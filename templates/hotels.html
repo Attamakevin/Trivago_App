@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>trivago - Compare hotel prices worldwide</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        
+        body {
+            line-height: 1.6;
+            color: #333;
+        }
+        
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 5%;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .logo {
+            height: 30px;
+        }
+        
+        nav a {
+            margin-left: 20px;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .hero {
+            background-color: #f5f7fa;
+            padding: 50px 5%;
+            text-align: center;
+        }
+        
+        .hero h1 {
+            font-size: 2.2rem;
+            margin-bottom: 15px;
+            color: #0a1121;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #555;
+        }
+        
+        .search-box {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .search-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .search-form input, .search-form select {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .search-button {
+            background-color: #e32851;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .partners {
+            padding: 40px 5%;
+            text-align: center;
+        }
+        
+        .partners h2 {
+            margin-bottom: 20px;
+        }
+        
+        .partner-logos {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+        
+        .partner-logo {
+            height: 25px;
+            opacity: 0.7;
+            transition: opacity 0.3s;
+        }
+        
+        .partner-logo:hover {
+            opacity: 1;
+        }
+        
+        .destinations {
+            padding: 40px 5%;
+            background-color: #f9f9f9;
+        }
+        
+        .destinations h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .destination-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .destination-card {
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+        }
+        
+        .destination-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .destination-img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+        }
+        
+        .destination-info {
+            padding: 15px;
+        }
+        
+        .destination-info h3 {
+            margin-bottom: 10px;
+        }
+        
+        .destination-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .usp {
+            padding: 50px 5%;
+            text-align: center;
+            background-color: #fff;
+        }
+        
+        .usp-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            max-width: 1000px;
+            margin: 30px auto 0;
+        }
+        
+        .usp-item {
+            flex: 1;
+            min-width: 250px;
+            padding: 20px;
+        }
+        
+        .usp-item img {
+            height: 60px;
+            margin-bottom: 15px;
+        }
+        
+        .usp-item h3 {
+            margin-bottom: 10px;
+            color: #0a1121;
+        }
+        
+        footer {
+            background-color: #0a1121;
+            color: white;
+            padding: 50px 5% 30px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            gap: 30px;
+        }
+        
+        .footer-logo {
+            height: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        
+        .link-group h4 {
+            margin-bottom: 15px;
+            color: #fff;
+        }
+        
+        .link-group ul {
+            list-style: none;
+        }
+        
+        .link-group li {
+            margin-bottom: 8px;
+        }
+        
+        .link-group a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .link-group a:hover {
+            color: white;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #333;
+            font-size: 0.8rem;
+            color: #999;
+        }
+        
+        @media (max-width: 768px) {
+            .search-form {
+                flex-direction: column;
+            }
+            
+            .search-form input, .search-form select {
+                width: 100%;
+            }
+            
+            .search-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://imgcy.trivago.com/f_auto,q_auto/hardcodedimages/trivago_facebook_opengraph.png" alt="trivago logo" class="logo">
+        <nav>
+            <a href="#">Favorites</a>
+            <a href="#">EN · R</a>
+            <a href="#">Log in</a>
+            <a href="#">Menu</a>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <h1>Save up to 45% on your next hotel stay</h1>
+        <p>We compare hotel prices from over 100 sites</p>
+        
+        <div class="search-box">
+            <form class="search-form">
+                <input type="text" placeholder="Destination">
+                <input type="date" placeholder="Check in">
+                <input type="date" placeholder="Check out">
+                <select>
+                    <option>Guests and rooms</option>
+                    <option>1 room, 1 adult</option>
+                    <option>1 room, 2 adults</option>
+                    <option>2 rooms, 4 adults</option>
+                </select>
+                <button class="search-button">Search</button>
+            </form>
+        </div>
+    </section>
+
+    <section class="partners">
+        <h2>Our Partners</h2>
+        <div class="partner-logos">
+            <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/626.png" alt="Booking.com" class="partner-logo">
+            <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/3340.png" alt="Hotels.com" class="partner-logo">
+            <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/395.png" alt="Agoda" class="partner-logo">
+            <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/2564.png" alt="Vrbo" class="partner-logo">
+            <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/14.png" alt="Accor" class="partner-logo">
+        </div>
+    </section>
+
+    <section class="destinations">
+        <h2>Popular searches</h2>
+        <div class="destination-grid">
+            <div class="destination-card">
+                <img src="https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_258,q_auto,w_258/categoryimages/31/37/31375_v44.jpeg" alt="Durban" class="destination-img">
+                <div class="destination-info">
+                    <h3>Durban</h3>
+                    <p>486 Hotels</p>
+                    <p>Avg. R 1,480</p>
+                </div>
+            </div>
+            
+            <div class="destination-card">
+                <img src="https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_258,q_auto,w_258/categoryimages/31/39/31399_v16.jpeg" alt="Cape Town" class="destination-img">
+                <div class="destination-info">
+                    <h3>Cape Town</h3>
+                    <p>1,836 Hotels</p>
+                    <p>Avg. R 1,933</p>
+                </div>
+            </div>
+            
+            <div class="destination-card">
+                <img src="https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_258,q_auto,w_258/categoryimages/33/71/33714_v40.jpeg" alt="Umhlanga" class="destination-img">
+                <div class="destination-info">
+                    <h3>Umhlanga</h3>
+                    <p>107 Hotels</p>
+                    <p>Avg. R 1,847</p>
+                </div>
+            </div>
+            
+            <div class="destination-card">
+                <img src="https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_258,q_auto,w_258/categoryimages/33/30/33304_v70.jpeg" alt="Ballito" class="destination-img">
+                <div class="destination-info">
+                    <h3>Ballito</h3>
+                    <p>145 Hotels</p>
+                    <p>Avg. R 1,886</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="usp">
+        <h2>Why choose trivago?</h2>
+        <div class="usp-container">
+            <div class="usp-item">
+                <img src="https://imgcy.trivago.com//hardcodedimages/homepage-landing/usp/Search.svg" alt="Search icon">
+                <h3>Search simply</h3>
+                <p>Easily search through millions of hotels in seconds.</p>
+            </div>
+            
+            <div class="usp-item">
+                <img src="https://imgcy.trivago.com//hardcodedimages/homepage-landing/usp/Compare.svg" alt="Compare icon">
+                <h3>Compare confidently</h3>
+                <p>Compare hotel prices from over 100 sites at once.</p>
+            </div>
+            
+            <div class="usp-item">
+                <img src="https://imgcy.trivago.com//hardcodedimages/homepage-landing/usp/Save.svg" alt="Save icon">
+                <h3>Save big</h3>
+                <p>Discover a great deal to book on our partner sites.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div>
+                <img src="https://imgcy.trivago.com/f_auto,q_auto/hardcodedimages/trivago_facebook_opengraph.png" alt="trivago logo" class="footer-logo">
+                <div style="margin-top: 20px;">
+                    <a href="#" style="margin-right: 15px;"><img src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook" style="height: 25px;"></a>
+                    <a href="#" style="margin-right: 15px;"><img src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter" style="height: 25px;"></a>
+                    <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram" style="height: 25px;"></a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <div class="link-group">
+                    <h4>Company</h4>
+                    <ul>
+                        <li><a href="#">About us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Press</a></li>
+                        <li><a href="#">Investor relations</a></li>
+                    </ul>
+                </div>
+                
+                <div class="link-group">
+                    <h4>Products</h4>
+                    <ul>
+                        <li><a href="#">Mobile apps</a></li>
+                        <li><a href="#">trivago Business Studio</a></li>
+                    </ul>
+                </div>
+                
+                <div class="link-group">
+                    <h4>Legal</h4>
+                    <ul>
+                        <li><a href="#">Terms and Conditions</a></li>
+                        <li><a href="#">Privacy Notice</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="link-group">
+                    <h4>Help</h4>
+                    <ul>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Contact us</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            <p>Copyright © 2025 trivago | All rights reserved.</p>
+            <p>trivago N.V., Kesselstraße 5 – 7, 40221 Düsseldorf, Germany</p>
+        </div>
+    </footer>
+</body>
+</html>

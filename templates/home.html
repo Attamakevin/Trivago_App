@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="./images/ico.png" type="image/x-icon">
+        <title>trivago - Rate hotels worldwide</title>
+        <link rel="stylesheet" href="/templates/css/main.css">
+        <!-- TailwindCSS -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+    </head>
+
+    <body>
+        <header class="sticky top-0 z-50 bg-gradient-to-r from-white/80 to-white/0 shadow-sm">
+            <img src="./images/logo.png" alt="trivago logo" class="logo">
+            <nav>
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                    </svg>
+                    Favorites
+                </a>
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
+                    </svg>
+                    EN · R
+                </a>
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                    </svg>
+                    Log in
+                </a>
+                <a href="#">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                    </svg>
+                    Menu
+                </a>
+            </nav>
+        </header>
+
+        <section class="hero">
+            <p class="font-bold text-xl">Save up to 45% on your next hotel stay</p>
+            <p class="font-sm text-sm mt-1 mb-10">We compare hotel prices from over 100 sites</p>
+
+            <div class="search-box">
+                <form class="search-form">
+                    <div class="flex items-center border-r border-gray-300 border-r border-gray-300 pr-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
+                        </svg>
+                        <input type="text" placeholder="">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
+                        </svg>
+                    </div>
+                    <input placeholder="Check in">
+                    <input placeholder="Check out">
+                    <div class="flex items-center border-l border-gray-300 pl-2">
+                        <svg fill="#999999" width="20px" height="20px" viewBox="0 0 1920 1920"
+                            xmlns="http://www.w3.org/2000/svg" stroke="#999999">
+                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
+                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
+                            <g id="SVGRepo_iconCarrier">
+                                <path
+                                    d="M1807.059 1270.091c-68.668 48.452-188.725 116.556-343.906 158.57-18.861-102.55-92.725-187.37-196.066-219.106-91.708-28.235-185.11-48.339-279.53-61.666 71.944-60.762 121.638-145.807 135.982-243.162 21.91-.791 44.837-1.243 71.04-1.243 166.023.904 331.143 26.316 490.955 75.445 72.621 22.362 121.525 87.755 121.525 162.861v128.301Zm-451.765 338.824c-114.183 80.753-330.24 198.099-621.176 198.099-129.43 0-379.144-26.203-621.177-198.1v-128.752c0-74.993 49.017-140.499 121.75-162.861 162.41-49.694 330.354-74.88 499.427-74.88h8.47c166.588.79 331.821 26.09 491.407 75.106 72.509 22.249 121.3 87.642 121.3 162.635v128.753Zm-903.53-761.901V734.072c0-155.632 126.608-282.352 282.354-282.352 155.746 0 282.353 126.72 282.353 282.352v112.942c0 155.746-126.607 282.353-282.353 282.353S451.765 1002.76 451.765 847.014Zm734.118-734.118c75.22 0 146.146 29.478 199.567 82.899 53.309 53.421 82.786 124.235 82.786 199.454V508.19c0 155.746-126.607 282.353-282.353 282.353-19.651 0-38.4-2.598-56.47-6.438v-50.033c0-156.423-92.047-290.71-224.188-354.748 8.357-148.066 130.447-266.428 280.658-266.428Zm532.857 758.061c-91.37-28.01-184.546-48.226-279.755-61.666 86.174-72.508 142.192-179.802 142.192-301.1V395.248c0-105.374-41.11-204.65-115.877-279.304-74.767-74.767-173.93-115.99-279.417-115.99-200.696 0-365.138 151.002-390.211 345.148-20.217-3.275-40.433-6.325-61.553-6.325-217.977 0-395.294 177.43-395.294 395.294v112.942c0 121.298 56.018 228.593 142.305 301.214-94.305 13.214-188.16 33.092-279.529 61.1C81.092 1246.375 0 1355.249 0 1480.163v185.675l22.588 16.941c275.238 206.344 563.803 237.177 711.53 237.177 344.244 0 593.618-148.63 711.53-237.177l22.587-16.94v-120.51c205.214-50.597 355.652-146.032 429.177-201.373l22.588-16.941V1141.79c0-125.026-80.979-233.901-201.261-270.833Z"
+                                    fill-rule="evenodd"></path>
+                            </g>
+                        </svg>
+                        <select>
+                            <option>Guests and rooms</option>
+                            <option>1 room, 1 adult</option>
+                            <option>1 room, 2 adults</option>
+                            <option>2 rooms, 4 adults</option>
+                        </select>
+                    </div>
+                    <button class="search-button">Search</button>
+                </form>
+            </div>
+            <div class="partner-logos">
+                <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/626.png"
+                    alt="Booking.com" loading="lazy" class="partner-logo">
+                <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/3340.png"
+                    alt="Hotels.com" loading="lazy" class="partner-logo">
+                <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/395.png"
+                    alt="Agoda" loading="lazy" class="partner-logo">
+                <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/2564.png"
+                    alt="Vrbo" loading="lazy" class="partner-logo">
+                <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/14.png"
+                    alt="Accor" loading="lazy" class="partner-logo">
+                <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/634.png"
+                    alt="Trip.com" loading="lazy" class="partner-logo">
+                <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/2652.png"
+                    alt="Trip.com" loading="lazy" class="partner-logo">
+                <p class="text-xs text-gray-500">+100 more</p>
+            </div>
+        </section>
+
+        <section class="destinations">
+            <div class="flex items-center justify-between mb-6">
+                <h2 class="text-xl font-bold">Hotel deals right now</h2>
+                <p class="text-sm font- text-blue-500">See More deals</p>
+            </div>
+
+            <div class="destination-grid">
+                <div class="destination-card">
+                    <img src="https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_258,q_auto,w_258/categoryimages/31/39/31399_v16.jpeg"
+                        alt="Durban" class="destination-img">
+                    <div class="destination-info">
+                        <h3>Durban</h3>
+                        <p>486 Hotels</p>
+                        <p>Avg. R 1,480</p>
+                    </div>
+                </div>
+
+                <div class="destination-card">
+                    <img src="https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_258,q_auto,w_258/categoryimages/31/39/31399_v16.jpeg"
+                        alt="Cape Town" class="destination-img">
+                    <div class="destination-info">
+                        <h3>Cape Town</h3>
+                        <p>1,836 Hotels</p>
+                        <p>Avg. R 1,933</p>
+                    </div>
+                </div>
+
+                <div class="destination-card">
+                    <img src="https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_258,q_auto,w_258/categoryimages/33/71/33714_v40.jpeg"
+                        alt="Umhlanga" class="destination-img">
+                    <div class="destination-info">
+                        <h3>Umhlanga</h3>
+                        <p>107 Hotels</p>
+                        <p>Avg. R 1,847</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="usp">
+            <div class="usp-container">
+                <div class="usp-item">
+                    <img src="./images/SearchDesktop.svg" alt="Search icon">
+                    <h3 class="font-bold text-lg">Search simply</h3>
+                    <p>Easily search through millions of hotels in seconds.</p>
+                </div>
+
+                <div class="usp-item">
+                    <img src="./images/CompareDesktop.svg" alt="Compare icon">
+                    <h3 class="font-bold text-lg">Compare confidently</h3>
+                    <p>Compare hotel prices from over 100 sites at once.</p>
+                </div>
+
+                <div class="usp-item">
+                    <img src="./images/SaveDesktop.svg" alt="Save icon">
+                    <h3 class="font-bold text-lg">Save big</h3>
+                    <p>Discover a great deal to book on our partner sites.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="usp1">
+            <p class="font-bold text-xl  ">Download the trivago app</p>
+            <div class="flex justify-between gap-4 mt-4 bg-[#e22851] text-white p-10 rounded-lg">
+                <div>
+                    <p class="font-bold text-3xl">Never miss a great deal with price alerts</p>
+                    <div class="flex items-center gap-4 mt-10">
+                        <img src="./images/qr.jpg" alt="" class="w-[100px] h-[100px]">
+                        <div class="flex flex-col gap-2">
+                            <img src="./images/applestore.jpg" alt="">
+                            <img src="./images/googlestore.jpg" alt="">
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <img src="./images/phone.webp" alt="" class="w-[250px] h-[270px] z-50 ">
+                    <p class="absolute h-[20px] w-[230px] bg-green-500 rounded-2xl flex items-center justify-center p-4 z-50 top-12 right- left-">10%
+                        price drop</p>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            <div class="footer-content">
+                <div class="flex justify-between items-center mb-8">
+                    <img src="./images/logoF.png"
+                        alt="trivago logo" class="footer-logo">
+                    <!-- <div style="margin-top: 20px;">
+                        <a href="#" style="margin-right: 15px;"><img
+                                src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook"
+                                style="height: 25px;"></a>
+                        <a href="#" style="margin-right: 15px;"><img
+                                src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter"
+                                style="height: 25px;"></a>
+                        <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"
+                                style="height: 25px;"></a>
+                    </div> -->
+                    <div class="flex">
+                        <p>Facebook</p>
+                        <p>Facebook</p>
+                        <p>Facebook</p>
+                        <p>Facebook</p>
+                        <p>Facebook</p>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="link-group">
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="#">About us</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Press</a></li>
+                            <li><a href="#">Investor relations</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="link-group">
+                        <h4>Products</h4>
+                        <ul>
+                            <li><a href="#">Mobile apps</a></li>
+                            <li><a href="#">trivago Business Studio</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="link-group">
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Terms and Conditions</a></li>
+                            <li><a href="#">Privacy Notice</a></li>
+                            <li><a href="#">Cookie Policy</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="link-group">
+                        <h4>Help</h4>
+                        <ul>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Contact us</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>Copyright © 2025 trivago | All rights reserved.</p>
+                <p>trivago N.V., Kesselstraße 5 – 7, 40221 Düsseldorf, Germany</p>
+            </div>
+        </footer>
+    </body>
+
+</html>

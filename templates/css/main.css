@@ -15,7 +15,7 @@ header {
     justify-content: space-between;
     gap: 20px;
     align-items: center;
-    padding: 30px 10%;
+    padding: 20px 10%;
     border-bottom: 1px solid #eee;
 }
 
@@ -45,11 +45,10 @@ nav a:hover {
 
 .hero {
     background-color: #f5f7fa;
-    padding: 50px 5%;
-    text-align: center;
+    padding: 50px 10%;
 }
 
-.hero h1 {
+/* .hero h1 {
     font-size: 2.2rem;
     margin-bottom: 15px;
     color: #0a1121;
@@ -59,13 +58,13 @@ nav a:hover {
     font-size: 1.2rem;
     margin-bottom: 30px;
     color: #555;
-}
+} */
 
 .search-box {
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 0 auto;
     background: white;
-    padding: 20px;
+    padding: 10px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0,0,0,0.1);
 }
@@ -78,18 +77,16 @@ nav a:hover {
 
 .search-form input, .search-form select {
     flex: 1;
-    min-width: 200px;
-    padding: 12px 15px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    min-width: 100px;
+    padding: 12px 15px;    
 }
 
 .search-button {
-    background-color: #e32851;
+    background-color: #0079c2;
     color: white;
     border: none;
-    padding: 12px 30px;
-    border-radius: 4px;
+    padding: 5px 35px;
+    border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
 }
@@ -106,13 +103,13 @@ nav a:hover {
 .partner-logos {
     display: flex;
     flex-wrap: wrap;
-    justify-content: center;
-    gap: 30px;
-    margin-top: 20px;
+    justify-content: space-between;
+    
+    margin-top: 60px;
 }
 
 .partner-logo {
-    height: 25px;
+    height: 15px;
     opacity: 0.7;
     transition: opacity 0.3s;
 }
@@ -122,13 +119,8 @@ nav a:hover {
 }
 
 .destinations {
-    padding: 40px 5%;
+    padding: 50px 10%;
     background-color: #f9f9f9;
-}
-
-.destinations h2 {
-    text-align: center;
-    margin-bottom: 30px;
 }
 
 .destination-grid {
@@ -171,7 +163,7 @@ nav a:hover {
 }
 
 .usp {
-    padding: 50px 5%;
+    padding: 50px 10%;
     text-align: center;
     background-color: #fff;
 }
@@ -187,12 +179,14 @@ nav a:hover {
 
 .usp-item {
     flex: 1;
+    align-items: center;
+    /* max-width: 300px; */
     min-width: 250px;
     padding: 20px;
 }
 
 .usp-item img {
-    height: 60px;
+    height: 150px;
     margin-bottom: 15px;
 }
 
@@ -201,23 +195,28 @@ nav a:hover {
     color: #0a1121;
 }
 
+.usp1 {
+    padding: 50px 15%;
+    background-color: #fff;
+}
+
 footer {
     background-color: #0a1121;
     color: white;
     padding: 50px 5% 30px;
 }
 
-.footer-content {
+/* .footer-content {
     max-width: 1200px;
     margin: 0 auto;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     gap: 30px;
-}
+} */
 
 .footer-logo {
-    height: 25px;
+    height: 38px;
     margin-bottom: 20px;
 }
 

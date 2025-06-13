@@ -1,0 +1,274 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: "Montserrat", sans-serif;
+}
+
+body {
+    line-height: 1.6;
+    color: #333;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    align-items: center;
+    padding: 30px 10%;
+    border-bottom: 1px solid #eee;
+}
+
+.logo {
+    height: 30px;
+}
+
+nav {
+    display: flex;
+}
+nav:hover{
+    color: #e32851;
+}
+nav a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 20px;
+    text-decoration: none;
+    color: #333;
+    font-size: 13px;
+}
+
+nav a:hover {
+    color: #e32851;
+}
+
+.hero {
+    background-color: #f5f7fa;
+    padding: 50px 5%;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 2.2rem;
+    margin-bottom: 15px;
+    color: #0a1121;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+    color: #555;
+}
+
+.search-box {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.search-form input, .search-form select {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.search-button {
+    background-color: #e32851;
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.partners {
+    padding: 40px 5%;
+    text-align: center;
+}
+
+.partners h2 {
+    margin-bottom: 20px;
+}
+
+.partner-logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 20px;
+}
+
+.partner-logo {
+    height: 25px;
+    opacity: 0.7;
+    transition: opacity 0.3s;
+}
+
+.partner-logo:hover {
+    opacity: 1;
+}
+
+.destinations {
+    padding: 40px 5%;
+    background-color: #f9f9f9;
+}
+
+.destinations h2 {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.destination-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.destination-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.3s;
+}
+
+.destination-card:hover {
+    transform: translateY(-5px);
+}
+
+.destination-img {
+    width: 100%;
+    height: 160px;
+    object-fit: cover;
+}
+
+.destination-info {
+    padding: 15px;
+}
+
+.destination-info h3 {
+    margin-bottom: 10px;
+}
+
+.destination-info p {
+    color: #666;
+    font-size: 0.9rem;
+}
+
+.usp {
+    padding: 50px 5%;
+    text-align: center;
+    background-color: #fff;
+}
+
+.usp-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    max-width: 1000px;
+    margin: 30px auto 0;
+}
+
+.usp-item {
+    flex: 1;
+    min-width: 250px;
+    padding: 20px;
+}
+
+.usp-item img {
+    height: 60px;
+    margin-bottom: 15px;
+}
+
+.usp-item h3 {
+    margin-bottom: 10px;
+    color: #0a1121;
+}
+
+footer {
+    background-color: #0a1121;
+    color: white;
+    padding: 50px 5% 30px;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 30px;
+}
+
+.footer-logo {
+    height: 25px;
+    margin-bottom: 20px;
+}
+
+.footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.link-group h4 {
+    margin-bottom: 15px;
+    color: #fff;
+}
+
+.link-group ul {
+    list-style: none;
+}
+
+.link-group li {
+    margin-bottom: 8px;
+}
+
+.link-group a {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.link-group a:hover {
+    color: white;
+}
+
+.copyright {
+    text-align: center;
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #333;
+    font-size: 0.8rem;
+    color: #999;
+}
+
+@media (max-width: 768px) {
+    .search-form {
+        flex-direction: column;
+    }
+    
+    .search-form input, .search-form select {
+        width: 100%;
+    }
+    
+    .search-button {
+        width: 100%;
+    }
+}

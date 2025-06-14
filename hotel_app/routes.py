@@ -4,10 +4,9 @@ from hotel_app import app, db
 from hotel_app.models import User, Hotel, Reservation, DepositRequest, WithdrawalRequest, EventAd
 from datetime import datetime
 
-@app.route('/')
+@app.route('/home')
 def home():
-    return redirect(url_for('login'))
-
+    return render_template('home.html')
 @app.route('/login', methods=['GET', 'POST'])
 @app.route('/login', methods=['GET', 'POST'])
 def login():

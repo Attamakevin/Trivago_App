@@ -43,6 +43,154 @@ nav a:hover {
     color: #e32851;
 }
 
+/* Mobile Menu Styles */
+.mobile-menu {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #eee;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.mobile-menu-content {
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.mobile-menu a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    border-radius: 8px;
+    transition: background-color 0.2s;
+}
+
+.mobile-menu a:hover {
+    background-color: #f5f5f5;
+    color: #e32851;
+}
+
+.mobile-menu .size-6 {
+    width: 20px;
+    height: 20px;
+}
+
+/* Hide mobile menu by default */
+.mobile-menu.hidden {
+    display: none;
+}
+
+/* Show mobile menu when active */
+.mobile-menu.active {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Updated responsive styles */
+@media (max-width: 768px) {
+    header {
+        padding: 15px 5%;
+        gap: 10px;
+        position: relative;
+    }
+    
+    .logo {
+        height: 25px;
+    }
+    
+    .desktop-nav {
+        gap: 0;
+    }
+    
+    .desktop-nav a {
+        margin-left: 10px;
+        font-size: 11px;
+        gap: 5px;
+    }
+    
+    .desktop-nav a .size-6 {
+        width: 18px;
+        height: 18px;
+    }
+    
+    /* Hide non-essential nav items on mobile */
+    .desktop-nav a:not(.menu-trigger) .nav-text {
+        display: none;
+    }
+    
+    /* Keep only favorites and menu visible on mobile */
+    .desktop-nav a:nth-child(2), /* Language */
+    .desktop-nav a:nth-child(3) { /* Login */
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        padding: 10px 3%;
+        gap: 5px;
+    }
+    
+    .logo {
+        height: 22px;
+    }
+    
+    .desktop-nav a {
+        margin-left: 8px;
+        padding: 8px;
+        border-radius: 4px;
+    }
+    
+    .desktop-nav a:hover {
+        background-color: #f5f5f5;
+    }
+    
+    .desktop-nav a .size-6 {
+        width: 20px;
+        height: 20px;
+    }
+    
+    /* Show only favorites and menu on very small screens */
+    .desktop-nav a:first-child .nav-text,
+    .desktop-nav a.menu-trigger .nav-text {
+        display: none;
+    }
+}
+
+/* Icon switching styles */
+.menu-trigger .hamburger-icon,
+.menu-trigger .close-icon {
+    transition: opacity 0.2s;
+}
+
+.menu-trigger.active .hamburger-icon {
+    display: none;
+}
+
+.menu-trigger.active .close-icon {
+    display: block !important;
+}
+
 .hero {
     background-color: #f5f7fa;
     padding: 50px 10%;
@@ -89,6 +237,306 @@ nav a:hover {
     border-radius: 10px;
     cursor: pointer;
     font-weight: bold;
+}
+
+.dropdown-active {
+    display: block !important;
+}
+.calendar-container {
+    display: flex;
+    gap: 2rem;
+}
+.calendar-month {
+    min-width: 280px;
+}
+.calendar-navigation {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.nav-button {
+    width: 32px;
+    height: 32px;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.nav-button:hover {
+    background-color: #f3f4f6;
+    border-color: #d1d5db;
+}
+.nav-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    text-align: center;
+}
+.calendar-day-header {
+    padding: 8px;
+    font-weight: 500;
+    color: #6b7280;
+    font-size: 0.875rem;
+}
+.calendar-day {
+    padding: 8px;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.calendar-day:hover {
+    background-color: #e5f3ff;
+}
+.calendar-day.selected {
+    background-color: #0ea5e9;
+    color: white;
+}
+.calendar-day.in-range {
+    background-color: #bae6fd;
+}
+.calendar-day.disabled {
+    color: #d1d5db;
+    cursor: not-allowed;
+}
+.calendar-day.other-month {
+    color: #d1d5db;
+}
+
+/* Responsive styles - add this to your existing <style> section */
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .max-w-6xl {
+        max-width: 100%;
+        padding: 0 1rem;
+    }
+    
+    /* Stack search inputs vertically on mobile */
+    .flex.items-center.gap-4 {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+    }
+    
+    /* Make inputs full width on mobile */
+    .flex-1, .relative {
+        width: 100%;
+    }
+    
+    /* Adjust dropdown widths for mobile */
+    #checkinDropdown, #checkoutDropdown {
+        width: 95vw !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+    
+    #locationDropdown {
+        width: 100% !important;
+        left: 0 !important;
+        right: 0 !important;
+    }
+    
+    #guestsDropdown {
+        width: 95vw !important;
+        right: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+    }
+    
+    /* Stack calendar months vertically on mobile */
+    .calendar-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .calendar-month {
+        min-width: auto;
+        width: 100%;
+    }
+    
+    /* Adjust calendar navigation for mobile */
+    .calendar-navigation {
+        margin-bottom: 0.5rem;
+    }
+    
+    .calendar-navigation .flex.gap-8 {
+        gap: 1rem;
+    }
+    
+    /* Make calendar grid more compact on mobile */
+    .calendar-grid {
+        gap: 0;
+    }
+    
+    .calendar-day {
+        min-height: 40px;
+        font-size: 0.75rem;
+    }
+    
+    .calendar-day-header {
+        font-size: 0.75rem;
+        padding: 4px;
+    }
+    
+    /* Adjust quick date buttons for mobile */
+    .flex.gap-3.mt-6 {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .flex.gap-3.mt-6 button {
+        flex: 1;
+        min-width: calc(50% - 0.25rem);
+        font-size: 0.75rem;
+        padding: 0.5rem 0.75rem;
+    }
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .max-w-6xl {
+        max-width: 90%;
+    }
+    
+    /* Adjust dropdown widths for tablet */
+    #checkinDropdown, #checkoutDropdown {
+        width: 600px;
+    }
+    
+    #guestsDropdown {
+        width: 350px;
+    }
+    
+    /* Keep calendar side by side on tablet but make it smaller */
+    .calendar-container {
+        gap: 1rem;
+    }
+    
+    .calendar-month {
+        min-width: 250px;
+    }
+}
+
+/* Calendar Mobile Responsive Fix - add this to your existing styles */
+
+@media (max-width: 768px) {
+    /* Hide the second calendar on mobile */
+    #calendar2, #calendar2Checkout {
+        display: none !important;
+    }
+    
+    /* Adjust calendar container for single month view */
+    .calendar-container {
+        flex-direction: row !important; /* Override the column direction */
+        gap: 0 !important;
+        justify-content: center;
+    }
+    
+    /* Make single calendar take full width */
+    .calendar-month {
+        width: 100%;
+        max-width: 350px;
+        margin: 0 auto;
+    }
+    
+    /* Update calendar navigation for single month */
+    .calendar-navigation .flex.gap-8 {
+        gap: 0;
+        justify-content: center;
+    }
+    
+    /* Hide the second month title */
+    #month2Title, #month2TitleCheckout {
+        display: none !important;
+    }
+    
+    /* Center the single month title */
+    #month1Title, #month1TitleCheckout {
+        text-align: center;
+        min-width: auto;
+        flex: 1;
+    }
+    
+    /* Adjust dropdown width for single month */
+    #checkinDropdown, #checkoutDropdown {
+        width: 90vw !important;
+        max-width: 400px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Even more compact on very small screens */
+    .calendar-month {
+        max-width: 320px;
+    }
+    
+    #checkinDropdown, #checkoutDropdown {
+        width: 95vw !important;
+        max-width: 350px !important;
+    }
+    
+    /* Make calendar grid more compact */
+    .calendar-day {
+        min-height: 36px;
+        font-size: 0.75rem;
+    }
+}
+
+/* Small mobile styles */
+@media (max-width: 480px) {
+    body {
+        padding: 1rem;
+    }
+    
+    h1 {
+        font-size: 1.5rem;
+    }
+    
+    .bg-white.rounded-lg.shadow-lg.p-6 {
+        padding: 1rem;
+    }
+    
+    /* Make month titles smaller on small screens */
+    #month1Title, #month2Title, #month1TitleCheckout, #month2TitleCheckout {
+        font-size: 0.875rem;
+        min-width: 100px;
+    }
+    
+    /* Adjust navigation buttons */
+    .nav-button {
+        width: 28px;
+        height: 28px;
+    }
+    
+    .nav-button svg {
+        width: 12px;
+        height: 12px;
+    }
+    
+    /* Make guests dropdown controls more touch-friendly */
+    .w-8.h-8 {
+        width: 40px;
+        height: 40px;
+    }
+    
+    /* Adjust input padding for mobile */
+    .border.border-gray-300.rounded-lg.px-4.py-3 {
+        padding: 0.75rem;
+    }
 }
 
 .partners {
@@ -200,62 +648,691 @@ nav a:hover {
     background-color: #fff;
 }
 
+/* USP Section Responsive Styles */
+
+/* Mobile styles */
+@media (max-width: 768px) {
+    .usp1 {
+        padding: 30px 5%;
+    }
+    
+    .usp1 p.font-bold.text-xl {
+        font-size: 1.125rem; /* 18px */
+        text-align: center;
+    }
+    
+    .usp1 .flex.justify-between {
+        flex-direction: column;
+        gap: 2rem;
+        padding: 2rem 1.5rem;
+        text-align: center;
+    }
+    
+    .usp1 .font-bold.text-3xl {
+        font-size: 1.5rem; /* 24px */
+        line-height: 1.3;
+    }
+    
+    .usp1 .flex.items-center.gap-4.mt-10 {
+        flex-direction: column;
+        margin-top: 2rem;
+        align-items: center;
+    }
+    
+    .usp1 img[alt=""] {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .usp1 .flex.flex-col.gap-2 {
+        flex-direction: row;
+        gap: 1rem;
+    }
+    
+    .usp1 .flex.flex-col.gap-2 img {
+        width: 120px;
+        height: auto;
+    }
+    
+    /* Phone image adjustments */
+    .usp1 .relative {
+        order: -1; /* Move phone image to top */
+        align-self: center;
+    }
+    
+    .usp1 .relative img[alt=""] {
+        width: 180px;
+        height: 200px;
+    }
+    
+    .usp1 .absolute {
+        width: 160px;
+        height: auto;
+        top: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+    }
+}
+
+/* Small mobile styles */
+@media (max-width: 480px) {
+    .usp1 {
+        padding: 20px 3%;
+    }
+    
+    .usp1 .flex.justify-between {
+        padding: 1.5rem 1rem;
+        gap: 1.5rem;
+    }
+    
+    .usp1 .font-bold.text-3xl {
+        font-size: 1.25rem; /* 20px */
+    }
+    
+    .usp1 .flex.items-center.gap-4.mt-10 {
+        margin-top: 1.5rem;
+    }
+    
+    .usp1 img[alt=""] {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .usp1 .flex.flex-col.gap-2 img {
+        width: 100px;
+    }
+    
+    .usp1 .relative img[alt=""] {
+        width: 150px;
+        height: 170px;
+    }
+    
+    .usp1 .absolute {
+        width: 130px;
+        font-size: 0.75rem;
+        padding: 0.375rem 0.75rem;
+        top: 1.5rem;
+    }
+}
+
+/* Tablet styles */
+@media (max-width: 1024px) and (min-width: 769px) {
+    .usp1 {
+        padding: 40px 8%;
+    }
+    
+    .usp1 .flex.justify-between {
+        gap: 2rem;
+        padding: 2.5rem 2rem;
+    }
+    
+    .usp1 .font-bold.text-3xl {
+        font-size: 2rem; /* 32px */
+    }
+    
+    .usp1 .relative img[alt=""] {
+        width: 200px;
+        height: 220px;
+    }
+    
+    .usp1 .absolute {
+        width: 180px;
+        top: 2.5rem;
+    }
+    
+    .usp1 .flex.flex-col.gap-2 img {
+        width: 130px;
+    }
+}
+
+/* Large tablet to small desktop */
+@media (max-width: 1200px) and (min-width: 1025px) {
+    .usp1 {
+        padding: 45px 10%;
+    }
+    
+    .usp1 .flex.justify-between {
+        padding: 2.5rem;
+    }
+    
+    .usp1 .relative img[alt=""] {
+        width: 220px;
+        height: 240px;
+    }
+    
+    .usp1 .absolute {
+        width: 200px;
+        top: 2.75rem;
+    }
+}
+
+/* Extra large screens */
+@media (min-width: 1400px) {
+    .usp1 {
+        padding: 50px 20%;
+    }
+}
+
+/* Fix for the absolute positioned price drop badge */
+@media (max-width: 768px) {
+    .usp1 .absolute {
+        position: relative !important;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        transform: none !important;
+        left: auto !important;
+        top: auto !important;
+        width: auto !important;
+        display: inline-block;
+    }
+}
+
 footer {
     background-color: #0a1121;
     color: white;
-    padding: 50px 5% 30px;
+    padding: 50px 0 30px;
 }
 
-/* .footer-content {
+.footer-content {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 5%;
+}
+
+/* Footer top section */
+.footer-top {
     display: flex;
-    flex-wrap: wrap;
     justify-content: space-between;
-    gap: 30px;
-} */
+    align-items: center;
+    margin-bottom: 50px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
 
 .footer-logo {
     height: 38px;
-    margin-bottom: 20px;
+}
+
+/* Country selector */
+.country-selector {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: #1a2332;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 8px 12px;
+    gap: 8px;
+}
+
+.flag-icon {
+    width: 20px;
+    height: 15px;
+    border-radius: 2px;
+}
+
+.country-select {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 14px;
+    outline: none;
+    cursor: pointer;
+    padding-right: 20px;
+}
+
+.chevron-down {
+    color: #ccc;
+    pointer-events: none;
+}
+
+/* Social icons */
+.social-icons {
+    display: flex;
+    gap: 12px;
+}
+
+.social-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #ccc;
+    transition: all 0.3s ease;
+    text-decoration: none;
+}
+
+.social-icon:hover {
+    background-color: #555;
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* Footer main content */
+.footer-main {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 50px;
+    margin-bottom: 40px;
 }
 
 .footer-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 30px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
 }
 
 .link-group h4 {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
     color: #fff;
+    font-size: 16px;
+    font-weight: 600;
 }
 
 .link-group ul {
     list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .link-group li {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
 }
 
 .link-group a {
     color: #ccc;
     text-decoration: none;
-    font-size: 0.9rem;
+    font-size: 14px;
+    line-height: 1.4;
+    transition: color 0.3s ease;
 }
 
 .link-group a:hover {
     color: white;
 }
 
+/* Newsletter section */
+.newsletter-section {
+    background-color: #1a2332;
+    padding: 30px;
+    border-radius: 8px;
+}
+
+.newsletter-section h4 {
+    margin-bottom: 20px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.newsletter-form {
+    display: flex;
+    gap: 0;
+}
+
+.newsletter-input {
+    flex: 1;
+    padding: 12px 16px;
+    border: 1px solid #333;
+    border-right: none;
+    border-radius: 6px 0 0 6px;
+    background-color: #0a1121;
+    color: white;
+    font-size: 14px;
+    outline: none;
+}
+
+.newsletter-input::placeholder {
+    color: #888;
+}
+
+.newsletter-input:focus {
+    border-color: #0066cc;
+}
+
+.newsletter-btn {
+    padding: 12px 24px;
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.newsletter-btn:hover {
+    background-color: #0052a3;
+}
+
+/* Copyright */
 .copyright {
     text-align: center;
-    margin-top: 40px;
-    padding-top: 20px;
+    padding-top: 30px;
     border-top: 1px solid #333;
-    font-size: 0.8rem;
+    font-size: 12px;
     color: #999;
+    line-height: 1.6;
+}
+
+.copyright p {
+    margin: 5px 0;
+}
+
+/* Responsive Styles */
+@media (max-width: 1024px) {
+    .footer-main {
+        grid-template-columns: 1fr;
+        gap: 40px;
+    }
+    
+    .footer-links {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+}
+
+@media (max-width: 768px) {
+    footer {
+        padding: 40px 0 20px;
+    }
+    
+    .footer-content {
+        padding: 0 3%;
+    }
+    
+    .footer-top {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 40px;
+        gap: 20px;
+    }
+    
+    .footer-logo {
+        height: 32px;
+    }
+    
+    .country-selector {
+        order: 1;
+    }
+    
+    .social-icons {
+        order: 2;
+        justify-content: center;
+    }
+    
+    .footer-main {
+        gap: 30px;
+    }
+    
+    .footer-links {
+        gap: 25px;
+    }
+    
+    .newsletter-section {
+        padding: 20px;
+    }
+    
+    .newsletter-section h4 {
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+    
+    .newsletter-form {
+        flex-direction: column;
+        gap: 10px;
+    }
+    
+    .newsletter-input {
+        border-radius: 6px;
+        border-right: 1px solid #333;
+    }
+    
+    .newsletter-btn {
+        border-radius: 6px;
+        padding: 12px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .footer-content {
+        padding: 0 5%;
+    }
+    
+    .footer-top {
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+    
+    .social-icons {
+        gap: 8px;
+    }
+    
+    .social-icon {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .country-selector {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    
+    .newsletter-section {
+        padding: 15px;
+    }
+    
+    .newsletter-section h4 {
+        font-size: 14px;
+    }
+    
+    .link-group h4 {
+        font-size: 15px;
+        margin-bottom: 15px;
+    }
+    
+    .link-group a {
+        font-size: 13px;
+    }
+    
+    .copyright {
+        font-size: 11px;
+        padding-top: 20px;
+    }
+}
+/* Country selector styles */
+.country-selector {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: #1a2332;
+    border: 1px solid #333;
+    border-radius: 6px;
+    padding: 8px 12px;
+    gap: 8px;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    min-width: 180px;
+}
+
+.country-selector:hover {
+    border-color: #555;
+}
+
+.flag-icon {
+    width: 20px;
+    height: 15px;
+    border-radius: 2px;
+    flex-shrink: 0;
+}
+
+#selectedCountry {
+    color: white;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+}
+
+.chevron-down {
+    color: #ccc;
+    pointer-events: none;
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.country-selector.active .chevron-down {
+    transform: rotate(180deg);
+}
+
+/* Country dropdown */
+.country-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #1a2332;
+    border: 1px solid #333;
+    border-radius: 6px;
+    margin-top: 4px;
+    z-index: 1000;
+    max-height: 300px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.country-dropdown.hidden {
+    display: none;
+}
+
+.country-dropdown.show {
+    display: block;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.country-search {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+}
+
+.country-search input {
+    width: 100%;
+    padding: 8px 12px;
+    background-color: #0a1121;
+    border: 1px solid #333;
+    border-radius: 4px;
+    color: white;
+    font-size: 14px;
+    outline: none;
+}
+
+.country-search input::placeholder {
+    color: #888;
+}
+
+.country-search input:focus {
+    border-color: #0066cc;
+}
+
+.country-list {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.country-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    border-bottom: 1px solid #2a3441;
+}
+
+.country-option:hover {
+    background-color: #2a3441;
+}
+
+.country-option:last-child {
+    border-bottom: none;
+}
+
+.country-option .flag-icon {
+    width: 18px;
+    height: 13px;
+}
+
+.country-option .country-name {
+    color: white;
+    font-size: 14px;
+    flex: 1;
+}
+
+/* Custom scrollbar for country list */
+.country-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.country-list::-webkit-scrollbar-track {
+    background: #1a2332;
+}
+
+.country-list::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 3px;
+}
+
+.country-list::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .country-selector {
+        min-width: 160px;
+    }
+    
+    .country-dropdown {
+        left: -50%;
+        right: -50%;
+        width: 280px;
+    }
+}
+
+@media (max-width: 480px) {
+    .country-selector {
+        min-width: 140px;
+    }
+    
+    #selectedCountry {
+        font-size: 13px;
+    }
+    
+    .country-dropdown {
+        left: -100%;
+        right: -100%;
+        width: 320px;
+    }
 }
 
 @media (max-width: 768px) {

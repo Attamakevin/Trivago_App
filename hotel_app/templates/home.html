@@ -10,11 +10,19 @@
         <!-- TailwindCSS -->
         <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <script src="https://cdn.tailwindcss.com"></script>
+        <!-- FlatPickr -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <!-- Country-list & FlagIcon -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
             rel="stylesheet">
+        <!-- Custom Script -->
+        <script src="/templates/js/main.js"></script>
     </head>
 
     <body>
@@ -27,7 +35,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                     </svg>
-                    Favorites
+                    <span class="nav-text">Favorites</span>
                 </a>
                 <a href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -35,7 +43,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
                     </svg>
-                    EN · R
+                    <span class="nav-text">EN · R</span>
                 </a>
                 <a href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -43,59 +51,418 @@
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                     </svg>
-                    Log in
+                    <span class="nav-text">Log in</span>
                 </a>
-                <a href="#">
+                <a href="#" class="menu-trigger" onclick="toggleMobileMenu()">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6">
+                        stroke="currentColor" class="size-6 hamburger-icon">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
                     </svg>
-                    Menu
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                        stroke="currentColor" class="size-6 close-icon hidden">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span class="nav-text">Menu</span>
                 </a>
             </nav>
+
+            <!-- Mobile Menu -->
+            <div id="mobileMenu" class="mobile-menu hidden">
+                <div class="mobile-menu-content">
+                    <a href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
+                        </svg>
+                        Favorites
+                    </a>
+                    <a href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
+                        </svg>
+                        Language & Region
+                    </a>
+                    <a href="#">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                            stroke="currentColor" class="size-6">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                        </svg>
+                        Sign In / Register
+                    </a>
+                </div>
+            </div>
         </header>
 
         <section class="hero">
             <p class="font-bold text-xl">Save up to 45% on your next hotel stay</p>
             <p class="font-sm text-sm mt-1 mb-10">We compare hotel prices from over 100 sites</p>
 
-            <div class="search-box">
-                <form class="search-form">
-                    <div class="flex items-center border-r border-gray-300 border-r border-gray-300 pr-2">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round"
-                                d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607Z" />
-                        </svg>
-                        <input type="text" placeholder="">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                            stroke="currentColor" class="size-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" />
-                        </svg>
+            <div class="bg-white rounded-lg shadow-lg p-6 relative">
+                <div class="flex items-center gap-4">
+                    <!-- Location Search -->
+                    <div class="flex-1 relative">
+                        <div class="flex items-center border border-gray-300 rounded-lg px-4 py-3 cursor-pointer"
+                            onclick="toggleDropdown('location')">
+                            <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                            <div class="flex-1">
+                                <div class="text-xs text-blue-600 font-medium">Hotel</div>
+                                <input type="text" value="Cape Town"
+                                    class="w-full text-gray-800 font-medium bg-transparent border-none outline-none"
+                                    readonly>
+                            </div>
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12">
+                                </path>
+                            </svg>
+                        </div>
+
+                        <!-- Location Dropdown -->
+                        <div id="locationDropdown"
+                            class="absolute top-full left-0 right-0 bg-white border border-gray-200 rounded-lg shadow-lg mt-1 z-50 hidden">
+                            <div class="p-4">
+                                <h3 class="font-medium text-gray-800 mb-3">Places you recently searched</h3>
+                                <div class="space-y-2">
+                                    <div class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
+                                        onclick="selectLocation('Cape Town', 'City • Western Cape, South Africa')">
+                                        <div
+                                            class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                            <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-gray-800">Cape Town</div>
+                                            <div class="text-sm text-gray-500">City • Western Cape, South Africa</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center p-2 hover:bg-gray-50 rounded cursor-pointer"
+                                        onclick="selectLocation('Le Morne', 'City • Mauritius')">
+                                        <div
+                                            class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                                            <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                                    clip-rule="evenodd"></path>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div class="font-medium text-gray-800">Le Morne</div>
+                                            <div class="text-sm text-gray-500">City • Mauritius</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <input placeholder="Check in">
-                    <input placeholder="Check out">
-                    <div class="flex items-center border-l border-gray-300 pl-2">
-                        <svg fill="#999999" width="20px" height="20px" viewBox="0 0 1920 1920"
-                            xmlns="http://www.w3.org/2000/svg" stroke="#999999">
-                            <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                            <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                            <g id="SVGRepo_iconCarrier">
-                                <path
-                                    d="M1807.059 1270.091c-68.668 48.452-188.725 116.556-343.906 158.57-18.861-102.55-92.725-187.37-196.066-219.106-91.708-28.235-185.11-48.339-279.53-61.666 71.944-60.762 121.638-145.807 135.982-243.162 21.91-.791 44.837-1.243 71.04-1.243 166.023.904 331.143 26.316 490.955 75.445 72.621 22.362 121.525 87.755 121.525 162.861v128.301Zm-451.765 338.824c-114.183 80.753-330.24 198.099-621.176 198.099-129.43 0-379.144-26.203-621.177-198.1v-128.752c0-74.993 49.017-140.499 121.75-162.861 162.41-49.694 330.354-74.88 499.427-74.88h8.47c166.588.79 331.821 26.09 491.407 75.106 72.509 22.249 121.3 87.642 121.3 162.635v128.753Zm-903.53-761.901V734.072c0-155.632 126.608-282.352 282.354-282.352 155.746 0 282.353 126.72 282.353 282.352v112.942c0 155.746-126.607 282.353-282.353 282.353S451.765 1002.76 451.765 847.014Zm734.118-734.118c75.22 0 146.146 29.478 199.567 82.899 53.309 53.421 82.786 124.235 82.786 199.454V508.19c0 155.746-126.607 282.353-282.353 282.353-19.651 0-38.4-2.598-56.47-6.438v-50.033c0-156.423-92.047-290.71-224.188-354.748 8.357-148.066 130.447-266.428 280.658-266.428Zm532.857 758.061c-91.37-28.01-184.546-48.226-279.755-61.666 86.174-72.508 142.192-179.802 142.192-301.1V395.248c0-105.374-41.11-204.65-115.877-279.304-74.767-74.767-173.93-115.99-279.417-115.99-200.696 0-365.138 151.002-390.211 345.148-20.217-3.275-40.433-6.325-61.553-6.325-217.977 0-395.294 177.43-395.294 395.294v112.942c0 121.298 56.018 228.593 142.305 301.214-94.305 13.214-188.16 33.092-279.529 61.1C81.092 1246.375 0 1355.249 0 1480.163v185.675l22.588 16.941c275.238 206.344 563.803 237.177 711.53 237.177 344.244 0 593.618-148.63 711.53-237.177l22.587-16.94v-120.51c205.214-50.597 355.652-146.032 429.177-201.373l22.588-16.941V1141.79c0-125.026-80.979-233.901-201.261-270.833Z"
-                                    fill-rule="evenodd"></path>
-                            </g>
-                        </svg>
-                        <select>
-                            <option>Guests and rooms</option>
-                            <option>1 room, 1 adult</option>
-                            <option>1 room, 2 adults</option>
-                            <option>2 rooms, 4 adults</option>
-                        </select>
+
+                    <!-- Check-in Date -->
+                    <div class="relative">
+                        <div class="border border-gray-300 rounded-lg px-4 py-3 cursor-pointer min-w-[140px]"
+                            onclick="toggleDropdown('checkin')">
+                            <div class="text-xs text-orange-600 font-medium">Check in</div>
+                            <div class="text-gray-800 font-medium">Fri, 27/06/25</div>
+                        </div>
+
+                        <!-- Check-in Calendar Dropdown -->
+                        <div id="checkinDropdown"
+                            class="absolute top-full left-0 bg-white border border-gray-200 rounded-lg shadow-lg mt-1 z-50 hidden w-[650px]">
+                            <div class="p-4">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-medium text-gray-800">Select your check-in date</h3>
+                                    <button onclick="toggleDropdown('checkin')"
+                                        class="text-gray-400 hover:text-gray-600">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-4">See prices and availability for your dates</p>
+
+                                <!-- Calendar Navigation -->
+                                <div class="calendar-navigation">
+                                    <button id="prevMonth" class="nav-button" onclick="navigateMonth(-1)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 19l-7-7 7-7"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="flex gap-8">
+                                        <h4 id="month1Title" class="font-medium text-center min-w-[120px]">June 2025
+                                        </h4>
+                                        <h4 id="month2Title" class="font-medium text-center min-w-[120px]">July 2025
+                                        </h4>
+                                    </div>
+                                    <button id="nextMonth" class="nav-button" onclick="navigateMonth(1)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Calendar Container -->
+                                <div class="calendar-container">
+                                    <div id="calendar1" class="calendar-month">
+                                        <div class="calendar-grid">
+                                            <div class="calendar-day-header">Mo</div>
+                                            <div class="calendar-day-header">Tu</div>
+                                            <div class="calendar-day-header">We</div>
+                                            <div class="calendar-day-header">Th</div>
+                                            <div class="calendar-day-header">Fr</div>
+                                            <div class="calendar-day-header">Sa</div>
+                                            <div class="calendar-day-header">Su</div>
+                                            <!-- Days will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+
+                                    <div id="calendar2" class="calendar-month">
+                                        <div class="calendar-grid">
+                                            <div class="calendar-day-header">Mo</div>
+                                            <div class="calendar-day-header">Tu</div>
+                                            <div class="calendar-day-header">We</div>
+                                            <div class="calendar-day-header">Th</div>
+                                            <div class="calendar-day-header">Fr</div>
+                                            <div class="calendar-day-header">Sa</div>
+                                            <div class="calendar-day-header">Su</div>
+                                            <!-- Days will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-3 mt-6">
+                                    <button onclick="selectQuickDate('tonight')"
+                                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Tonight</button>
+                                    <button onclick="selectQuickDate('tomorrow')"
+                                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Tomorrow
+                                        night</button>
+                                    <button onclick="selectQuickDate('weekend')"
+                                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">This
+                                        weekend</button>
+                                    <button onclick="selectQuickDate('nextweekend')"
+                                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Next
+                                        weekend</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                    <button class="search-button">Search</button>
-                </form>
+
+                    <!-- Check-out Date -->
+                    <div class="relative">
+                        <div class="border border-gray-300 rounded-lg px-4 py-3 cursor-pointer min-w-[140px]"
+                            onclick="toggleDropdown('checkout')">
+                            <div class="text-xs text-orange-600 font-medium">Check out</div>
+                            <div class="text-gray-800 font-medium">Sat, 28/06/25</div>
+                        </div>
+
+                        <!-- Check-out Calendar Dropdown (Same structure as check-in) -->
+                        <div id="checkoutDropdown"
+                            class="absolute top-full left-0 bg-white border border-gray-200 rounded-lg shadow-lg mt-1 z-50 hidden w-[650px]">
+                            <div class="p-4">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-medium text-gray-800">Select your check-out date</h3>
+                                    <button onclick="toggleDropdown('checkout')"
+                                        class="text-gray-400 hover:text-gray-600">
+                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-4">See prices and availability for your dates</p>
+
+                                <!-- Calendar Navigation -->
+                                <div class="calendar-navigation">
+                                    <button id="prevMonthCheckout" class="nav-button"
+                                        onclick="navigateMonthCheckout(-1)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 19l-7-7 7-7"></path>
+                                        </svg>
+                                    </button>
+                                    <div class="flex gap-8">
+                                        <h4 id="month1TitleCheckout" class="font-medium text-center min-w-[120px]">June
+                                            2025</h4>
+                                        <h4 id="month2TitleCheckout" class="font-medium text-center min-w-[120px]">July
+                                            2025</h4>
+                                    </div>
+                                    <button id="nextMonthCheckout" class="nav-button"
+                                        onclick="navigateMonthCheckout(1)">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7">
+                                            </path>
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <!-- Calendar Container -->
+                                <div class="calendar-container">
+                                    <div id="calendar1Checkout" class="calendar-month">
+                                        <div class="calendar-grid">
+                                            <div class="calendar-day-header">Mo</div>
+                                            <div class="calendar-day-header">Tu</div>
+                                            <div class="calendar-day-header">We</div>
+                                            <div class="calendar-day-header">Th</div>
+                                            <div class="calendar-day-header">Fr</div>
+                                            <div class="calendar-day-header">Sa</div>
+                                            <div class="calendar-day-header">Su</div>
+                                            <!-- Days will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+
+                                    <div id="calendar2Checkout" class="calendar-month">
+                                        <div class="calendar-grid">
+                                            <div class="calendar-day-header">Mo</div>
+                                            <div class="calendar-day-header">Tu</div>
+                                            <div class="calendar-day-header">We</div>
+                                            <div class="calendar-day-header">Th</div>
+                                            <div class="calendar-day-header">Fr</div>
+                                            <div class="calendar-day-header">Sa</div>
+                                            <div class="calendar-day-header">Su</div>
+                                            <!-- Days will be populated by JavaScript -->
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex gap-3 mt-6">
+                                    <button onclick="selectQuickDateCheckout('tonight')"
+                                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Tonight</button>
+                                    <button onclick="selectQuickDateCheckout('tomorrow')"
+                                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Tomorrow
+                                        night</button>
+                                    <button onclick="selectQuickDateCheckout('weekend')"
+                                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">This
+                                        weekend</button>
+                                    <button onclick="selectQuickDateCheckout('nextweekend')"
+                                        class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50">Next
+                                        weekend</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Guests and Rooms -->
+                    <div class="relative">
+                        <div class="border border-gray-300 rounded-lg px-4 py-3 cursor-pointer min-w-[160px]"
+                            onclick="toggleDropdown('guests')">
+                            <div class="text-xs text-blue-600 font-medium">Guests and rooms</div>
+                            <div class="text-gray-800 font-medium">2 Guests, 1 Room</div>
+                        </div>
+
+                        <!-- Guests Dropdown -->
+                        <div id="guestsDropdown"
+                            class="absolute top-full right-0 bg-white border border-gray-200 rounded-lg shadow-lg mt-1 z-50 hidden w-80">
+                            <div class="p-4">
+                                <!-- Adults -->
+                                <div class="flex items-center justify-between py-3">
+                                    <div class="font-medium text-gray-800">Adults</div>
+                                    <div class="flex items-center gap-3">
+                                        <button onclick="decrementGuests('adults')"
+                                            class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-50">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M20 12H4">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                        <span id="adultsCount" class="w-8 text-center font-medium">2</span>
+                                        <button onclick="incrementGuests('adults')"
+                                            class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-50">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Children -->
+                                <div class="flex items-center justify-between py-3">
+                                    <div class="font-medium text-gray-800">Children</div>
+                                    <div class="flex items-center gap-3">
+                                        <button onclick="decrementGuests('children')"
+                                            class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-50">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M20 12H4">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                        <span id="childrenCount" class="w-8 text-center font-medium">0</span>
+                                        <button onclick="incrementGuests('children')"
+                                            class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-50">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Rooms -->
+                                <div class="flex items-center justify-between py-3">
+                                    <div class="font-medium text-gray-800">Rooms</div>
+                                    <div class="flex items-center gap-3">
+                                        <button onclick="decrementGuests('rooms')"
+                                            class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-50">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M20 12H4">
+                                                </path>
+                                            </svg>
+                                        </button>
+                                        <span id="roomsCount" class="w-8 text-center font-medium">1</span>
+                                        <button onclick="incrementGuests('rooms')"
+                                            class="w-8 h-8 flex items-center justify-center border border-gray-300 rounded-full hover:bg-gray-50">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M12 4v16m8-8H4"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Pet-friendly -->
+                                <div class="flex items-center justify-between py-3 border-t border-gray-200">
+                                    <div>
+                                        <div class="font-medium text-gray-800">Pet-friendly</div>
+                                        <div class="text-sm text-gray-500">Only show stays that allow pets</div>
+                                    </div>
+                                    <input type="checkbox" id="petFriendly"
+                                        class="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500">
+                                </div>
+
+                                <!-- Buttons -->
+                                <div class="flex gap-3 mt-6">
+                                    <button onclick="resetGuests()"
+                                        class="px-4 py-2 text-gray-600 hover:bg-gray-50 rounded-lg font-medium">RESET</button>
+                                    <button onclick="applyGuests()"
+                                        class="px-6 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 ml-auto">Apply</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Search Button -->
+                    <button
+                        class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                        Search
+                    </button>
+                </div>
             </div>
             <div class="partner-logos">
                 <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/626.png"
@@ -116,41 +483,446 @@
             </div>
         </section>
 
-        <section class="destinations">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold">Hotel deals right now</h2>
-                <p class="text-sm font- text-blue-500">See More deals</p>
+        <section class="w-full max-w-6xl mx-auto px-4 py-8">
+            <!-- Header -->
+            <div class="flex items-center justify-between mb-8">
+                <h2 class="text-sm md:text-lg lg:text-2xl font-bold text-gray-900">Hot hotel deals right now</h2>
+                <a href="#"
+                    class="flex items-center gap-2 text-blue-600 hover:text-blue-700 font-medium text-[8px] sm:text-sm transition-colors">
+                    See more deals
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </a>
             </div>
 
-            <div class="destination-grid">
-                <div class="destination-card">
-                    <img src="https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_258,q_auto,w_258/categoryimages/31/39/31399_v16.jpeg"
-                        alt="Durban" class="destination-img">
-                    <div class="destination-info">
-                        <h3>Durban</h3>
-                        <p>486 Hotels</p>
-                        <p>Avg. R 1,480</p>
+            <!-- Carousel Container -->
+            <div class="relative">
+                <!-- Navigation Buttons -->
+                <button id="prevBtn"
+                    class="absolute left-0 top-1/2 transform -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors opacity-50 cursor-not-allowed"
+                    onclick="slideCarousel(-1)">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+
+                <button id="nextBtn"
+                    class="absolute right-0 top-1/2 transform -translate-y-1/2 translate-x-4 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+                    onclick="slideCarousel(1)">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                <!-- Hotel Cards Container -->
+                <div class="overflow-hidden">
+                    <div id="hotelCarousel" class="flex transition-transform duration-500">
+
+                        <!-- Hotel Card 1 -->
+                        <div class="flex-none w-full md:w-1/2 lg:w-1/3 px-3">
+                            <div
+                                class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=400&h=240&fit=crop"
+                                        alt="Heritage Le Telfair Golf & Wellness Resort"
+                                        class="w-full h-48 object-cover">
+                                    <div
+                                        class="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                                        26% Less than usual
+                                    </div>
+                                    <button
+                                        class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50">
+                                        <svg class="w-4 h-4 text-gray-400 hover:text-red-500" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="p-4">
+                                    <h3 class="font-bold text-gray-900 mb-2 line-clamp-2">Heritage Le Telfair Golf &
+                                        Wellness
+                                        Resort</h3>
+
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <div class="flex items-center gap-1">
+                                            <span
+                                                class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">9.3
+                                                -
+                                                Excellent</span>
+                                            <span class="text-gray-500 text-xs">(8326)</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-gray-500 text-xs">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Mauritius
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="text-xs text-gray-600">
+                                            <div class="font-medium">Hotel site</div>
+                                            <div class="flex items-center gap-1 mt-1">
+                                                <svg class="w-3 h-3 text-green-500" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                <span class="text-xs">Pay at the property</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-end justify-between mb-4">
+                                        <div>
+                                            <div class="text-2xl font-bold text-gray-900">$270</div>
+                                            <div class="text-xs text-gray-500">per night</div>
+                                        </div>
+                                        <div class="text-xs text-gray-500 text-right">
+                                            14 Jul - 15 Jul
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
+                                        Check deal
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hotel Card 2 -->
+                        <div class="flex-none w-full md:w-1/2 lg:w-1/3 px-3">
+                            <div
+                                class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=400&h=240&fit=crop"
+                                        alt="Cape Town Lodge Hotel" class="w-full h-48 object-cover">
+                                    <div
+                                        class="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                                        28% Less than usual
+                                    </div>
+                                    <button
+                                        class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50">
+                                        <svg class="w-4 h-4 text-gray-400 hover:text-red-500" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="p-4">
+                                    <h3 class="font-bold text-gray-900 mb-2 line-clamp-2">Cape Town Lodge Hotel</h3>
+
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <div class="flex items-center gap-1">
+                                            <span
+                                                class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">8.0
+                                                -
+                                                Very good</span>
+                                            <span class="text-gray-500 text-xs">(9090)</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-gray-500 text-xs">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Western Cape, South Africa
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="text-xs text-gray-600">
+                                            <div class="font-medium">Agoda</div>
+                                            <div class="flex items-center gap-1 mt-1">
+                                                <svg class="w-3 h-3 text-green-500" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                <span class="text-xs">Free cancellation</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-end justify-between mb-4">
+                                        <div>
+                                            <div class="text-2xl font-bold text-gray-900">$37</div>
+                                            <div class="text-xs text-gray-500">per night</div>
+                                        </div>
+                                        <div class="text-xs text-gray-500 text-right">
+                                            13 Jul - 14 Jul
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
+                                        Check deal
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hotel Card 3 -->
+                        <div class="flex-none w-full md:w-1/2 lg:w-1/3 px-3">
+                            <div
+                                class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=400&h=240&fit=crop"
+                                        alt="Coastlands Musgrave Hotel" class="w-full h-48 object-cover">
+                                    <div
+                                        class="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                                        12% Less than usual
+                                    </div>
+                                    <button
+                                        class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50">
+                                        <svg class="w-4 h-4 text-gray-400 hover:text-red-500" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="p-4">
+                                    <h3 class="font-bold text-gray-900 mb-2 line-clamp-2">Coastlands Musgrave Hotel</h3>
+
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <div class="flex items-center gap-1">
+                                            <span
+                                                class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">8.2
+                                                -
+                                                Very good</span>
+                                            <span class="text-gray-500 text-xs">(7851)</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-gray-500 text-xs">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            KwaZulu-Natal, South Africa
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="text-xs text-gray-600">
+                                            <div class="font-medium">Agoda</div>
+                                            <div class="flex items-center gap-1 mt-1">
+                                                <svg class="w-3 h-3 text-green-500" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                <span class="text-xs">Free cancellation</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-end justify-between mb-4">
+                                        <div>
+                                            <div class="text-2xl font-bold text-gray-900">$80</div>
+                                            <div class="text-xs text-gray-500">per night</div>
+                                        </div>
+                                        <div class="text-xs text-gray-500 text-right">
+                                            27 Jul - 28 Jul
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
+                                        Check deal
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hotel Card 4 -->
+                        <div class="flex-none w-full md:w-1/2 lg:w-1/3 px-3">
+                            <div
+                                class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=400&h=240&fit=crop"
+                                        alt="Sandton Sun Hotel" class="w-full h-48 object-cover">
+                                    <div
+                                        class="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                                        15% Less than usual
+                                    </div>
+                                    <button
+                                        class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50">
+                                        <svg class="w-4 h-4 text-gray-400 hover:text-red-500" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="p-4">
+                                    <h3 class="font-bold text-gray-900 mb-2 line-clamp-2">Sandton Sun Hotel</h3>
+
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <div class="flex items-center gap-1">
+                                            <span
+                                                class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">8.5
+                                                -
+                                                Very good</span>
+                                            <span class="text-gray-500 text-xs">(6420)</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-gray-500 text-xs">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Johannesburg, South Africa
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="text-xs text-gray-600">
+                                            <div class="font-medium">Booking.com</div>
+                                            <div class="flex items-center gap-1 mt-1">
+                                                <svg class="w-3 h-3 text-green-500" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                <span class="text-xs">Free cancellation</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-end justify-between mb-4">
+                                        <div>
+                                            <div class="text-2xl font-bold text-gray-900">$59</div>
+                                            <div class="text-xs text-gray-500">per night</div>
+                                        </div>
+                                        <div class="text-xs text-gray-500 text-right">
+                                            20 Jul - 21 Jul
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
+                                        Check deal
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hotel Card 5 -->
+                        <div class="flex-none w-full md:w-1/2 lg:w-1/3 px-3">
+                            <div
+                                class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300">
+                                <div class="relative">
+                                    <img src="https://images.unsplash.com/photo-1590490360182-c33d57733427?w=400&h=240&fit=crop"
+                                        alt="Table Bay Hotel" class="w-full h-48 object-cover">
+                                    <div
+                                        class="absolute top-3 left-3 bg-red-500 text-white px-2 py-1 rounded text-xs font-bold">
+                                        20% Less than usual
+                                    </div>
+                                    <button
+                                        class="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md hover:bg-gray-50">
+                                        <svg class="w-4 h-4 text-gray-400 hover:text-red-500" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                                        </svg>
+                                    </button>
+                                </div>
+
+                                <div class="p-4">
+                                    <h3 class="font-bold text-gray-900 mb-2 line-clamp-2">Table Bay Hotel</h3>
+
+                                    <div class="flex items-center gap-4 mb-3">
+                                        <div class="flex items-center gap-1">
+                                            <span
+                                                class="bg-green-100 text-green-800 px-2 py-1 rounded text-xs font-bold">9.1
+                                                -
+                                                Excellent</span>
+                                            <span class="text-gray-500 text-xs">(4521)</span>
+                                        </div>
+                                        <div class="flex items-center gap-1 text-gray-500 text-xs">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd"
+                                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                                    clip-rule="evenodd" />
+                                            </svg>
+                                            Cape Town, South Africa
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="text-xs text-gray-600">
+                                            <div class="font-medium">Hotels.com</div>
+                                            <div class="flex items-center gap-1 mt-1">
+                                                <svg class="w-3 h-3 text-green-500" fill="currentColor"
+                                                    viewBox="0 0 20 20">
+                                                    <path fill-rule="evenodd"
+                                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                        clip-rule="evenodd" />
+                                                </svg>
+                                                <span class="text-xs">Pay at the property</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="flex items-end justify-between mb-4">
+                                        <div>
+                                            <div class="text-2xl font-bold text-gray-900">$162</div>
+                                            <div class="text-xs text-gray-500">per night</div>
+                                        </div>
+                                        <div class="text-xs text-gray-500 text-right">
+                                            25 Jul - 26 Jul
+                                        </div>
+                                    </div>
+
+                                    <button
+                                        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200 flex items-center justify-center gap-2">
+                                        Check deal
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
 
-                <div class="destination-card">
-                    <img src="https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_258,q_auto,w_258/categoryimages/31/39/31399_v16.jpeg"
-                        alt="Cape Town" class="destination-img">
-                    <div class="destination-info">
-                        <h3>Cape Town</h3>
-                        <p>1,836 Hotels</p>
-                        <p>Avg. R 1,933</p>
-                    </div>
-                </div>
-
-                <div class="destination-card">
-                    <img src="https://imgcy.trivago.com/c_fill,d_dummy.jpeg,e_sharpen:60,f_auto,h_258,q_auto,w_258/categoryimages/33/71/33714_v40.jpeg"
-                        alt="Umhlanga" class="destination-img">
-                    <div class="destination-info">
-                        <h3>Umhlanga</h3>
-                        <p>107 Hotels</p>
-                        <p>Avg. R 1,847</p>
-                    </div>
+                <!-- Carousel Indicators -->
+                <div class="flex justify-center mt-6 gap-2" id="indicators">
+                    <!-- Indicators will be populated by JavaScript -->
                 </div>
             </div>
         </section>
@@ -200,69 +972,111 @@
 
         <footer>
             <div class="footer-content">
-                <div class="flex justify-between items-center mb-8">
-                    <img src="./static/images/logoF.png"
-                        alt="trivago logo" class="footer-logo">
-                    <!-- <div style="margin-top: 20px;">
-                        <a href="#" style="margin-right: 15px;"><img
-                                src="https://cdn-icons-png.flaticon.com/512/124/124010.png" alt="Facebook"
-                                style="height: 25px;"></a>
-                        <a href="#" style="margin-right: 15px;"><img
-                                src="https://cdn-icons-png.flaticon.com/512/733/733579.png" alt="Twitter"
-                                style="height: 25px;"></a>
-                        <a href="#"><img src="https://cdn-icons-png.flaticon.com/512/2111/2111463.png" alt="Instagram"
-                                style="height: 25px;"></a>
-                    </div> -->
-                    <div class="flex">
-                        <p>Facebook</p>
-                        <p>Facebook</p>
-                        <p>Facebook</p>
-                        <p>Facebook</p>
-                        <p>Facebook</p>
+                <!-- Top section with logo, country selector, and social icons -->
+                <div class="footer-top">
+                    <img src="./images/logoF.png" alt="trivago logo" class="footer-logo">
+
+                    <!-- Country selector -->
+                    <div class="country-selector" onclick="toggleCountryDropdown()">
+                        <span id="selectedFlag" class="fi fi-za flag-icon"></span>
+                        <span id="selectedCountry">South Africa</span>
+                        <svg class="chevron-down" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2">
+                            <path d="M6 9l6 6 6-6" />
+                        </svg>
+
+                        <!-- Country dropdown -->
+                        <div id="countryDropdown" class="country-dropdown hidden">
+                            <div class="country-search">
+                                <input type="text" id="countrySearch" placeholder="Search countries..."
+                                    onkeyup="filterCountries()">
+                            </div>
+                            <div class="country-list" id="countryList">
+                                <!-- Countries will be populated here -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Social media icons -->
+                    <div class="social-icons">
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                                <path
+                                    d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                            </svg>
+                        </a>
                     </div>
                 </div>
 
-                <div class="footer-links">
-                    <div class="link-group">
-                        <h4>Company</h4>
-                        <ul>
-                            <li><a href="#">About us</a></li>
-                            <li><a href="#">Careers</a></li>
-                            <li><a href="#">Press</a></li>
-                            <li><a href="#">Investor relations</a></li>
-                        </ul>
+                <!-- Main footer content -->
+                <div class="footer-main">
+                    <!-- Footer links -->
+                    <div class="footer-links">
+                        <div class="link-group">
+                            <h4>Company</h4>
+                            <ul>
+                                <li><a href="#">Jobs</a></li>
+                                <li><a href="#">Press</a></li>
+                                <li><a href="#">Investor relations</a></li>
+                                <li><a href="#">Mobile apps - searching on the go</a></li>
+                                <li><a href="#">trivago for hoteliers</a></li>
+                            </ul>
+                        </div>
+
+                        <div class="link-group">
+                            <h4>Help</h4>
+                            <ul>
+                                <li><a href="#">Learn how trivago works</a></li>
+                                <li><a href="#">Terms and conditions</a></li>
+                                <li><a href="#">Legal information</a></li>
+                                <li><a href="#">Do Not Sell My Personal Information</a></li>
+                                <li><a href="#">Privacy notice</a></li>
+                                <li><a href="#">DSA information</a></li>
+                                <li><a href="#">Cybersecurity</a></li>
+                                <li><a href="#">Vulnerability Disclosure Programme</a></li>
+                            </ul>
+                        </div>
                     </div>
 
-                    <div class="link-group">
-                        <h4>Products</h4>
-                        <ul>
-                            <li><a href="#">Mobile apps</a></li>
-                            <li><a href="#">trivago Business Studio</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="link-group">
-                        <h4>Legal</h4>
-                        <ul>
-                            <li><a href="#">Terms and Conditions</a></li>
-                            <li><a href="#">Privacy Notice</a></li>
-                            <li><a href="#">Cookie Policy</a></li>
-                        </ul>
-                    </div>
-
-                    <div class="link-group">
-                        <h4>Help</h4>
-                        <ul>
-                            <li><a href="#">FAQ</a></li>
-                            <li><a href="#">Contact us</a></li>
-                        </ul>
+                    <!-- Newsletter signup -->
+                    <div class="newsletter-section">
+                        <h4>Get exclusive inspiration for your next stay – subscribe to our newsletter.</h4>
+                        <div class="newsletter-form">
+                            <input type="email" placeholder="Email address" class="newsletter-input">
+                            <button type="submit" class="newsletter-btn">Subscribe</button>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <div class="copyright">
-                <p>Copyright © 2025 trivago | All rights reserved.</p>
-                <p>trivago N.V., Kesselstraße 5 – 7, 40221 Düsseldorf, Germany</p>
+                <!-- Copyright -->
+                <div class="copyright">
+                    <p><strong>trivago N.V.</strong>, Kesselstraße 5 – 7, 40221 Düsseldorf, Germany</p>
+                    <p>Copyright 2025 trivago | All rights reserved.</p>
+                </div>
             </div>
         </footer>
     </body>

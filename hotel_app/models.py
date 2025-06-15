@@ -13,7 +13,15 @@ class User(db.Model, UserMixin):
     balance = db.Column(db.Float, default=0.0)
     vip_level = db.Column(db.String(10), default='VIP0')
     withdrawal_password = db.Column(db.String(100))
+    password_hash = db.Column(db.String(100))
     is_active = db.Column(db.Boolean, default=False)
+    
+class InvitationCode(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(20), unique=True, nullable=False)
+    is_used = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 
 
 class Hotel(db.Model):

@@ -1411,6 +1411,13 @@ footer {
 .slide-in {
     animation: slideInFromRight 0.6s ease-out;
 }
+.input-style {
+    @apply w-full px-4 py-3 border border-gray-300 rounded-lg;
+}
+
+.btn-primary {
+    @apply w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg;
+}
 
 @keyframes slideInFromRight {
     from {

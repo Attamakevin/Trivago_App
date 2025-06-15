@@ -1171,6 +1171,18 @@ function switchTab(tab) {
     }
 }
 
+// Initialize form display based on URL parameter
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const formType = urlParams.get('form_type');
+    
+    if (formType === 'register') {
+        switchTab('signup');
+    } else {
+        switchTab('login');
+    }
+});
+
 function togglePassword(inputId) {
     const input = document.getElementById(inputId);
     const type = input.getAttribute('type') === 'password' ? 'text' : 'password';

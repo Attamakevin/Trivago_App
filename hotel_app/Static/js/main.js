@@ -913,3 +913,276 @@ function handleSwipe() {
     }
 }
 // Card Carousal Functionality Ends Here
+
+// Main Modal Functions
+function showLoginModal(action = 'general') {
+    const modal = document.getElementById('loginModal');
+    const message = document.getElementById('modalMessage');
+
+    // Customize message based on action
+    const messages = {
+        'general': 'Please sign in to your account to access this feature and enjoy exclusive benefits.',
+        'favorite': 'Please sign in to save hotels to your favorites and create your personal wishlist.',
+        'booking': 'Please sign in to complete your booking and access member-only deals.',
+        'deals': 'Please sign in to view exclusive member deals and special offers.'
+    };
+
+    message.textContent = messages[action] || messages['general'];
+
+    modal.classList.remove('hidden');
+    // Prevent body scroll
+    document.body.style.overflow = 'hidden';
+}
+
+function closeLoginModal() {
+    const modal = document.getElementById('loginModal');
+    modal.classList.add('hidden');
+    // Restore body scroll
+    document.body.style.overflow = 'auto';
+}
+
+// Compact Modal Functions
+function showCompactModal() {
+    const modal = document.getElementById('compactModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeCompactModal() {
+    const modal = document.getElementById('compactModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+}
+
+// Redirect Functions (customize these URLs)
+function redirectToLogin() {
+    alert('Redirecting to login page... (customize this URL)');
+    // window.location.href = '/login';
+    closeLoginModal();
+    closeCompactModal();
+}
+
+function redirectToSignup() {
+    alert('Redirecting to signup page... (customize this URL)');
+    // window.location.href = '/signup';
+    closeLoginModal();
+}
+
+// Close modals when clicking outside
+document.getElementById('loginModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+        closeLoginModal();
+    }
+});
+
+document.getElementById('compactModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+        closeCompactModal();
+    }
+});
+
+// Close modals with Escape key
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        closeLoginModal();
+        closeCompactModal();
+    }
+});
+
+// Example usage functions you can call from other pages
+window.requireLogin = function (action) {
+    showLoginModal(action);
+};
+
+window.showQuickLoginPrompt = function () {
+    showCompactModal();
+};
+
+let countdownTimer = null;
+let redirectTimer = null;
+let compactCountdownTimer = null;
+let compactRedirectTimer = null;
+
+// Main Modal Functions
+function showRedirectModal(action = 'general') {
+    const modal = document.getElementById('redirectModal');
+    const title = document.getElementById('redirectTitle');
+    const message = document.getElementById('redirectMessage');
+
+    // Customize message based on action
+    const content = {
+        'general': {
+            title: 'Ready to explore amazing deals?',
+            message: 'You\'ll be taken to Trivago.com where you can compare prices from hundreds of travel sites and find the perfect hotel at the best price.'
+        },
+        'booking': {
+            title: 'Complete your booking on Trivago',
+            message: 'You\'ll be redirected to Trivago.com to finalize your hotel reservation and secure the best available rate.'
+        },
+        'deals': {
+            title: 'Discover exclusive deals on Trivago',
+            message: 'You\'ll be taken to Trivago.com to explore thousands of hotel deals and limited-time offers from top booking sites.'
+        },
+        'search': {
+            title: 'Continue your search on Trivago',
+            message: 'You\'ll be redirected to Trivago.com to access our full search functionality and compare prices from over 100 booking sites.'
+        }
+    };
+
+    const selectedContent = content[action] || content['general'];
+    title.textContent = selectedContent.title;
+    message.textContent = selectedContent.message;
+
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    // Start countdown
+    startCountdown();
+}
+
+function closeRedirectModal() {
+    const modal = document.getElementById('redirectModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+
+    // Clear timers
+    if (countdownTimer) clearInterval(countdownTimer);
+    if (redirectTimer) clearTimeout(redirectTimer);
+}
+
+function startCountdown() {
+    let seconds = 5;
+    const countdownElement = document.getElementById('countdown');
+
+    countdownTimer = setInterval(() => {
+        seconds--;
+        countdownElement.textContent = seconds;
+
+        if (seconds <= 0) {
+            clearInterval(countdownTimer);
+            redirectNow();
+        }
+    }, 1000);
+}
+
+function redirectNow() {
+    // Close modal first
+    closeRedirectModal();
+
+    // Redirect to Trivago
+    window.open('https://www.trivago.com', '_blank');
+    // Or use window.location.href = 'https://www.trivago.com' for same tab
+}
+
+// Compact Modal Functions
+function showCompactRedirectModal() {
+    const modal = document.getElementById('compactRedirectModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+
+    // Start compact countdown
+    startCompactCountdown();
+}
+
+function closeCompactRedirectModal() {
+    const modal = document.getElementById('compactRedirectModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = 'auto';
+
+    // Clear timers
+    if (compactCountdownTimer) clearInterval(compactCountdownTimer);
+    if (compactRedirectTimer) clearTimeout(compactRedirectTimer);
+}
+
+function startCompactCountdown() {
+    let seconds = 5;
+    const countdownElement = document.getElementById('compactCountdown');
+
+    compactCountdownTimer = setInterval(() => {
+        seconds--;
+        countdownElement.textContent = seconds;
+
+        if (seconds <= 0) {
+            clearInterval(compactCountdownTimer);
+            redirectNowCompact();
+        }
+    }, 1000);
+}
+
+function redirectNowCompact() {
+    closeCompactRedirectModal();
+    window.open('https://www.trivago.com', '_blank');
+}
+
+// Close modals when clicking outside
+document.getElementById('redirectModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+        closeRedirectModal();
+    }
+});
+
+document.getElementById('compactRedirectModal').addEventListener('click', function (e) {
+    if (e.target === this) {
+        closeCompactRedirectModal();
+    }
+});
+
+// Close modals with Escape key
+document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') {
+        closeRedirectModal();
+        closeCompactRedirectModal();
+    }
+});
+
+// Global functions for easy integration
+window.redirectToTrivago = function (action) {
+    showRedirectModal(action);
+};
+
+window.quickRedirectToTrivago = function () {
+    showCompactRedirectModal();
+};
+
+// Login/Signup Functions
+
+function switchTab(tab) {
+    const loginTab = document.getElementById('loginTab');
+    const signupTab = document.getElementById('signupTab');
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+
+    if (tab === 'login') {
+        loginTab.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+        loginTab.classList.remove('text-gray-500');
+        signupTab.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+        signupTab.classList.add('text-gray-500');
+
+        loginForm.classList.remove('hidden');
+        signupForm.classList.add('hidden');
+    } else {
+        signupTab.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
+        signupTab.classList.remove('text-gray-500');
+        loginTab.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
+        loginTab.classList.add('text-gray-500');
+
+        signupForm.classList.remove('hidden');
+        loginForm.classList.add('hidden');
+    }
+}
+
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+    input.setAttribute('type', type);
+}
+
+function handleLogin(event) {
+    event.preventDefault();
+    alert('Login form submitted! (This is just a demo)');
+}
+
+function handleSignup(event) {
+    event.preventDefault();
+    alert('Signup form submitted! (This is just a demo)');
+}

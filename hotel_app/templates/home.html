@@ -28,30 +28,60 @@
     <body>
         <header class="sticky top-0 z-50 bg-gradient-to-r from-white/80 to-white/0 shadow-sm">
             <img src="./static/images/logo.png" alt="trivago logo" class="logo">
-            <nav>
+            <nav class="desktop-nav">
                 <a href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z" />
                     </svg>
-                    <span class="nav-text">Favorites</span>
+                    <span data-translate class="nav-text">Favorites</span>
                 </a>
-                <a href="#">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                        stroke="currentColor" class="size-6">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 0 1 3 12c0-1.605.42-3.113 1.157-4.418" />
-                    </svg>
-                    <span class="nav-text">EN · R</span>
-                </a>
-                <a href= "{{url_for('login')}}">
+                
+                <!-- Language Selector -->
+                <div class="relative inline-block">
+                    <a href="#" onclick="toggleLanguageDropdown()">
+                        <span id="selectedLanguageFlag" class="fi fi-us flag-icon"></span>
+                        <span data-translate id="selectedLanguageText" class="nav-text">EN</span>
+                        <svg class="w-3 h-3 text-gray-500 transition-transform duration-200" id="languageChevron" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                        </svg>
+                    </a>
+                    
+                    <!-- Language Dropdown -->
+                    <div id="languageDropdown" class="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[180px] overflow-hidden hidden">
+                        <div class="py-1">
+                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors bg-blue-50 text-blue-600 font-medium" onclick="selectLanguage('en', 'us', 'English', 'EN')">
+                                <span class="fi fi-us flag-icon"></span>
+                                <span class="flex-1 text-sm">English</span>
+                                <span class="text-xs text-gray-500">EN</span>
+                            </div>
+                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors" onclick="selectLanguage('pt', 'pt', 'Português', 'PT')">
+                                <span class="fi fi-pt flag-icon"></span>
+                                <span class="flex-1 text-sm">Português</span>
+                                <span class="text-xs text-gray-500">PT</span>
+                            </div>
+                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors" onclick="selectLanguage('it', 'it', 'Italiano', 'IT')">
+                                <span class="fi fi-it flag-icon"></span>
+                                <span class="flex-1 text-sm">Italiano</span>
+                                <span class="text-xs text-gray-500">IT</span>
+                            </div>
+                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors" onclick="selectLanguage('nl', 'nl', 'Nederlands', 'NL')">
+                                <span class="fi fi-nl flag-icon"></span>
+                                <span class="flex-1 text-sm">Nederlands</span>
+                                <span class="text-xs text-gray-500">NL</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <a href="{{url_for('login')}}">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                         stroke="currentColor" class="size-6">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                     </svg>
-                    <span class="nav-text">Log in</span>
+                    <span data-translate class="nav-text">Log in</span>
                 </a>
                 <a href="#" class="menu-trigger" onclick="toggleMobileMenu()">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
@@ -63,10 +93,25 @@
                         stroke="currentColor" class="size-6 close-icon hidden">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                     </svg>
-                    <span class="nav-text">Menu</span>
+                    <span data-translate class="nav-text">Menu</span>
                 </a>
+                <!-- Loading indicator for translations -->
+                <div id="translationLoader"
+                    class="hidden fixed top-20 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-50">
+                    <div class="flex items-center gap-2">
+                        <svg class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        <span data-translate>Translating...</span>
+                    </div>
+                </div>
             </nav>
-
+        
+            <!-- Mobile Menu Backdrop -->
+            <div id="mobileMenuBackdrop" class="mobile-menu-backdrop" onclick="toggleMobileMenu()"></div>
             <!-- Mobile Menu -->
             <div id="mobileMenu" class="mobile-menu hidden">
                 <div class="mobile-menu-content">
@@ -99,14 +144,14 @@
         </header>
 
         <section class="hero">
-            <p class="font-bold text-xl">Save up to 45% on your next hotel stay</p>
-            <p class="font-sm text-sm mt-1 mb-10">We compare hotel prices from over 100 sites</p>
+            <p data-translate class="font-bold text-xl">Save up to 45% on your next hotel stay</p>
+            <p data-translate class="font-sm text-sm mt-1 mb-10">We compare hotel prices from over 100 sites</p>
 
-            <div class="bg-white rounded-lg shadow-lg p-6 relative">
+            <div class="bg-white rounded-lg shadow-lg p-6 sm:px-3 sm:py-1 relative">
                 <div class="flex items-center gap-4">
                     <!-- Location Search -->
                     <div class="flex-1 relative">
-                        <div class="flex items-center border border-gray-300 rounded-lg px-4 py-3 cursor-pointer"
+                        <div class="flex items-center rounded-lg px-4 py-1 cursor-pointer"
                             onclick="toggleDropdown('location')">
                             <svg class="w-5 h-5 text-gray-400 mr-3" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -116,7 +161,7 @@
                             <div class="flex-1">
                                 <div class="text-xs text-blue-600 font-medium">Hotel</div>
                                 <input type="text" value="Cape Town"
-                                    class="w-full text-gray-800 font-medium bg-transparent border-none outline-none"
+                                    class="w-full text-sm text-gray-800 font-medium bg-transparent border-none outline-none"
                                     readonly>
                             </div>
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,10 +214,10 @@
 
                     <!-- Check-in Date -->
                     <div class="relative">
-                        <div class="border border-gray-300 rounded-lg px-4 py-3 cursor-pointer min-w-[140px]"
+                        <div class="rounded-lg px-4 py-1 cursor-pointer min-w-[140px]"
                             onclick="toggleDropdown('checkin')">
                             <div class="text-xs text-orange-600 font-medium">Check in</div>
-                            <div class="text-gray-800 font-medium">Fri, 27/06/25</div>
+                            <div class="text-gray-800 text-sm font-medium">Fri, 27/06/25</div>
                         </div>
 
                         <!-- Check-in Calendar Dropdown -->
@@ -262,10 +307,10 @@
 
                     <!-- Check-out Date -->
                     <div class="relative">
-                        <div class="border border-gray-300 rounded-lg px-4 py-3 cursor-pointer min-w-[140px]"
+                        <div class=" rounded-lg px-4 py-1 cursor-pointer min-w-[140px]"
                             onclick="toggleDropdown('checkout')">
                             <div class="text-xs text-orange-600 font-medium">Check out</div>
-                            <div class="text-gray-800 font-medium">Sat, 28/06/25</div>
+                            <div class="text-gray-800 text-sm font-medium">Sat, 28/06/25</div>
                         </div>
 
                         <!-- Check-out Calendar Dropdown (Same structure as check-in) -->
@@ -357,10 +402,10 @@
 
                     <!-- Guests and Rooms -->
                     <div class="relative">
-                        <div class="border border-gray-300 rounded-lg px-4 py-3 cursor-pointer min-w-[160px]"
+                        <div class=" rounded-lg px-4 py-1 cursor-pointer min-w-[160px]"
                             onclick="toggleDropdown('guests')">
                             <div class="text-xs text-blue-600 font-medium">Guests and rooms</div>
-                            <div class="text-gray-800 font-medium">2 Guests, 1 Room</div>
+                            <div class="text-gray-800 text-sm font-medium">2 Guests, 1 Room</div>
                         </div>
 
                         <!-- Guests Dropdown -->
@@ -459,7 +504,7 @@
 
                     <!-- Search Button -->
                     <button onclick="showLoginModal()"
-                        class="bg-blue-600 text-white px-8 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors">
+                        class="bg-blue-600 text-sm text-white px-8 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors">
                         Search
                     </button>
                 </div>
@@ -949,26 +994,38 @@
             </div>
         </section>
 
-        <section class="usp1">
-            <p class="font-bold text-xl  ">Download the trivago app</p>
-            <div class="flex justify-between gap-4 mt-4 bg-[#e22851] text-white p-10 rounded-lg">
-                <div>
-                    <p class="font-bold text-3xl">Never miss a great deal with price alerts</p>
-                    <div class="flex items-center gap-4 mt-10">
-                        <img src="./static/images/qr.jpg" alt="" class="w-[100px] h-[100px]">
-                        <div class="flex flex-col gap-2">
-                            <img src="./static/images/applestore.jpg" alt="">
-                            <img src="./static/images/googlestore.jpg" alt="">
+        <section
+            class="py-5 px-[3%] bg-white sm:py-8 sm:px-[5%] md:py-10 md:px-[8%] lg:py-11 lg:px-[10%] xl:py-12 xl:px-[15%] 2xl:py-12 2xl:px-[20%]">
+            <p class="font-bold text-lg text-center sm:text-xl">Download the trivago app</p>
+        
+            <div
+                class="flex flex-col gap-6 mt-4 bg-[#e22851] text-white p-6 rounded-lg text-center sm:gap-8 sm:p-8 md:flex-row md:justify-between md:gap-4 md:p-10 md:text-left lg:gap-8 lg:p-10">
+                <div class="order-2 md:order-1">
+                    <p class="font-bold text-xl leading-[1.3] sm:text-2xl md:text-3xl lg:text-3xl">Never miss a great deal with
+                        price alerts</p>
+        
+                    <div class="flex flex-col items-center gap-4 mt-6 sm:mt-8 md:flex-row md:items-center md:mt-10">
+                        <img src="./static/images/qr.jpg" alt="" class="w-[60px] h-[60px] sm:w-20 sm:h-20 md:w-[100px] md:h-[100px]">
+        
+                        <div class="flex flex-row gap-4 md:flex-col md:gap-2">
+                            <img src="./static/images/applestore.jpg" alt="" class="w-[100px] sm:w-[120px] md:w-auto lg:w-32">
+                            <img src="./static/images/googlestore.jpg" alt="" class="w-[100px] sm:w-[120px] md:w-auto lg:w-32">
                         </div>
                     </div>
                 </div>
-                <div class="relative">
-                    <img src="./static/images/phone.webp" alt="" class="w-[250px] h-[270px] z-50 ">
-                    <p class="absolute h-[20px] w-[230px] bg-green-500 rounded-2xl flex items-center justify-center p-4 z-50 top-12 right- left-">10%
-                        price drop</p>
+        
+                <div class="relative order-1 self-center md:order-2">
+                    <img src="./static/images/phone.webp" alt=""
+                        class="w-[150px] h-[170px] z-10 sm:w-[180px] sm:h-[200px] md:w-[250px] md:h-[270px] lg:w-[200px] lg:h-[220px] xl:w-[220px] xl:h-[240px]">
+        
+                    <!-- Price drop badge - stays absolute on all screen sizes -->
+                    <p
+                        class="absolute bg-green-500 rounded-2xl flex items-center justify-center px-3 py-2 text-xs z-20 w-[160px] top-6 left-1/2 transform -translate-x-1/2 sm:w-[160px] sm:top-8 sm:text-sm md:w-[230px] md:h-[20px] md:top-12 md:px-4 md:py-4 lg:w-[180px] lg:top-10 xl:w-[200px] xl:top-11">
+                        10% price drop
+                    </p>
                 </div>
             </div>
-        </section>
+            </section>
 
         <footer>
             <div class="footer-content">
@@ -1079,188 +1136,212 @@
                 </div>
             </div>
         </footer>
-            <!-- Login Required Modal -->
-            <div id="loginModal"
-                class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden modal-enter">
-                <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative modal-content-enter">
-                    <!-- Close Button -->
-                    <button onclick="closeLoginModal()"
-                        class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
-            
-                    <!--Login Modal Content -->
-                    <div class="p-8 text-center">
-                        <!-- Icon -->
-                        <div class="mx-auto flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
-                            <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                        </div>
-            
-                        <!-- Title -->
-                        <h3 class="text-2xl font-bold text-gray-900 mb-3">Login Required</h3>
-            
-                        <!-- Message -->
-                        <p id="modalMessage" class="text-gray-600 mb-8 leading-relaxed">
-                            Please sign in to your account to access this feature and enjoy exclusive benefits.
-                        </p>
-            
-                        <!-- Benefits List -->
-                        <div class="bg-blue-50 rounded-lg p-4 mb-8 text-left">
-                            <h4 class="font-semibold text-gray-800 mb-3">Member Benefits:</h4>
-                            <ul class="space-y-2 text-sm text-gray-600">
-                                <li class="flex items-center">
-                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                    Exclusive member-only deals
-                                </li>
-                                <li class="flex items-center">
-                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                    Save favorites and compare prices
-                                </li>
-                                <li class="flex items-center">
-                                    <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fill-rule="evenodd"
-                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                    Price alerts and notifications
-                                </li>
-                            </ul>
-                        </div>
-            
-                        <!-- Action Buttons -->
-                        <div class="space-y-3">
-                            <button onclick="redirectToLogin()"
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 pulse-animation">
-                                Sign In Now
-                            </button>
-            
-                            <button onclick="redirectToSignup()"
-                                class="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition-colors duration-200">
-                                Create Free Account
-                            </button>
-            
-                            <button onclick="closeLoginModal()"
-                                class="w-full text-gray-500 hover:text-gray-700 font-medium py-2 transition-colors duration-200">
-                                Maybe Later
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-             <!-- Main Redirect Modal -->
-    <div id="redirectModal" class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 hidden modal-enter">
-        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative modal-content-enter overflow-hidden">
-            <!-- Header with Trivago branding -->
-            <div class="gradient-bg text-white p-6 text-center relative">
+        <!-- Login Required Modal -->
+        <div id="loginModal"
+            class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden modal-enter">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md relative modal-content-enter">
                 <!-- Close Button -->
-                <button onclick="closeRedirectModal()" class="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors">
+                <button onclick="closeLoginModal()"
+                    class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors z-10">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
-                
-                <!-- Trivago Logo -->
-                <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 bounce-animation">
-                    <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                    </svg>
-                </div>
-                
-                <h2 class="text-2xl font-bold mb-2">Continue to Trivago</h2>
-                <p class="text-blue-100">You're being redirected to the official Trivago website</p>
-            </div>
 
-            <!-- Content -->
-            <div class="p-8">
-                <!-- Message -->
-                <div class="text-center mb-8">
-                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                <!--Login Modal Content -->
+                <div class="p-8 text-center">
+                    <!-- Icon -->
+                    <div class="mx-auto flex items-center justify-center w-16 h-16 bg-blue-100 rounded-full mb-6">
+                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                     </div>
-                    <h3 id="redirectTitle" class="text-xl font-bold text-gray-900 mb-3">Ready to explore amazing deals?</h3>
-                    <p id="redirectMessage" class="text-gray-600 leading-relaxed">
-                        You'll be taken to Trivago.com where you can compare prices from hundreds of travel sites and find the perfect hotel at the best price.
+
+                    <!-- Title -->
+                    <h3 class="text-2xl font-bold text-gray-900 mb-3">Login Required</h3>
+
+                    <!-- Message -->
+                    <p id="modalMessage" class="text-gray-600 mb-8 leading-relaxed">
+                        Please sign in to your account to access this feature and enjoy exclusive benefits.
                     </p>
-                </div>
 
-                <!-- Benefits -->
-                <div class="bg-blue-50 rounded-lg p-6 mb-8">
-                    <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
-                        <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
-                        </svg>
-                        What you'll get on Trivago.com:
-                    </h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
-                        <div class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                            Compare 100+ booking sites
-                        </div>
-                        <div class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                            Real-time price updates
-                        </div>
-                        <div class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                            Best price guarantee
-                        </div>
-                        <div class="flex items-center">
-                            <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
-                            </svg>
-                            Millions of reviews
-                        </div>
+                    <!-- Benefits List -->
+                    <div class="bg-blue-50 rounded-lg p-4 mb-8 text-left">
+                        <h4 class="font-semibold text-gray-800 mb-3">Member Benefits:</h4>
+                        <ul class="space-y-2 text-sm text-gray-600">
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Exclusive member-only deals
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Save favorites and compare prices
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Price alerts and notifications
+                            </li>
+                        </ul>
                     </div>
-                </div>
 
-                <!-- Countdown -->
-                <div class="text-center mb-8">
-                    <div class="inline-flex items-center bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm font-medium">
-                        <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clip-rule="evenodd"/>
-                        </svg>
-                        Redirecting in <span id="countdown" class="countdown font-bold">5</span> seconds
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                        <button onclick="redirectToLogin()"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors duration-200 pulse-animation">
+                            Sign In Now
+                        </button>
+
+                        <button onclick="redirectToSignup()"
+                            class="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition-colors duration-200">
+                            Create Free Account
+                        </button>
+
+                        <button onclick="closeLoginModal()"
+                            class="w-full text-gray-500 hover:text-gray-700 font-medium py-2 transition-colors duration-200">
+                            Maybe Later
+                        </button>
                     </div>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="space-y-3">
-                    <button onclick="redirectNow()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 px-6 rounded-lg transition-colors duration-200 pulse-glow flex items-center justify-center">
-                        <span class="mr-2">Go to Trivago.com Now</span>
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-                        </svg>
-                    </button>
-                    
-                    <button onclick="closeRedirectModal()" class="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition-colors duration-200">
-                        Cancel
-                    </button>
                 </div>
             </div>
         </div>
-    </div>
+
+        <!-- Main Redirect Modal -->
+        <div id="redirectModal"
+            class="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 hidden modal-enter">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg relative modal-content-enter overflow-hidden">
+                <!-- Header with Trivago branding -->
+                <div class="gradient-bg text-white p-6 text-center relative">
+                    <!-- Close Button -->
+                    <button onclick="closeRedirectModal()"
+                        class="absolute top-4 right-4 text-white hover:text-gray-200 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+
+                    <!-- Trivago Logo -->
+                    <div
+                        class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 bounce-animation">
+                        <svg class="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                        </svg>
+                    </div>
+
+                    <h2 class="text-2xl font-bold mb-2">Continue to Trivago</h2>
+                    <p class="text-blue-100">You're being redirected to the official Trivago website</p>
+                </div>
+
+                <!-- Content -->
+                <div class="p-8">
+                    <!-- Message -->
+                    <div class="text-center mb-8">
+                        <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </div>
+                        <h3 id="redirectTitle" class="text-xl font-bold text-gray-900 mb-3">Ready to explore amazing
+                            deals?</h3>
+                        <p id="redirectMessage" class="text-gray-600 leading-relaxed">
+                            You'll be taken to Trivago.com where you can compare prices from hundreds of travel sites
+                            and find the perfect hotel at the best price.
+                        </p>
+                    </div>
+
+                    <!-- Benefits -->
+                    <div class="bg-blue-50 rounded-lg p-6 mb-8">
+                        <h4 class="font-semibold text-gray-800 mb-4 flex items-center">
+                            <svg class="w-5 h-5 text-blue-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            What you'll get on Trivago.com:
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm text-gray-700">
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Compare 100+ booking sites
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Real-time price updates
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Best price guarantee
+                            </div>
+                            <div class="flex items-center">
+                                <svg class="w-4 h-4 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd"
+                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                Millions of reviews
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Countdown -->
+                    <div class="text-center mb-8">
+                        <div
+                            class="inline-flex items-center bg-orange-100 text-orange-800 px-4 py-2 rounded-full text-sm font-medium">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                                    clip-rule="evenodd" />
+                            </svg>
+                            Redirecting in <span id="countdown" class="countdown font-bold">5</span> seconds
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="space-y-3">
+                        <button onclick="redirectNow()"
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 px-6 rounded-lg transition-colors duration-200 pulse-glow flex items-center justify-center">
+                            <span class="mr-2">Go to Trivago.com Now</span>
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                            </svg>
+                        </button>
+
+                        <button onclick="closeRedirectModal()"
+                            class="w-full border border-gray-300 text-gray-700 hover:bg-gray-50 font-medium py-3 px-6 rounded-lg transition-colors duration-200">
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </body>
 
 </html>

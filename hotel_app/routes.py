@@ -219,30 +219,112 @@ def set_withdrawal_password():
         db.session.commit()
         return redirect(url_for('withdraw'))
     return render_template('set_password.html')
-from functools import wraps
-from flask import redirect, url_for, flash, session
 
-from flask_login import current_user
+from functools import wraps
+from flask import session, flash, redirect, url_for, request, render_template
 import string
 import random
-from datetime import datetime
-
-
+from hotel_app.models import Admin
+# Admin authentication decorator
 def admin_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
-        user = User.query.get(session.get('user_id'))
-        if not user or user.user_id != 'ADMIN1':  # Replace 'ADMIN1' with actual admin user_id
-            flash("Admin access required.", "danger")
-            return redirect(url_for('login'))
+        admin_id = session.get('admin_id')
+        if not admin_id:
+            flash("Admin login required.", "danger")
+            return redirect(url_for('admin_login'))
+        
+        admin = Admin.query.get(admin_id)
+        if not admin or not admin.is_active:
+            session.pop('admin_id', None)
+            flash("Admin access denied.", "danger")
+            return redirect(url_for('admin_login'))
+        
         return f(*args, **kwargs)
     return wrapper
 
+# Separate admin login route
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+       
+        admin = Admin.query.filter_by(username=username).first()
+        
+        if admin and admin.check_password(password) and admin.is_active:
+            session['admin_id'] = admin.id
+            admin.last_login = datetime.utcnow()
+            db.session.commit()
+            flash('Admin login successful!', 'success')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid admin credentials!', 'danger')
+    
+    return render_template('admin_login.html')
+
+# Admin logout
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('admin_id', None)
+    flash('Admin logged out successfully!', 'success')
+    return redirect(url_for('admin_login'))
+
+# Admin Dashboard
+@app.route('/admin/dashboard')
+@admin_required
+def admin_dashboard():
+    # Get statistics for dashboard
+    total_users = User.query.count()
+    active_users = User.query.filter_by(is_active=True).count()
+    total_deposits = DepositRequest.query.count()
+    pending_deposits = DepositRequest.query.filter_by(status='pending').count()
+    total_withdrawals = WithdrawalRequest.query.count()
+    pending_withdrawals = WithdrawalRequest.query.filter_by(status='pending').count()
+    total_hotels = Hotel.query.count()
+    total_bookings = Booking.query.count() if 'Booking' in globals() else 0
+    
+    # Recent activities
+    recent_users = User.query.order_by(User.id.desc()).limit(5).all()
+    recent_deposits = DepositRequest.query.order_by(DepositRequest.id.desc()).limit(5).all()
+    recent_withdrawals = WithdrawalRequest.query.order_by(WithdrawalRequest.id.desc()).limit(5).all()
+    
+    stats = {
+        'total_users': total_users,
+        'active_users': active_users,
+        'total_deposits': total_deposits,
+        'pending_deposits': pending_deposits,
+        'total_withdrawals': total_withdrawals,
+        'pending_withdrawals': pending_withdrawals,
+        'total_hotels': total_hotels,
+        'total_bookings': total_bookings,
+    }
+    
+    return render_template('admin_dashboard.html', 
+                         stats=stats,
+                         recent_users=recent_users,
+                         recent_deposits=recent_deposits,
+                         recent_withdrawals=recent_withdrawals)
+
+# User Management
 @app.route('/admin/users')
 @admin_required
 def view_users():
-    users = User.query.all()
-    return render_template('admin_users.html', users=users)
+    page = request.args.get('page', 1, type=int)
+    search = request.args.get('search', '')
+    
+    users_query = User.query
+    if search:
+        users_query = users_query.filter(
+            User.username.contains(search) | 
+            User.email.contains(search)
+        )
+    
+    users = users_query.order_by(User.id.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    
+    return render_template('admin_users.html', users=users, search=search)
 
 @app.route('/admin/users/<int:user_id>/toggle', methods=['POST'])
 @admin_required
@@ -250,20 +332,136 @@ def toggle_user(user_id):
     user = User.query.get_or_404(user_id)
     user.is_active = not user.is_active
     db.session.commit()
-    flash(f"User {'activated' if user.is_active else 'deactivated'}", "success")
+    
+    action = 'activated' if user.is_active else 'deactivated'
+    flash(f"User {user.username} has been {action}.", "success")
     return redirect(url_for('view_users'))
 
-@app.route('/admin/withdrawals')
+@app.route('/admin/users/<int:user_id>/delete', methods=['POST'])
 @admin_required
-def view_withdrawals():
-    withdrawals = WithdrawalRequest.query.order_by(WithdrawalRequest.id.desc()).all()
-    return render_template('admin_withdrawals.html', withdrawals=withdrawals)
+def delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    username = user.username
+    
+    # You might want to handle related records (deposits, withdrawals, etc.)
+    # before deleting the user
+    
+    db.session.delete(user)
+    db.session.commit()
+    flash(f"User {username} has been deleted.", "success")
+    return redirect(url_for('view_users'))
 
+@app.route('/admin/users/<int:user_id>/view')
+@admin_required
+def view_user_details(user_id):
+    user = User.query.get_or_404(user_id)
+    deposits = DepositRequest.query.filter_by(user_id=user_id).order_by(DepositRequest.id.desc()).all()
+    withdrawals = WithdrawalRequest.query.filter_by(user_id=user_id).order_by(WithdrawalRequest.id.desc()).all()
+    
+    return render_template('admin_user_details.html', 
+                         user=user, 
+                         deposits=deposits, 
+                         withdrawals=withdrawals)
+
+# Deposit Management
 @app.route('/admin/deposits')
 @admin_required
 def view_deposits():
-    deposits = DepositRequest.query.order_by(DepositRequest.id.desc()).all()
-    return render_template('admin_deposits.html', deposits=deposits)
+    page = request.args.get('page', 1, type=int)
+    status_filter = request.args.get('status', '')
+    
+    deposits_query = DepositRequest.query
+    if status_filter:
+        deposits_query = deposits_query.filter_by(status=status_filter)
+    
+    deposits = deposits_query.order_by(DepositRequest.id.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    
+    return render_template('admin_deposits.html', deposits=deposits, status_filter=status_filter)
+
+@app.route('/admin/deposits/<int:deposit_id>/approve', methods=['POST'])
+@admin_required
+def approve_deposit(deposit_id):
+    deposit = DepositRequest.query.get_or_404(deposit_id)
+    
+    if deposit.status == 'pending':
+        deposit.status = 'approved'
+        # Update user balance
+        user = User.query.get(deposit.user_id)
+        user.balance += deposit.amount
+        
+        db.session.commit()
+        flash(f"Deposit of ${deposit.amount} approved for user {user.username}.", "success")
+    else:
+        flash("Deposit has already been processed.", "warning")
+    
+    return redirect(url_for('view_deposits'))
+
+@app.route('/admin/deposits/<int:deposit_id>/reject', methods=['POST'])
+@admin_required
+def reject_deposit(deposit_id):
+    deposit = DepositRequest.query.get_or_404(deposit_id)
+    
+    if deposit.status == 'pending':
+        deposit.status = 'rejected'
+        db.session.commit()
+        flash(f"Deposit of ${deposit.amount} rejected.", "success")
+    else:
+        flash("Deposit has already been processed.", "warning")
+    
+    return redirect(url_for('view_deposits'))
+
+# Withdrawal Management
+@app.route('/admin/withdrawals')
+@admin_required
+def view_withdrawals():
+    page = request.args.get('page', 1, type=int)
+    status_filter = request.args.get('status', '')
+    
+    withdrawals_query = WithdrawalRequest.query
+    if status_filter:
+        withdrawals_query = withdrawals_query.filter_by(status=status_filter)
+    
+    withdrawals = withdrawals_query.order_by(WithdrawalRequest.id.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    
+    return render_template('admin_withdrawals.html', withdrawals=withdrawals, status_filter=status_filter)
+
+@app.route('/admin/withdrawals/<int:withdrawal_id>/approve', methods=['POST'])
+@admin_required
+def approve_withdrawal(withdrawal_id):
+    withdrawal = WithdrawalRequest.query.get_or_404(withdrawal_id)
+    
+    if withdrawal.status == 'pending':
+        withdrawal.status = 'approved'
+        db.session.commit()
+        flash(f"Withdrawal of ${withdrawal.amount} approved.", "success")
+    else:
+        flash("Withdrawal has already been processed.", "warning")
+    
+    return redirect(url_for('view_withdrawals'))
+
+@app.route('/admin/withdrawals/<int:withdrawal_id>/reject', methods=['POST'])
+@admin_required
+def reject_withdrawal(withdrawal_id):
+    withdrawal = WithdrawalRequest.query.get_or_404(withdrawal_id)
+    
+    if withdrawal.status == 'pending':
+        withdrawal.status = 'rejected'
+        # Refund the amount to user's balance
+        user = User.query.get(withdrawal.user_id)
+        user.balance += withdrawal.amount
+        
+        db.session.commit()
+        flash(f"Withdrawal of ${withdrawal.amount} rejected and amount refunded.", "success")
+    else:
+        flash("Withdrawal has already been processed.", "warning")
+    
+    return redirect(url_for('view_withdrawals'))
+
+# Hotel Management
 @app.route('/admin/hotels', methods=['GET', 'POST'])
 @admin_required
 def manage_hotels():
@@ -273,24 +471,61 @@ def manage_hotels():
         price = float(request.form['price'])
         commission_multiplier = float(request.form.get('commission_multiplier', 1.0))
         days_available = int(request.form.get('days_available', 1))
+        description = request.form.get('description', '')
+        location = request.form.get('location', '')
 
         new_hotel = Hotel(
             name=name,
             primary_picture=primary_picture,
             price=price,
             commission_multiplier=commission_multiplier,
-            days_available=days_available
+            days_available=days_available,
+            description=description,
+            location=location
         )
         db.session.add(new_hotel)
         db.session.commit()
         flash('Hotel added successfully', 'success')
         return redirect(url_for('manage_hotels'))
 
-    hotels = Hotel.query.all()
+    page = request.args.get('page', 1, type=int)
+    hotels = Hotel.query.order_by(Hotel.id.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
     return render_template('admin_hotels.html', hotels=hotels)
 
-import string, random
+@app.route('/admin/hotels/<int:hotel_id>/edit', methods=['GET', 'POST'])
+@admin_required
+def edit_hotel(hotel_id):
+    hotel = Hotel.query.get_or_404(hotel_id)
+    
+    if request.method == 'POST':
+        hotel.name = request.form['name']
+        hotel.primary_picture = request.form['primary_picture']
+        hotel.price = float(request.form['price'])
+        hotel.commission_multiplier = float(request.form.get('commission_multiplier', 1.0))
+        hotel.days_available = int(request.form.get('days_available', 1))
+        hotel.description = request.form.get('description', '')
+        hotel.location = request.form.get('location', '')
+        
+        db.session.commit()
+        flash('Hotel updated successfully', 'success')
+        return redirect(url_for('manage_hotels'))
+    
+    return render_template('admin_edit_hotel.html', hotel=hotel)
 
+@app.route('/admin/hotels/<int:hotel_id>/delete', methods=['POST'])
+@admin_required
+def delete_hotel(hotel_id):
+    hotel = Hotel.query.get_or_404(hotel_id)
+    hotel_name = hotel.name
+    
+    db.session.delete(hotel)
+    db.session.commit()
+    flash(f'Hotel "{hotel_name}" deleted successfully', 'success')
+    return redirect(url_for('manage_hotels'))
+
+# Invitation Code Management
 def generate_random_code(length=8):
     return ''.join(random.choices(string.ascii_uppercase + string.digits, k=length))
 
@@ -311,7 +546,82 @@ def generate_invitation_code():
             codes.append(code)
 
         db.session.commit()
-        flash(f'{len(codes)} code(s) generated.', 'success')
+        flash(f'{len(codes)} invitation code(s) generated successfully.', 'success')
         return render_template('admin_invite.html', codes=codes)
 
-    return render_template('admin_invite.html')
+    # Show existing codes
+    page = request.args.get('page', 1, type=int)
+    codes = InvitationCode.query.order_by(InvitationCode.id.desc()).paginate(
+        page=page, per_page=20, error_out=False
+    )
+    return render_template('admin_invite.html', codes=codes)
+
+@app.route('/admin/invite-codes/<int:code_id>/delete', methods=['POST'])
+@admin_required
+def delete_invitation_code(code_id):
+    code = InvitationCode.query.get_or_404(code_id)
+    code_value = code.code
+    
+    db.session.delete(code)
+    db.session.commit()
+    flash(f'Invitation code "{code_value}" deleted successfully', 'success')
+    return redirect(url_for('generate_invitation_code'))
+
+# Admin Settings
+@app.route('/admin/settings', methods=['GET', 'POST'])
+@admin_required
+def admin_settings():
+    admin = Admin.query.get(session['admin_id'])
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'update_profile':
+            admin.username = request.form['username']
+            admin.email = request.form['email']
+            db.session.commit()
+            flash('Profile updated successfully', 'success')
+            
+        elif action == 'change_password':
+            current_password = request.form['current_password']
+            new_password = request.form['new_password']
+            confirm_password = request.form['confirm_password']
+            
+            if not admin.check_password(current_password):
+                flash('Current password is incorrect', 'danger')
+            elif new_password != confirm_password:
+                flash('New passwords do not match', 'danger')
+            elif len(new_password) < 6:
+                flash('Password must be at least 6 characters long', 'danger')
+            else:
+                admin.set_password(new_password)
+                db.session.commit()
+                flash('Password changed successfully', 'success')
+    
+    return render_template('admin_settings.html', admin=admin)
+
+# Create admin function (run this once to create the first admin)
+def create_admin():
+    """
+    Run this function once to create the first admin user.
+    You can run this in a Python shell or create a CLI command.
+    """
+    admin = Admin(
+        username='admin',
+        email='admin@example.com'
+    )
+    admin.set_password('admin123')  # Change this password!
+    
+    db.session.add(admin)
+    db.session.commit()
+    print("Admin user created successfully!")
+    print("Username: admin")
+    print("Password: admin123")
+    print("Please change the password after first login!")
+
+# Middleware to prevent regular users from accessing admin routes
+@app.before_request
+def check_admin_routes():
+    if request.endpoint and request.endpoint.startswith('admin_') and request.endpoint != 'admin_login':
+        if 'admin_id' not in session:
+            return redirect(url_for('admin_login'))

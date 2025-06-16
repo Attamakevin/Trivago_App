@@ -1,0 +1,100 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Deposit Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Deposit Management</h1>
+</div>
+
+<!-- Filters -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="GET" class="d-flex">
+            <select name="status" class="form-select me-2">
+                <option value="">All Status</option>
+                <option value="pending" {{ 'selected' if status_filter == 'pending' }}>Pending</option>
+                <option value="approved" {{ 'selected' if status_filter == 'approved' }}>Approved</option>
+                <option value="rejected" {{ 'selected' if status_filter == 'rejected' }}>Rejected</option>
+            </select>
+            <button type="submit" class="btn btn-outline-primary">Filter</button>
+        </form>
+    </div>
+</div>
+
+<!-- Deposits Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Amount</th>
+                        <th>Payment Method</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for deposit in deposits.items %}
+                    <tr>
+                        <td>{{ deposit.id }}</td>
+                        <td>{{ deposit.user.username if deposit.user else 'Unknown' }}</td>
+                        <td>${{ "%.2f"|format(deposit.amount) }}</td>
+                        <td>{{ deposit.payment_method or 'N/A' }}</td>
+                        <td>
+                            <span class="badge bg-{{ 'warning' if deposit.status == 'pending' else ('success' if deposit.status == 'approved' else 'danger') }}">
+                                {{ deposit.status.title() }}
+                            </span>
+                        </td>
+                        <td>{{ deposit.created_at.strftime('%Y-%m-%d %H:%M') if deposit.created_at else 'N/A' }}</td>
+                        <td>
+                            {% if deposit.status == 'pending' %}
+                            <div class="btn-group btn-group-sm">
+                                <form method="POST" action="{{ url_for('approve_deposit', deposit_id=deposit.id) }}" class="d-inline">
+                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                </form>
+                                <form method="POST" action="{{ url_for('reject_deposit', deposit_id=deposit.id) }}" class="d-inline">
+                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <span class="text-muted">Processed</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if deposits.pages > 1 %}
+        <nav aria-label="Deposit pagination">
+            <ul class="pagination justify-content-center">
+                {% for page_num in deposits.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != deposits.page %}
+                            <li class="page-item">
+                                <a class="page-link" href="{{ url_for('view_deposits', page=page_num, status=status_filter) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item active">
+                                <span class="page-link">{{ page_num }}</span>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link">...</span>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

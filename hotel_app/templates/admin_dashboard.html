@@ -1,0 +1,113 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <span class="text-muted">Last updated: <span id="last-updated"></span></span>
+        </div>
+    </div>
+</div>
+<!-- Add Moment.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Optionally use a real last updated time from the backend if needed
+        const updatedTime = moment().format('MMMM Do YYYY, h:mm a');
+        document.getElementById("last-updated").textContent = updatedTime;
+    });
+</script>
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <i class="fas fa-users fa-2x mb-2"></i>
+                <h3>{{ stats.total_users }}</h3>
+                <p class="mb-0">Total Users</p>
+                <small>({{ stats.active_users }} active)</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <i class="fas fa-money-bill-wave fa-2x mb-2"></i>
+                <h3>{{ stats.total_deposits }}</h3>
+                <p class="mb-0">Total Deposits</p>
+                <small>({{ stats.pending_deposits }} pending)</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <i class="fas fa-credit-card fa-2x mb-2"></i>
+                <h3>{{ stats.total_withdrawals }}</h3>
+                <p class="mb-0">Total Withdrawals</p>
+                <small>({{ stats.pending_withdrawals }} pending)</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card stats-card">
+            <div class="card-body text-center">
+                <i class="fas fa-hotel fa-2x mb-2"></i>
+                <h3>{{ stats.total_hotels }}</h3>
+                <p class="mb-0">Total Hotels</p>
+                <small>({{ stats.total_bookings }} bookings)</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Activities -->
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Deposits</h5>
+            </div>
+            <div class="card-body">
+                {% for deposit in recent_deposits %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <strong>${{ "%.2f"|format(deposit.amount) }}</strong><br>
+                        <small class="text-muted">{{ deposit.user.username if deposit.user else 'Unknown' }}</small>
+                    </div>
+                    <span class="badge bg-{{ 'warning' if deposit.status == 'pending' else ('success' if deposit.status == 'approved' else 'danger') }}">
+                        {{ deposit.status.title() }}
+                    </span>
+                </div>
+                {% endfor %}
+                <a href="{{ url_for('view_deposits') }}" class="btn btn-sm btn-outline-primary w-100 mt-2">View All Deposits</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Recent Withdrawals</h5>
+            </div>
+            <div class="card-body">
+                {% for withdrawal in recent_withdrawals %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <div>
+                        <strong>${{ "%.2f"|format(withdrawal.amount) }}</strong><br>
+                        <small class="text-muted">{{ withdrawal.user.username if withdrawal.user else 'Unknown' }}</small>
+                    </div>
+                    <span class="badge bg-{{ 'warning' if withdrawal.status == 'pending' else ('success' if withdrawal.status == 'approved' else 'danger') }}">
+                        {{ withdrawal.status.title() }}
+                    </span>
+                </div>
+                {% endfor %}
+                <a href="{{ url_for('view_withdrawals') }}" class="btn btn-sm btn-outline-primary w-100 mt-2">View All Withdrawals</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

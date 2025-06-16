@@ -1,29 +1,45 @@
 function toggleMobileMenu() {
     const mobileMenu = document.getElementById('mobileMenu');
+    const backdrop = document.getElementById('mobileMenuBackdrop');
     const menuTrigger = document.querySelector('.menu-trigger');
 
     if (mobileMenu.classList.contains('hidden')) {
         // Show menu
         mobileMenu.classList.remove('hidden');
         mobileMenu.classList.add('active');
+        backdrop.classList.add('active');
         menuTrigger.classList.add('active');
+
+        // Prevent body scroll
+        document.body.style.overflow = 'hidden';
     } else {
         // Hide menu
         mobileMenu.classList.remove('active');
         mobileMenu.classList.add('hidden');
+        backdrop.classList.remove('active');
         menuTrigger.classList.remove('active');
+
+        // Restore body scroll
+        document.body.style.overflow = 'auto';
     }
 }
 
-// Close mobile menu when clicking outside
+// Close mobile menu when clicking outside or on backdrop
 document.addEventListener('click', function (event) {
     const mobileMenu = document.getElementById('mobileMenu');
-    const header = document.querySelector('header');
+    const menuTrigger = document.querySelector('.menu-trigger');
+    const backdrop = document.getElementById('mobileMenuBackdrop');
 
-    if (!header.contains(event.target) && !mobileMenu.classList.contains('hidden')) {
-        mobileMenu.classList.remove('active');
-        mobileMenu.classList.add('hidden');
-        document.querySelector('.menu-trigger').classList.remove('active');
+    // Close if clicked on backdrop
+    if (event.target === backdrop) {
+        toggleMobileMenu();
+    }
+
+    // Close if clicked outside menu and trigger
+    if (!mobileMenu.contains(event.target) &&
+        !menuTrigger.contains(event.target) &&
+        !mobileMenu.classList.contains('hidden')) {
+        toggleMobileMenu();
     }
 });
 
@@ -31,9 +47,13 @@ document.addEventListener('click', function (event) {
 window.addEventListener('resize', function () {
     if (window.innerWidth > 768) {
         const mobileMenu = document.getElementById('mobileMenu');
+        const backdrop = document.getElementById('mobileMenuBackdrop');
+
         mobileMenu.classList.remove('active');
         mobileMenu.classList.add('hidden');
+        backdrop.classList.remove('active');
         document.querySelector('.menu-trigger').classList.remove('active');
+        document.body.style.overflow = 'auto';
     }
 });
 

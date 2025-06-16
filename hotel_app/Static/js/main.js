@@ -1146,55 +1146,32 @@ window.quickRedirectToTrivago = function () {
 
 // Login/Signup Functions
 
-function switchTab(tab) {
-    const loginTab = document.getElementById('loginTab');
-    const signupTab = document.getElementById('signupTab');
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-
-    if (tab === 'login') {
-        loginTab.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
-        loginTab.classList.remove('text-gray-500');
-        signupTab.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
-        signupTab.classList.add('text-gray-500');
-
-        loginForm.classList.remove('hidden');
-        signupForm.classList.add('hidden');
-    } else {
-        signupTab.classList.add('bg-white', 'text-blue-600', 'shadow-sm');
-        signupTab.classList.remove('text-gray-500');
-        loginTab.classList.remove('bg-white', 'text-blue-600', 'shadow-sm');
-        loginTab.classList.add('text-gray-500');
-
-        signupForm.classList.remove('hidden');
-        loginForm.classList.add('hidden');
+function switchTab(tabType) {
+        if (tabType === 'login') {
+            // Redirect to login URL (refresh page)
+            window.location.href = '/login';
+        } else {
+            // Redirect to register URL (refresh page)
+            window.location.href = '/register';
+        }
     }
-}
 
-// Initialize form display based on URL parameter
-document.addEventListener('DOMContentLoaded', function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const formType = urlParams.get('form_type');
-    
-    if (formType === 'register') {
-        switchTab('signup');
-    } else {
-        switchTab('login');
-    }
-});
+    // On page load, detect which tab to show based on URL
+    window.addEventListener('DOMContentLoaded', function () {
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        const loginTab = document.getElementById('loginTab');
+        const signupTab = document.getElementById('signupTab');
 
-function togglePassword(inputId) {
-    const input = document.getElementById(inputId);
-    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
-    input.setAttribute('type', type);
-}
-
-function handleLogin(event) {
-    event.preventDefault();
-    alert('Login form submitted! (This is just a demo)');
-}
-
-function handleSignup(event) {
-    event.preventDefault();
-    alert('Signup form submitted! (This is just a demo)');
-}
+        if (window.location.pathname === '/login') {
+            loginForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+            loginTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 bg-white text-blue-600 shadow-sm';
+            signupTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 text-gray-500 hover:text-gray-700';
+        } else if (window.location.pathname === '/register') {
+            signupForm.classList.remove('hidden');
+            loginForm.classList.add('hidden');
+            signupTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 bg-white text-green-600 shadow-sm';
+            loginTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 text-gray-500 hover:text-gray-700';
+        }
+    });

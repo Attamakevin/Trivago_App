@@ -4,7 +4,7 @@ from hotel_app import app, db
 from hotel_app.models import User, Hotel, Reservation, DepositRequest, WithdrawalRequest, EventAd
 from datetime import datetime
 
-@app.route('/home')
+@app.route('/')
 def home():
     return render_template('home.html')
 from flask import render_template, request, redirect, url_for, flash, session
@@ -14,74 +14,106 @@ from hotel_app import db
 from hotel_app.models import User, InvitationCode  # ✅ Only import User now
 
 
-@app.route('/login', methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        phone = request.form['phone']
-        password = request.form['password']
+import random
 
-        user = User.query.filter_by(contact=phone).first()
-        if user and check_password_hash(user.password_hash, password):
-            if not user.is_active:
-                flash('Account not yet activated by admin', 'warning')
-                return redirect(url_for('login'))
+def generate_captcha():
+    """Generate a new captcha code and store it in session"""
+    captcha_code = ''.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', k=5))
+    session['captcha_code'] = captcha_code
+    return captcha_code
 
-            session['user_id'] = user.id
-            session['language'] = request.form.get('language', 'en')
-            return redirect(url_for('dashboard'))
-        else:
-            flash('Invalid phone number or password', 'error')
+# GET routes - display forms
+@app.route('/auth')
+@app.route('/login', endpoint = 'login')
+@app.route('/register', endpoint = 'register')
+def auth():
+    if request.endpoint == 'register' or request.path == '/register':
+        captcha = generate_captcha()
+        return render_template('auth.html', form_type='register', captcha=captcha)
+    else:
+        return render_template('auth.html', form_type='login')
 
-    return render_template('auth.html', form_type='login',)  # No captcha needed here
+# POST routes - handle form submissions
+@app.route('/login', methods=['POST'])
+def login_post():
+    phone = request.form.get('phone')
+    password = request.form.get('password')
+    
+    if not phone or not password:
+        flash('Phone number and password are required', 'error')
+        return redirect(url_for('auth'))
+    
+    user = User.query.filter_by(contact=phone).first()
+    if user and check_password_hash(user.password_hash, password):
+        if not user.is_active:
+            flash('Account not yet activated by admin', 'warning')
+            return redirect(url_for('auth'))
 
+        session['user_id'] = user.id
+        session['language'] = request.form.get('language', 'en')
+        return redirect(url_for('dashboard'))
+    else:
+        flash('Invalid phone number or password', 'error')
+        return redirect(url_for('auth'))
 
-@app.route('/register', methods=['GET', 'POST'])
-def register():
-    if request.method == 'POST':
-        phone = request.form['phone']
-        password = request.form['password']
-        confirm_password = request.form['confirm_password']
-        captcha = request.form['captcha']
-        invitation_code = request.form['invitation_code']
+@app.route('/register', methods=['POST'])
+def register_post():
+    phone = request.form.get('phone')
+    password = request.form.get('password')
+    confirm_password = request.form.get('confirm_password')
+    captcha = request.form.get('captcha')
+    invitation_code = request.form.get('invitation_code')
+    
+    # Basic validation
+    if not all([phone, password, confirm_password, captcha, invitation_code]):
+        flash('All fields are required', 'error')
+        return redirect(url_for('register'))
+    
+    # Captcha check
+    if captcha.strip().upper() != session.get('captcha_code', '').upper():
+        flash('Invalid captcha code', 'error')
+        return redirect(url_for('register'))
 
-        # Captcha check
-        if captcha.strip().lower() != session.get('captcha_code', '').lower():
-            flash('Invalid captcha code', 'error')
-            return redirect(url_for('register'))
+    # Password match check
+    if password != confirm_password:
+        flash('Passwords do not match', 'error')
+        return redirect(url_for('register'))
 
-        # Password match check
-        if password != confirm_password:
-            flash('Passwords do not match', 'error')
-            return redirect(url_for('register'))
+    # Duplicate phone check
+    if User.query.filter_by(contact=phone).first():
+        flash('Phone number already registered', 'error')
+        return redirect(url_for('register'))
+    
+    # Validate invitation code
+    code_entry = InvitationCode.query.filter_by(code=invitation_code, is_used=False).first()
+    if not code_entry:
+        flash('Invalid or already used invitation code', 'error')
+        return redirect(url_for('register'))
 
-        # Duplicate phone check
-        if User.query.filter_by(contact=phone).first():
-            flash('Phone number already registered', 'error')
-            return redirect(url_for('register'))
-        # Validate invitation code
-        code_entry = InvitationCode.query.filter_by(code=invitation_code, is_used=False).first()
-        if not code_entry:
-            flash('Invalid or already used invitation code', 'error')
-            return redirect(url_for('register'))
-
+    try:
+        # Mark invitation code as used
+        code_entry.is_used = True
+        
         # Create new user with inactive status
         new_user = User(
             contact=phone,
             password_hash=generate_password_hash(password),
             is_active=False,
-            invitation_code=invitation_code  # Just storing the code as a string
+            invitation_code=invitation_code
         )
         db.session.add(new_user)
         db.session.commit()
 
+        # Clear captcha from session after successful registration
+        session.pop('captcha_code', None)
+        
         flash('Registration successful! Your account will be activated by the admin.', 'success')
-        return redirect(url_for('login'))
-
-    # GET request — generate new captcha
-    captcha_code = ''.join(random.choices('ABCDEFGHJKLMNPQRSTUVWXYZ23456789', k=5))
-    session['captcha_code'] = captcha_code
-    return render_template('auth.html',form_type='register', captcha=captcha_code)
-
+        return redirect(url_for('auth'))  # Redirect to login form
+    
+    except Exception as e:
+        db.session.rollback()
+        flash('Registration failed. Please try again.', 'error')
+        return redirect(url_for('register'))
 
 @app.route('/dashboard')
 def dashboard():

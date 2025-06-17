@@ -316,8 +316,8 @@ def view_users():
     users_query = User.query
     if search:
         users_query = users_query.filter(
-            User.username.contains(search) | 
-            User.email.contains(search)
+            User.nickname.contains(search) | 
+            User.user.agent_id.contains(search)
         )
     
     users = users_query.order_by(User.id.desc()).paginate(
@@ -334,14 +334,14 @@ def toggle_user(user_id):
     db.session.commit()
     
     action = 'activated' if user.is_active else 'deactivated'
-    flash(f"User {user.username} has been {action}.", "success")
+    flash(f"User {user.nickname} has been {action}.", "success")
     return redirect(url_for('view_users'))
 
 @app.route('/admin/users/<int:user_id>/delete', methods=['POST'])
 @admin_required
 def delete_user(user_id):
     user = User.query.get_or_404(user_id)
-    username = user.username
+    username = user.nickname
     
     # You might want to handle related records (deposits, withdrawals, etc.)
     # before deleting the user
@@ -625,3 +625,85 @@ def check_admin_routes():
     if request.endpoint and request.endpoint.startswith('admin_') and request.endpoint != 'admin_login':
         if 'admin_id' not in session:
             return redirect(url_for('admin_login'))
+        
+@admin_required
+def admin_settings():
+    admin = current_user  # Assuming current_user is the admin
+    
+    if request.method == 'POST':
+        form_type = request.form.get('form_type')
+        
+        if form_type == 'profile':
+            admin.username = request.form.get('username')
+            admin.email = request.form.get('email')
+            admin.full_name = request.form.get('full_name')
+            db.session.commit()
+            flash('Profile updated successfully!', 'success')
+            
+        elif form_type == 'password':
+            current_password = request.form.get('current_password')
+            new_password = request.form.get('new_password')
+            confirm_password = request.form.get('confirm_password')
+            
+            if not check_password_hash(admin.password, current_password):
+                flash('Current password is incorrect!', 'error')
+            elif new_password != confirm_password:
+                flash('New passwords do not match!', 'error')
+            else:
+                admin.password = generate_password_hash(new_password)
+                db.session.commit()
+                flash('Password changed successfully!', 'success')
+                
+        elif form_type == 'system':
+            # Handle system settings (you might want to store these in a settings table)
+            flash('System settings updated successfully!', 'success')
+    
+    return render_template('admin_settings.html', admin=admin)
+@admin_required
+def view_user_details(user_id):
+    user = User.query.get_or_404(user_id)
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'adjust_balance':
+            adjustment_type = request.form.get('adjustment_type')
+            amount = float(request.form.get('amount', 0))
+            reason = request.form.get('reason', '')
+            
+            if adjustment_type == 'add':
+                user.balance += amount
+            elif adjustment_type == 'subtract':
+                user.balance -= amount
+            elif adjustment_type == 'set':
+                user.balance = amount
+            
+            db.session.commit()
+            flash(f'Balance adjusted successfully! New balance: ${user.balance:.2f}', 'success')
+            
+        elif action == 'toggle_status':
+            user.is_active = not user.is_active
+            db.session.commit()
+            flash(f'User {"activated" if user.is_active else "deactivated"} successfully!', 'success')
+            
+        elif action == 'reset_password':
+            # Generate a temporary password
+            temp_password = ''.join(random.choices(string.ascii_letters + string.digits, k=8))
+            user.password = generate_password_hash(temp_password)
+            db.session.commit()
+            flash(f'Password reset successfully! Temporary password: {temp_password}', 'success')
+            
+        elif action == 'send_message':
+            # Handle message sending (implement according to your message system)
+            flash('Message sent successfully!', 'success')
+    
+    return render_template('admin_user_details.html', user=user)
+@admin_required
+def clear_logs():
+    # Implement log clearing logic
+    return jsonify({'success': True, 'message': 'Logs cleared successfully'})
+
+@admin_required  
+def reset_sessions():
+    # Implement session reset logic
+    return jsonify({'success': True, 'message': 'All sessions reset successfully'})

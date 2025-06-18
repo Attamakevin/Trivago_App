@@ -1,0 +1,45 @@
+# Bytecode and cache
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+venv/
+env/
+.venv/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Logs and dumps
+*.log
+*.pot
+*.mo
+
+# IDE/editor configs
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Test/coverage tools
+htmlcov/
+coverage.xml
+.tox/
+.nox/
+.cache/
+.pytest_cache/
+.mypy_cache/
+
+# dotenv / secrets
+.env
+.env.*

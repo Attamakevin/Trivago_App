@@ -1,0 +1,179 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Withdrawal Management{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Withdrawal Management</h1>
+</div>
+
+<!-- Filters -->
+<div class="row mb-3">
+    <div class="col-md-6">
+        <form method="GET" class="d-flex">
+            <select name="status" class="form-select me-2">
+                <option value="">All Status</option>
+                <option value="pending" {{ 'selected' if status_filter == 'pending' }}>Pending</option>
+                <option value="approved" {{ 'selected' if status_filter == 'approved' }}>Approved</option>
+                <option value="rejected" {{ 'selected' if status_filter == 'rejected' }}>Rejected</option>
+            </select>
+            <button type="submit" class="btn btn-outline-primary">Filter</button>
+        </form>
+    </div>
+</div>
+
+<!-- Withdrawals Table -->
+<div class="card">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>User</th>
+                        <th>Amount</th>
+                        <th>Withdrawal Method</th>
+                        <th>Account Details</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for withdrawal in withdrawals.items %}
+                    <tr>
+                        <td>{{ withdrawal.id }}</td>
+                        <td>{{ withdrawal.user.username if withdrawal.user else 'Unknown' }}</td>
+                        <td>${{ "%.2f"|format(withdrawal.amount) }}</td>
+                        <td>{{ withdrawal.withdrawal_method or 'N/A' }}</td>
+                        <td>{{ withdrawal.account_details or 'N/A' }}</td>
+                        <td>
+                            <span class="badge bg-{{ 'warning' if withdrawal.status == 'pending' else ('success' if withdrawal.status == 'approved' else 'danger') }}">
+                                {{ withdrawal.status.title() }}
+                            </span>
+                        </td>
+                        <td>{{ withdrawal.created_at.strftime('%Y-%m-%d %H:%M') if withdrawal.created_at else 'N/A' }}</td>
+                        <td>
+                            {% if withdrawal.status == 'pending' %}
+                            <div class="btn-group" role="group">
+                                <form method="POST" action="{{ url_for('admin.update_withdrawal_status', withdrawal_id=withdrawal.id) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <input type="hidden" name="status" value="approved"/>
+                                    <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Are you sure you want to approve this withdrawal?')">
+                                        Approve
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ url_for('admin.update_withdrawal_status', withdrawal_id=withdrawal.id) }}" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <input type="hidden" name="status" value="rejected"/>
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to reject this withdrawal?')">
+                                        Reject
+                                    </button>
+                                </form>
+                            </div>
+                            {% else %}
+                            <span class="text-muted">No actions available</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="8" class="text-center text-muted">No withdrawal requests found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if withdrawals.pages > 1 %}
+<nav aria-label="Withdrawal pagination">
+    <ul class="pagination justify-content-center">
+        {% if withdrawals.has_prev %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('admin.withdrawals', page=withdrawals.prev_num, status=status_filter) }}">Previous</a>
+        </li>
+        {% endif %}
+
+        {% for page_num in withdrawals.iter_pages() %}
+            {% if page_num %}
+                {% if page_num != withdrawals.page %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('admin.withdrawals', page=page_num, status=status_filter) }}">{{ page_num }}</a>
+                </li>
+                {% else %}
+                <li class="page-item active">
+                    <span class="page-link">{{ page_num }}</span>
+                </li>
+                {% endif %}
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">…</span>
+            </li>
+            {% endif %}
+        {% endfor %}
+
+        {% if withdrawals.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="{{ url_for('admin.withdrawals', page=withdrawals.next_num, status=status_filter) }}">Next</a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+
+<!-- Statistics Card -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Withdrawal Statistics</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4 class="text-warning">{{ pending_count or 0 }}</h4>
+                            <p class="text-muted mb-0">Pending</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4 class="text-success">{{ approved_count or 0 }}</h4>
+                            <p class="text-muted mb-0">Approved</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4 class="text-danger">{{ rejected_count or 0 }}</h4>
+                            <p class="text-muted mb-0">Rejected</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="text-center">
+                            <h4 class="text-primary">${{ "%.2f"|format(total_amount or 0) }}</h4>
+                            <p class="text-muted mb-0">Total Amount</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Auto-refresh every 30 seconds for pending withdrawals
+    if (window.location.search.includes('status=pending') || window.location.search === '') {
+        setTimeout(function() {
+            location.reload();
+        }, 30000);
+    }
+});
+</script>
+{% endblock %}

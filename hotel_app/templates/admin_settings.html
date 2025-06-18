@@ -1,0 +1,241 @@
+<!-- templates/admin_settings.html -->
+{% extends "admin_base.html" %}
+
+{% block title %}Admin Settings{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+    <h1 class="h2">Admin Settings</h1>
+</div>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+{% endwith %}
+
+<div class="row">
+    <!-- Admin Profile Settings -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Profile Settings</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin_settings') }}">
+                    
+                    <input type="hidden" name="form_type" value="profile"/>
+                    
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="username" name="username" 
+                               value="{{ admin.username if admin else '' }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email" 
+                               value="{{ admin.email if admin else '' }}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="full_name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="full_name" name="full_name" 
+                               value="{{ admin.full_name if admin else '' }}">
+                    </div>
+                    
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Change Password</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin_settings') }}">
+                    
+                    <input type="hidden" name="form_type" value="password"/>
+                    
+                    <div class="mb-3">
+                        <label for="current_password" class="form-label">Current Password</label>
+                        <input type="password" class="form-control" id="current_password" name="current_password" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="new_password" class="form-label">New Password</label>
+                        <input type="password" class="form-control" id="new_password" name="new_password" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="confirm_password" class="form-label">Confirm New Password</label>
+                        <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-warning">Change Password</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <!-- System Settings -->
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">System Settings</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('admin_settings') }}">
+                    
+                    <input type="hidden" name="form_type" value="system"/>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="site_name" class="form-label">Site Name</label>
+                                <input type="text" class="form-control" id="site_name" name="site_name" 
+                                       value="Hotel Booking System">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="site_email" class="form-label">Site Email</label>
+                                <input type="email" class="form-control" id="site_email" name="site_email" 
+                                       value="admin@hotelbooking.com">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="currency" class="form-label">Default Currency</label>
+                                <select class="form-select" id="currency" name="currency">
+                                    <option value="USD" selected>USD ($)</option>
+                                    <option value="EUR">EUR (€)</option>
+                                    <option value="GBP">GBP (£)</option>
+                                    <option value="NGN">NGN (₦)</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="min_deposit" class="form-label">Minimum Deposit Amount</label>
+                                <input type="number" class="form-control" id="min_deposit" name="min_deposit" 
+                                       value="10" step="0.01" min="0">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="min_withdrawal" class="form-label">Minimum Withdrawal Amount</label>
+                                <input type="number" class="form-control" id="min_withdrawal" name="min_withdrawal" 
+                                       value="20" step="0.01" min="0">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="maintenance_mode" name="maintenance_mode">
+                                    <label class="form-check-label" for="maintenance_mode">
+                                        Enable Maintenance Mode
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-success">Update System Settings</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Danger Zone -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card border-danger">
+            <div class="card-header bg-danger text-white">
+                <h5 class="card-title mb-0">Danger Zone</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6>Clear All Logs</h6>
+                        <p class="text-muted">This will permanently delete all system logs.</p>
+                        <button type="button" class="btn btn-outline-danger" onclick="confirmClearLogs()">
+                            Clear Logs
+                        </button>
+                    </div>
+                    <div class="col-md-6">
+                        <h6>Reset All User Sessions</h6>
+                        <p class="text-muted">This will log out all users from the system.</p>
+                        <button type="button" class="btn btn-outline-danger" onclick="confirmResetSessions()">
+                            Reset Sessions
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmClearLogs() {
+    if (confirm('Are you sure you want to clear all system logs? This action cannot be undone.')) {
+        // Add AJAX call to clear logs endpoint
+        fetch('{{ url_for("clear_logs") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Logs cleared successfully');
+            } else {
+                alert('Error clearing logs: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error);
+        });
+    }
+}
+
+function confirmResetSessions() {
+    if (confirm('Are you sure you want to reset all user sessions? All users will be logged out.')) {
+        // Add AJAX call to reset sessions endpoint
+        fetch('{{ url_for("admin.reset_sessions") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token() }}'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('All sessions reset successfully');
+            } else {
+                alert('Error resetting sessions: ' + data.message);
+            }
+        })
+        .catch(error => {
+            alert('Error: ' + error);
+        });
+    }
+}
+</script>
+{% endblock %}

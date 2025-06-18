@@ -338,7 +338,7 @@ async function applyTranslations(targetLang) {
 
             if (textsToTranslate.length > 0) {
                 // Translate in larger batches for speed
-                const translations = await translateBatch(textsToTranslate, translateCode, 8);
+                const translations = await translateBatch(textsToTranslate, translateCode, 20);
 
                 // Apply translations to text nodes
                 textNodes.forEach((node, index) => {
@@ -388,11 +388,11 @@ function hideLoader() {
 }
 
 function showTranslationSuccess(languageName) {
-    showNotification(`✅ Successfully translated to ${languageName}`, 'success');
+    showNotification(`Successfully translated to ${languageName}`, 'success');
 }
 
 function showTranslationError() {
-    showNotification('❌ Translation failed. Please check your internet connection and try again.', 'error');
+    showNotification('Translation failed. Please check your internet connection and try again.', 'error');
 }
 
 function showNotification(message, type = 'info') {
@@ -433,7 +433,7 @@ function toggleLanguageDropdown() {
 
 async function selectLanguage(langCode, flagCode, langName, displayCode) {
     if (isTranslating) {
-        showNotification('⏳ Please wait for current translation to complete', 'info');
+        showNotification('Please wait for current translation to complete', 'info');
         return;
     }
 

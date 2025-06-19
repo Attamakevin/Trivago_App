@@ -1,4 +1,4 @@
-// Simple Google Translate with limited languages
+// SIMPLE SOLUTION: Just save language and apply it on every page load
 function googleTranslateElementInit() {
     new google.translate.TranslateElement({
         pageLanguage: 'en',
@@ -6,9 +6,102 @@ function googleTranslateElementInit() {
         layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
         autoDisplay: false
     }, 'google_translate_element');
+
+    // Apply saved language immediately after Google Translate loads
+    setTimeout(applySavedLanguage, 2000);
+}
+
+// Apply saved language on page load
+function applySavedLanguage() {
+    const savedLang = localStorage.getItem('user_language');
+
+    if (savedLang && savedLang !== 'en') {
+        console.log('Applying saved language:', savedLang);
+        setGoogleTranslateLanguage(savedLang);
+    }
+}
+
+// Set Google Translate to specific language
+function setGoogleTranslateLanguage(langCode) {
+    let attempts = 0;
+    const maxAttempts = 15;
+
+    const attemptTranslation = () => {
+        const selectElement = document.querySelector('.goog-te-combo');
+
+        if (selectElement && selectElement.options.length > 1) {
+            console.log('Google Translate is ready. Available options:');
+
+            // Log all options for debugging
+            for (let i = 0; i < selectElement.options.length; i++) {
+                console.log(i + ':', selectElement.options[i].value, '-', selectElement.options[i].text);
+            }
+
+            // Find and select the correct language
+            let found = false;
+            for (let i = 0; i < selectElement.options.length; i++) {
+                const option = selectElement.options[i];
+                const optionValue = option.value.toLowerCase();
+
+                // Try exact match or partial match
+                if (optionValue === langCode ||
+                    optionValue === 'en|' + langCode ||
+                    optionValue.endsWith('|' + langCode)) {
+
+                    console.log('Setting language to:', option.value);
+                    selectElement.value = option.value;
+
+                    // Trigger change event
+                    const event = new Event('change', { bubbles: true });
+                    selectElement.dispatchEvent(event);
+
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                console.log('Language not found:', langCode);
+            }
+
+            return found;
+        } else {
+            attempts++;
+            if (attempts < maxAttempts) {
+                console.log('Google Translate not ready, attempt', attempts);
+                setTimeout(attemptTranslation, 500);
+            } else {
+                console.log('Failed to load Google Translate after', maxAttempts, 'attempts');
+            }
+        }
+    };
+
+    attemptTranslation();
+}
+
+// Save language when user changes it
+function saveLanguageWhenChanged() {
+    setTimeout(() => {
+        const selectElement = document.querySelector('.goog-te-combo');
+        if (selectElement) {
+            selectElement.addEventListener('change', function () {
+                let selectedLang = 'en';
+
+                if (this.value && this.value.includes('|')) {
+                    selectedLang = this.value.split('|')[1];
+                } else if (this.value && this.value !== 'en') {
+                    selectedLang = this.value;
+                }
+
+                console.log('User selected language:', selectedLang);
+                localStorage.setItem('user_language', selectedLang);
+            });
+        }
+    }, 3000);
 }
 
 document.addEventListener('DOMContentLoaded', function () {
+    // Add CSS styles
     setTimeout(function () {
         const style = document.createElement('style');
         style.textContent = `
@@ -136,5 +229,27 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         `;
         document.head.appendChild(style);
-    }, 2000);
+    }, 1000);
+
+    // Setup language change monitoring
+    saveLanguageWhenChanged();
 });
+
+// TEST FUNCTION - Open console and run this to test
+function testLanguagePersistence() {
+    console.log('=== LANGUAGE TEST ===');
+    console.log('Saved language:', localStorage.getItem('user_language'));
+
+    const select = document.querySelector('.goog-te-combo');
+    if (select) {
+        console.log('Google Translate current value:', select.value);
+        console.log('Available options:');
+        for (let i = 0; i < select.options.length; i++) {
+            console.log(`${i}: ${select.options[i].value} - ${select.options[i].text}`);
+        }
+    } else {
+        console.log('Google Translate not found');
+    }
+
+    console.log('To test: setGoogleTranslateLanguage("es")');
+}

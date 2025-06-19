@@ -206,7 +206,7 @@ nav a:hover {
     }
     
     /* Show only favorites and menu on very small screens */
-    .desktop-nav a:first-child .nav-text,
+    .desktop-nav a:first-child .nav-text .trans,
     .desktop-nav a.menu-trigger .nav-text {
         display: none;
     }

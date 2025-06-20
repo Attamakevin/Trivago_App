@@ -1,0 +1,44 @@
+/* Hide everything except the Google Translate icon */
+.goog-te-gadget-simple {
+    background: transparent !important;
+    border: none !important;
+    font-size: 0 !important; /* Hide text */
+}
+
+.goog-te-gadget-simple .goog-te-menu-value {
+    color: transparent !important; /* Hide dropdown text */
+    font-size: 0 !important;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value span {
+    display: none !important; /* Hide language text */
+}
+
+.goog-te-gadget-simple .goog-te-menu-value:before {
+    content: "🌐" !important; /* Show globe icon */
+    font-size: 20px !important;
+    color: #374151 !important;
+}
+
+/* Hide the dropdown arrow */
+.goog-te-gadget-simple .goog-te-menu-value span:last-child {
+    display: none !important;
+}
+
+/* Style the icon container */
+#google_translate_element {
+    display: inline-block;
+    cursor: pointer;
+}
+
+/* Optional: Custom styling for the icon */
+.goog-te-gadget-simple .goog-te-menu-value {
+    display: inline-block !important;
+    padding: 8px !important;
+    border-radius: 8px !important;
+    transition: background-color 0.2s !important;
+}
+
+.goog-te-gadget-simple .goog-te-menu-value:hover {
+    background-color: #f3f4f6 !important;
+}

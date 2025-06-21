@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="./static/images/ico.png" type="image/x-icon">
+        <title>trivago - Rate hotels worldwide</title>
+        <link rel="stylesheet" href="./static/css/main.css">
+        <link rel="stylesheet" href="./static/css/translate.css">
+        <!-- TailwindCSS -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- FlatPickr -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <!-- Country-list & FlagIcon -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+        <!-- Custom Script -->
+        <script src="./static/js/main.js"></script>
+        <script src="./static/js/translate.js"></script>
+        <script src="./static/js/user.js"></script>
+    </head>
+
+    <body class="bg-gray-100 min-h-screen">
+        <!-- <div class="max-w-7xl mx-auto px-4"> -->
+        <!-- Header -->
+        <header class="sticky h-12 top-0 z-50 bg-white shadow-sm">
+            <img src="./static/images/logo.png" alt="trivago logo" class="logo">
+            <nav class="desktop-nav">
+                <!-- Custom Google Translate UI -->
+                <!-- <div id="google_translate_element" class=""></div> -->
+                <!-- Language Selector -->
+                <div class="relative inline-block">
+                    <a href="#" onclick="toggleLanguageDropdown()">
+                        <span id="selectedLanguageFlag" class="fi fi-us flag-icon"></span>
+                        <span data-translate id="selectedLanguageText" class="nav-text">EN</span>
+                        <svg class="w-3 h-3 text-gray-500 transition-transform duration-200" id="languageChevron"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
+                        </svg>
+                    </a>
+
+                    <!-- Language Dropdown -->
+                    <div id="languageDropdown"
+                        class="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[180px] overflow-hidden hidden">
+                        <div class="py-1">
+                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors bg-blue-50 text-blue-600 font-medium"
+                                onclick="selectLanguage('en', 'us', 'English', 'EN')">
+                                <span class="fi fi-us flag-icon"></span>
+                                <span class="flex-1 text-sm">English</span>
+                                <span class="text-xs text-gray-500">EN</span>
+                            </div>
+                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                            onclick="translateToLanguage('pt', 'Português')" data-lang="pt">
+                                <span class="fi fi-pt flag-icon"></span>
+                                <span class="flex-1 text-sm">Português</span>
+                                <span class="text-xs text-gray-500">PT</span>
+                            </div>
+                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                            onclick="translateToLanguage('es', 'Español')" data-lang="es">
+                                <span class="fi fi-it flag-icon"></span>
+                                <span class="flex-1 text-sm">Español</span>
+                                <span class="text-xs text-gray-500">ES</span>
+                            </div> 
+                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                            onclick="translateToLanguage('it', 'Italiano')" data-lang="it">
+                                <span class="fi fi-it flag-icon"></span>
+                                <span class="flex-1 text-sm">Italiano</span>
+                                <span class="text-xs text-gray-500">IT</span>
+                            </div>
+                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                            onclick="translateToLanguage('fr', 'Français')" data-lang="fr">
+                                <span class="fi fi-nl flag-icon"></span>
+                                <span class="flex-1 text-sm">Français</span>
+                                <span class="text-xs text-gray-500">FR</span>
+                            </div>
+                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                            onclick="translateToLanguage('de', 'Deutsch')" data-lang="de">
+                                <span class="fi fi-nl flag-icon"></span>
+                                <span class="flex-1 text-sm">Deutsch</span>
+                                <span class="text-xs text-gray-500">DE</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#">
+                    <img src="./static/images/box.png" width="30" height="30" alt="">
+                </a>
+
+                <a href="">
+                    <img src="./static/images/shield.png" width="30" height="30" alt="">
+                </a>
+                <a href="#" class="">
+                    <img src="./static/images/hotel.png" width="30" height="30" alt="">
+
+                </a>
+                <a href="#">
+                    <img src="./static/images/profile.png" width="30" height="30" alt="" class="">
+                </a>
+            </nav>
+        </header>
+
+        <!-- Hotel Slider -->
+        <div class="relative w-full h-96 md:h-[600px] bg-gray-900 overflow-hidden shadow-2xl">
+
+            <!-- Slide 1: Burj Al Arab, Dubai -->
+            <div class="slide active absolute inset-0 bg-cover bg-center"
+                style="background-image: url('./static/images/hotel3.jpg')">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                <!-- <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
+                    <h2 class="text-2xl md:text-4xl font-bold mb-2">Burj Al Arab</h2>
+                    <p class="text-lg md:text-xl mb-3 opacity-90">Dubai, UAE</p>
+                    <p class="text-sm md:text-base opacity-80 max-w-2xl">
+                        The world's most luxurious hotel, offering unparalleled service and breathtaking views of
+                        the Arabian Gulf.
+                    </p>
+                </div> -->
+            </div>
+
+            <!-- Slide 2: Santorini Grace Hotel -->
+            <div class="slide absolute inset-0 bg-cover bg-center"
+                style="background-image: url('./static/images/hotel1.jpg')">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                <!-- <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
+                    <h2 class="text-2xl md:text-4xl font-bold mb-2">Grace Hotel Santorini</h2>
+                    <p class="text-lg md:text-xl mb-3 opacity-90">Santorini, Greece</p>
+                    <p class="text-sm md:text-base opacity-80 max-w-2xl">
+                        Perched on volcanic cliffs with stunning views of the Aegean Sea and iconic white-washed
+                        architecture.
+                    </p>
+                </div> -->
+            </div>
+
+            <!-- Slide 3: Marina Bay Sands -->
+            <div class="slide absolute inset-0 bg-cover bg-center"
+                style="background-image: url('./static/images/hotel2.jpg')">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                <!-- <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
+                    <h2 class="text-2xl md:text-4xl font-bold mb-2">Marina Bay Sands</h2>
+                    <p class="text-lg md:text-xl mb-3 opacity-90">Singapore</p>
+                    <p class="text-sm md:text-base opacity-80 max-w-2xl">
+                        An architectural marvel featuring the world's largest rooftop infinity pool with panoramic
+                        city views.
+                    </p>
+                </div> -->
+            </div>
+
+            <!-- Slide 4: Atlantis The Palm -->
+            <div class="slide absolute inset-0 bg-cover bg-center"
+                style="background-image: url('./static/images/hotel4.jpg')">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                <!-- <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
+                    <h2 class="text-2xl md:text-4xl font-bold mb-2">Atlantis The Palm</h2>
+                    <p class="text-lg md:text-xl mb-3 opacity-90">Dubai, UAE</p>
+                    <p class="text-sm md:text-base opacity-80 max-w-2xl">
+                        A luxury resort on Dubai's iconic Palm Jumeirah, featuring underwater suites and world-class
+                        amenities.
+                    </p>
+                </div> -->
+            </div>
+
+            <!-- Slide 5: Bora Bora Resort -->
+            <div class="slide absolute inset-0 bg-cover bg-center"
+                style="background-image: url('./static/images/hotel1.jpg')">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                <!-- <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
+                    <h2 class="text-2xl md:text-4xl font-bold mb-2">Four Seasons Bora Bora</h2>
+                    <p class="text-lg md:text-xl mb-3 opacity-90">Bora Bora, French Polynesia</p>
+                    <p class="text-sm md:text-base opacity-80 max-w-2xl">
+                        Overwater bungalows in a tropical paradise with crystal-clear lagoons and pristine beaches.
+                    </p>
+                </div> -->
+            </div>
+
+            <!-- Slide 6: Ritz-Carlton Kyoto -->
+            <div class="slide absolute inset-0 bg-cover bg-center"
+                style="background-image: url('./static/images/hotel3.jpg')">
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
+                <!-- <div class="absolute bottom-0 left-0 right-0 p-6 md:p-8 text-white">
+                    <h2 class="text-2xl md:text-4xl font-bold mb-2">The Ritz-Carlton Kyoto</h2>
+                    <p class="text-lg md:text-xl mb-3 opacity-90">Kyoto, Japan</p>
+                    <p class="text-sm md:text-base opacity-80 max-w-2xl">
+                        Traditional Japanese elegance meets modern luxury in the heart of Japan's ancient capital.
+                    </p>
+                </div> -->
+            </div>
+
+            <!-- Navigation Buttons -->
+            <button
+                class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white bg-opacity-20 backdrop-blur-md border border-white border-opacity-30 rounded-full flex items-center justify-center text-white hover:bg-opacity-30 hover:scale-110 transition-all duration-300 z-10"
+                onclick="previousSlide()">
+                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                    </path>
+                </svg>
+            </button>
+
+            <button
+                class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white bg-opacity-20 backdrop-blur-md border border-white border-opacity-30 rounded-full flex items-center justify-center text-white hover:bg-opacity-30 hover:scale-110 transition-all duration-300 z-10"
+                onclick="nextSlide()">
+                <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+
+            <!-- Indicators -->
+            <div class="absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 flex space-x-2 md:space-x-3 z-10">
+                <button class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white transition-all duration-300 indicator active"
+                    onclick="goToSlide(0)"></button>
+                <button
+                    class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"
+                    onclick="goToSlide(1)"></button>
+                <button
+                    class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"
+                    onclick="goToSlide(2)"></button>
+                <button
+                    class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"
+                    onclick="goToSlide(3)"></button>
+                <button
+                    class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"
+                    onclick="goToSlide(4)"></button>
+                <button
+                    class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"
+                    onclick="goToSlide(5)"></button>
+            </div>
+        </div>
+        <!-- </div> -->
+    </body>
+
+</html>

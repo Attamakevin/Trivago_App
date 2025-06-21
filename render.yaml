@@ -3,7 +3,7 @@ services:
     name: hotel_app
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn run:run"
+    startCommand: "gunicorn app:run"
     plan: free
     healthCheckPath: /
     envVars:

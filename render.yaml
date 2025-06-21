@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: hotel_app
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn run:run"
+    plan: free
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.9.16
+      - key: FLASK_ENV
+        value: production
+    # This ensures static files are included in the build
+    staticPublishPath: ./static

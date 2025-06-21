@@ -3,7 +3,7 @@ services:
     name: hotel_app
     env: python
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "gunicorn app:run"
+    startCommand: "gunicorn Trivago_app:run"
     plan: free
     healthCheckPath: /
     envVars:

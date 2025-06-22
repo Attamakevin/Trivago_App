@@ -1335,3 +1335,40 @@ footer {
 .slide.prev {
     transform: translateX(-100%);
 }
+
+@media (max-width: 768px) {
+    
+    .user-desktop-nav {
+        gap: 0;
+    }
+    
+    .user-desktop-nav a {
+        margin-left: 10px;
+        font-size: 11px;
+        gap: 5px;
+    }
+    
+    .user-desktop-nav a .size-6 {
+        width: 18px;
+        height: 18px;
+    }
+
+}
+
+@media (max-width: 480px) {
+    
+    .user-desktop-nav a {
+        margin-left: 0px;
+        padding: 2px;
+        border-radius: 4px;
+    }
+    
+    .user-desktop-nav a:hover {
+        background-color: #f5f5f5;
+    }
+    
+    .user-desktop-nav a .size-6 {
+        width: 20px;
+        height: 20px;
+    }
+}

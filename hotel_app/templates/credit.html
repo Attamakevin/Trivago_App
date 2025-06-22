@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="./static/images/ico.png" type="image/x-icon">
+        <title>Credit Score - trivago</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="./static/css/user.css">
+        <link rel="stylesheet" href="./static/css/translate.css">
+        <!-- TailwindCSS -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- FlatPickr -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <!-- Country-list & FlagIcon -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+        <!-- Custom Script -->
+        <script src="./static/js/main.js"></script>
+        <script src="./static/js/translate.js"></script>
+        <script src="./static/js/user.js"></script>
+    </head>
+
+    <body class="bg-gray-50 min-h-screen">
+        <!-- Header -->
+        <header class="sticky h-16 top-0 z-50 bg-[#007cc2] shadow-sm py-2 md:py-4 px-4 md:px-8">
+            <div class="flex items-center justify-start gap-8 text-white">
+                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-white text-sm md:text-md font-bold">Credit Score</h1>
+            </div>
+        </header>
+
+        <div class="px-4 py-6 space-y-6">
+            <!-- Credit Score Overview -->
+            <div class="bg-white rounded-2xl shadow-l p-6 md:p-">
+                <div class="text-center mb-6">
+                    <p class="text-sm md:text-md font-bold text-gray-900 mb-2">Your Credit Score</p>
+                    <p class="text-gray-600 text-xs">Last updated: January 15, 2025</p>
+                </div>
+
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-12">
+                    <!-- Credit Score Circle -->
+                    <div class="relative">
+                        <div class="score-circle w-48 h-48 md:w-48 md:h-48">
+                            <div class="score-inner">
+                                <div class="text-center">
+                                    <div class="text-2xl md:text-2xl font-bold text-gray-900 mb-2">742</div>
+                                    <div class="text-lg md:text-xl font-semibold text-green-600">Excellent</div>
+                                    <div class="text-sm text-gray-500 mt-1">740-850</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Score Breakdown -->
+                    <div class="flex-1 w-full max-w-md">
+                        <div class="space-y-4">
+                            <div class="text-center md:text-left">
+                                <h3 class="text-sm font-semibold text-gray-900 mb-2">Credit Range</h3>
+                                <p class="text-gray-600 text-xs">Your score is in the excellent range, giving you access to the
+                                    best rates and terms.</p>
+                            </div>
+
+                            <!-- Score Ranges -->
+                            <div class="space-y-3">
+                                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
+                                    <span class="text-xs font-medium text-gray-700">Poor (300-579)</span>
+                                    <span class="text-xs text-red-600">Below Range</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
+                                    <span class="text-xs font-medium text-gray-700">Fair (580-669)</span>
+                                    <span class="text-xs text-yellow-600">Below Range</span>
+                                </div>
+                                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
+                                    <span class="text-xs font-medium text-gray-700">Good (670-739)</span>
+                                    <span class="text-xs text-blue-600">Below Range</span>
+                                </div>
+                                <div
+                                    class="flex items-center justify-between p-3 bg-green-50 rounded-lg border-2 border-green-200">
+                                    <span class="text-xs font-medium text-gray-700">Excellent (740-850)</span>
+                                    <span class="text-xs text-green-600 font-semibold">Your Score</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tips to Improve -->
+            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl shadow-lg p-6 md:p-8">
+                <h3 class="flex items-center justify-center text-sm md:text-sm font-bold text-gray-900 mb-6">What is Credit Score</h3>
+
+                <div class="flex items-center justify-center">
+                    <p class="text-gray-800 text-sm">Every account has a credit score system. The credit score
+                        is determined by the
+                        performance of each member.
+                        Completing daily tasks keeps the credit score high, but if tasks are not completed, it will
+                        affect the score.
+                        When
+                        the credit score is below 80%, the system will disable withdrawal. To solve this problem,
+                        the member needs to
+                        complete tasks or make a deposit to increase the credit score.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <!-- <div class="grid md:grid-cols-2 gap-4">
+            <button
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors flex items-center justify-center space-x-2">
+                <i class="fas fa-download"></i>
+                <span>Download Credit Report</span>
+            </button>
+            <button
+                class="bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors flex items-center justify-center space-x-2">
+                <i class="fas fa-shield-alt"></i>
+                <span>Credit Monitoring</span>
+            </button>
+        </div> -->
+    </body>
+
+</html>

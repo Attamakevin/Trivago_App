@@ -4,58 +4,47 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Profile - Trivago</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="shortcut icon" href="./static/images/ico.png" type="image/x-icon">
+        <title>Profile - trivago</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <style>
-            .gradient-bg {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-
-            .card-hover {
-                transition: all 0.3s ease;
-            }
-
-            .card-hover:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-            }
-
-            .balance-card {
-                background: linear-gradient(135deg, #00c6ff 0%, #0072ff 100%);
-            }
-
-            .deposit-card {
-                background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            }
-
-            .withdraw-card {
-                background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
-            }
-
-            .details-card {
-                background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
-            }
-        </style>
+        <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="./static/css/user.css">
+        <link rel="stylesheet" href="./static/css/translate.css">
+        <!-- TailwindCSS -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- FlatPickr -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <!-- Country-list & FlagIcon -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+        <!-- Custom Script -->
+        <script src="./static/js/main.js"></script>
+        <script src="./static/js/translate.js"></script>
+        <script src="./static/js/user.js"></script>
     </head>
 
     <body class="bg-gray-50 min-h-screen">
         <!-- Header -->
-        <header class="gradient-bg text-white p-4 md:p-6">
-            <div class="max-w-6xl mx-auto flex items-center justify-between">
-                <button onclick="history.back()" class="text-white hover:text-gray-200 transition-colors">
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+            <div class="flex items-center justify-start gap-8 text-white h-full">
+                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-xl md:text-2xl font-bold">My Profile</h1>
-                <button class="text-white hover:text-gray-200 transition-colors">
-                    <i class="fas fa-cog text-xl"></i>
-                </button>
+                <h1 class="text-white text-sm md:text-md font-bold">Profile</h1>
             </div>
         </header>
 
-        <div class="max-w-6xl mx-auto px-4 py-6 space-y-6">
+        <div class="px-4 py-6 space-y-6">
             <!-- Profile Section -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div class="bg-white rounded-2xl overflow-hidden">
                 <div class="gradient-bg h-24 md:h-32"></div>
                 <div class="relative px-6 pb-6">
                     <!-- Profile Image -->
@@ -78,8 +67,8 @@
 
                         <div class="grid md:grid-cols-2 gap-4 text-sm md:text-base">
                             <div class="flex items-center space-x-3">
-                                <i class="fas fa-envelope text-blue-600 w-5"></i>
-                                <span class="text-gray-700">john.anderson@email.com</span>
+                                <i class="fas fa-hashtag text-blue-600 w-5"></i>
+                                <span class="text-gray-700">Agent ID: 65678654</span>
                             </div>
                             <div class="flex items-center space-x-3">
                                 <i class="fas fa-phone text-green-600 w-5"></i>
@@ -90,8 +79,12 @@
                                 <span class="text-gray-700">New York, USA</span>
                             </div>
                             <div class="flex items-center space-x-3">
-                                <i class="fas fa-calendar text-purple-600 w-5"></i>
-                                <span class="text-gray-700">Member since 2020</span>
+                                <i class="fas fa-check text-purple-600 w-5"></i>
+                                <span class="text-gray-700">Invitation Code:76WHTEE</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fas fa-plus text-purple-600 w-5"></i>
+                                <span class="text-gray-700">Member Points:75</span>
                             </div>
                         </div>
                     </div>
@@ -99,7 +92,7 @@
             </div>
 
             <!-- Account Balance Section -->
-            <div class="balance-card rounded-2xl shadow-lg p-6 text-white">
+            <div class="balance-card rounded-2xl p-6 text-white">
                 <div class="flex items-center justify-between">
                     <div>
                         <h3 class="text-lg font-semibold opacity-90">Account Balance</h3>
@@ -163,7 +156,7 @@
             </div>
 
             <!-- Menu Items -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div class="bg-white rounded-2xl overflow-hidden">
                 <div class="p-4 border-b border-gray-100">
                     <h3 class="text-lg font-semibold text-gray-900">Account Management</h3>
                 </div>
@@ -258,11 +251,25 @@
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
                     </div>
+                    <!-- Bind Wallet Address -->
+                    <div onclick="navigateToPage('help')"
+                        class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-wallet text-gray-600"></i>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-900">Bind Wallet Address</h4>
+                                <p class="text-sm text-gray-500">Your Wallet Address</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </div>
                 </div>
             </div>
 
             <!-- Logout Button -->
-            <div class="bg-white rounded-2xl shadow-lg p-4">
+            <div class="bg-white rounded-2xl p-4">
                 <button onclick="logout()"
                     class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2">
                     <i class="fas fa-sign-out-alt"></i>
@@ -270,25 +277,6 @@
                 </button>
             </div>
         </div>
-
-        <script>
-            function navigateToPage(page) {
-                // Add your navigation logic here
-                console.log('Navigating to:', page);
-                // Example: window.location.href = `/${page}`;
-            }
-
-            function logout() {
-                if (confirm('Are you sure you want to sign out?')) {
-                    // Add logout logic here
-                    console.log('Logging out...');
-                    // Example: window.location.href = '/login';
-                }
-            }
-
-            // Add smooth scroll behavior
-            document.documentElement.style.scrollBehavior = 'smooth';
-        </script>
     </body>
 
 </html>

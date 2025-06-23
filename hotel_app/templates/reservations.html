@@ -7,6 +7,7 @@
         <link rel="shortcut icon" href="./static/images/ico.png" type="image/x-icon">
         <title>Reservation Center - trivago</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="./static/css/user.css">
         <link rel="stylesheet" href="./static/css/translate.css">
         <!-- TailwindCSS -->
@@ -32,7 +33,7 @@
 
     <body class="min-h-screen">
         <!-- Header -->
-        <header class="sticky h-16 top-0 z-50 bg-[#007cc2] shadow-sm py-2 md:py-4 px-4 md:px-8">
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
             <div class="flex items-center justify-start gap-8 text-white h-full">
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
@@ -212,8 +213,8 @@
                         <div class="text-center space-y-6">
                             <!-- Hotel Image -->
                             <div class="relative">
-                                <img src="./static/images/hotel3.jpg"
-                                    alt="Grand Plaza Hotel" class="w-full h-48 object-cover rounded-xl shadow-lg">
+                                <img src="./static/images/hotel3.jpg" alt="Grand Plaza Hotel"
+                                    class="w-full h-48 object-cover rounded-xl shadow-lg">
                                 <div
                                     class="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
                                     Completed
@@ -222,20 +223,25 @@
 
                             <!-- Order Details -->
                             <div class="bg-gray-50 rounded-xl p-4 space-y-2">
+                                <p class="text-lg text-gray-800 font-bold">Grand Plaza Hotel</p>
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm text-gray-600">Order Number:</span>
                                     <span class="font-semibold text-sm text-gray-900">#RSV-001234</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-600">Hotel:</span>
-                                    <span class="font-semibold text-sm  text-gray-900">Grand Plaza Hotel</span>
-                                </div>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-600">Check-in Date:</span>
+                                    <span class="text-sm text-gray-600">Order Time:</span>
                                     <span class="font-semibold text-sm  text-gray-900">June 25, 2025</span>
                                 </div>
                                 <div class="flex justify-between items-center">
-                                    <span class="text-sm text-gray-600">Total Amount:</span>
+                                    <span class="text-sm text-gray-600">Days:</span>
+                                    <span class="font-semibold text-sm text-gray-900">3 days</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Price:</span>
+                                    <span class="font-semibold text-sm  text-green-600">$450.00</span>
+                                </div>
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Commission:</span>
                                     <span class="font-semibold text-sm  text-green-600">$450.00</span>
                                 </div>
                             </div>
@@ -262,11 +268,11 @@
                             <div>
                                 <textarea id="ratingComment" placeholder="Tell us about your experience (optional)..."
                                     rows="3"
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"></textarea>
+                                    class="w-full px-4 py-3 border border-gray-300 text-black rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent resize-none"></textarea>
                             </div>
 
                             <!-- Submit Button -->
-                            <button id="submitRatingBtn"  onclick="submitRating()" disabled
+                            <button id="submitRatingBtn" onclick="submitRating()" disabled
                                 class="w-full bg-gray-300 text-gray-500 font-medium py-3 px-4 rounded-xl transition-colors cursor-not-allowed">
                                 <i class="fas fa-star mr-2"></i>Submit Rating
                             </button>
@@ -303,7 +309,7 @@
                 <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl slide-up max-h-[80vh] overflow-y-auto">
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-xl font-bold text-gray-900">Rules & Guidelines</h3>
+                            <h3 class="text-xl font-bold text-gray-900">Tasks Description</h3>
                             <button onclick="closeRulesModal()" class="text-gray-400 hover:text-gray-600">
                                 <i class="fas fa-times text-xl"></i>
                             </button>
@@ -311,32 +317,46 @@
 
                         <div class="space-y-4">
                             <div class="bg-blue-50 rounded-xl p-4">
-                                <h4 class="font-semibold text-blue-900 mb-2"><i
-                                        class="fas fa-check-circle mr-2"></i>Booking Rules</h4>
                                 <ul class="text-sm text-blue-800 space-y-1">
-                                    <li>• All bookings must be confirmed within 24 hours</li>
-                                    <li>• Cancellations allowed up to 48 hours before check-in</li>
-                                    <li>• Valid ID required for all reservations</li>
-                                </ul>
-                            </div>
-
-                            <div class="bg-green-50 rounded-xl p-4">
-                                <h4 class="font-semibold text-green-900 mb-2"><i
-                                        class="fas fa-money-bill-wave mr-2"></i>Payment Guidelines</h4>
-                                <ul class="text-sm text-green-800 space-y-1">
-                                    <li>• Deposit required for all bookings</li>
-                                    <li>• Full payment due at check-in</li>
-                                    <li>• Refunds processed within 5-7 business days</li>
-                                </ul>
-                            </div>
-
-                            <div class="bg-yellow-50 rounded-xl p-4">
-                                <h4 class="font-semibold text-yellow-900 mb-2"><i
-                                        class="fas fa-exclamation-triangle mr-2"></i>Important Notes</h4>
-                                <ul class="text-sm text-yellow-800 space-y-1">
-                                    <li>• Check hotel-specific policies before booking</li>
-                                    <li>• Commission rates vary by hotel partner</li>
-                                    <li>• Customer support available 24/7</li>
+                                    <li>● Only one mobile phone number can be registered for one account. In order to
+                                        prevent misoperation or a series of
+                                        illegal acts, let the platform set corresponding progress rules. The system will
+                                        automatically match orders when the
+                                        agent member makes a reservation. After completing the reservation every day,
+                                        the amount can be withdrawn to the preset
+                                        or escrow bank account. Platform recharge only allows the account owner to
+                                        transfer money. Other people or anonymous
+                                        transfers will affect the security of the account.
+                                    </li>
+                                    <li>● Each account must complete all reservations every day, otherwise it will
+                                        affect the credit score
+                                    </li>
+                                    <li>● All reservations are randomly assigned by the system and cannot be modified,
+                                        canceled or skipped after receiving the
+                                        reservation.
+                                    </li>
+                                    <li>● Each order is provided by a different trader, so the profit is naturally
+                                        different. Therefore, before each deposit,
+                                        you must get the deposit address from the customer service to complete the
+                                        Luxury. You must reconfirm the deposit
+                                        address with the customer service.
+                                    </li>
+                                    <li>● If there is still no deposit after 30 minutes, you need to reconfirm your
+                                        deposit address with the customer service.
+                                        Avoid unnecessary problems in ongoing transactions.
+                                    </li>
+                                    <li>● If the transfer is to the wrong or overdue verification deposit address, the
+                                        platform does not assume any
+                                        responsibility
+                                    </li>
+                                    <li>● Once the account information is associated with a single account, it cannot be
+                                        changed unless the account cannot
+                                        receive withdrawals.
+                                    </li>
+                                    <li>Note: Please do not use the same person's information to repeatedly register an
+                                        account on this platform to avoid data
+                                        errors.
+                                    </li>
                                 </ul>
                             </div>
                         </div>
@@ -348,7 +368,7 @@
         <!-- Order History Modal -->
         <div id="orderModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl slide-up max-h-[80vh]">
+                <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl slide-up max-h-[90vh] overflow-hidden mb-8">
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-xl font-bold text-gray-900">Order History</h3>
@@ -357,122 +377,275 @@
                             </button>
                         </div>
 
-                        <div class="overflow-x-auto">
-                            <table class="w-full">
-                                <thead class="bg-gray-50">
-                                    <tr>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                            Order ID</th>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                            Hotel</th>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                            Dates</th>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                            Amount</th>
-                                        <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">
-                                            Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody class="divide-y divide-gray-200">
-                                    <tr>
-                                        <td class="px-4 py-4 text-sm font-medium text-gray-900">#RSV-001</td>
-                                        <td class="px-4 py-4 text-sm text-gray-700">Grand Plaza Hotel</td>
-                                        <td class="px-4 py-4 text-sm text-gray-700">Jun 25-27, 2025</td>
-                                        <td class="px-4 py-4 text-sm text-gray-700">$450.00</td>
-                                        <td class="px-4 py-4"><span
-                                                class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full">Confirmed</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-4 py-4 text-sm font-medium text-gray-900">#RSV-002</td>
-                                        <td class="px-4 py-4 text-sm text-gray-700">Ocean View Resort</td>
-                                        <td class="px-4 py-4 text-sm text-gray-700">Jul 10-15, 2025</td>
-                                        <td class="px-4 py-4 text-sm text-gray-700">$1,200.00</td>
-                                        <td class="px-4 py-4"><span
-                                                class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full">Pending</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td class="px-4 py-4 text-sm font-medium text-gray-900">#RSV-003</td>
-                                        <td class="px-4 py-4 text-sm text-gray-700">City Center Inn</td>
-                                        <td class="px-4 py-4 text-sm text-gray-700">May 15-17, 2025</td>
-                                        <td class="px-4 py-4 text-sm text-gray-700">$320.00</td>
-                                        <td class="px-4 py-4"><span
-                                                class="px-2 py-1 bg-gray-100 text-gray-800 text-xs rounded-full">Completed</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <!-- Tabs -->
+                        <div class="flex space-x-1 bg-gray-100 p-1 rounded-xl mb-6">
+                            <button onclick="switchTab('all')" id="tab-all"
+                                class="flex-1 py-2 px-4 text-[8px] sm:text-sm font-medium rounded-lg transition-colors bg-white text-purple-600 shadow-sm">
+                                All Orders
+                            </button>
+                            <button onclick="switchTab('progress')" id="tab-progress"
+                                class="flex-1 py-2 px-4 text-[8px] sm:text-sm font-medium rounded-lg transition-colors text-gray-600 hover:text-gray-900">
+                                In Progress
+                            </button>
+                            <button onclick="switchTab('completed')" id="tab-completed"
+                                class="flex-1 py-2 px-4 text-[8px] sm:text-sm font-medium rounded-lg transition-colors text-gray-600 hover:text-gray-900">
+                                Completed
+                            </button>
+                        </div>
+
+                        <!-- Orders Container -->
+                        <div class="overflow-y-auto max-h-96 space-y-4 mb-8 py-5 pb-10" id="ordersContainer">
+
+                            <!-- Order Card 1 -->
+                            <div
+                                class="order-card all progress border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                <div class="flex flex-col md:flex-row gap-4">
+                                    <!-- Hotel Image -->
+                                    <div class="relative">
+                                        <img src="https://images.unsplash.com/photo-1566073771259-6a8506099945?w=150&h=100&fit=crop"
+                                            alt="Grand Plaza Hotel" class="w-full md:w-32 h-24 object-cover rounded-lg">
+                                        <div
+                                            class="absolute top-2 right-2 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                            Confirmed
+                                        </div>
+                                    </div>
+
+                                    <!-- Order Details -->
+                                    <div class="flex-1 space-y-2">
+                                        <div class="flex justify-between items-start">
+                                            <h4 class="font-bold text-gray-900 text-lg">Grand Plaza Hotel</h4>
+                                            <span class="text-lg font-bold text-green-600"><span class="text-sm text-gray-600 font-normal">Price:</span>$450.00</span>
+                                        </div>
+
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                                            <div class="flex items-center text-gray-600">
+                                                <i class="fas fa-hashtag text-purple-500 mr-2"></i>
+                                                <span>Order Number: #RSV-001</span>
+                                            </div>
+                                            <div class="flex items-center text-gray-600">
+                                                <i class="fas fa-calendar text-blue-500 mr-2"></i>
+                                                <span>Order Time: Jun 25-27, 2025</span>
+                                            </div>
+                                            <div class="flex items-center text-gray-600">
+                                                <i class="fas fa-time text-orange-500 mr-2"></i>
+                                                <span>Days: 3 Days</span>
+                                            </div>
+                                            <div class="flex items-center text-gray-600">
+                                                <i class="fa fa-money text-indigo-500 mr-2"></i>
+                                                <span>Total Amount: $450.00 </span>
+                                            </div>
+                                            <div class="flex items-center text-gray-600">
+                                                <i class="fa fa-money text-indigo-500 mr-2"></i>
+                                                <span>Commission: $450.00 </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex justify-between items-center pt-2">
+                                            <span
+                                                class="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full font-medium">
+                                                Confirmed
+                                            </span>
+                                            <button onclick="viewOrderDetails('RSV-001')"
+                                                class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                                                View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Card 2 -->
+                            <div
+                                class="order-card all progress border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                <div class="flex flex-col md:flex-row gap-4">
+                                    <!-- Hotel Image -->
+                                    <div class="relative">
+                                        <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?w=150&h=100&fit=crop"
+                                            alt="Ocean View Resort" class="w-full md:w-32 h-24 object-cover rounded-lg">
+                                        <div
+                                            class="absolute top-2 right-2 bg-yellow-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                            Pending
+                                        </div>
+                                    </div>
+
+                                    <!-- Order Details -->
+                                    <div class="flex-1 space-y-2">
+                                        <div class="flex justify-between items-start">
+                                            <h4 class="font-bold text-gray-900 text-lg">Ocean View Resort</h4>
+                                            <span class="text-lg font-bold text-green-600"><span class="text-sm text-gray-600 font-normal">Price:</span>$450.00</span>
+                                            </div>
+                                            
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fas fa-hashtag text-purple-500 mr-2"></i>
+                                                    <span>Order Number: #RSV-001</span>
+                                                </div>
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fas fa-calendar text-blue-500 mr-2"></i>
+                                                    <span>Order Time: Jun 25-27, 2025</span>
+                                                </div>
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fas fa-time text-orange-500 mr-2"></i>
+                                                    <span>Days: 3 Days</span>
+                                                </div>
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fa fa-money text-indigo-500 mr-2"></i>
+                                                    <span>Total Amount: $450.00 </span>
+                                                </div>
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fa fa-money text-indigo-500 mr-2"></i>
+                                                    <span>Commission: $450.00 </span>
+                                                </div>
+                                        </div>
+
+                                        <div class="flex justify-between items-center pt-2">
+                                            <span
+                                                class="px-3 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">
+                                                Pending
+                                            </span>
+                                            <button onclick="viewOrderDetails('RSV-002')"
+                                                class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                                                View Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Card 3 -->
+                            <div
+                                class="order-card all completed border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                <div class="flex flex-col md:flex-row gap-4">
+                                    <!-- Hotel Image -->
+                                    <div class="relative">
+                                        <img src="https://images.unsplash.com/photo-1551882547-ff40c63fe5fa?w=150&h=100&fit=crop"
+                                            alt="City Center Inn" class="w-full md:w-32 h-24 object-cover rounded-lg">
+                                        <div
+                                            class="absolute top-2 right-2 bg-gray-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                            Completed
+                                        </div>
+                                    </div>
+
+                                    <!-- Order Details -->
+                                    <div class="flex-1 space-y-2">
+                                        <div class="flex justify-between items-start">
+                                            <h4 class="font-bold text-gray-900 text-lg">City Center Inn</h4>
+                                            <span class="text-lg font-bold text-green-600"><span class="text-sm text-gray-600 font-normal">Price:</span>$450.00</span>
+                                            </div>
+                                            
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fas fa-hashtag text-purple-500 mr-2"></i>
+                                                    <span>Order Number: #RSV-001</span>
+                                                </div>
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fas fa-calendar text-blue-500 mr-2"></i>
+                                                    <span>Order Time: Jun 25-27, 2025</span>
+                                                </div>
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fas fa-time text-orange-500 mr-2"></i>
+                                                    <span>Days: 3 Days</span>
+                                                </div>
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fa fa-money text-indigo-500 mr-2"></i>
+                                                    <span>Total Amount: $450.00 </span>
+                                                </div>
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fa fa-money text-indigo-500 mr-2"></i>
+                                                    <span>Commission: $450.00 </span>
+                                                </div>
+                                        </div>
+
+                                        <div class="flex justify-between items-center pt-2">
+                                            <span
+                                                class="px-3 py-1 bg-gray-100 text-gray-800 text-xs rounded-full font-medium">
+                                                Completed
+                                            </span>
+                                            <div class="flex space-x-2">
+                                                <button onclick="rateOrder('RSV-003')"
+                                                    class="text-yellow-600 hover:text-yellow-700 text-sm font-medium">
+                                                    <i class="fas fa-star mr-1"></i>Rate
+                                                </button>
+                                                <button onclick="viewOrderDetails('RSV-003')"
+                                                    class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                                                    View Details
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Order Card 4 -->
+                            <div
+                                class="order-card all completed border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow">
+                                <div class="flex flex-col md:flex-row gap-4">
+                                    <!-- Hotel Image -->
+                                    <div class="relative">
+                                        <img src="https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?w=150&h=100&fit=crop"
+                                            alt="Mountain Lodge" class="w-full md:w-32 h-24 object-cover rounded-lg">
+                                        <div
+                                            class="absolute top-2 right-2 bg-gray-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                            Completed
+                                        </div>
+                                    </div>
+
+                                    <!-- Order Details -->
+                                    <div class="flex-1 space-y-2">
+                                        <div class="flex justify-between items-start">
+                                            <h4 class="font-bold text-gray-900 text-lg">Mountain Lodge</h4>
+                                            <span class="text-lg font-bold text-green-600"><span class="text-sm text-gray-600 font-normal">Price:</span>$450.00</span>
+                                            </div>
+                                            
+                                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fas fa-hashtag text-purple-500 mr-2"></i>
+                                                    <span>Order Number: #RSV-001</span>
+                                                </div>
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fas fa-calendar text-blue-500 mr-2"></i>
+                                                    <span>Order Time: Jun 25-27, 2025</span>
+                                                </div>
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fas fa-time text-orange-500 mr-2"></i>
+                                                    <span>Days: 3 Days</span>
+                                                </div>
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fa fa-money text-indigo-500 mr-2"></i>
+                                                    <span>Total Amount: $450.00 </span>
+                                                </div>
+                                                <div class="flex items-center text-gray-600">
+                                                    <i class="fa fa-money text-indigo-500 mr-2"></i>
+                                                    <span>Commission: $450.00 </span>
+                                                </div>
+                                        </div>
+
+                                        <div class="flex justify-between items-center pt-2">
+                                            <span
+                                                class="px-3 py-1 bg-gray-100 text-gray-800 text-xs rounded-full font-medium">
+                                                Completed
+                                            </span>
+                                            <div class="flex space-x-2">
+                                                <button onclick="rateOrder('RSV-004')"
+                                                    class="text-yellow-600 hover:text-yellow-700 text-sm font-medium">
+                                                    <i class="fas fa-star mr-1"></i>Rate
+                                                </button>
+                                                <button onclick="viewOrderDetails('RSV-004')"
+                                                    class="text-purple-600 hover:text-purple-700 text-sm font-medium">
+                                                    View Details
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <script>
-            // Modal Functions
-            function openReservationModal() {
-                document.getElementById('reservationModal').classList.remove('hidden');
-            }
-
-            function closeReservationModal() {
-                document.getElementById('reservationModal').classList.add('hidden');
-            }
-
-            function openRulesModal() {
-                document.getElementById('rulesModal').classList.remove('hidden');
-            }
-
-            function closeRulesModal() {
-                document.getElementById('rulesModal').classList.add('hidden');
-            }
-
-            function openOrderModal() {
-                document.getElementById('orderModal').classList.remove('hidden');
-            }
-
-            function closeOrderModal() {
-                document.getElementById('orderModal').classList.add('hidden');
-            }
-
-            function makeReservation(event) {
-                event.preventDefault();
-                alert('Searching for available hotels...');
-                closeReservationModal();
-            }
-
-            function viewReservations() {
-                openOrderModal();
-            }
-
-            function viewAnalytics() {
-                alert('Opening analytics dashboard...');
-            }
-
-            function contactSupport() {
-                alert('Opening customer support...');
-            }
-
-            // Close modals when clicking outside
-            document.addEventListener('click', function (event) {
-                const modals = ['reservationModal', 'rulesModal', 'orderModal'];
-                modals.forEach(modalId => {
-                    const modal = document.getElementById(modalId);
-                    if (event.target === modal) {
-                        modal.classList.add('hidden');
-                    }
-                });
-            });
-
-            // Set minimum date to today for date inputs
-            document.addEventListener('DOMContentLoaded', function () {
-                const today = new Date().toISOString().split('T')[0];
-                const dateInputs = document.querySelectorAll('input[type="date"]');
-                dateInputs.forEach(input => {
-                    input.min = today;
-                });
-            });
-        </script>
     </body>
 
 </html>

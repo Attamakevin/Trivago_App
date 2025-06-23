@@ -329,12 +329,46 @@ function closeRulesModal() {
     document.getElementById('rulesModal').classList.add('hidden');
 }
 
-function openOrderModal() {
-    document.getElementById('orderModal').classList.remove('hidden');
+let currentTab = 'all';
+
+function switchTab(tab) {
+    currentTab = tab;
+
+    // Update tab buttons
+    document.querySelectorAll('[id^="tab-"]').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-purple-600', 'shadow-sm');
+        btn.classList.add('text-gray-600', 'hover:text-gray-900');
+    });
+
+    document.getElementById(`tab-${tab}`).classList.add('bg-white', 'text-purple-600', 'shadow-sm');
+    document.getElementById(`tab-${tab}`).classList.remove('text-gray-600', 'hover:text-gray-900');
+
+    // Filter cards
+    const allCards = document.querySelectorAll('.order-card');
+    allCards.forEach(card => {
+        if (tab === 'all' || card.classList.contains(tab)) {
+            card.classList.remove('hidden');
+        } else {
+            card.classList.add('hidden');
+        }
+    });
+}
+
+function viewOrderDetails(orderId) {
+    alert(`Viewing details for order: ${orderId}`);
+}
+
+function rateOrder(orderId) {
+    alert(`Opening rating modal for order: ${orderId}`);
+    // Here you would open the rating modal
 }
 
 function closeOrderModal() {
     document.getElementById('orderModal').classList.add('hidden');
+}
+
+function openOrderModal() {
+    document.getElementById('orderModal').classList.remove('hidden');
 }
 
 function makeReservation(event) {
@@ -374,3 +408,25 @@ document.addEventListener('DOMContentLoaded', function () {
         input.min = today;
     });
 });
+
+function navigateToPage(pageName) {
+    // Check if it's an external link or internal page
+    if (pageName.startsWith('http')) {
+        // External link - open in new tab
+        window.open(pageName, '_blank');
+    } else {
+        // Internal page - navigate in same window
+        window.location.href = pageName;
+    }
+}
+
+function logout() {
+    if (confirm('Are you sure you want to sign out?')) {
+        // Add logout logic here
+        console.log('Logging out...');
+        // Example: window.location.href = '/login';
+    }
+}
+
+// Add smooth scroll behavior
+document.documentElement.style.scrollBehavior = 'smooth';

@@ -185,140 +185,15 @@ document.addEventListener('DOMContentLoaded', function () {
     
 });
 
-let selectedRating = 0;
+// Reservation Functionality
 
 // Modal Functions
 function openReservationModal() {
     document.getElementById('reservationModal').classList.remove('hidden');
-    resetRating();
 }
 
 function closeReservationModal() {
     document.getElementById('reservationModal').classList.add('hidden');
-    resetRating();
-}
-
-function closeRatingCompletedModal() {
-    document.getElementById('ratingCompletedModal').classList.add('hidden');
-    stopConfetti();
-}
-
-// Rating Functions
-function selectRating(rating) {
-    selectedRating = rating;
-    updateStarDisplay();
-    updateRatingText(rating);
-    enableSubmitButton();
-}
-
-function updateStarDisplay() {
-    const stars = document.querySelectorAll('.rating-star');
-    stars.forEach((star, index) => {
-        if (index < selectedRating) {
-            star.classList.add('active');
-        } else {
-            star.classList.remove('active');
-        }
-    });
-}
-
-function updateRatingText(rating) {
-    const ratingTexts = {
-        1: "Poor - We're sorry to hear that",
-        2: "Fair - We'll work to improve",
-        3: "Good - Thanks for your feedback",
-        4: "Very Good - We're glad you enjoyed it",
-        5: "Excellent - Thank you for the amazing review!"
-    };
-
-    document.getElementById('ratingText').textContent = ratingTexts[rating] || '';
-}
-
-function enableSubmitButton() {
-    const submitBtn = document.getElementById('submitRatingBtn');
-    if (selectedRating > 0) {
-        submitBtn.disabled = false;
-        submitBtn.classList.remove('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
-        submitBtn.classList.add('bg-purple-600', 'hover:bg-purple-700', 'text-white', 'cursor-pointer');
-    } else {
-        submitBtn.disabled = true;
-        submitBtn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
-        submitBtn.classList.remove('bg-purple-600', 'hover:bg-purple-700', 'text-white', 'cursor-pointer');
-    }
-}
-
-function resetRating() {
-    selectedRating = 0;
-    updateStarDisplay();
-    document.getElementById('ratingText').textContent = '';
-    document.getElementById('ratingComment').value = '';
-    enableSubmitButton();
-}
-
-function submitRating() {
-    if (selectedRating === 0) return;
-
-    // Hide the rating modal
-    closeReservationModal();
-
-    // Show the completion modal
-    document.getElementById('ratingCompletedModal').classList.remove('hidden');
-
-    // Start confetti animation
-    startConfetti();
-
-    // Auto-close the completion modal after 3 seconds
-    setTimeout(() => {
-        closeRatingCompletedModal();
-    }, 3000);
-}
-
-// Confetti Functions
-function startConfetti() {
-    const container = document.getElementById('confetti-container');
-    container.style.display = 'block';
-    container.innerHTML = '';
-
-    // Create confetti pieces
-    for (let i = 0; i < 50; i++) {
-        createConfettiPiece(container);
-    }
-
-    // Stop confetti after 4 seconds
-    setTimeout(() => {
-        stopConfetti();
-    }, 4000);
-}
-
-function createConfettiPiece(container) {
-    const confetti = document.createElement('div');
-    confetti.className = 'confetti';
-
-    // Random shapes
-    const shapes = ['square', 'circle', 'triangle'];
-    const randomShape = shapes[Math.floor(Math.random() * shapes.length)];
-    confetti.classList.add(randomShape);
-
-    // Random colors
-    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#fd79a8', '#fdcb6e', '#6c5ce7', '#a29bfe', '#00b894'];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-
-    if (randomShape !== 'triangle') {
-        confetti.style.backgroundColor = randomColor;
-    }
-
-    // Random position and animation
-    confetti.style.left = Math.random() * 100 + '%';
-    confetti.style.animationDelay = Math.random() * 2 + 's';
-    confetti.style.animationDuration = (Math.random() * 2 + 2) + 's';
-
-    container.appendChild(confetti);
-}
-
-function stopConfetti() {
-    const container = document.getElementById('confetti-container');
-    container.style.display = 'none';
-    container.innerHTML = '';
 }
 
 function openRulesModal() {
@@ -329,104 +204,194 @@ function closeRulesModal() {
     document.getElementById('rulesModal').classList.add('hidden');
 }
 
-let currentTab = 'all';
+function openOrderHistoryModal() {
+    document.getElementById('orderHistoryModal').classList.remove('hidden');
+}
 
-function switchTab(tab) {
-    currentTab = tab;
+function closeOrderHistoryModal() {
+    document.getElementById('orderHistoryModal').classList.add('hidden');
+}
 
-    // Update tab buttons
-    document.querySelectorAll('[id^="tab-"]').forEach(btn => {
-        btn.classList.remove('bg-white', 'text-purple-600', 'shadow-sm');
-        btn.classList.add('text-gray-600', 'hover:text-gray-900');
+function closeSuccessModal() {
+    document.getElementById('successModal').classList.add('hidden');
+    window.location.href = "{{ url_for('reservations') }}";
+}
+
+function closeErrorModal() {
+    document.getElementById('errorModal').classList.add('hidden');
+}
+
+// Order filtering functions
+function filterOrders(status) {
+    const orderItems = document.querySelectorAll('.order-item');
+    const filterBtns = document.querySelectorAll('.filter-btn');
+
+    // Update active button
+    filterBtns.forEach(btn => {
+        btn.classList.remove('active', 'bg-blue-600', 'text-white');
+        btn.classList.add('bg-gray-200', 'text-gray-700');
     });
+    event.target.classList.add('active', 'bg-blue-600', 'text-white');
+    event.target.classList.remove('bg-gray-200', 'text-gray-700');
 
-    document.getElementById(`tab-${tab}`).classList.add('bg-white', 'text-purple-600', 'shadow-sm');
-    document.getElementById(`tab-${tab}`).classList.remove('text-gray-600', 'hover:text-gray-900');
-
-    // Filter cards
-    const allCards = document.querySelectorAll('.order-card');
-    allCards.forEach(card => {
-        if (tab === 'all' || card.classList.contains(tab)) {
-            card.classList.remove('hidden');
+    // Filter orders
+    orderItems.forEach(item => {
+        if (status === 'all' || item.dataset.status === status) {
+            item.style.display = 'block';
         } else {
-            card.classList.add('hidden');
+            item.style.display = 'none';
         }
     });
 }
 
-function viewOrderDetails(orderId) {
-    alert(`Viewing details for order: ${orderId}`);
+// Rate reservation function
+function rateReservation(reservationId) {
+    // This would typically make an AJAX call to rate the reservation
+    alert(`Rating reservation #${reservationId}. This would open a rating dialog.`);
 }
 
-function rateOrder(orderId) {
-    alert(`Opening rating modal for order: ${orderId}`);
-    // Here you would open the rating modal
+// Cancel reservation function
+function cancelReservation(reservationId) {
+    if (confirm('Are you sure you want to cancel this reservation?')) {
+        // This would typically make an AJAX call to cancel the reservation
+        alert(`Cancelling reservation #${reservationId}. This would make an API call.`);
+    }
 }
 
-function closeOrderModal() {
-    document.getElementById('orderModal').classList.add('hidden');
-}
-
-function openOrderModal() {
-    document.getElementById('orderModal').classList.remove('hidden');
-}
-
-function makeReservation(event) {
-    event.preventDefault();
-    alert('Searching for available hotels...');
-    closeReservationModal();
-}
-
-function viewReservations() {
-    openOrderModal();
-}
-
-function viewAnalytics() {
-    alert('Opening analytics dashboard...');
-}
-
-function contactSupport() {
-    alert('Opening customer support...');
-}
-
-// Close modals when clicking outside
-document.addEventListener('click', function (event) {
-    const modals = ['reservationModal', 'rulesModal', 'orderModal'];
-    modals.forEach(modalId => {
-        const modal = document.getElementById(modalId);
-        if (event.target === modal) {
-            modal.classList.add('hidden');
-        }
-    });
-});
-
-// Set minimum date to today for date inputs
+// Handle form submissions with AJAX for better UX
 document.addEventListener('DOMContentLoaded', function () {
-    const today = new Date().toISOString().split('T')[0];
-    const dateInputs = document.querySelectorAll('input[type="date"]');
-    dateInputs.forEach(input => {
-        input.min = today;
+    const forms = document.querySelectorAll('form[action*="reserve"]');
+    forms.forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(form);
+            const url = form.action;
+
+            fetch(url, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+                .then(response => {
+                    if (response.ok) {
+                        closeReservationModal();
+                        document.getElementById('successModal').classList.remove('hidden');
+                    } else {
+                        return response.json();
+                    }
+                })
+                .then(data => {
+                    if (data && data.error) {
+                        document.getElementById('errorMessage').textContent = data.error;
+                        document.getElementById('errorModal').classList.remove('hidden');
+                    }
+                })
+                .catch(error => {
+                    // Error case
+                    console.error('Error:', error);
+                    const errorMessage = error.error || 'An unexpected error occurred';
+                    document.getElementById('errorMessage').textContent = errorMessage;
+                    document.getElementById('errorModal').classList.remove('hidden');
+                })
+                .finally(() => {
+                    // Reset button state
+                    submitBtn.textContent = originalText;
+                    submitBtn.disabled = false;
+                });
+        });
+    });
+
+    // Close modals when clicking outside of them
+    const modals = document.querySelectorAll('[id$="Modal"]');
+    modals.forEach(modal => {
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                modal.classList.add('hidden');
+            }
+        });
+    });
+
+    // Close modals with Escape key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            modals.forEach(modal => {
+                if (!modal.classList.contains('hidden')) {
+                    modal.classList.add('hidden');
+                }
+            });
+        }
     });
 });
 
-function navigateToPage(pageName) {
-    // Check if it's an external link or internal page
-    if (pageName.startsWith('http')) {
-        // External link - open in new tab
-        window.open(pageName, '_blank');
-    } else {
-        // Internal page - navigate in same window
-        window.location.href = pageName;
-    }
+// Additional utility functions
+
+// Format date for display
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 }
 
-function logout() {
-    if (confirm('Are you sure you want to sign out?')) {
-        // Add logout logic here
-        console.log('Logging out...');
-        // Example: window.location.href = '/login';
-    }
+// Validate form data before submission
+function validateReservationForm(form) {
+    const requiredFields = form.querySelectorAll('[required]');
+    let isValid = true;
+
+    requiredFields.forEach(field => {
+        if (!field.value.trim()) {
+            field.classList.add('border-red-500');
+            isValid = false;
+        } else {
+            field.classList.remove('border-red-500');
+        }
+    });
+
+    return isValid;
 }
+
+// Show notification toast
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${type === 'success' ? 'bg-green-500 text-white' :
+            type === 'error' ? 'bg-red-500 text-white' :
+                type === 'warning' ? 'bg-yellow-500 text-black' :
+                    'bg-blue-500 text-white'
+        }`;
+    notification.textContent = message;
+
+    document.body.appendChild(notification);
+
+    // Auto remove after 5 seconds
+    setTimeout(() => {
+        notification.remove();
+    }, 5000);
+}
+
+// Export functions for global access
+window.reservationSystem = {
+    openReservationModal,
+    closeReservationModal,
+    openRulesModal,
+    closeRulesModal,
+    openOrderHistoryModal,
+    closeOrderHistoryModal,
+    closeSuccessModal,
+    closeErrorModal,
+    filterOrders,
+    rateReservation,
+    cancelReservation,
+    formatDate,
+    validateReservationForm,
+    showNotification
+};
 
 // Add smooth scroll behavior
 document.documentElement.style.scrollBehavior = 'smooth';

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+    <title>Reservation Center - trivago</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
+    <!-- TailwindCSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FlatPickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Country-list & FlagIcon -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <!-- Custom Script -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/translate.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+</head>
+
+<body class="min-h-screen">
+    <!-- Header -->
+    <header class="sticky h-16 top-0 z-50 bg-[#007cc2] shadow-sm py-2 md:py-4 px-4 md:px-8">
+        <div class="flex items-center justify-start gap-8 text-white h-full">
+            <a href="{{ url_for('dashboard') }}" class="text-white hover:text-blue-200 transition-colors">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </a>
+            <h1 class="text-white text-sm md:text-md font-bold">Hotel Reservation Center</h1>
+        </div>
+    </header>
+
+    <div class="px-4 py-6 space-y-8 bg-cover bg-center" style="background-image: url('{{ url_for('static', filename='images/hotel1.jpg') }}')">
+        <!-- Reservation Stats Section -->
+        <div class="flex flex-col sm:flex-row items-center sm:justify-between p-6">
+            <div class="mb-6 bg-white rounded-lg shadow-sm p-4 text">
+                <div class="text-sm md:text-sm font-bold text-purple-600 mb-2">{{ user.reservations|length if user.reservations else 0 }}</div>
+                <p class="text-xs text-gray-700 font-medium">Total Reservations Made</p>
+                <p class="text-xs text-gray-500">VIP Level: {{ user.vip_level }}</p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button onclick="openRulesModal()" class="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-3 px-6 rounded-xl transition-colors flex items-center justify-center">
+                    <i class="fas fa-book mr-2"></i>
+                    Rules & Guidelines
+                </button>
+                <button onclick="openOrderHistoryModal()" class="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white text-sm font-medium py-3 px-6 rounded-xl transition-colors flex items-center justify-center">
+                    <i class="fas fa-list-ul mr-2"></i>
+                    Order History
+                </button>
+            </div>
+        </div>
+
+        <!-- Dancing Hotel Logos Section -->
+        <div class="p-6 bg-[#101f56] text-[#f7b437] rounded-lg shadow-sm overflow-hidden">
+            <h3 class="text-xl font-bold text-center mb-6">Our Hotel Partners</h3>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+                <div class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-red-100 rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-hotel text-red-600 text-2xl md:text-3xl"></i>
+                </div>
+                <div class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-blue-100 rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-building text-blue-600 text-2xl md:text-3xl"></i>
+                </div>
+                <div class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-green-100 rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-bed text-green-600 text-2xl md:text-3xl"></i>
+                </div>
+                <div class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-purple-100 rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-home text-purple-600 text-2xl md:text-3xl"></i>
+                </div>
+                <div class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-yellow-100 rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-star text-yellow-600 text-2xl md:text-3xl"></i>
+                </div>
+                <div class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-pink-100 rounded-xl flex items-center justify-center shadow-lg">
+                    <i class="fas fa-crown text-pink-600 text-2xl md:text-3xl"></i>
+                </div>
+            </div>
+            <div class="text-center mt-4">
+                <p class="text-sm">500+ Premium Hotel Partners Worldwide</p>
+            </div>
+        </div>
+
+        <!-- Main Action Card -->
+        <div class="overflow-hidden bg-[#101f56]">
+            <!-- Reservation Button -->
+            <div class="p-8 text-center">
+                <button onclick="openReservationModal()" class="bg-[#f7b437] hover:bg-[#f7b437] font-bold py-4 px-8 rounded-xl transition-colors text-sm text-white shadow-lg">
+                    Make Reservation
+                </button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <!-- Trial Bonus -->
+                    <div class="card-hover bg-[#f7b437] rounded-2xl p-6 text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white bg-opacity-40 rounded-full flex items-center justify-center">
+                                <i class="fas fa-gift text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user.trial_bonus if user.trial_bonus else 250.00) }}</div>
+                        <p class="text-sm text-[#101f56]">Trial Bonus</p>
+                        <p class="text-xs text-[#101f56] mt-1">Expires in 15 days</p>
+                    </div>
+
+                    <!-- Account Balance -->
+                    <div class="card-hover bg-[#f7b437] rounded-2xl p-6 text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white bg-opacity-80 rounded-full flex items-center justify-center">
+                                <i class="fas fa-wallet text-xl text-teal-600"></i>
+                            </div>
+                        </div>
+                        <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user.balance) }}</div>
+                        <p class="text-[#101f56] text-sm">Account Balance</p>
+                        <p class="text-xs text-[#101f56] mt-1">Available for withdrawal</p>
+                    </div>
+
+                    <!-- Earned Commission -->
+                    <div class="card-hover bg-[#f7b437] rounded-2xl p-6 text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white bg-opacity-80 rounded-full flex items-center justify-center">
+                                <i class="fas fa-chart-line text-xl text-orange-600"></i>
+                            </div>
+                        </div>
+                        <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user.total_commission if user.total_commission else 0) }}</div>
+                        <p class="text-[#101f56] text-sm">Earned Commission</p>
+                        <p class="text-xs text-[#101f56] mt-1">Total earnings</p>
+                    </div>
+
+                    <!-- Hotel Booking Deposit -->
+                    <div class="card-hover bg-[#f7b437] rounded-2xl p-6 text-white">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 bg-white bg-opacity-80 rounded-full flex items-center justify-center">
+                                <i class="fas fa-piggy-bank text-xl text-purple-600"></i>
+                            </div>
+                        </div>
+                        <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user.deposit_balance if user.deposit_balance else 540.00) }}</div>
+                        <p class="text-[#101f56] text-sm">Booking Deposits</p>
+                        <p class="text-xs text-[#101f56] mt-1">{{ user.active_bookings if user.active_bookings else 5 }} active bookings</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hotel Selection Modal -->
+    <div id="reservationModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden overflow-scroll">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-4xl slide-up max-h-[80vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold text-gray-900">Select Hotel for Reservation</h3>
+                        <button onclick="closeReservationModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {% for hotel in hotels %}
+                        <div class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                            <div class="relative">
+                                <img src="{{ url_for('static', filename='images/hotel' + loop.index|string + '.jpg') }}" 
+                                     alt="{{ hotel.name }}" class="w-full h-48 object-cover">
+                                <div class="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                    Available
+                                </div>
+                            </div>
+                            <div class="p-4">
+                                <h4 class="font-bold text-lg text-gray-900 mb-2">{{ hotel.name }}</h4>
+                                <p class="text-gray-600 text-sm mb-3">{{ hotel.location }}</p>
+                                <div class="flex items-center justify-between mb-3">
+                                    <div class="flex items-center">
+                                        {% for i in range(hotel.rating) %}
+                                        <i class="fas fa-star text-yellow-400 text-sm"></i>
+                                        {% endfor %}
+                                        <span class="ml-1 text-sm text-gray-600">({{ hotel.rating }}.0)</span>
+                                    </div>
+                                    <span class="text-lg font-bold text-green-600">${{ "%.2f"|format(hotel.price) }}</span>
+                                </div>
+                                <div class="text-xs text-gray-500 mb-3">
+                                    Commission: ${{ "%.2f"|format(0.02 * hotel.price * hotel.commission_multiplier) }}
+                                </div>
+                                <form method="POST" action="{{ url_for('reserve', hotel_id=hotel.id) }}" class="w-full">
+                                    <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                        <i class="fas fa-calendar-plus mr-2"></i>Reserve Now
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if not hotels %}
+                    <div class="text-center py-12">
+                        <i class="fas fa-hotel text-gray-300 text-6xl mb-4"></i>
+                        <h4 class="text-xl font-semibold text-gray-600 mb-2">No Hotels Available</h4>
+                        <p class="text-gray-500">Please check back later for available hotels.</p>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order History Modal -->
+    <div id="orderHistoryModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-5xl slide-up max-h-[80vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold text-gray-900">Order History</h3>
+                        <button onclick="closeOrderHistoryModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <div class="mb-4">
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="filterOrders('all')" class="filter-btn active px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white">
+                                All Orders
+                            </button>
+                            <button onclick="filterOrders('pending')" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">
+                                Pending
+                            </button>
+                            <button onclick="filterOrders('confirmed')" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">
+                                Confirmed
+                            </button>
+                            <button onclick="filterOrders('completed')" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">
+                                Completed
+                            </button>
+                            <button onclick="filterOrders('cancelled')" class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">
+                                Cancelled
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="ordersList" class="space-y-4">
+                        {% if user.reservations %}
+                            {% for reservation in user.reservations %}
+                            <div class="order-item bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow" data-status="{{ reservation.status }}">
+                                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div class="flex-1">
+                                        <div class="flex items-center gap-3 mb-2">
+                                            <h4 class="font-semibold text-lg text-gray-900">{{ reservation.hotel_name }}</h4>
+                                            <span class="status-badge px-2 py-1 rounded-full text-xs font-medium
+                                                {% if reservation.status == 'pending' %}bg-yellow-100 text-yellow-800
+                                                {% elif reservation.status == 'confirmed' %}bg-blue-100 text-blue-800
+                                                {% elif reservation.status == 'completed' %}bg-green-100 text-green-800
+                                                {% elif reservation.status == 'cancelled' %}bg-red-100 text-red-800
+                                                {% endif %}">
+                                                {{ reservation.status|title }}
+                                            </span>
+                                        </div>
+                                        <div class="text-sm text-gray-600 space-y-1">
+                                            <p><i class="fas fa-map-marker-alt mr-2"></i>{{ reservation.location }}</p>
+                                            <p><i class="fas fa-calendar mr-2"></i>{{ reservation.created_at.strftime('%B %d, %Y at %I:%M %p') }}</p>
+                                            <p><i class="fas fa-dollar-sign mr-2"></i>Price: ${{ "%.2f"|format(reservation.price) }}</p>
+                                            {% if reservation.commission %}
+                                            <p><i class="fas fa-coins mr-2"></i>Commission: ${{ "%.2f"|format(reservation.commission) }}</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col gap-2 min-w-[120px]">
+                                        {% if reservation.status == 'completed' and not reservation.rated %}
+                                        <button onclick="rateReservation({{ reservation.id }})" class="bg-green-600 hover:bg-green-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors">
+                                            <i class="fas fa-star mr-1"></i>Rate & Earn
+                                        </button>
+                                        {% elif reservation.status == 'pending' %}
+                                        <button onclick="cancelReservation({{ reservation.id }})" class="bg-red-600 hover:bg-red-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors">
+                                            <i class="fas fa-times mr-1"></i>Cancel
+                                        </button>
+                                        {% endif %}
+                                        <span class="text-xs text-gray-500 text-center">Order #{{ reservation.id }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% else %}
+                        <div class="text-center py-12">
+                            <i class="fas fa-history text-gray-300 text-6xl mb-4"></i>
+                            <h4 class="text-xl font-semibold text-gray-600 mb-2">No Order History</h4>
+                            <p class="text-gray-500">You haven't made any reservations yet. Start by making your first reservation!</p>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Rules Modal -->
+    <div id="rulesModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl slide-up max-h-[80vh] overflow-y-auto">
+                <div class="p-6">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-xl font-bold text-gray-900">Rules & Guidelines</h3>
+                        <button onclick="closeRulesModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 rounded-xl p-4">
+                            <h4 class="font-semibold text-blue-900 mb-2"><i class="fas fa-check-circle mr-2"></i>Daily Limits</h4>
+                            <ul class="text-sm text-blue-800 space-y-1">
+                                <li>• VIP0: 5 reservations per day</li>
+                                <li>• VIP1: 10 reservations per day</li>
+                                <li>• VIP2: 15 reservations per day</li>
+                                <li>• Your current level: {{ user.vip_level }}</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-green-50 rounded-xl p-4">
+                            <h4 class="font-semibold text-green-900 mb-2"><i class="fas fa-money-bill-wave mr-2"></i>Commission System</h4>
+                            <ul class="text-sm text-green-800 space-y-1">
+                                <li>• Earn 2% commission on each reservation</li>
+                                <li>• Commission multiplier varies by hotel</li>
+                                <li>• Rate your experience to receive commission</li>
+                                <li>• Funds added to your balance after rating</li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-yellow-50 rounded-xl p-4">
+                            <h4 class="font-semibold text-yellow-900 mb-2"><i class="fas fa-exclamation-triangle mr-2"></i>Important Notes</h4>
+                            <ul class="text-sm text-yellow-800 space-y-1">
+                                <li>• You must rate completed reservations to earn commission</li>
+                                <li>• Withdrawal password required for fund withdrawals</li>
+                                <li>• Customer support available 24/7</li>
+                                <li>• Check order history for reservation status</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-60 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm slide-up text-center p-8">
+                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-check text-green-600 text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Reservation Successful!</h3>
+                <p class="text-gray-600 mb-6">Your hotel reservation has been created successfully.</p>
+                <button onclick="closeSuccessModal()" class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-xl transition-colors">
+                    <i class="fas fa-thumbs-up mr-2"></i>Great!
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Modal -->
+    <div id="errorModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-60 hidden">
+        <div class="flex items-center justify-center min-h-screen p-4">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm slide-up text-center p-8">
+                <div class="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-exclamation-triangle text-red-600 text-3xl"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-2">Reservation Failed</h3>
+                <p id="errorMessage" class="text-gray-600 mb-6">An error occurred while processing your reservation.</p>
+                <button onclick="closeErrorModal()" class="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-xl transition-colors">
+                    <i class="fas fa-times mr-2"></i>Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Modal Functions
+        function openReservationModal() {
+            document.getElementById('reservationModal').classList.remove('hidden');
+        }
+
+        function closeReservationModal() {
+            document.getElementById('reservationModal').classList.add('hidden');
+        }
+
+        function openRulesModal() {
+            document.getElementById('rulesModal').classList.remove('hidden');
+        }
+
+        function closeRulesModal() {
+            document.getElementById('rulesModal').classList.add('hidden');
+        }
+
+        function openOrderHistoryModal() {
+            document.getElementById('orderHistoryModal').classList.remove('hidden');
+        }
+
+        function closeOrderHistoryModal() {
+            document.getElementById('orderHistoryModal').classList.add('hidden');
+        }
+
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            window.location.href = "{{ url_for('reservations') }}";
+        }
+
+        function closeErrorModal() {
+            document.getElementById('errorModal').classList.add('hidden');
+        }
+
+        // Order filtering functions
+        function filterOrders(status) {
+            const orderItems = document.querySelectorAll('.order-item');
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            // Update active button
+            filterBtns.forEach(btn => {
+                btn.classList.remove('active', 'bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            event.target.classList.add('active', 'bg-blue-600', 'text-white');
+            event.target.classList.remove('bg-gray-200', 'text-gray-700');
+            
+            // Filter orders
+            orderItems.forEach(item => {
+                if (status === 'all' || item.dataset.status === status) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
+        // Rate reservation function
+        function rateReservation(reservationId) {
+            // This would typically make an AJAX call to rate the reservation
+            alert(`Rating reservation #${reservationId}. This would open a rating dialog.`);
+        }
+
+        // Cancel reservation function
+        function cancelReservation(reservationId) {
+            if (confirm('Are you sure you want to cancel this reservation?')) {
+                // This would typically make an AJAX call to cancel the reservation
+                alert(`Cancelling reservation #${reservationId}. This would make an API call.`);
+            }
+        }
+
+        // Handle form submissions with AJAX for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            const forms = document.querySelectorAll('form[action*="reserve"]');
+            forms.forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(form);
+                    const url = form.action;
+                    
+                    fetch(url, {
+                        method: 'POST',
+                        body: formData,
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            closeReservationModal();
+                            document.getElementById('successModal').classList.remove('hidden');
+                        } else {
+                            return response.json();
+                        }
+                    })
+                    .then(data => {
+                        if (data && data.error) {
+                            document.getElementById('errorMessage').textContent = data.error;
+                            document.getElementById('errorModal').classList.remove('hidden');
+                        }
+                    })
+                    .catch(error => {
+                        // Error case
+                        console.error('Error:', error);
+                        const errorMessage = error.error || 'An unexpected error occurred';
+                        document.getElementById('errorMessage').textContent = errorMessage;
+                        document.getElementById('errorModal').classList.remove('hidden');
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        submitBtn.textContent = originalText;
+                        submitBtn.disabled = false;
+                    });
+                });
+            });
+            
+            // Close modals when clicking outside of them
+            const modals = document.querySelectorAll('[id$="Modal"]');
+            modals.forEach(modal => {
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.add('hidden');
+                    }
+                });
+            });
+            
+            // Close modals with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') {
+                    modals.forEach(modal => {
+                        if (!modal.classList.contains('hidden')) {
+                            modal.classList.add('hidden');
+                        }
+                    });
+                }
+            });
+        });
+
+        // Additional utility functions
+        
+        // Format date for display
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Validate form data before submission
+        function validateReservationForm(form) {
+            const requiredFields = form.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('border-red-500');
+                    isValid = false;
+                } else {
+                    field.classList.remove('border-red-500');
+                }
+            });
+            
+            return isValid;
+        }
+
+        // Show notification toast
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500 text-white' :
+                type === 'error' ? 'bg-red-500 text-white' :
+                type === 'warning' ? 'bg-yellow-500 text-black' :
+                'bg-blue-500 text-white'
+            }`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        // Export functions for global access
+        window.reservationSystem = {
+            openReservationModal,
+            closeReservationModal,
+            openRulesModal,
+            closeRulesModal,
+            openOrderHistoryModal,
+            closeOrderHistoryModal,
+            closeSuccessModal,
+            closeErrorModal,
+            filterOrders,
+            rateReservation,
+            cancelReservation,
+            formatDate,
+            validateReservationForm,
+            showNotification
+        };
+    </script>

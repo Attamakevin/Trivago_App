@@ -186,15 +186,15 @@ def profile():
 
 @app.route('/deposit', methods=['GET', 'POST'])
 def deposit():
+    user = User.query.get(session['user_id'])
     if request.method == 'POST':
-        user = User.query.get(session['user_id'])
         amount = float(request.form['amount'])
         network = request.form['network']
         deposit = DepositRequest(user_id=user.id, amount=amount, network=network)
         db.session.add(deposit)
         db.session.commit()
-        return redirect('https://t.me/your_admin_telegram')
-    return render_template('deposit.html')
+        # return redirect('https://t.me/your_admin_telegram')
+    return render_template('deposit.html', user=user)
 
 @app.route('/withdraw', methods=['GET', 'POST'])
 def withdraw():

@@ -376,9 +376,6 @@ body {
     display: none;
 }
 
-.gradient-bg {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
 
 .card-hover {
     transition: all 0.3s ease;
@@ -418,10 +415,12 @@ body {
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 }
 
-.payment-card.selected {
-    border: 2px solid #4facfe;
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    color: white;
+.payment-radio.checked {
+    background-color: #3b82f6 !important;
+    border-color: #3b82f6 !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .amount-btn {
@@ -456,4 +455,20 @@ body {
 
 .opacity-100 {
     opacity: 1;
+}
+
+.amount-btn.selected {
+    border-color: #3b82f6 !important;
+    background-color: #eff6ff !important;
+    color: #1d4ed8;
+    font-weight: 600;
+}
+
+.amount-btn {
+    transition: all 0.2s ease;
+}
+
+.amount-btn:hover {
+    border-color: #60a5fa;
+    background-color: #f8fafc;
 }

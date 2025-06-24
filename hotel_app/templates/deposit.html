@@ -4,21 +4,13 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="./static/images/ico.png" type="image/x-icon">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
         <title>Deposit - trivago</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="./static/css/user.css">
-        <link rel="stylesheet" href="./static/css/translate.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
         <!-- TailwindCSS -->
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <script src="https://cdn.tailwindcss.com"></script>
-        <!-- FlatPickr -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <!-- Country-list & FlagIcon -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -26,9 +18,9 @@
             rel="stylesheet">
         <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
         <!-- Custom Script -->
-        <script src="./static/js/main.js"></script>
-        <script src="./static/js/translate.js"></script>
-        <script src="./static/js/user.js"></script>
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/translate.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/user.js') }}"></script>
     </head>
 
     <body class="bg-gray-50 min-h-screen">
@@ -48,312 +40,125 @@
                 <div class="text-center">
                     <h3 class="text-lg font-semibold opacity-90">Current Balance</h3>
                     <div class="mt-2">
-                        <span class="text-3xl md:text-4xl font-bold">$12,456.78</span>
+                        <span class="text-3xl md:text-4xl font-bold">${{ "%.2f"|format(user.balance) }}</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Quick Amount Selection -->
-            <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Amount</h3>
+            <!-- Form wrapper -->
+            <form method="POST" onsubmit="return handleFormSubmit(event)">
+                <!-- Quick Amount Selection -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Quick Amount</h3>
 
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-                    <button onclick="selectAmount(50)"
-                        class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-blue-400">
-                        $50
-                    </button>
-                    <button onclick="selectAmount(100)"
-                        class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-blue-400">
-                        $100
-                    </button>
-                    <button onclick="selectAmount(250)"
-                        class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-blue-400">
-                        $250
-                    </button>
-                    <button onclick="selectAmount(500)"
-                        class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-blue-400">
-                        $500
-                    </button>
-                </div>
-
-                <!-- Custom Amount -->
-                <div class="space-y-4">
-                    <label class="block text-sm font-medium text-gray-700">Custom Amount</label>
-                    <div class="relative">
-                        <span
-                            class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
-                        <input type="number" id="customAmount" placeholder="0.00"
-                            class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
-                            min="10" max="10000" step="0.01">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <button type="button" onclick="selectAmount(50)"
+                            class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-blue-400">
+                            $50
+                        </button>
+                        <button type="button" onclick="selectAmount(100)"
+                            class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-blue-400">
+                            $100
+                        </button>
+                        <button type="button" onclick="selectAmount(250)"
+                            class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-blue-400">
+                            $250
+                        </button>
+                        <button type="button" onclick="selectAmount(500)"
+                            class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-blue-400">
+                            $500
+                        </button>
                     </div>
-                    <p class="text-sm text-gray-500">Minimum deposit: $10.00 | Maximum deposit: $10,000.00</p>
+
+                    <!-- Custom Amount -->
+                    <div class="space-y-4">
+                        <label class="block text-sm font-medium text-gray-700">Custom Amount</label>
+                        <div class="relative">
+                            <span
+                                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
+                            <input type="number" id="customAmount" name="amount" placeholder="0.00" required
+                                class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg"
+                                min="10" max="10000" step="0.01">
+                        </div>
+                        <p class="text-sm text-gray-500">Minimum deposit: $10.00 | Maximum deposit: $10,000.00</p>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Payment Methods -->
-            <div class="bg-white rounded-2xl shadow-lg p-6">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
+                <!-- Payment Methods -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
 
-                <div class="space-y-3">
-                    <!-- USDT-->
-                    <div onclick="selectPaymentMethod('usdt')"
-                        class="payment-card border border-gray-200 rounded-xl p-4 cursor-pointer">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-credit-card text-blue-600 text-xl"></i>
+                    <div class="space-y-3">
+                        <!-- USDT -->
+                        <label class="payment-card border border-gray-200 rounded-xl p-4 cursor-pointer block">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-coins text-green-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">USDT</h4>
+                                        <p class="text-sm text-gray-500">Tether USD (TRC-20)</p>
+                                    </div>
                                 </div>
-                                <div>
-                                    <h4 class="font-medium">Credit/Debit Card</h4>
-                                    <p class="text-sm text-gray-500">Visa, Mastercard, American Express</p>
+                                <input type="radio" name="network" value="usdt" required class="hidden"
+                                    onchange="selectPaymentMethod('usdt')">
+                                <div class="w-6 h-6 border-2 border-gray-300 rounded-full payment-radio"
+                                    id="usdt-radio"></div>
+                            </div>
+                        </label>
+
+                        <!-- USDT1 -->
+                        <label class="payment-card border border-gray-200 rounded-xl p-4 cursor-pointer block">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-dollar-sign text-blue-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">USDT</h4>
+                                        <p class="text-sm text-gray-500">Tether USD (ERC-20)</p>
+                                    </div>
                                 </div>
+                                <input type="radio" name="network" value="usdt1" required class="hidden"
+                                    onchange="selectPaymentMethod('usdt1')">
+                                <div class="w-6 h-6 border-2 border-gray-300 rounded-full payment-radio"
+                                    id="usdt1-radio"></div>
                             </div>
-                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full payment-radio" id="card-radio">
-                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div id="summary" class="bg-white rounded-2xl shadow-lg p-6 mb-6" style="display: none;">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between py-2 border-b border-gray-100">
+                            <span class="text-gray-600">Deposit Amount</span>
+                            <span class="font-medium" id="summaryAmount">$0.00</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-gray-100">
+                            <span class="text-gray-600">Processing Fee</span>
+                            <span class="font-medium" id="summaryFee">$0.00</span>
+                        </div>
+                        <div class="flex justify-between py-2 font-semibold text-lg">
+                            <span>Total</span>
+                            <span id="summaryTotal">$0.00</span>
                         </div>
                     </div>
-
-                    <!-- USDT1 -->
-                    <div onclick="selectPaymentMethod('usdt1')"
-                        class="payment-card border border-gray-200 rounded-xl p-4 cursor-pointer">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center space-x-4">
-                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <i class="fab fa-paypal text-blue-600 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-medium">PayPal</h4>
-                                    <p class="text-sm text-gray-500">Pay with your PayPal account</p>
-                                </div>
-                            </div>
-                            <div class="w-6 h-6 border-2 border-gray-300 rounded-full payment-radio" id="paypal-radio">
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Bank Transfer -->
-                    
                 </div>
-            </div>
 
-            <!-- Summary -->
-            <div id="summary" class="bg-white rounded-2xl shadow-lg p-6" style="display: none;">
-                <h3 class="text-lg font-semibold text-gray-900 mb-4">Transaction Summary</h3>
-
-                <div class="space-y-3">
-                    <div class="flex justify-between py-2 border-b border-gray-100">
-                        <span class="text-gray-600">Deposit Amount</span>
-                        <span class="font-medium" id="summaryAmount">$0.00</span>
-                    </div>
-                    <div class="flex justify-between py-2 border-b border-gray-100">
-                        <span class="text-gray-600">Processing Fee</span>
-                        <span class="font-medium" id="summaryFee">$0.00</span>
-                    </div>
-                    <div class="flex justify-between py-2 font-semibold text-lg">
-                        <span>Total</span>
-                        <span id="summaryTotal">$0.00</span>
-                    </div>
+                <!-- Action Button -->
+                <div class="bg-white rounded-2xl shadow-lg p-4">
+                    <button type="submit" id="depositBtn"
+                        class="w-full bg-gray-400 text-white font-medium py-4 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2"
+                        disabled>
+                        <i class="fas fa-plus"></i>
+                        <span>Add Funds</span>
+                    </button>
                 </div>
-            </div>
-
-            <!-- Action Button -->
-            <div class="bg-white rounded-2xl shadow-lg p-4">
-                <button onclick="processDeposit()" id="depositBtn"
-                    class="w-full bg-gray-400 text-white font-medium py-4 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2"
-                    disabled>
-                    <i class="fas fa-plus"></i>
-                    <span>Add Funds</span>
-                </button>
-            </div>
+            </form>
         </div>
-
-        <script>
-            let selectedAmount = 0;
-            let selectedPaymentMethod = '';
-
-            function selectAmount(amount) {
-                selectedAmount = amount;
-                document.getElementById('customAmount').value = amount;
-
-                // Update button styles
-                document.querySelectorAll('.amount-btn').forEach(btn => {
-                    btn.classList.remove('selected');
-                });
-                event.target.classList.add('selected');
-
-                updateSummary();
-            }
-
-            function selectPaymentMethod(method) {
-                selectedPaymentMethod = method;
-
-                // Update payment card styles
-                document.querySelectorAll('.payment-card').forEach(usdt => {
-                    card.classList.remove('selected');
-                });
-                document.querySelectorAll('.payment-radio').forEach(radio => {
-                    radio.style.backgroundColor = 'transparent';
-                    radio.innerHTML = '';
-                });
-
-                event.currentTarget.classList.add('selected');
-                document.getElementById(method + '-radio').style.backgroundColor = 'white';
-                document.getElementById(method + '-radio').innerHTML = '<i class="fas fa-check text-blue-600 text-xs"></i>';
-
-                updateSummary();
-            }
-
-            function updateSummary() {
-                const amount = parseFloat(document.getElementById('customAmount').value) || selectedAmount;
-
-                if (amount > 0 && selectedPaymentMethod) {
-                    const fee = calculateFee(amount, selectedPaymentMethod);
-                    const total = amount + fee;
-
-                    document.getElementById('summaryAmount').textContent = '$' + amount.toFixed(2);
-                    document.getElementById('summaryFee').textContent = '$' + fee.toFixed(2);
-                    document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
-                    document.getElementById('summary').style.display = 'block';
-
-                    document.getElementById('depositBtn').disabled = false;
-                    document.getElementById('depositBtn').classList.remove('bg-gray-400');
-                    document.getElementById('depositBtn').classList.add('bg-blue-600', 'hover:bg-blue-700');
-                } else {
-                    document.getElementById('summary').style.display = 'none';
-                    document.getElementById('depositBtn').disabled = true;
-                    document.getElementById('depositBtn').classList.add('bg-gray-400');
-                    document.getElementById('depositBtn').classList.remove('bg-blue-600', 'hover:bg-blue-700');
-                }
-            }
-
-            function calculateFee(amount, method) {
-                const fees = {
-                    'usdt': amount * 0.029 + 0.30,
-                    'paypal': amount * 0.034 + 0.30,
-                    'bank': amount < 100 ? 1.50 : 0
-                };
-                return fees[method] || 0;
-            }
-
-            function showStyledAlert(message, type = 'info', title = '', autoClose = false) {
-                const alertConfig = {
-                    success: {
-                        bgColor: 'bg-green-100',
-                        iconColor: 'text-green-600',
-                        buttonColor: 'bg-green-600 hover:bg-green-700',
-                        icon: 'fa-check-circle',
-                        defaultTitle: 'Success!'
-                    },
-                    error: {
-                        bgColor: 'bg-red-100',
-                        iconColor: 'text-red-600',
-                        buttonColor: 'bg-red-600 hover:bg-red-700',
-                        icon: 'fa-exclamation-triangle',
-                        defaultTitle: 'Error'
-                    }
-                };
-
-                const config = alertConfig[type] || alertConfig.success;
-                const alertTitle = title || config.defaultTitle;
-
-                const modalHTML = `
-                    <div id="styledAlert" data-type="${type}" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-                        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full transform transition-all duration-300">
-                            <div class="p-6 text-center">
-                                <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${config.bgColor}">
-                                    <i class="fas ${config.icon} ${config.iconColor} text-2xl"></i>
-                                </div>
-                                <h3 class="text-xl font-bold text-gray-900 mb-3">${alertTitle}</h3>
-                                <p class="text-gray-600 mb-6">${message}</p>
-                                <button onclick="closeStyledAlert()" class="w-full ${config.buttonColor} text-white font-medium py-3 px-4 rounded-xl transition-colors">
-                                    OK
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
-            }
-
-            function closeStyledAlert() {
-                    const modal = document.getElementById('styledAlert');
-                    if (modal) {
-                        modal.remove();
-                        // Add redirect after closing success modal
-                        if (modal.dataset.type === 'success') {
-                            history.back();
-                        }
-                    }
-                }
-
-            function handleConfirm(result) {
-                closeStyledAlert();
-                if (window.confirmCallback) {
-                    window.confirmCallback(result);
-                    window.confirmCallback = null;
-                }
-            }
-
-            // Close on background click
-            document.addEventListener('click', function (event) {
-                if (event.target && event.target.id === 'styledAlert') {
-                    closeStyledAlert();
-                }
-            });
-
-            // Close on Escape key
-            document.addEventListener('keydown', function (event) {
-                if (event.key === 'Escape' && document.getElementById('styledAlert')) {
-                    closeStyledAlert();
-                }
-            });
-
-            function processDeposit() {
-                const amount = parseFloat(document.getElementById('customAmount').value) || selectedAmount;
-
-                if (amount < 10) {
-                    showStyledAlert('Minimum deposit amount is $10.00', 'error');
-                    return;
-                }
-
-                if (amount > 10000) {
-                    showStyledAlert('Maximum deposit amount is $10,000.00', 'error');
-                    return;
-                }
-
-                if (!selectedPaymentMethod) {
-                    showStyledAlert('Please select a payment method', 'error');
-                    return;
-                }
-
-                // Show loading state
-                const btn = document.getElementById('depositBtn');
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i><span>Processing...</span>';
-                btn.disabled = false;
-
-                // Simulate processing
-                setTimeout(() => {
-                    showStyledAlert(`Deposit of $${amount.toFixed(2)} has been processed successfully!`, 'success');
-                    // In a real app, you would redirect to a success page or back to profile
-                }, 2000);
-
-                // Listen for custom amount input
-                document.getElementById('customAmount').addEventListener('input', function () {
-                    selectedAmount = parseFloat(this.value) || 0;
-
-                    // Clear quick amount selection
-                    document.querySelectorAll('.amount-btn').forEach(btn => {
-                        btn.classList.remove('selected');
-                    });
-
-                    updateSummary();
-                });
-
-                // Add smooth scroll behavior
-                document.documentElement.style.scrollBehavior = 'smooth';
-            }
-        </script>
     </body>
 
 </html>

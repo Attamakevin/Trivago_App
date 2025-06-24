@@ -209,7 +209,7 @@ def withdraw():
         db.session.add(withdrawal)
         db.session.commit()
         return redirect(url_for('profile'))
-    return render_template('withdraw.html')
+    return render_template('withdraw.html', user=user)
 
 @app.route('/set-withdrawal-password', methods=['GET', 'POST'])
 def set_withdrawal_password():

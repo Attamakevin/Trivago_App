@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+        <title>Withdraw - trivago</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
+        <!-- TailwindCSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+        <!-- Custom Script -->
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/translate.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+    </head>
+
+    <body class="bg-gray-50 min-h-screen">
+        <!-- Header -->
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+            <div class="flex items-center justify-start gap-8 text-white h-full">
+                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-white text-sm md:text-md font-bold">Withdraw Funds</h1>
+            </div>
+        </header>
+
+        <div class="max-w-4xl mx-auto px-4 py-6 space-y-6">
+            <!-- Available Balance -->
+            <div class="withdraw-gradient rounded-2xl shadow-lg p-6 text-white">
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold opacity-90">Available Balance</h3>
+                    <div class="mt-2">
+                        <span class="text-3xl md:text-4xl font-bold">${{ "%.2f"|format(user.balance) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form wrapper -->
+            <form method="POST" onsubmit="return handleWithdrawFormSubmit(event)">
+                <!-- Quick Amount Selection -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Withdrawal Amount</h3>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+                        <button type="button" onclick="selectWithdrawAmount(100)"
+                            class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-green-400">
+                            $100
+                        </button>
+                        <button type="button" onclick="selectWithdrawAmount(250)"
+                            class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-green-400">
+                            $250
+                        </button>
+                        <button type="button" onclick="selectWithdrawAmount(500)"
+                            class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-green-400">
+                            $500
+                        </button>
+                        <button type="button" onclick="selectWithdrawAmount(1000)"
+                            class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-green-400">
+                            $1,000
+                        </button>
+                    </div>
+
+                    <!-- Custom Amount -->
+                    <div class="space-y-4">
+                        <label class="block text-sm font-medium text-gray-700">Custom Amount</label>
+                        <div class="relative">
+                            <span
+                                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
+                            <input type="number" id="customAmount" name="amount" placeholder="0.00" required
+                                class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
+                                min="25" max="{{ user.balance }}" step="0.01">
+                        </div>
+                        <p class="text-sm text-gray-500">Minimum withdrawal: $25.00 | Maximum: ${{
+                            "%.2f"|format(user.balance) }} (your available balance)</p>
+                    </div>
+                </div>
+
+                <!-- Withdrawal Methods -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
+
+                    <div class="space-y-3">
+                        <!-- USDT -->
+                        <label class="withdraw-card border border-gray-200 rounded-xl p-4 cursor-pointer block">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-coins text-green-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">USDT</h4>
+                                        <p class="text-sm text-gray-500">Tether USD (TRC-20)</p>
+                                    </div>
+                                </div>
+                                <input type="radio" name="network" value="usdt" required class="hidden"
+                                    onchange="selectWithdrawMethod('withdraw_usdt')">
+                                <div class="w-6 h-6 border-2 border-gray-300 rounded-full withdraw-radio"
+                                    id="withdraw_usdt-radio">
+                                </div>
+                            </div>
+                        </label>
+
+                        <!-- USDT1 -->
+                        <label class="withdraw-card border border-gray-200 rounded-xl p-4 cursor-pointer block">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-dollar-sign text-blue-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">USDT1</h4>
+                                        <p class="text-sm text-gray-500">Tether USD (ERC-20)</p>
+                                    </div>
+                                </div>
+                                <input type="radio" name="network" value="usdt1" required class="hidden"
+                                    onchange="selectWithdrawMethod('withdraw_usdt1')">
+                                <div class="w-6 h-6 border-2 border-gray-300 rounded-full withdraw-radio"
+                                    id="withdraw_usdt1-radio">
+                                </div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Wallet Address -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Wallet Address</h3>
+                    <div class="space-y-4">
+                        <label class="block text-sm font-medium text-gray-700">Enter your wallet address</label>
+                        <input type="text" name="wallet" id="walletAddress" required
+                            placeholder="Enter your USDT wallet address"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm">
+                        <p class="text-xs text-gray-500">Make sure to enter the correct wallet address. Funds sent to
+                            wrong
+                            addresses cannot be recovered.</p>
+                    </div>
+                </div>
+
+                <!-- Summary -->
+                <div id="summary" class="bg-white rounded-2xl shadow-lg p-6 mb-6" style="display: none;">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Withdrawal Summary</h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between py-2 border-b border-gray-100">
+                            <span class="text-gray-600">Withdrawal Amount</span>
+                            <span class="font-medium" id="summaryAmount">$0.00</span>
+                        </div>
+                        <div class="flex justify-between py-2 border-b border-gray-100">
+                            <span class="text-gray-600">Processing Fee</span>
+                            <span class="font-medium" id="summaryFee">$0.00</span>
+                        </div>
+                        <div class="flex justify-between py-2 font-semibold text-lg">
+                            <span>You'll Receive</span>
+                            <span id="summaryTotal">$0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Button -->
+                <div class="bg-white rounded-2xl shadow-lg p-4">
+                    <button type="submit" id="withdrawBtn"
+                        class="w-full bg-gray-400 text-white font-medium py-4 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2"
+                        disabled>
+                        <i class="fas fa-minus"></i>
+                        <span>Withdraw Funds</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                initializeWithdrawEvents();
+            });
+        </script>
+    </body>
+
+</html>

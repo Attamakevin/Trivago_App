@@ -205,7 +205,7 @@
                                     <p class="text-gray-600 text-sm mb-3">{{ hotel.location }}</p>
                                     <div class="flex items-center justify-between mb-3">
                                         <div class="flex items-center">
-                                            {% for i in range(hotel.rating) %}
+                                            {% for i in range(hotel.rating|round|int) %} %}
                                             <i class="fas fa-star text-yellow-400 text-sm"></i>
                                             {% endfor %}
                                             <span class="ml-1 text-sm text-gray-600">({{ hotel.rating }}.0)</span>
@@ -342,8 +342,8 @@
                         </div>
 
                         <div id="ordersList" class="space-y-4">
-                            {% if user.reservations %}
-                            {% for reservation in user.reservations %}
+                            {% if reservations %}
+                            {% for reservation in reservations %}
                             <div class="order-item bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
                                 data-status="{{ reservation.status }}">
                                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">

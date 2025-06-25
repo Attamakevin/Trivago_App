@@ -369,7 +369,7 @@ def profile():
     total_reservations = Reservation.query.filter_by(user_id=user.id).count()
     completed_reservations = Reservation.query.filter_by(user_id=user.id).filter(
         Reservation.status == 'Completed').count()
-    
+    user = user
     # Calculate completion rate
     completion_rate = (completed_reservations / total_reservations * 100) if total_reservations > 0 else 0
     
@@ -788,7 +788,7 @@ def view_user_details(user_id):
 def view_deposits():
     """View all deposit requests - Admin only"""
     try:
-        deposits = Deposit.query.order_by(Deposit.created_at.desc()).all()
+        deposits = DepositRequest.query.order_by(DepositRequest.created_at.desc()).all()
         return render_template('view_deposits.html', deposits=deposits)
     except Exception as e:
         flash(f'Error loading deposits: {str(e)}', 'error')
@@ -844,7 +844,7 @@ def reject_deposit(deposit_id):
 def view_withdrawals():
     """View all withdrawal requests - Admin only"""
     try:
-        withdrawals = Withdrawal.query.order_by(Withdrawal.created_at.desc()).all()
+        withdrawals = WithdrawalRequest.query.order_by(WithdrawalRequest.created_at.desc()).all()
         return render_template('view_withdrawals.html', withdrawals=withdrawals)
     except Exception as e:
         flash(f'Error loading withdrawals: {str(e)}', 'error')

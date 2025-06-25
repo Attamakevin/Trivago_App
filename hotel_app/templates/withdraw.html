@@ -3,8 +3,8 @@
 
     <head>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"
-        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" <link rel="shortcut icon"
+            href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
         <title>Withdraw - trivago</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
@@ -135,6 +135,23 @@
                 <!-- Wallet Address -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
                     <h3 class="text-lg font-semibold text-gray-900 mb-4">Wallet Address</h3>
+                    <div class="relative">
+                        <label class="block text-sm font-medium text-gray-700 mb-4">Enter your wallet address</label>
+                        <input type="text" name="wallet" id="walletAddress" required
+                            placeholder="Enter your USDT wallet address"
+                            class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm">
+                        <button type="button"
+                            onclick="copyToClipboard(document.getElementById('walletAddress').value, this)"
+                            class="absolute items-center right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <p class="text-xs text-gray-500 mt-3">Make sure to enter the correct wallet address. Funds sent to
+                            wrong
+                            addresses cannot be recovered.</p>
+                    </div>
+                </div>
+                <!-- <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Wallet Address</h3>
                     <div class="space-y-4">
                         <label class="block text-sm font-medium text-gray-700">Enter your wallet address</label>
                         <input type="text" name="wallet" id="walletAddress" required
@@ -144,7 +161,8 @@
                             wrong
                             addresses cannot be recovered.</p>
                     </div>
-                </div>
+                </div> -->
+
 
                 <!-- Summary -->
                 <div id="summary" class="bg-white rounded-2xl shadow-lg p-6 mb-6" style="display: none;">

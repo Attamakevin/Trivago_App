@@ -220,6 +220,36 @@ def set_withdrawal_password():
         return redirect(url_for('withdraw'))
     return render_template('set_password.html')
 
+@app.route('/membership')
+def membership():
+    user = User.query.get(session['user_id'])
+    return render_template('membership.html', user=user)
+
+@app.route('/about_us')
+def about_us():
+    return render_template('about_us.html')
+
+@app.route('/settings', methods=['GET', 'POST'])
+def settings():
+    user = User.query.get(session['user_id'])
+    if request.method == 'POST':
+        if 'language' in request.form:
+            session['language'] = request.form['language']
+        elif 'nickname' in request.form:
+            user.nickname = request.form['nickname']
+            db.session.commit()
+            flash('Nickname updated successfully!', 'success')
+        elif 'password' in request.form:
+            new_password = request.form['new_password']
+            confirm_password = request.form['confirm_password']
+            if new_password == confirm_password:
+                user.password_hash = generate_password_hash(new_password)
+                db.session.commit()
+                flash('Password updated successfully!', 'success')
+            else:
+                flash('Passwords do not match!', 'error')
+    return render_template('settings.html', user=user)
+
 from functools import wraps
 from flask import session, flash, redirect, url_for, request, render_template
 import string

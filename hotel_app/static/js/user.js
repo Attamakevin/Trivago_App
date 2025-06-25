@@ -668,6 +668,81 @@ document.addEventListener('keydown', function (event) {
     }
 });
 
+
+// Clipboard functionality
+function copyToClipboard(text, buttonElement = null) {
+    // Try modern clipboard API first
+    if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(text).then(() => {
+            showCopySuccess(buttonElement);
+        }).catch(() => {
+            // Fallback to older method
+            copyTextFallback(text, buttonElement);
+        });
+    } else {
+        // Fallback for older browsers or non-secure contexts
+        copyTextFallback(text, buttonElement);
+    }
+}
+
+function copyTextFallback(text, buttonElement) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    textArea.style.top = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+        document.execCommand('copy');
+        showCopySuccess(buttonElement);
+    } catch (err) {
+        showWithdrawAlert('Failed to copy to clipboard', 'error');
+    } finally {
+        document.body.removeChild(textArea);
+    }
+}
+
+function showCopySuccess(buttonElement) {
+    if (buttonElement) {
+        const originalHTML = buttonElement.innerHTML;
+        buttonElement.innerHTML = '<i class="fas fa-check text-green-600"></i> Copied!';
+        buttonElement.classList.add('text-green-600');
+
+        setTimeout(() => {
+            buttonElement.innerHTML = originalHTML;
+            buttonElement.classList.remove('text-green-600');
+        }, 2000);
+    } else {
+        // Show a toast notification
+        showCopyToast();
+    }
+}
+
+function showCopyToast() {
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-4 right-4 bg-green-600 text-white px-4 py-2 rounded-lg shadow-lg z-50 transform translate-x-full transition-transform duration-300';
+    toast.innerHTML = '<i class="fas fa-check mr-2"></i>Copied to clipboard!';
+
+    document.body.appendChild(toast);
+
+    // Slide in
+    setTimeout(() => {
+        toast.classList.remove('translate-x-full');
+    }, 10);
+
+    // Slide out and remove
+    setTimeout(() => {
+        toast.classList.add('translate-x-full');
+        setTimeout(() => {
+            document.body.removeChild(toast);
+        }, 300);
+    }, 2000);
+}
+
+
 // Withdraw Functionality
 let withdrawSelectedAmount = 0;
 let selectedWithdrawMethod = '';
@@ -734,6 +809,19 @@ function updateWithdrawSummary() {
     const amount = parseFloat(document.getElementById('customAmount').value) || withdrawSelectedAmount;
     const hasPaymentMethod = document.querySelector('input[name="network"]:checked');
     const hasWalletAddress = document.getElementById('walletAddress').value.trim();
+
+    // Check if amount exceeds balance
+    if (amount > availableBalance) {
+        showWithdrawAlert(`Insufficient funds. Your available balance is ${availableBalance.toFixed(2)}`, 'error', 'Insufficient Balance');
+        // Clear the input
+        document.getElementById('customAmount').value = '';
+        withdrawSelectedAmount = 0;
+        // Clear amount button selections
+        document.querySelectorAll('.amount-btn').forEach(btn => {
+            btn.classList.remove('selected');
+        });
+        return;
+        }
 
     if (amount > 0 && hasPaymentMethod && hasWalletAddress) {
         const fee = calculateWithdrawFee(amount, hasPaymentMethod.value);

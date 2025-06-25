@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+        <title>About Us - trivago</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
+        <!-- TailwindCSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+        <!-- Custom Script -->
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/translate.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+    </head>
+
+    <body class="bg-gray-50 min-h-screen">
+        <!-- Header -->
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+            <div class="flex items-center justify-start gap-8 text-white h-full">
+                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-white text-sm md:text-md font-bold">About trivago</h1>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <div class="hero-gradient text-white py-16 md:py-24">
+            <div class="max-w-6xl mx-auto px-4 text-center">
+                <h2 class="text-4xl md:text-6xl font-bold mb-6">
+                    Your Journey Starts Here
+                </h2>
+                <p class="text-lg md:text-xl opacity-90 max-w-3xl mx-auto mb-8">
+                    We're revolutionizing the way you discover, book, and experience travel. From humble beginnings to
+                    becoming a global leader in travel technology.
+                </p>
+                <div class="flex flex-wrap justify-center gap-8 mt-12">
+                    <div class="text-center">
+                        <div class="stat-counter">50M+</div>
+                        <p class="text-sm opacity-80">Happy Travelers</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="stat-counter">180+</div>
+                        <p class="text-sm opacity-80">Countries</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="stat-counter">15+</div>
+                        <p class="text-sm opacity-80">Years Experience</p>
+                    </div>
+                    <div class="text-center">
+                        <div class="stat-counter">24/7</div>
+                        <p class="text-sm opacity-80">Customer Support</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 py-12 space-y-16">
+            <!-- Mission Statement -->
+            <div class="text-center">
+                <h3 class="text-3xl md:text-4xl font-bold text-gray-900 mb-6">Our Mission</h3>
+                <p class="text-lg md:text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
+                    To empower every traveler with the tools, information, and confidence needed to explore the world.
+                    We believe that travel should be accessible, affordable, and extraordinary for everyone.
+                </p>
+            </div>
+
+            <!-- Our Values -->
+            <div>
+                <h3 class="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">Our Values</h3>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="value-card bg-white rounded-2xl shadow-lg p-8 text-center">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-compass text-blue-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-4">Innovation</h4>
+                        <p class="text-gray-600">We constantly push boundaries to create cutting-edge travel solutions
+                            that make your journey seamless and memorable.</p>
+                    </div>
+
+                    <div class="value-card bg-white rounded-2xl shadow-lg p-8 text-center">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-heart text-green-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-4">Customer First</h4>
+                        <p class="text-gray-600">Every decision we make is guided by what's best for our travelers. Your
+                            satisfaction and trust are our top priorities.</p>
+                    </div>
+
+                    <div class="value-card bg-white rounded-2xl shadow-lg p-8 text-center">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-globe text-purple-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-4">Global Impact</h4>
+                        <p class="text-gray-600">We're committed to sustainable travel and supporting local communities
+                            worldwide through responsible tourism.</p>
+                    </div>
+
+                    <div class="value-card bg-white rounded-2xl shadow-lg p-8 text-center">
+                        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-shield-alt text-yellow-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-4">Transparency</h4>
+                        <p class="text-gray-600">We believe in honest pricing, clear policies, and open communication
+                            with our customers and partners.</p>
+                    </div>
+
+                    <div class="value-card bg-white rounded-2xl shadow-lg p-8 text-center">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-users text-red-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-4">Diversity</h4>
+                        <p class="text-gray-600">We celebrate diversity in our team, our customers, and the destinations
+                            we help you discover around the globe.</p>
+                    </div>
+
+                    <div class="value-card bg-white rounded-2xl shadow-lg p-8 text-center">
+                        <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <i class="fas fa-rocket text-indigo-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-4">Excellence</h4>
+                        <p class="text-gray-600">We strive for excellence in every interaction, every product feature,
+                            and every travel experience we facilitate.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Our Story Timeline -->
+            <div>
+                <h3 class="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">Our Journey</h3>
+                <div class="relative">
+                    <div class="space-y-12">
+                        <div class="timeline-item grid md:grid-cols-2 gap-8 items-center">
+                            <div class="timeline-dot"></div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6 md:mr-8">
+                                <div class="text-right">
+                                    <span class="text-sm font-medium text-purple-600">2008</span>
+                                    <h4 class="text-xl font-bold text-gray-900 mb-2">The Beginning</h4>
+                                    <p class="text-gray-600">Founded in Berlin with a simple mission: make hotel search
+                                        easier and more transparent for travelers worldwide.</p>
+                                </div>
+                            </div>
+                            <div></div>
+                        </div>
+
+                        <div class="timeline-item grid md:grid-cols-2 gap-8 items-center">
+                            <div class="timeline-dot"></div>
+                            <div></div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6 md:ml-8">
+                                <span class="text-sm font-medium text-purple-600">2012</span>
+                                <h4 class="text-xl font-bold text-gray-900 mb-2">Global Expansion</h4>
+                                <p class="text-gray-600">Expanded to over 55 countries, becoming one of the world's
+                                    largest hotel search platforms with millions of users.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item grid md:grid-cols-2 gap-8 items-center">
+                            <div class="timeline-dot"></div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6 md:mr-8">
+                                <div class="text-right">
+                                    <span class="text-sm font-medium text-purple-600">2016</span>
+                                    <h4 class="text-xl font-bold text-gray-900 mb-2">Mobile Revolution</h4>
+                                    <p class="text-gray-600">Launched our award-winning mobile app, making travel
+                                        planning accessible on-the-go for millions of users.</p>
+                                </div>
+                            </div>
+                            <div></div>
+                        </div>
+
+                        <div class="timeline-item grid md:grid-cols-2 gap-8 items-center">
+                            <div class="timeline-dot"></div>
+                            <div></div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6 md:ml-8">
+                                <span class="text-sm font-medium text-purple-600">2020</span>
+                                <h4 class="text-xl font-bold text-gray-900 mb-2">AI Integration</h4>
+                                <p class="text-gray-600">Introduced AI-powered recommendations and smart search features
+                                    to personalize every user's travel experience.</p>
+                            </div>
+                        </div>
+
+                        <div class="timeline-item grid md:grid-cols-2 gap-8 items-center">
+                            <div class="timeline-dot"></div>
+                            <div class="bg-white rounded-2xl shadow-lg p-6 md:mr-8">
+                                <div class="text-right">
+                                    <span class="text-sm font-medium text-purple-600">2025</span>
+                                    <h4 class="text-xl font-bold text-gray-900 mb-2">Future Vision</h4>
+                                    <p class="text-gray-600">Continuing to innovate with sustainable travel options, VR
+                                        previews, and seamless booking experiences.</p>
+                                </div>
+                            </div>
+                            <div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Leadership Team -->
+            <div>
+                <h3 class="text-3xl md:text-4xl font-bold text-gray-900 text-center mb-12">Leadership Team</h3>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="team-card bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face"
+                            alt="CEO" class="w-full h-48 object-cover">
+                        <div class="p-6 text-center">
+                            <h4 class="text-xl font-bold text-gray-900 mb-2">Michael Schmidt</h4>
+                            <p class="text-purple-600 font-medium mb-3">Chief Executive Officer</p>
+                            <p class="text-sm text-gray-600">Leading Trivago's vision for the future of travel
+                                technology with over 15 years of industry experience.</p>
+                            <div class="flex justify-center space-x-3 mt-4">
+                                <a href="#" class="text-blue-600 hover:text-blue-700"><i
+                                        class="fab fa-linkedin text-xl"></i></a>
+                                <a href="#" class="text-blue-400 hover:text-blue-500"><i
+                                        class="fab fa-twitter text-xl"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="team-card bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1494790108755-2616b5c88b3c?w=300&h=300&fit=crop&crop=face"
+                            alt="CTO" class="w-full h-48 object-cover">
+                        <div class="p-6 text-center">
+                            <h4 class="text-xl font-bold text-gray-900 mb-2">Sarah Johnson</h4>
+                            <p class="text-purple-600 font-medium mb-3">Chief Technology Officer</p>
+                            <p class="text-sm text-gray-600">Driving innovation and technical excellence across all our
+                                platforms and emerging technologies.</p>
+                            <div class="flex justify-center space-x-3 mt-4">
+                                <a href="#" class="text-blue-600 hover:text-blue-700"><i
+                                        class="fab fa-linkedin text-xl"></i></a>
+                                <a href="#" class="text-gray-600 hover:text-gray-700"><i
+                                        class="fab fa-github text-xl"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="team-card bg-white rounded-2xl shadow-lg overflow-hidden">
+                        <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face"
+                            alt="Head of Operations" class="w-full h-48 object-cover">
+                        <div class="p-6 text-center">
+                            <h4 class="text-xl font-bold text-gray-900 mb-2">David Chen</h4>
+                            <p class="text-purple-600 font-medium mb-3">Head of Global Operations</p>
+                            <p class="text-sm text-gray-600">Ensuring seamless operations across all markets and
+                                maintaining our high standards of service quality.</p>
+                            <div class="flex justify-center space-x-3 mt-4">
+                                <a href="#" class="text-blue-600 hover:text-blue-700"><i
+                                        class="fab fa-linkedin text-xl"></i></a>
+                                <a href="#" class="text-blue-400 hover:text-blue-500"><i
+                                        class="fab fa-twitter text-xl"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Company Info -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="p-6 md:p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">Company Information</h3>
+                    <div class="grid md:grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div class="flex items-start space-x-4">
+                                <div
+                                    class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-building text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Headquarters</h4>
+                                    <p class="text-gray-600">Düsseldorf, Germany</p>
+                                    <p class="text-sm text-gray-500">Kesselstraße 5-7, 40221 Düsseldorf</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-4">
+                                <div
+                                    class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-calendar text-green-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Founded</h4>
+                                    <p class="text-gray-600">2008</p>
+                                    <p class="text-sm text-gray-500">17 years of travel innovation</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-4">
+                                <div
+                                    class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-users text-purple-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Team Size</h4>
+                                    <p class="text-gray-600">1,000+ Employees</p>
+                                    <p class="text-sm text-gray-500">Across 50 countries worldwide</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="space-y-6">
+                            <div class="flex items-start space-x-4">
+                                <div
+                                    class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-trophy text-yellow-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Awards</h4>
+                                    <p class="text-gray-600">50+ Industry Awards</p>
+                                    <p class="text-sm text-gray-500">Best Travel Platform 2024</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-4">
+                                <div
+                                    class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-handshake text-red-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Partners</h4>
+                                    <p class="text-gray-600">300+ Booking Sites</p>
+                                    <p class="text-sm text-gray-500">Trusted hotel partners globally</p>
+                                </div>
+                            </div>
+
+                            <div class="flex items-start space-x-4">
+                                <div
+                                    class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                                    <i class="fas fa-leaf text-indigo-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Sustainability</h4>
+                                    <p class="text-gray-600">Carbon Neutral</p>
+                                    <p class="text-sm text-gray-500">Committed to sustainable travel</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact CTA -->
+            <div class="gradient-bg rounded-2xl shadow-lg p-8 md:p-12 text-center text-white">
+                <h3 class="text-2xl md:text-3xl font-bold mb-4">Ready to Start Your Journey?</h3>
+                <p class="text-lg opacity-90 mb-8">Join millions of travelers who trust Trivago to find their perfect
+                    stay.</p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="getStarted()"
+                        class="bg-white text-purple-600 font-medium py-3 px-6 rounded-xl hover:bg-gray-100 transition-colors">
+                        Get Started
+                    </button>
+                    <button onclick="contactUs()"
+                        class="border border-white text-white font-medium py-3 px-6 rounded-xl hover:bg-white hover:text-purple-600 transition-colors">
+                        Contact Us
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function getStarted() {
+                alert('Redirecting to sign up...');
+            }
+
+            function contactUs() {
+                alert('Opening contact form...');
+            }
+
+            // Animate counters on scroll
+            function animateCounters() {
+                const counters = document.querySelectorAll('.stat-counter');
+                counters.forEach(counter => {
+                    const target = parseInt(counter.textContent.replace(/[^0-9]/g, ''));
+                    let current = 0;
+                    const increment = target / 100;
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= target) {
+                            current = target;
+                            clearInterval(timer);
+                        }
+                        const suffix = counter.textContent.replace(/[0-9]/g, '');
+                        counter.textContent = Math.floor(current) + suffix;
+                    }, 30);
+                });
+            }
+
+            // Trigger animation when page loads
+            window.addEventListener('load', () => {
+                setTimeout(animateCounters, 500);
+            });
+
+            // Add smooth scroll behavior
+            document.documentElement.style.scrollBehavior = 'smooth';
+        </script>
+    </body>
+
+</html>

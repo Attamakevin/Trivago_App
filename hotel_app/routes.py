@@ -2,8 +2,8 @@
 from flask import render_template, redirect, url_for, flash, request, jsonify, session
 from hotel_app import app, db
 from hotel_app.models import User, Hotel, Reservation, DepositRequest, WithdrawalRequest, EventAd
-from datetime import datetime
-
+from datetime import datetime, date
+from flask_login import login_required
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -115,110 +115,526 @@ def register_post():
         flash('Registration failed. Please try again.', 'error')
         return redirect(url_for('register'))
 
+import string
+
 @app.route('/dashboard')
 def dashboard():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
     user = User.query.get(session['user_id'])
     hotels = Hotel.query.all()
-    return render_template('dashboard.html', hotels=hotels, user=user)
+    
+    # Calculate today's reservations for daily limit checking
+    today_reservations = Reservation.query.filter_by(user_id=user.id).filter(
+        Reservation.timestamp >= datetime.combine(date.today(), datetime.min.time())).count()
+    
+    return render_template('dashboard.html', 
+                         hotels=hotels, 
+                         user=user, 
+                         today_reservations=today_reservations)
 
 @app.route('/events')
 def events():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
     ads = EventAd.query.all()
     return render_template('events.html', ads=ads)
 
 @app.route('/credit')
 def credit():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
     user = User.query.get(session['user_id'])
     return render_template('credit.html', user=user)
 
 @app.route('/reservations')
 def reservations():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
     user = User.query.get(session['user_id'])
     hotels = Hotel.query.all()
-    return render_template('reservations.html', hotels=hotels, user=user)
+    
+    # Get user's reservations with hotel details
+    user_reservations = db.session.query(Reservation, Hotel).join(
+        Hotel, Reservation.hotel_id == Hotel.id
+    ).filter(Reservation.user_id == user.id).order_by(Reservation.timestamp.desc()).all()
+    
+    # Format reservations for template (matching your HTML structure)
+    formatted_reservations = []
+    for reservation, hotel in user_reservations:
+        formatted_reservations.append({
+            'id': reservation.id,
+            'hotel_name': hotel.name,
+            'location': f"{hotel.name} Location",  # Since location is not in Hotel model
+            'price': hotel.price,
+            'commission': reservation.commission_earned,
+            'status': reservation.status.lower(),  # Convert to lowercase for CSS classes
+            'created_at': reservation.timestamp,
+            'rated': reservation.rating is not None
+        })
+    
+    # DON'T assign to user.reservations - it's a SQLAlchemy relationship!
+    # user.reservations = formatted_reservations  # <-- This line caused the error
+    
+    # Calculate additional user stats for dashboard
+    user.total_commission = sum([r.commission_earned for r in Reservation.query.filter_by(user_id=user.id).all()])
+    user.trial_bonus = 250.00  # Static value as per your template
+    user.balance += user.total_commission  # Add earned commission to account balance
+    user.deposit_balance = 540.00  # Static value as per your template
+    user.active_bookings = len([r for r in formatted_reservations if r['status'] in ['processing', 'confirmed']])
+    
+    # Pass formatted_reservations as a separate variable to the template
+    return render_template('reservations.html', hotels=hotels, user=user, reservations=formatted_reservations)
 
 @app.route('/reserve/<int:hotel_id>', methods=['POST'])
 def reserve(hotel_id):
-    user = User.query.get(session['user_id'])
-    hotel = Hotel.query.get(hotel_id)
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        user = User.query.get(session['user_id'])
+        hotel = Hotel.query.get_or_404(hotel_id)
 
-    # Enforce daily limit
-    today_reservations = Reservation.query.filter_by(user_id=user.id).filter(
-        Reservation.timestamp >= datetime.utcnow().date()).count()
-    limit = {'VIP0': 5, 'VIP1': 10, 'VIP2': 15}.get(user.vip_level, 5)
+        # Check daily reservation limit based on VIP level
+        today_reservations = Reservation.query.filter_by(user_id=user.id).filter(
+            Reservation.timestamp >= datetime.combine(date.today(), datetime.min.time())).count()
+        
+        limits = {'VIP0': 5, 'VIP1': 10, 'VIP2': 15}
+        daily_limit = limits.get(user.vip_level, 5)
 
-    if today_reservations >= limit:
-        return jsonify({'error': 'Daily reservation limit reached'}), 403
+        if today_reservations >= daily_limit:
+            return jsonify({
+                'error': f'Daily reservation limit reached ({daily_limit} reservations per day for {user.vip_level})'
+            }), 403
 
-    commission = 0.02 * hotel.price * hotel.commission_multiplier
-    reservation = Reservation(
-        user_id=user.id,
-        hotel_id=hotel.id,
-        order_number=f"ORD{user.id}{datetime.utcnow().strftime('%Y%m%d%H%M%S')}",
-        commission_earned=commission
-    )
-    db.session.add(reservation)
-    db.session.commit()
-    return redirect(url_for('reservations'))
+        # Calculate commission
+        commission = 0.02 * hotel.price * hotel.commission_multiplier
+        
+        # Generate unique order number
+        order_number = f"ORD{user.id}{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        
+        # Create reservation
+        reservation = Reservation(
+            user_id=user.id,
+            hotel_id=hotel.id,
+            order_number=order_number,
+            commission_earned=commission,
+            status='Processing',  # Using your model's default status
+            timestamp=datetime.utcnow()
+        )
+        
+        db.session.add(reservation)
+        db.session.commit()
+        
+        # Simulate some reservations being confirmed immediately
+        if random.choice([True, False]):
+            reservation.status = 'Confirmed'
+            db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Reservation created successfully',
+            'reservation_id': reservation.id,
+            'order_number': order_number
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/rate/<int:reservation_id>', methods=['POST'])
 def rate(reservation_id):
-    reservation = Reservation.query.get(reservation_id)
-    reservation.rating = request.form['rating']
-    reservation.feedback = request.form['feedback']
-    user = reservation.user
-    user.balance += reservation.commission_earned
-    db.session.commit()
-    return redirect(url_for('reservations'))
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        reservation = Reservation.query.get_or_404(reservation_id)
+        user = User.query.get(session['user_id'])
+        
+        # Verify reservation belongs to user
+        if reservation.user_id != user.id:
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        # Check if reservation is completed and not already rated
+        if reservation.status.lower() != 'completed':
+            return jsonify({'error': 'Can only rate completed reservations'}), 400
+            
+        if reservation.rating is not None:
+            return jsonify({'error': 'Reservation already rated'}), 400
+        
+        # Get rating and feedback from request
+        if request.is_json:
+            rating = request.json.get('rating', 5)
+            feedback = request.json.get('feedback', '')
+        else:
+            rating = int(request.form.get('rating', 5))
+            feedback = request.form.get('feedback', '')
+        
+        # Update reservation
+        reservation.rating = rating
+        reservation.feedback = feedback
+        
+        # Add commission to user balance
+        user.balance += reservation.commission_earned
+        
+        db.session.commit()
+        
+        if request.is_json:
+            return jsonify({
+                'success': True,
+                'message': 'Rating submitted successfully',
+                'commission_earned': reservation.commission_earned,
+                'new_balance': user.balance
+            })
+        else:
+            flash('Rating submitted successfully', 'success')
+            return redirect(url_for('reservations'))
+        
+    except Exception as e:
+        db.session.rollback()
+        if request.is_json:
+            return jsonify({'error': str(e)}), 500
+        else:
+            flash(f'Error submitting rating: {str(e)}', 'error')
+            return redirect(url_for('reservations'))
+
+@app.route('/cancel-reservation/<int:reservation_id>', methods=['POST'])
+def cancel_reservation(reservation_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        reservation = Reservation.query.get_or_404(reservation_id)
+        user = User.query.get(session['user_id'])
+        
+        # Verify reservation belongs to user
+        if reservation.user_id != user.id:
+            return jsonify({'error': 'Unauthorized'}), 403
+        
+        # Check if reservation can be cancelled
+        if reservation.status.lower() not in ['processing', 'confirmed']:
+            return jsonify({'error': 'Cannot cancel this reservation'}), 400
+        
+        # Update reservation status
+        reservation.status = 'Cancelled'
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Reservation cancelled successfully'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/order-history')
 def order_history():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
     user = User.query.get(session['user_id'])
-    all_orders = Reservation.query.filter_by(user_id=user.id).all()
-    processing = [r for r in all_orders if r.status == 'Processing']
-    completed = [r for r in all_orders if r.status == 'Completed']
-    return render_template('order_history.html', all_orders=all_orders, processing=processing, completed=completed)
+    
+    # Get all reservations with hotel details
+    reservations_query = db.session.query(Reservation, Hotel).join(
+        Hotel, Reservation.hotel_id == Hotel.id
+    ).filter(Reservation.user_id == user.id).order_by(Reservation.timestamp.desc())
+    
+    all_reservations = reservations_query.all()
+    
+    # Separate by status
+    processing = [(r, h) for r, h in all_reservations if r.status.lower() in ['processing', 'confirmed']]
+    completed = [(r, h) for r, h in all_reservations if r.status.lower() == 'completed']
+    cancelled = [(r, h) for r, h in all_reservations if r.status.lower() == 'cancelled']
+    
+    return render_template('order_history.html', 
+                         all_orders=all_reservations, 
+                         processing=processing, 
+                         completed=completed,
+                         cancelled=cancelled)
 
 @app.route('/profile')
 def profile():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
     user = User.query.get(session['user_id'])
-    return render_template('profile.html', user=user)
+    
+    # Calculate user statistics
+    total_reservations = Reservation.query.filter_by(user_id=user.id).count()
+    completed_reservations = Reservation.query.filter_by(user_id=user.id).filter(
+        Reservation.status == 'Completed').count()
+    
+    # Calculate completion rate
+    completion_rate = (completed_reservations / total_reservations * 100) if total_reservations > 0 else 0
+    
+    # Calculate total commission earned
+    total_commission = sum([r.commission_earned for r in Reservation.query.filter_by(user_id=user.id).all()])
+    
+    return render_template('profile.html', 
+                         user=user,
+                         total_reservations=total_reservations,
+                         completed_reservations=completed_reservations,
+                         completion_rate=completion_rate,
+                         total_commission=total_commission)
 
+# Updated deposit route with wallet address validation
 @app.route('/deposit', methods=['GET', 'POST'])
 def deposit():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
     user = User.query.get(session['user_id'])
+    
     if request.method == 'POST':
-        amount = float(request.form['amount'])
-        network = request.form['network']
-        deposit = DepositRequest(user_id=user.id, amount=amount, network=network)
-        db.session.add(deposit)
-        db.session.commit()
-        # return redirect('https://t.me/your_admin_telegram')
+        try:
+            amount = float(request.form['amount'])
+            network = request.form['network']
+            wallet_address = request.form['wallet_address'].strip()
+            transaction_hash = request.form.get('transaction_hash', '').strip()
+            
+            if amount <= 0:
+                flash('Invalid deposit amount', 'error')
+                return render_template('deposit.html', user=user)
+            
+            if not wallet_address:
+                flash('Wallet address is required', 'error')
+                return render_template('deposit.html', user=user)
+            
+            # Validate wallet address format
+            if not DepositRequest.validate_wallet_address(wallet_address, network):
+                flash(f'Invalid wallet address format for {network} network', 'error')
+                return render_template('deposit.html', user=user)
+            
+            # Create deposit request
+            deposit_request = DepositRequest(
+                user_id=user.id, 
+                amount=amount, 
+                network=network,
+                wallet_address=wallet_address,
+                transaction_hash=transaction_hash,
+                status='Pending'
+            )
+            
+            db.session.add(deposit_request)
+            db.session.commit()
+            
+            flash('Deposit request submitted successfully. Please wait for admin approval.', 'success')
+            return redirect(url_for('profile'))
+            
+        except ValueError:
+            flash('Invalid deposit amount format', 'error')
+        except Exception as e:
+            flash(f'Error processing deposit: {str(e)}', 'error')
+    
     return render_template('deposit.html', user=user)
 
+# Updated withdrawal route with wallet address validation
 @app.route('/withdraw', methods=['GET', 'POST'])
 def withdraw():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
     user = User.query.get(session['user_id'])
+    
     if request.method == 'POST':
-        amount = float(request.form['amount'])
-        network = request.form['network']
-        wallet_address = request.form['wallet']
-        if not user.withdrawal_password:
-            return redirect(url_for('set_withdrawal_password'))
-        withdrawal = WithdrawalRequest(user_id=user.id, amount=amount, network=network, wallet_address=wallet_address)
-        db.session.add(withdrawal)
-        db.session.commit()
-        return redirect(url_for('profile'))
+        try:
+            amount = float(request.form['amount'])
+            network = request.form['network']
+            wallet_address = request.form['wallet_address'].strip()
+            withdrawal_password = request.form.get('withdrawal_password')
+            
+            # Check if withdrawal password is set
+            if not user.withdrawal_password:
+                flash('Please set a withdrawal password first', 'error')
+                return redirect(url_for('set_withdrawal_password'))
+            
+            # Validate withdrawal password
+            if user.withdrawal_password != withdrawal_password:
+                flash('Invalid withdrawal password', 'error')
+                return render_template('withdraw.html', user=user)
+            
+            # Check balance
+            if amount > user.balance:
+                flash('Insufficient balance', 'error')
+                return render_template('withdraw.html', user=user)
+            
+            if amount <= 0:
+                flash('Invalid withdrawal amount', 'error')
+                return render_template('withdraw.html', user=user)
+            
+            if not wallet_address:
+                flash('Wallet address is required', 'error')
+                return render_template('withdraw.html', user=user)
+            
+            # Validate wallet address format
+            if not WithdrawalRequest.validate_wallet_address(wallet_address, network):
+                flash(f'Invalid wallet address format for {network} network', 'error')
+                return render_template('withdraw.html', user=user)
+            
+            # Create withdrawal request
+            withdrawal_request = WithdrawalRequest(
+                user_id=user.id, 
+                amount=amount, 
+                network=network,
+                wallet_address=wallet_address,
+                status='Pending'
+            )
+            
+            # Temporarily reduce balance (will be restored if withdrawal is rejected)
+            user.balance -= amount
+            
+            db.session.add(withdrawal_request)
+            db.session.commit()
+            
+            flash('Withdrawal request submitted successfully. Please wait for approval.', 'success')
+            return redirect(url_for('profile'))
+            
+        except ValueError:
+            flash('Invalid withdrawal amount format', 'error')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Error processing withdrawal: {str(e)}', 'error')
+    
     return render_template('withdraw.html', user=user)
 
 @app.route('/set-withdrawal-password', methods=['GET', 'POST'])
 def set_withdrawal_password():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
     user = User.query.get(session['user_id'])
+    
     if request.method == 'POST':
-        user.withdrawal_password = request.form['password']
-        db.session.commit()
-        return redirect(url_for('withdraw'))
+        try:
+            password = request.form['password']
+            confirm_password = request.form.get('confirm_password', '')
+            
+            if confirm_password and password != confirm_password:
+                flash('Passwords do not match', 'error')
+                return render_template('set_password.html')
+            
+            if len(password) < 6:
+                flash('Password must be at least 6 characters long', 'error')
+                return render_template('set_password.html')
+            
+            user.withdrawal_password = password
+            db.session.commit()
+            
+            flash('Withdrawal password set successfully', 'success')
+            return redirect(url_for('profile'))
+            
+        except Exception as e:
+            flash(f'Error setting password: {str(e)}', 'error')
+    
     return render_template('set_password.html')
+
+# API endpoints for AJAX calls from the frontend
+@app.route('/api/user-stats')
+def api_user_stats():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    user = User.query.get(session['user_id'])
+    today_reservations = Reservation.query.filter_by(user_id=user.id).filter(
+        Reservation.timestamp >= datetime.combine(date.today(), datetime.min.time())).count()
+    
+    limits = {'VIP0': 5, 'VIP1': 10, 'VIP2': 15}
+    daily_limit = limits.get(user.vip_level, 5)
+    
+    # Calculate total commission
+    total_commission = sum([r.commission_earned for r in Reservation.query.filter_by(user_id=user.id).all()])
+    
+    # Count active bookings
+    active_bookings = Reservation.query.filter_by(user_id=user.id).filter(
+        Reservation.status.in_(['Processing', 'Confirmed'])).count()
+    
+    return jsonify({
+        'balance': user.balance,
+        'total_commission': total_commission,
+        'trial_bonus': 250.00,  # Static value as per your template
+        'deposit_balance': 540.00,  # Static value as per your template
+        'today_reservations': today_reservations,
+        'daily_limit': daily_limit,
+        'vip_level': user.vip_level,
+        'active_bookings': active_bookings
+    })
+
+@app.route('/api/complete-reservation/<int:reservation_id>', methods=['POST'])
+def complete_reservation(reservation_id):
+    """Admin endpoint to mark reservations as completed"""
+    try:
+        reservation = Reservation.query.get_or_404(reservation_id)
+        reservation.status = 'Completed'
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Reservation marked as completed'
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/simulate-reservation-processing')
+def simulate_reservation_processing():
+    """Simulate reservation status updates for testing"""
+    try:
+        # Get processing/confirmed reservations
+        active_reservations = Reservation.query.filter(
+            Reservation.status.in_(['Processing', 'Confirmed'])).all()
+        
+        updated_count = 0
+        for reservation in active_reservations:
+            # Randomly update status
+            if random.random() < 0.2:  # 20% chance to update
+                if reservation.status == 'Processing':
+                    reservation.status = random.choice(['Confirmed', 'Completed'])
+                elif reservation.status == 'Confirmed':
+                    reservation.status = 'Completed'
+                updated_count += 1
+        
+        db.session.commit()
+        return jsonify({'success': True, 'updated': updated_count})
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500
+
+# Helper route to get reservation details for modals
+@app.route('/api/reservation/<int:reservation_id>')
+def get_reservation_details(reservation_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        reservation, hotel = db.session.query(Reservation, Hotel).join(
+            Hotel, Reservation.hotel_id == Hotel.id
+        ).filter(Reservation.id == reservation_id, 
+                Reservation.user_id == session['user_id']).first()
+        
+        if not reservation:
+            return jsonify({'error': 'Reservation not found'}), 404
+        
+        return jsonify({
+            'id': reservation.id,
+            'hotel_name': hotel.name,
+            'price': hotel.price,
+            'commission': reservation.commission_earned,
+            'status': reservation.status,
+            'order_number': reservation.order_number,
+            'timestamp': reservation.timestamp.isoformat(),
+            'rating': reservation.rating,
+            'feedback': reservation.feedback
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/membership')
 def membership():
@@ -250,6 +666,8 @@ def settings():
                 flash('Passwords do not match!', 'error')
     return render_template('settings.html', user=user)
 
+
+# Admin Setup Functions
 from functools import wraps
 from flask import session, flash, redirect, url_for, request, render_template
 import string
@@ -394,47 +812,58 @@ def view_user_details(user_id):
                          withdrawals=withdrawals)
 
 # Deposit Management
+# Updated admin deposit approval with wallet address display
+# Add these routes to your routes.py file
+
+# VIEW DEPOSITS - Main listing page
 @app.route('/admin/deposits')
 @admin_required
 def view_deposits():
-    page = request.args.get('page', 1, type=int)
-    status_filter = request.args.get('status', '')
-    
-    deposits_query = DepositRequest.query
-    if status_filter:
-        deposits_query = deposits_query.filter_by(status=status_filter)
-    
-    deposits = deposits_query.order_by(DepositRequest.id.desc()).paginate(
-        page=page, per_page=20, error_out=False
-    )
-    
-    return render_template('admin_deposits.html', deposits=deposits, status_filter=status_filter)
+    """View all deposit requests - Admin only"""
+    try:
+        deposits = Deposit.query.order_by(Deposit.created_at.desc()).all()
+        return render_template('view_deposits.html', deposits=deposits)
+    except Exception as e:
+        flash(f'Error loading deposits: {str(e)}', 'error')
+        return redirect(url_for('admin_dashboard'))
 
+# APPROVE DEPOSIT - Individual deposit approval
 @app.route('/admin/deposits/<int:deposit_id>/approve', methods=['POST'])
 @admin_required
 def approve_deposit(deposit_id):
     deposit = DepositRequest.query.get_or_404(deposit_id)
+    admin = Admin.query.get(session['admin_id'])
     
-    if deposit.status == 'pending':
-        deposit.status = 'approved'
+    if deposit.status == 'Pending':
+        deposit.status = 'Approved'
+        deposit.processed_at = datetime.utcnow()
+        deposit.processed_by = admin.id
+        deposit.admin_notes = request.form.get('admin_notes', '')
+        
         # Update user balance
         user = User.query.get(deposit.user_id)
         user.balance += deposit.amount
         
         db.session.commit()
-        flash(f"Deposit of ${deposit.amount} approved for user {user.username}.", "success")
+        flash(f"Deposit of ${deposit.amount} approved for user {user.nickname}.", "success")
     else:
         flash("Deposit has already been processed.", "warning")
     
     return redirect(url_for('view_deposits'))
 
+# REJECT DEPOSIT
 @app.route('/admin/deposits/<int:deposit_id>/reject', methods=['POST'])
 @admin_required
 def reject_deposit(deposit_id):
     deposit = DepositRequest.query.get_or_404(deposit_id)
+    admin = Admin.query.get(session['admin_id'])
     
-    if deposit.status == 'pending':
-        deposit.status = 'rejected'
+    if deposit.status == 'Pending':
+        deposit.status = 'Rejected'
+        deposit.processed_at = datetime.utcnow()
+        deposit.processed_by = admin.id
+        deposit.admin_notes = request.form.get('admin_notes', '')
+        
         db.session.commit()
         flash(f"Deposit of ${deposit.amount} rejected.", "success")
     else:
@@ -442,44 +871,54 @@ def reject_deposit(deposit_id):
     
     return redirect(url_for('view_deposits'))
 
-# Withdrawal Management
+# VIEW WITHDRAWALS - Main listing page
 @app.route('/admin/withdrawals')
 @admin_required
 def view_withdrawals():
-    page = request.args.get('page', 1, type=int)
-    status_filter = request.args.get('status', '')
-    
-    withdrawals_query = WithdrawalRequest.query
-    if status_filter:
-        withdrawals_query = withdrawals_query.filter_by(status=status_filter)
-    
-    withdrawals = withdrawals_query.order_by(WithdrawalRequest.id.desc()).paginate(
-        page=page, per_page=20, error_out=False
-    )
-    
-    return render_template('admin_withdrawals.html', withdrawals=withdrawals, status_filter=status_filter)
+    """View all withdrawal requests - Admin only"""
+    try:
+        withdrawals = Withdrawal.query.order_by(Withdrawal.created_at.desc()).all()
+        return render_template('view_withdrawals.html', withdrawals=withdrawals)
+    except Exception as e:
+        flash(f'Error loading withdrawals: {str(e)}', 'error')
+        return redirect(url_for('admin_dashboard'))
 
+# APPROVE WITHDRAWAL - Individual withdrawal approval
 @app.route('/admin/withdrawals/<int:withdrawal_id>/approve', methods=['POST'])
 @admin_required
 def approve_withdrawal(withdrawal_id):
     withdrawal = WithdrawalRequest.query.get_or_404(withdrawal_id)
+    admin = Admin.query.get(session['admin_id'])
     
-    if withdrawal.status == 'pending':
-        withdrawal.status = 'approved'
+    if withdrawal.status == 'Pending':
+        withdrawal.status = 'Approved'
+        withdrawal.processed_at = datetime.utcnow()
+        withdrawal.processed_by = admin.id
+        withdrawal.admin_notes = request.form.get('admin_notes', '')
+        withdrawal.transaction_hash = request.form.get('transaction_hash', '')
+        withdrawal.transaction_fee = float(request.form.get('transaction_fee', 0))
+        
         db.session.commit()
         flash(f"Withdrawal of ${withdrawal.amount} approved.", "success")
     else:
         flash("Withdrawal has already been processed.", "warning")
     
-    return redirect(url_for('view_withdrawals'))
+    return redirect(url_for('view_withdrawals'))  # Fixed: was 'withdrawals'
 
+# REJECT WITHDRAWAL
 @app.route('/admin/withdrawals/<int:withdrawal_id>/reject', methods=['POST'])
 @admin_required
 def reject_withdrawal(withdrawal_id):
     withdrawal = WithdrawalRequest.query.get_or_404(withdrawal_id)
+    admin = Admin.query.get(session['admin_id'])
     
-    if withdrawal.status == 'pending':
-        withdrawal.status = 'rejected'
+    if withdrawal.status == 'Pending':
+        withdrawal.status = 'Rejected'
+        withdrawal.processed_at = datetime.utcnow()
+        withdrawal.processed_by = admin.id
+        withdrawal.admin_notes = request.form.get('admin_notes', '')
+        withdrawal.rejection_reason = request.form.get('rejection_reason', '')
+        
         # Refund the amount to user's balance
         user = User.query.get(withdrawal.user_id)
         user.balance += withdrawal.amount
@@ -490,7 +929,29 @@ def reject_withdrawal(withdrawal_id):
         flash("Withdrawal has already been processed.", "warning")
     
     return redirect(url_for('view_withdrawals'))
-
+@app.route('/api/validate-wallet', methods=['POST'])
+def validate_wallet_address():
+    """API endpoint to validate wallet address format"""
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        data = request.get_json()
+        address = data.get('address', '').strip()
+        network = data.get('network', '').upper()
+        
+        if not address or not network:
+            return jsonify({'valid': False, 'message': 'Address and network are required'})
+        
+        is_valid = DepositRequest.validate_wallet_address(address, network)
+        
+        return jsonify({
+            'valid': is_valid,
+            'message': f'Valid {network} address' if is_valid else f'Invalid {network} address format'
+        })
+        
+    except Exception as e:
+        return jsonify({'valid': False, 'message': str(e)}), 500
 # Hotel Management
 @app.route('/admin/hotels', methods=['GET', 'POST'])
 @admin_required

@@ -61,6 +61,8 @@ class Reservation(db.Model):
     rating = db.Column(db.Integer)
     feedback = db.Column(db.Text)
     commission_earned = db.Column(db.Float, default=0.0)
+    commission_paid = db.Column(db.Boolean, default=False)
+    commission_paid_at = db.Column(db.DateTime, nullable=True)
 
 class Admin(db.Model):
     id = db.Column(db.Integer, primary_key=True)

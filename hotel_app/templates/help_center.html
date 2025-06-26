@@ -4,538 +4,484 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Help Center - Trivago</title>
-        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+        <title>Help Center - trivago</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <style>
-            .gradient-bg {
-                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            }
-
-            .help-gradient {
-                background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
-            }
-
-            .category-card {
-                transition: all 0.3s ease;
-            }
-
-            .category-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
-            }
-
-            .faq-item {
-                transition: all 0.3s ease;
-            }
-
-            .faq-item.active .faq-answer {
-                max-height: 200px;
-                opacity: 1;
-                padding: 1rem 0;
-            }
-
-            .faq-answer {
-                max-height: 0;
-                opacity: 0;
-                overflow: hidden;
-                transition: all 0.3s ease;
-                padding: 0;
-            }
-
-            .faq-item.active .faq-icon {
-                transform: rotate(45deg);
-            }
-
-            .search-result {
-                display: none;
-            }
-
-            .search-result.show {
-                display: block;
-            }
-        </style>
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
+        <!-- TailwindCSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+        <!-- Custom Script -->
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/translate.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/user.js') }}"></script>
     </head>
 
-    <body class="bg-gray-50 min-h-screen">
+    <body class="luxury-bg min-h-screen">
         <!-- Header -->
-        <header class="gradient-bg text-white p-4 md:p-6">
-            <div class="max-w-6xl mx-auto flex items-center justify-between">
-                <button onclick="history.back()" class="text-white hover:text-gray-200 transition-colors">
+        <header
+            class="sticky h-16 top-0 z-50 bg-[#2563eb] py-2 md:py-4 px-4 md:px-8">
+            <div class="flex items-center justify-start gap-8 text-white h-full px-4 md:px-8">
+                <button onclick="history.back()" class="text-white hover:text-yellow-300 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-xl md:text-2xl font-bold">Help Center</h1>
-                <div class="w-6"></div>
+                <h1 class="text-white text-sm md:text-md font-bold">Help Center</h1>
             </div>
         </header>
 
-        <!-- Hero Section -->
-        <div class="help-gradient text-white py-16 md:py-20">
-            <div class="max-w-4xl mx-auto px-4 text-center">
-                <h2 class="text-3xl md:text-5xl font-bold mb-6">How can we help you?</h2>
-                <p class="text-lg opacity-90 mb-8">Find answers to your questions or get in touch with our support team
-                </p>
-
-                <!-- Search Bar -->
-                <div class="relative max-w-2xl mx-auto">
-                    <input type="text" id="helpSearch" placeholder="Search for help articles, FAQs, tutorials..."
-                        class="w-full pl-12 pr-16 py-4 text-gray-900 rounded-2xl shadow-lg text-lg focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-30"
-                        onkeyup="searchHelp()">
-                    <i
-                        class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl"></i>
-                    <button
-                        class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-xl hover:from-pink-600 hover:to-purple-700 transition-colors">
-                        Search
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div class="max-w-6xl mx-auto px-4 py-12 space-y-12">
-            <!-- Quick Actions -->
-            <div class="grid md:grid-cols-4 gap-6">
-                <div onclick="contactSupport()"
-                    class="category-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
-                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-headset text-blue-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Contact Support</h3>
-                    <p class="text-sm text-gray-600">Get direct help from our team</p>
-                </div>
-
-                <div onclick="trackOrder()"
-                    class="category-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
-                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-map-marker-alt text-green-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Track Booking</h3>
-                    <p class="text-sm text-gray-600">Check your reservation status</p>
-                </div>
-
-                <div onclick="reportIssue()"
-                    class="category-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
-                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Report Issue</h3>
-                    <p class="text-sm text-gray-600">Let us know about problems</p>
-                </div>
-
-                <div onclick="requestRefund()"
-                    class="category-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
-                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-undo text-yellow-600 text-2xl"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-gray-900 mb-2">Request Refund</h3>
-                    <p class="text-sm text-gray-600">Process cancellations</p>
-                </div>
-            </div>
-
-            <!-- Help Categories -->
-            <div>
-                <h3 class="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-8">Browse Help Topics</h3>
-                <div class="grid md:grid-cols-3 gap-6">
-                    <div onclick="showCategory('booking')"
-                        class="category-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
-                                <i class="fas fa-calendar-check text-purple-600 text-xl"></i>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900">Booking & Reservations</h4>
-                        </div>
-                        <p class="text-gray-600 mb-4">Everything about making, modifying, and cancelling bookings</p>
-                        <div class="text-sm text-gray-500">
-                            <span>15 articles</span> • <span>Most popular</span>
-                        </div>
-                    </div>
-
-                    <div onclick="showCategory('payment')"
-                        class="category-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                                <i class="fas fa-credit-card text-green-600 text-xl"></i>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900">Payment & Billing</h4>
-                        </div>
-                        <p class="text-gray-600 mb-4">Payment methods, billing issues, and refund processes</p>
-                        <div class="text-sm text-gray-500">
-                            <span>12 articles</span> • <span>Updated recently</span>
-                        </div>
-                    </div>
-
-                    <div onclick="showCategory('account')"
-                        class="category-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                                <i class="fas fa-user-cog text-blue-600 text-xl"></i>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900">Account Management</h4>
-                        </div>
-                        <p class="text-gray-600 mb-4">Profile settings, password changes, and account security</p>
-                        <div class="text-sm text-gray-500">
-                            <span>8 articles</span> • <span>Beginner friendly</span>
-                        </div>
-                    </div>
-
-                    <div onclick="showCategory('technical')"
-                        class="category-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4">
-                                <i class="fas fa-cog text-orange-600 text-xl"></i>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900">Technical Support</h4>
-                        </div>
-                        <p class="text-gray-600 mb-4">App issues, website problems, and troubleshooting</p>
-                        <div class="text-sm text-gray-500">
-                            <span>10 articles</span> • <span>Step-by-step guides</span>
-                        </div>
-                    </div>
-
-                    <div onclick="showCategory('travel')"
-                        class="category-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mr-4">
-                                <i class="fas fa-plane text-teal-600 text-xl"></i>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900">Travel Information</h4>
-                        </div>
-                        <p class="text-gray-600 mb-4">Travel tips, destination guides, and safety information</p>
-                        <div class="text-sm text-gray-500">
-                            <span>20 articles</span> • <span>Travel tips</span>
-                        </div>
-                    </div>
-
-                    <div onclick="showCategory('policies')"
-                        class="category-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
-                        <div class="flex items-center mb-4">
-                            <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
-                                <i class="fas fa-file-contract text-indigo-600 text-xl"></i>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900">Policies & Terms</h4>
-                        </div>
-                        <p class="text-gray-600 mb-4">Privacy policy, terms of service, and legal information</p>
-                        <div class="text-sm text-gray-500">
-                            <span>6 articles</span> • <span>Legal documents</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Popular FAQs -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-6 border-b border-gray-100">
-                    <h3 class="text-2xl font-bold text-gray-900">Frequently Asked Questions</h3>
-                </div>
-
-                <div class="divide-y divide-gray-100">
-                    <div class="faq-item p-6 cursor-pointer" onclick="toggleFAQ(this)">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-lg font-medium text-gray-900 pr-4">How do I make a booking through Trivago?
-                            </h4>
-                            <i class="fas fa-plus faq-icon text-gray-400 transition-transform flex-shrink-0"></i>
-                        </div>
-                        <div class="faq-answer text-gray-600">
-                            <p>To make a booking through Trivago: 1) Search for your destination and dates, 2) Compare
-                                prices from different booking sites, 3) Click on your preferred option to be redirected
-                                to the booking site, 4) Complete your reservation on the partner site. Trivago is a
-                                comparison platform that helps you find the best deals.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item p-6 cursor-pointer" onclick="toggleFAQ(this)">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-lg font-medium text-gray-900 pr-4">Can I cancel or modify my booking?</h4>
-                            <i class="fas fa-plus faq-icon text-gray-400 transition-transform flex-shrink-0"></i>
-                        </div>
-                        <div class="faq-answer text-gray-600">
-                            <p>Cancellation and modification policies depend on the booking site and hotel you booked
-                                with. You'll need to contact the booking site directly or check your booking
-                                confirmation email for specific terms. Trivago can help you find the contact information
-                                for your booking site.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item p-6 cursor-pointer" onclick="toggleFAQ(this)">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-lg font-medium text-gray-900 pr-4">Why do I see different prices on
-                                different sites?</h4>
-                            <i class="fas fa-plus faq-icon text-gray-400 transition-transform flex-shrink-0"></i>
-                        </div>
-                        <div class="faq-answer text-gray-600">
-                            <p>Prices can vary between booking sites due to different deals, promotions, or partnerships
-                                they have with hotels. Some sites may include taxes and fees in the displayed price,
-                                while others add them later. Trivago shows you these differences so you can make an
-                                informed choice.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item p-6 cursor-pointer" onclick="toggleFAQ(this)">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-lg font-medium text-gray-900 pr-4">Is Trivago free to use?</h4>
-                            <i class="fas fa-plus faq-icon text-gray-400 transition-transform flex-shrink-0"></i>
-                        </div>
-                        <div class="faq-answer text-gray-600">
-                            <p>Yes, Trivago is completely free for users. We make money through commissions from our
-                                partner booking sites when you complete a reservation. There are no hidden fees or
-                                charges for using our comparison service.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item p-6 cursor-pointer" onclick="toggleFAQ(this)">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-lg font-medium text-gray-900 pr-4">How do I contact customer support?</h4>
-                            <i class="fas fa-plus faq-icon text-gray-400 transition-transform flex-shrink-0"></i>
-                        </div>
-                        <div class="faq-answer text-gray-600">
-                            <p>You can contact us through multiple channels: 1) Live chat (available 24/7), 2) Email
-                                support@trivago.com, 3) Phone +1-800-TRIVAGO, or 4) Through our mobile app. For
-                                booking-related issues, you may need to contact the booking site directly.</p>
-                        </div>
-                    </div>
-
-                    <div class="faq-item p-6 cursor-pointer" onclick="toggleFAQ(this)">
-                        <div class="flex items-center justify-between">
-                            <h4 class="text-lg font-medium text-gray-900 pr-4">What should I do if I have a problem with
-                                my hotel stay?</h4>
-                            <i class="fas fa-plus faq-icon text-gray-400 transition-transform flex-shrink-0"></i>
-                        </div>
-                        <div class="faq-answer text-gray-600">
-                            <p>First, try to resolve the issue directly with the hotel. If that doesn't work, contact
-                                the booking site you used to make the reservation. They are responsible for handling
-                                booking-related issues. You can also contact Trivago support for assistance in finding
-                                the right contact information.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Contact Options -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-6 border-b border-gray-100">
-                    <h3 class="text-2xl font-bold text-gray-900">Still Need Help?</h3>
-                    <p class="text-gray-600 mt-2">Our support team is here to assist you 24/7</p>
-                </div>
-
-                <div class="grid md:grid-cols-3 gap-6 p-6">
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <!-- Hero Section -->
+            <!-- <div class="text-center mb-12">
+                <div class="glass-effect rounded-2xl p-8 mb-8">
                     <div
-                        class="text-center p-6 border border-gray-200 rounded-xl hover:border-blue-300 transition-colors">
-                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-comments text-blue-600 text-2xl"></i>
-                        </div>
-                        <h4 class="text-lg font-bold text-gray-900 mb-2">Live Chat</h4>
-                        <p class="text-sm text-gray-600 mb-4">Get instant help from our support team</p>
-                        <button onclick="startChat()"
-                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
-                            Start Chat
-                        </button>
-                        <p class="text-xs text-green-600 mt-2"><i class="fas fa-circle text-xs"></i> Available 24/7</p>
+                        class="w-20 h-20 bg-yellow-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-concierge-bell text-4xl text-yellow-300"></i>
                     </div>
-
-                    <div
-                        class="text-center p-6 border border-gray-200 rounded-xl hover:border-green-300 transition-colors">
-                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-envelope text-green-600 text-2xl"></i>
-                        </div>
-                        <h4 class="text-lg font-bold text-gray-900 mb-2">Email Support</h4>
-                        <p class="text-sm text-gray-600 mb-4">Send us a detailed message</p>
-                        <button onclick="sendEmail()"
-                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
-                            Send Email
-                        </button>
-                        <p class="text-xs text-gray-500 mt-2">Response within 2 hours</p>
-                    </div>
-
-                    <div
-                        class="text-center p-6 border border-gray-200 rounded-xl hover:border-purple-300 transition-colors">
-                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <i class="fas fa-phone text-purple-600 text-2xl"></i>
-                        </div>
-                        <h4 class="text-lg font-bold text-gray-900 mb-2">Phone Support</h4>
-                        <p class="text-sm text-gray-600 mb-4">Speak directly with our team</p>
-                        <button onclick="callSupport()"
-                            class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
-                            Call Now
-                        </button>
-                        <p class="text-xs text-gray-500 mt-2">+1-800-TRIVAGO</p>
-                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Luxury Service Guide</h2>
+                    <p class="text-lg text-gray-700">Learn how our rating features work to enhance your experience</p>
                 </div>
-            </div>
+            </div> -->
 
-            <!-- Search Results (Hidden by default) -->
-            <div id="searchResults" class="bg-white rounded-2xl shadow-lg overflow-hidden" style="display: none;">
-                <div class="p-6 border-b border-gray-100">
-                    <h3 class="text-xl font-bold text-gray-900">Search Results</h3>
-                    <p class="text-gray-600" id="searchResultsCount">Found 0 results</p>
-                </div>
-                <div id="searchResultsList" class="divide-y divide-gray-100">
-                    <!-- Search results will be populated here -->
-                </div>
-            </div>
-
-            <!-- Video Tutorials -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-6 border-b border-gray-100">
-                    <h3 class="text-2xl font-bold text-gray-900">Video Tutorials</h3>
-                    <p class="text-gray-600 mt-2">Learn how to use Trivago with our step-by-step guides</p>
-                </div>
-
-                <div class="grid md:grid-cols-2 gap-6 p-6">
-                    <div class="group cursor-pointer" onclick="playVideo('booking-tutorial')">
-                        <div class="relative bg-gray-200 rounded-xl overflow-hidden mb-4">
-                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop"
-                                alt="Booking Tutorial" class="w-full h-48 object-cover">
-                            <div
-                                class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center group-hover:bg-opacity-40 transition-colors">
-                                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-                                    <i class="fas fa-play text-gray-800 text-xl ml-1"></i>
+            <!-- Help Topics -->
+            <div class="space-y-4">
+                <!-- Deposit -->
+                <div class="glass-effect topic-card deposit rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('deposit')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-plus-circle text-green-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Deposit</h3>
+                                    <p class="text-sm text-gray-600">How to add funds to your account</p>
                                 </div>
                             </div>
-                            <div
-                                class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-                                3:45
-                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="deposit-icon"></i>
                         </div>
-                        <h4 class="text-lg font-bold text-gray-900 mb-2">How to Make Your First Booking</h4>
-                        <p class="text-sm text-gray-600">Learn the basics of searching and booking hotels through
-                            Trivago</p>
                     </div>
 
-                    <div class="group cursor-pointer" onclick="playVideo('comparison-tutorial')">
-                        <div class="relative bg-gray-200 rounded-xl overflow-hidden mb-4">
-                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=200&fit=crop"
-                                alt="Comparison Tutorial" class="w-full h-48 object-cover">
-                            <div
-                                class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center group-hover:bg-opacity-40 transition-colors">
-                                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
-                                    <i class="fas fa-play text-gray-800 text-xl ml-1"></i>
+                    <div class="topic-content hidden" id="deposit-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-green-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">How Deposits Work</h4>
+                                    <p class="text-gray-700 mb-3">
+                                        Deposits allow you to add funds to your account for future bookings and
+                                        services.
+                                        This ensures quick and seamless transactions when making luxury reservations.
+                                    </p>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-check text-green-500 mt-1"></i>
+                                            <span>Instant processing for most payment methods</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-check text-green-500 mt-1"></i>
+                                            <span>Secure encryption for all transactions</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-check text-green-500 mt-1"></i>
+                                            <span>Multiple payment methods accepted</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-check text-green-500 mt-1"></i>
+                                            <span>Minimum deposit: $100, Maximum: $50,000</span>
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
-                            <div
-                                class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
-                                5:12
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Withdraw -->
+                <div class="glass-effect topic-card withdraw rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('withdraw')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-minus-circle text-yellow-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Withdraw</h3>
+                                    <p class="text-sm text-gray-600">How to withdraw funds from your account</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="withdraw-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="withdraw-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-yellow-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Withdrawal Process</h4>
+                                    <p class="text-gray-700 mb-3">
+                                        Withdraw your available balance back to your preferred payment method.
+                                        All withdrawals are subject to verification for security purposes.
+                                    </p>
+                                    <div class="grid md:grid-cols-2 gap-4">
+                                        <div>
+                                            <h5 class="font-medium text-gray-900 mb-2">Processing Times:</h5>
+                                            <ul class="space-y-1 text-sm text-gray-700">
+                                                <li>• Bank Transfer: 3-5 business days</li>
+                                                <li>• Credit Card: 5-7 business days</li>
+                                                <li>• Digital Wallet: 1-2 business days</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium text-gray-900 mb-2">Requirements:</h5>
+                                            <ul class="space-y-1 text-sm text-gray-700">
+                                                <li>• Minimum withdrawal: $50</li>
+                                                <li>• Account verification required</li>
+                                                <li>• Same method as deposit (when possible)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <h4 class="text-lg font-bold text-gray-900 mb-2">Understanding Price Comparisons</h4>
-                        <p class="text-sm text-gray-600">Get the most out of our comparison features and find the best
-                            deals</p>
+                    </div>
+                </div>
+
+                <!-- Credit Score -->
+                <div class="glass-effect topic-card credit rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('credit')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-chart-line text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Credit Score</h3>
+                                    <p class="text-sm text-gray-600">Your booking reliability rating</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="credit-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="credit-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-blue-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Understanding Your Credit Score</h4>
+                                    <p class="text-gray-700 mb-3">
+                                        Your credit score reflects your booking history, payment reliability, and
+                                        account standing.
+                                        Higher scores unlock premium benefits and better rates.
+                                    </p>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 bg-red-500 rounded"></div>
+                                            <span class="text-sm"><strong>Poor (300-599):</strong> Basic booking
+                                                access</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 bg-yellow-500 rounded"></div>
+                                            <span class="text-sm"><strong>Fair (600-699):</strong> Standard
+                                                benefits</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 bg-blue-500 rounded"></div>
+                                            <span class="text-sm"><strong>Good (700-799):</strong> Priority booking &
+                                                discounts</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                            <span class="text-sm"><strong>Excellent (800+):</strong> VIP access & luxury
+                                                perks</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending and On Hold -->
+                <div class="glass-effect topic-card pending rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('pending')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-clock text-purple-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Pending & On Hold</h3>
+                                    <p class="text-sm text-gray-600">Understanding booking and payment statuses</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="pending-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="pending-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-purple-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Status Explanations</h4>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <h5 class="font-medium text-purple-800 mb-2">
+                                                <i class="fas fa-hourglass-half mr-2"></i>Pending Status
+                                            </h5>
+                                            <p class="text-sm text-gray-700">
+                                                Your booking or transaction is being processed. This typically takes
+                                                2-24 hours
+                                                depending on verification requirements and hotel confirmation.
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium text-orange-800 mb-2">
+                                                <i class="fas fa-pause-circle mr-2"></i>On Hold Status
+                                            </h5>
+                                            <p class="text-sm text-gray-700">
+                                                Your request requires additional verification or manual review. This may
+                                                happen
+                                                for high-value transactions, first-time bookings, or when additional
+                                                documentation is needed.
+                                            </p>
+                                        </div>
+                                        <div class="mt-3 p-3 bg-purple-100 rounded">
+                                            <p class="text-xs text-purple-800">
+                                                <strong>Note:</strong> You'll receive email notifications for all status
+                                                changes.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent Rewards -->
+                <div class="glass-effect topic-card agent rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('agent')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-award text-red-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Agent Rewards</h3>
+                                    <p class="text-sm text-gray-600">Earn rewards for referrals and partnerships</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="agent-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="agent-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-red-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Agent Reward Program</h4>
+                                    <p class="text-gray-700 mb-3">
+                                        Our exclusive agent program rewards partners and high-volume users with
+                                        commissions,
+                                        bonuses, and exclusive access to luxury properties.
+                                    </p>
+                                    <div class="grid md:grid-cols-2 gap-4">
+                                        <div>
+                                            <h5 class="font-medium text-gray-900 mb-2">Reward Tiers:</h5>
+                                            <ul class="space-y-1 text-sm text-gray-700">
+                                                <li>• Bronze Agent: 2% commission</li>
+                                                <li>• Silver Agent: 3.5% commission</li>
+                                                <li>• Gold Agent: 5% commission</li>
+                                                <li>• Platinum Agent: 7% + bonuses</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium text-gray-900 mb-2">Benefits:</h5>
+                                            <ul class="space-y-1 text-sm text-gray-700">
+                                                <li>• Monthly commission payouts</li>
+                                                <li>• Exclusive property access</li>
+                                                <li>• Priority customer support</li>
+                                                <li>• Marketing materials provided</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent Avenue -->
+                <div class="glass-effect topic-card avenue rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('avenue')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-road text-cyan-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Agent Avenue</h3>
+                                    <p class="text-sm text-gray-600">Your dedicated agent dashboard and tools</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="avenue-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="avenue-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-cyan-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Agent Avenue Platform</h4>
+                                    <p class="text-gray-700 mb-3">
+                                        Agent Avenue is your comprehensive dashboard for managing bookings, tracking
+                                        commissions,
+                                        and accessing exclusive agent-only features and inventory.
+                                    </p>
+                                    <div class="space-y-3">
+                                        <div class="flex items-start gap-3">
+                                            <i class="fas fa-chart-bar text-cyan-600 mt-1"></i>
+                                            <div>
+                                                <h5 class="font-medium text-gray-900">Analytics Dashboard</h5>
+                                                <p class="text-sm text-gray-600">Track your performance, commissions,
+                                                    and client bookings</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-3">
+                                            <i class="fas fa-users text-cyan-600 mt-1"></i>
+                                            <div>
+                                                <h5 class="font-medium text-gray-900">Client Management</h5>
+                                                <p class="text-sm text-gray-600">Manage client profiles and booking
+                                                    preferences</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-3">
+                                            <i class="fas fa-key text-cyan-600 mt-1"></i>
+                                            <div>
+                                                <h5 class="font-medium text-gray-900">Exclusive Access</h5>
+                                                <p class="text-sm text-gray-600">Access to agent-only rates and hidden
+                                                    inventory</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Luxury Reservations -->
+                <div class="glass-effect topic-card luxury rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('luxury')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-crown text-amber-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Luxury Reservations</h3>
+                                    <p class="text-sm text-gray-600">Premium booking service for exclusive properties
+                                    </p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="luxury-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="luxury-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-amber-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Luxury Booking Experience</h4>
+                                    <p class="text-gray-700 mb-3">
+                                        Our luxury reservation service provides access to the world's most exclusive
+                                        hotels,
+                                        resorts, and private properties with white-glove concierge service.
+                                    </p>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <h5 class="font-medium text-amber-800 mb-2">What's Included:</h5>
+                                            <div class="grid md:grid-cols-2 gap-3">
+                                                <ul class="space-y-1 text-sm text-gray-700">
+                                                    <li>• Dedicated luxury concierge</li>
+                                                    <li>• Room upgrades when available</li>
+                                                    <li>• Welcome amenities</li>
+                                                    <li>• Priority check-in/out</li>
+                                                </ul>
+                                                <ul class="space-y-1 text-sm text-gray-700">
+                                                    <li>• Restaurant reservations</li>
+                                                    <li>• Transportation arrangements</li>
+                                                    <li>• 24/7 emergency support</li>
+                                                    <li>• Exclusive property access</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="bg-amber-100 rounded p-3">
+                                            <p class="text-sm text-amber-800">
+                                                <strong>Minimum spend:</strong> $500 per night | <strong>Available
+                                                    to:</strong> Gold-level members and above
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <script>
-            // Sample help articles data
-            const helpArticles = [
-                { title: "How to make a booking", category: "booking", content: "Step-by-step guide to making your first booking" },
-                { title: "Payment methods accepted", category: "payment", content: "We accept all major credit cards and PayPal" },
-                { title: "How to change your password", category: "account", content: "Security settings and password management" },
-                { title: "App not loading", category: "technical", content: "Troubleshooting common app issues" },
-                { title: "Travel insurance options", category: "travel", content: "Understanding travel insurance coverage" },
-                { title: "Privacy policy", category: "policies", content: "How we protect your personal information" },
-                { title: "Cancellation policy", category: "booking", content: "Understanding cancellation terms and conditions" },
-                { title: "Refund processing time", category: "payment", content: "How long refunds take to process" },
-                { title: "Two-factor authentication", category: "account", content: "Setting up 2FA for enhanced security" },
-                { title: "Website troubleshooting", category: "technical", content: "Common website issues and solutions" }
-            ];
+            function toggleTopic(topicId) {
+                const content = document.getElementById(topicId + '-content');
+                const icon = document.getElementById(topicId + '-icon');
 
-            function toggleFAQ(element) {
-                const isActive = element.classList.contains('active');
+                // Close all other topics
+                const allContents = document.querySelectorAll('.topic-content');
+                const allIcons = document.querySelectorAll('[id$="-icon"]');
 
-                // Close all FAQ items
-                document.querySelectorAll('.faq-item').forEach(item => {
-                    item.classList.remove('active');
+                allContents.forEach(content => {
+                    if (content.id !== topicId + '-content') {
+                        content.classList.add('hidden');
+                    }
                 });
 
-                // Open clicked item if it wasn't active
-                if (!isActive) {
-                    element.classList.add('active');
-                }
-            }
-
-            function searchHelp() {
-                const query = document.getElementById('helpSearch').value.toLowerCase().trim();
-                const resultsContainer = document.getElementById('searchResults');
-                const resultsList = document.getElementById('searchResultsList');
-                const resultsCount = document.getElementById('searchResultsCount');
-
-                if (query.length < 2) {
-                    resultsContainer.style.display = 'none';
-                    return;
-                }
-
-                const results = helpArticles.filter(article =>
-                    article.title.toLowerCase().includes(query) ||
-                    article.content.toLowerCase().includes(query) ||
-                    article.category.toLowerCase().includes(query)
-                );
-
-                resultsCount.textContent = `Found ${results.length} result${results.length !== 1 ? 's' : ''}`;
-                resultsList.innerHTML = '';
-
-                results.forEach(article => {
-                    const resultItem = document.createElement('div');
-                    resultItem.className = 'p-6 hover:bg-gray-50 cursor-pointer';
-                    resultItem.onclick = () => openArticle(article);
-                    resultItem.innerHTML = `
-                    <h4 class="text-lg font-medium text-gray-900 mb-2">${article.title}</h4>
-                    <p class="text-sm text-gray-600 mb-2">${article.content}</p>
-                    <span class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">${article.category}</span>
-                `;
-                    resultsList.appendChild(resultItem);
+                allIcons.forEach(icon => {
+                    if (icon.id !== topicId + '-icon') {
+                        icon.classList.remove('rotate-180');
+                    }
                 });
 
-                resultsContainer.style.display = 'block';
+                // Toggle current topic
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
             }
 
-            function openArticle(article) {
-                alert(`Opening article: ${article.title}\n\nCategory: ${article.category}\nContent: ${article.content}`);
-            }
-
-            function showCategory(category) {
-                alert(`Showing all articles in category: ${category}`);
-            }
-
-            function contactSupport() {
-                alert('Opening contact support form...');
-            }
-
-            function trackOrder() {
-                const orderId = prompt('Please enter your booking reference number:');
-                if (orderId) {
-                    alert(`Tracking booking: ${orderId}`);
-                }
-            }
-
-            function reportIssue() {
-                alert('Opening issue report form...');
-            }
-
-            function requestRefund() {
-                alert('Opening refund request form...');
-            }
-
-            function startChat() {
-                alert('Starting live chat session...');
-            }
-
-            function sendEmail() {
-                alert('Opening email form...');
-            }
-
-            function callSupport() {
-                alert('Calling +1-800-TRIVAGO...');
-            }
-
-            function playVideo(videoId) {
-                alert(`Playing video: ${videoId}`);
-            }
-
-            // Add smooth scroll behavior
-            document.documentElement.style.scrollBehavior = 'smooth';
-
-            // Focus search input when page loads
-            window.addEventListener('load', () => {
-                document.getElementById('helpSearch').focus();
+            // Add smooth animations
+            document.addEventListener('DOMContentLoaded', function () {
+                const contents = document.querySelectorAll('.topic-content');
+                contents.forEach(content => {
+                    content.style.transition = 'all 0.3s ease';
+                });
             });
         </script>
     </body>

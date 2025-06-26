@@ -995,5 +995,205 @@ function initializeWithdrawEvents() {
     document.documentElement.style.scrollBehavior = 'smooth';
 }
 
+// Feedback Form Functionality
+
+let currentRating = 0;
+let uploadedImages = [];
+
+// Character counter
+document.getElementById('feedbackMessage').addEventListener('input', function () {
+    const charCount = this.value.length;
+    document.getElementById('charCount').textContent = `${charCount} characters`;
+
+    if (charCount < 20) {
+        document.getElementById('charCount').className = 'text-xs text-red-400';
+    } else {
+        document.getElementById('charCount').className = 'text-xs text-gray-400';
+    }
+});
+
+// Star rating functionality
+function setRating(rating) {
+    currentRating = rating;
+    const stars = document.querySelectorAll('.star');
+    const ratingTexts = ['', 'Poor', 'Fair', 'Good', 'Very Good', 'Excellent'];
+
+    stars.forEach((star, index) => {
+        if (index < rating) {
+            star.className = 'star cursor-pointer text-2xl text-yellow-400 transition-colors';
+        } else {
+            star.className = 'star cursor-pointer text-2xl text-gray-300 hover:text-yellow-400 transition-colors';
+        }
+    });
+
+    document.getElementById('ratingText').textContent = ratingTexts[rating];
+}
+
+// Image upload handling
+function handleImageUpload(event) {
+    const files = Array.from(event.target.files);
+    const maxFiles = 5;
+    const maxSize = 5 * 1024 * 1024; // 5MB
+
+    if (uploadedImages.length + files.length > maxFiles) {
+        alert(`You can only upload up to ${maxFiles} images.`);
+        return;
+    }
+
+    files.forEach(file => {
+        if (file.size > maxSize) {
+            alert(`${file.name} is too large. Maximum file size is 5MB.`);
+            return;
+        }
+
+        if (!file.type.startsWith('image/')) {
+            alert(`${file.name} is not a valid image file.`);
+            return;
+        }
+
+        uploadedImages.push(file);
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            addImagePreview(e.target.result, file.name, uploadedImages.length - 1);
+        };
+        reader.readAsDataURL(file);
+    });
+
+    // Clear the input
+    event.target.value = '';
+}
+
+function addImagePreview(src, name, index) {
+    const previewContainer = document.getElementById('imagePreview');
+    previewContainer.classList.remove('hidden');
+
+    const imageDiv = document.createElement('div');
+    imageDiv.className = 'relative group';
+    imageDiv.innerHTML = `
+                <img src="${src}" alt="${name}" class="w-full h-20 object-cover rounded-lg border border-gray-200">
+                <button type="button" onclick="removeImage(${index})" 
+                        class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div class="absolute bottom-0 left-0 right-0 bg-black bg-opacity-75 text-white text-xs p-1 rounded-b-lg truncate">
+                    ${name}
+                </div>
+            `;
+
+    previewContainer.appendChild(imageDiv);
+}
+
+function removeImage(index) {
+    uploadedImages.splice(index, 1);
+
+    // Rebuild preview
+    const previewContainer = document.getElementById('imagePreview');
+    previewContainer.innerHTML = '';
+
+    if (uploadedImages.length === 0) {
+        previewContainer.classList.add('hidden');
+    } else {
+        uploadedImages.forEach((file, i) => {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                addImagePreview(e.target.result, file.name, i);
+            };
+            reader.readAsDataURL(file);
+        });
+    }
+}
+
+// Form submission
+function submitFeedback(event) {
+    event.preventDefault();
+
+    const name = document.getElementById('userName').value;
+    const email = document.getElementById('userEmail').value;
+    const type = document.getElementById('feedbackType').value;
+    const subject = document.getElementById('feedbackSubject').value;
+    const message = document.getElementById('feedbackMessage').value;
+    const contactMe = document.getElementById('contactMe').checked;
+
+    // Validation
+    if (message.length < 20) {
+        alert('Please provide at least 20 characters in your feedback message.');
+        return;
+    }
+
+    // Simulate form submission
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...';
+    submitBtn.disabled = true;
+
+    setTimeout(() => {
+        // Reset submit button first
+        submitBtn.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Submit Feedback';
+        submitBtn.disabled = false;
+
+        // Show success message
+        const successMessage = document.getElementById('successMessage');
+        successMessage.classList.remove('hidden');
+        successMessage.scrollIntoView({ behavior: 'smooth' });
+
+        // Reset form after showing success message
+        setTimeout(() => {
+            resetForm();
+        }, 1000);
+    }, 2000);
+}
+
+// Reset form
+function resetForm() {
+    // Don't hide success message when called from submit function
+    const isFormSubmitted = !document.getElementById('successMessage').classList.contains('hidden');
+
+    document.querySelector('form').reset();
+    currentRating = 0;
+    uploadedImages = [];
+
+    // Reset stars
+    document.querySelectorAll('.star').forEach(star => {
+        star.className = 'star cursor-pointer text-2xl text-gray-300 hover:text-yellow-400 transition-colors';
+    });
+    document.getElementById('ratingText').textContent = '';
+
+    // Reset character count
+    document.getElementById('charCount').textContent = '0 characters';
+    document.getElementById('charCount').className = 'text-xs text-gray-400';
+
+    // Reset image preview
+    document.getElementById('imagePreview').innerHTML = '';
+    document.getElementById('imagePreview').classList.add('hidden');
+
+    // Only hide success message if this is a manual reset (not from form submission)
+    if (!isFormSubmitted) {
+        document.getElementById('successMessage').classList.add('hidden');
+    }
+}
+
+// Drag and drop functionality
+const uploadArea = document.querySelector('.border-dashed');
+
+uploadArea.addEventListener('dragover', function (e) {
+    e.preventDefault();
+    this.classList.add('border-orange-400', 'bg-orange-50');
+});
+
+uploadArea.addEventListener('dragleave', function (e) {
+    e.preventDefault();
+    this.classList.remove('border-orange-400', 'bg-orange-50');
+});
+
+uploadArea.addEventListener('drop', function (e) {
+    e.preventDefault();
+    this.classList.remove('border-orange-400', 'bg-orange-50');
+
+    const files = e.dataTransfer.files;
+    document.getElementById('imageUpload').files = files;
+    handleImageUpload({ target: { files: files } });
+});
+
 // Add smooth scroll behavior
 document.documentElement.style.scrollBehavior = 'smooth';

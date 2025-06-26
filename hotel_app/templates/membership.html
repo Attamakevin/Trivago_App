@@ -30,458 +30,280 @@
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-white text-sm md:text-md font-bold">Membership</h1>
+                <h1 class="text-white text-sm md:text-md font-bold">Membership Levels</h1>
             </div>
         </header>
-
-        <div class="max-w-6xl mx-auto px-4 py-8 space-y-8">
-            <!-- Current Membership Status -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="premium-gradient p-6 text-center">
-                    <div class="flex items-center justify-center mb-4">
-                        <i class="fas fa-crown crown-icon text-4xl mr-3"></i>
-                        <h2 class="text-2xl md:text-3xl font-bold text-gray-900">Premium Member</h2>
-                    </div>
-                    <p class="text-gray-700 mb-6">Member since January 2020 • 5 years of premium benefits</p>
-
-                    <!-- Progress to Next Tier -->
-                    <div class="max-w-md mx-auto">
-                        <div class="flex items-center justify-between mb-2">
-                            <span class="text-sm font-medium text-gray-700">Progress to Elite</span>
-                            <span class="text-sm font-medium text-gray-700">75%</span>
-                        </div>
-                        <div class="w-full bg-white bg-opacity-50 rounded-full h-3">
-                            <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-3 rounded-full"
-                                style="width: 75%"></div>
-                        </div>
-                        <p class="text-xs text-gray-600 mt-2">$2,500 more in bookings to reach Elite status</p>
-                    </div>
-                </div>
-
-                <div class="p-6">
-                    <div class="grid md:grid-cols-4 gap-6">
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-purple-600">$12,450</div>
-                            <p class="text-sm text-gray-600">Total Bookings</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-green-600">47</div>
-                            <p class="text-sm text-gray-600">Trips Completed</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-blue-600">$3,200</div>
-                            <p class="text-sm text-gray-600">Money Saved</p>
-                        </div>
-                        <div class="text-center">
-                            <div class="text-2xl font-bold text-orange-600">2,840</div>
-                            <p class="text-sm text-gray-600">Points Earned</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Membership Tiers -->
-            <div>
-                <h3 class="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-8">Choose Your Membership Tier
-                </h3>
-
-                <div class="grid md:grid-cols-3 gap-6">
-                    <!-- Basic Tier -->
-                    <div class="tier-card bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="p-6 text-center border-b border-gray-100">
-                            <div
-                                class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-user text-gray-600 text-2xl"></i>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900 mb-2">Basic</h4>
-                            <div class="text-3xl font-bold text-gray-900 mb-1">Free</div>
-                            <p class="text-sm text-gray-600">Perfect for occasional travelers</p>
-                        </div>
-
-                        <div class="p-6">
-                            <ul class="space-y-3 mb-6">
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Basic hotel comparison</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Email support</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Mobile app access</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Trip history</span>
-                                </li>
-                                <li class="flex items-center text-gray-400">
-                                    <i class="fas fa-times mr-3"></i>
-                                    <span class="text-sm">Priority support</span>
-                                </li>
-                                <li class="flex items-center text-gray-400">
-                                    <i class="fas fa-times mr-3"></i>
-                                    <span class="text-sm">Exclusive deals</span>
-                                </li>
-                            </ul>
-
-                            <button
-                                class="w-full bg-gray-200 text-gray-700 font-medium py-3 px-4 rounded-xl cursor-not-allowed">
-                                Current Plan
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Premium Tier -->
-                    <div class="tier-card featured bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="bg-gradient-to-r from-orange-400 to-yellow-400 text-center py-2">
-                            <span class="text-white font-bold text-sm">MOST POPULAR</span>
-                        </div>
-                        <div class="premium-gradient p-6 text-center border-b border-orange-200">
-                            <div
-                                class="w-16 h-16 bg-white bg-opacity-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-crown text-orange-600 text-2xl"></i>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900 mb-2">Premium</h4>
-                            <div class="text-3xl font-bold text-gray-900 mb-1">$9.99<span
-                                    class="text-lg font-normal">/month</span></div>
-                            <p class="text-sm text-gray-700">Best for frequent travelers</p>
-                        </div>
-
-                        <div class="p-6">
-                            <ul class="space-y-3 mb-6">
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Everything in Basic</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Priority customer support</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Exclusive member deals</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Price alerts & tracking</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">5% cashback on bookings</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">No booking fees</span>
-                                </li>
-                            </ul>
-
-                            <button
-                                class="w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-3 px-4 rounded-xl transition-colors">
-                                Current Plan
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Elite Tier -->
-                    <div class="tier-card bg-white rounded-2xl shadow-lg overflow-hidden">
-                        <div class="elite-gradient p-6 text-center border-b border-teal-200">
-                            <div
-                                class="w-16 h-16 bg-white bg-opacity-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-gem text-teal-600 text-2xl"></i>
-                            </div>
-                            <h4 class="text-xl font-bold text-gray-900 mb-2">Elite</h4>
-                            <div class="text-3xl font-bold text-gray-900 mb-1">$19.99<span
-                                    class="text-lg font-normal">/month</span></div>
-                            <p class="text-sm text-gray-700">For luxury travel enthusiasts</p>
-                        </div>
-
-                        <div class="p-6">
-                            <ul class="space-y-3 mb-6">
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Everything in Premium</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">10% cashback on bookings</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Free room upgrades</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Personal travel concierge</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Airport lounge access</span>
-                                </li>
-                                <li class="flex items-center">
-                                    <i class="fas fa-check text-green-500 mr-3"></i>
-                                    <span class="text-sm text-gray-700">Travel insurance included</span>
-                                </li>
-                            </ul>
-
-                            <button onclick="upgradeMembership('elite')"
-                                class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 px-4 rounded-xl transition-colors">
-                                Upgrade to Elite
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Membership Benefits -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-6 border-b border-gray-100">
-                    <h3 class="text-2xl font-bold text-gray-900">Your Premium Benefits</h3>
-                    <p class="text-gray-600 mt-2">Enjoy these exclusive perks with your current membership</p>
-                </div>
-
-                <div class="divide-y divide-gray-100">
-                    <div class="benefit-item p-6 flex items-center">
-                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
-                            <i class="fas fa-headset text-blue-600 text-xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-medium text-gray-900">Priority Customer Support</h4>
-                            <p class="text-sm text-gray-600">Get help faster with our dedicated premium support line</p>
-                        </div>
-                        <span class="px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full">Active</span>
-                    </div>
-
-                    <div class="benefit-item p-6 flex items-center">
-                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                            <i class="fas fa-percentage text-green-600 text-xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-medium text-gray-900">5% Cashback on All Bookings</h4>
-                            <p class="text-sm text-gray-600">Earn money back on every hotel reservation you make</p>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-lg font-bold text-green-600">$160</div>
-                            <div class="text-xs text-gray-500">Earned this year</div>
-                        </div>
-                    </div>
-
-                    <div class="benefit-item p-6 flex items-center">
-                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
-                            <i class="fas fa-tags text-purple-600 text-xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-medium text-gray-900">Exclusive Member Deals</h4>
-                            <p class="text-sm text-gray-600">Access to special rates not available to basic members</p>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-lg font-bold text-purple-600">23</div>
-                            <div class="text-xs text-gray-500">Deals used</div>
-                        </div>
-                    </div>
-
-                    <div class="benefit-item p-6 flex items-center">
-                        <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center mr-4">
-                            <i class="fas fa-bell text-yellow-600 text-xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-medium text-gray-900">Price Alerts & Tracking</h4>
-                            <p class="text-sm text-gray-600">Get notified when prices drop for your desired destinations
-                            </p>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-lg font-bold text-yellow-600">8</div>
-                            <div class="text-xs text-gray-500">Active alerts</div>
-                        </div>
-                    </div>
-
-                    <div class="benefit-item p-6 flex items-center">
-                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
-                            <i class="fas fa-ban text-red-600 text-xl"></i>
-                        </div>
-                        <div class="flex-1">
-                            <h4 class="font-medium text-gray-900">No Booking Fees</h4>
-                            <p class="text-sm text-gray-600">Save on every reservation with waived booking fees</p>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-lg font-bold text-red-600">$235</div>
-                            <div class="text-xs text-gray-500">Fees waived</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Points & Rewards -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-6 border-b border-gray-100">
-                    <h3 class="text-2xl font-bold text-gray-900">Points & Rewards</h3>
-                    <p class="text-gray-600 mt-2">Earn points on every booking and redeem for amazing rewards</p>
-                </div>
-
-                <div class="p-6">
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <div class="flex items-center justify-between mb-4">
-                                <h4 class="text-lg font-medium text-gray-900">Available Points</h4>
-                                <div class="text-2xl font-bold text-purple-600">2,840</div>
-                            </div>
-
-                            <div class="space-y-3">
-                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-coffee text-brown-600 mr-3"></i>
-                                        <span class="text-sm font-medium">$10 Coffee Gift Card</span>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-sm font-bold">500 pts</div>
-                                        <button onclick="redeemReward('coffee')"
-                                            class="text-xs text-purple-600 hover:text-purple-700">Redeem</button>
-                                    </div>
+    
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <!-- Level Cards -->
+            <div class="space-y-4">
+                <!-- Level 1 - Basic -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-gray-400">
+                    <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+                        onclick="toggleLevel('level1')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-user text-gray-600 text-xl"></i>
                                 </div>
-
-                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-utensils text-orange-600 mr-3"></i>
-                                        <span class="text-sm font-medium">$25 Restaurant Voucher</span>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-sm font-bold">1,200 pts</div>
-                                        <button onclick="redeemReward('restaurant')"
-                                            class="text-xs text-purple-600 hover:text-purple-700">Redeem</button>
-                                    </div>
-                                </div>
-
-                                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-plane text-blue-600 mr-3"></i>
-                                        <span class="text-sm font-medium">Free Hotel Night</span>
-                                    </div>
-                                    <div class="text-right">
-                                        <div class="text-sm font-bold">2,500 pts</div>
-                                        <button onclick="redeemReward('hotel')"
-                                            class="text-xs text-purple-600 hover:text-purple-700">Redeem</button>
-                                    </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Level 1 - Basic</h3>
+                                    <p class="text-sm text-gray-600">Free • Perfect for new users</p>
                                 </div>
                             </div>
-                        </div>
-
-                        <div>
-                            <h4 class="text-lg font-medium text-gray-900 mb-4">How to Earn More Points</h4>
-                            <div class="space-y-3">
-                                <div class="flex items-center">
-                                    <i class="fas fa-bed text-blue-600 mr-3"></i>
-                                    <span class="text-sm text-gray-700">1 point per $1 spent on bookings</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-star text-yellow-600 mr-3"></i>
-                                    <span class="text-sm text-gray-700">50 points for writing reviews</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-user-friends text-green-600 mr-3"></i>
-                                    <span class="text-sm text-gray-700">500 points per friend referral</span>
-                                </div>
-                                <div class="flex items-center">
-                                    <i class="fas fa-calendar text-purple-600 mr-3"></i>
-                                    <span class="text-sm text-gray-700">100 bonus points on birthdays</span>
-                                </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Current</span>
+                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                    id="level1-icon"></i>
                             </div>
-
-                            <button onclick="inviteFriends()"
-                                class="w-full mt-6 bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
-                                <i class="fas fa-user-plus mr-2"></i>Invite Friends
-                            </button>
+                        </div>
+                    </div>
+    
+                    <div class="level-content hidden" id="level1-content">
+                        <div class="px-6 pb-6 border-t border-gray-100">
+                            <div class="pt-4">
+                                <h4 class="font-semibold text-gray-900 mb-3">What you get:</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Basic hotel comparison</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Email support</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Mobile app access</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Trip history</span>
+                                    </li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Billing Information -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-6 border-b border-gray-100">
-                    <h3 class="text-2xl font-bold text-gray-900">Billing Information</h3>
-                </div>
-
-                <div class="p-6">
-                    <div class="grid md:grid-cols-2 gap-8">
-                        <div>
-                            <h4 class="text-lg font-medium text-gray-900 mb-4">Current Plan</h4>
-                            <div class="bg-orange-50 border border-orange-200 rounded-xl p-4">
-                                <div class="flex items-center justify-between mb-2">
-                                    <span class="font-medium text-gray-900">Premium Monthly</span>
-                                    <span class="text-lg font-bold text-orange-600">$9.99/month</span>
+    
+                <!-- Level 2 - Premium -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-orange-400">
+                    <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+                        onclick="toggleLevel('level2')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-crown text-orange-600 text-xl"></i>
                                 </div>
-                                <p class="text-sm text-gray-600 mb-3">Next billing date: July 20, 2025</p>
-                                <div class="flex space-x-2">
-                                    <button onclick="cancelSubscription()"
-                                        class="text-sm text-red-600 hover:text-red-700 font-medium">Cancel</button>
-                                    <span class="text-gray-300">•</span>
-                                    <button onclick="modifyPlan()"
-                                        class="text-sm text-blue-600 hover:text-blue-700 font-medium">Modify
-                                        Plan</button>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Level 2 - Premium</h3>
+                                    <p class="text-sm text-gray-600">$9.99/month • Best for frequent travelers</p>
                                 </div>
                             </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">Most
+                                    Popular</span>
+                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                    id="level2-icon"></i>
+                            </div>
                         </div>
-
-                        <div>
-                            <h4 class="text-lg font-medium text-gray-900 mb-4">Payment Method</h4>
-                            <div class="border border-gray-200 rounded-xl p-4">
-                                <div class="flex items-center justify-between mb-2">
-                                    <div class="flex items-center">
-                                        <i class="fab fa-cc-visa text-blue-600 text-2xl mr-3"></i>
-                                        <span class="font-medium text-gray-900">•••• •••• •••• 1234</span>
-                                    </div>
-                                    <button onclick="updatePayment()"
-                                        class="text-sm text-blue-600 hover:text-blue-700 font-medium">Edit</button>
+                    </div>
+    
+                    <div class="level-content hidden" id="level2-content">
+                        <div class="px-6 pb-6 border-t border-gray-100">
+                            <div class="pt-4">
+                                <h4 class="font-semibold text-gray-900 mb-3">Everything in Basic, plus:</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Priority customer support</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Exclusive member deals</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Price alerts & tracking</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">5% cashback on bookings</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">No booking fees</span>
+                                    </li>
+                                </ul>
+                                <button onclick="upgradeTo('premium')"
+                                    class="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                    Upgrade to Premium
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Level 3 - Elite -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-teal-400">
+                    <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+                        onclick="toggleLevel('level3')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-gem text-teal-600 text-xl"></i>
                                 </div>
-                                <p class="text-sm text-gray-600">Expires 12/2027</p>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Level 3 - Elite</h3>
+                                    <p class="text-sm text-gray-600">$19.99/month • For luxury travel enthusiasts</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                    id="level3-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="level-content hidden" id="level3-content">
+                        <div class="px-6 pb-6 border-t border-gray-100">
+                            <div class="pt-4">
+                                <h4 class="font-semibold text-gray-900 mb-3">Everything in Premium, plus:</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">10% cashback on bookings</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Free room upgrades</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Personal travel concierge</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Airport lounge access</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Travel insurance included</span>
+                                    </li>
+                                </ul>
+                                <button onclick="upgradeTo('elite')"
+                                    class="mt-4 w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                    Upgrade to Elite
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+    
+                <!-- Level 4 - VIP -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-purple-400">
+                    <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+                        onclick="toggleLevel('level4')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-star text-purple-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Level 4 - VIP</h3>
+                                    <p class="text-sm text-gray-600">$39.99/month • Ultimate luxury experience</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Exclusive</span>
+                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                    id="level4-icon"></i>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="level-content hidden" id="level4-content">
+                        <div class="px-6 pb-6 border-t border-gray-100">
+                            <div class="pt-4">
+                                <h4 class="font-semibold text-gray-900 mb-3">Everything in Elite, plus:</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">15% cashback on bookings</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">24/7 dedicated VIP support</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Complimentary suite upgrades</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Private jet booking assistance</span>
+                                    </li>
+                                    <li class="flex items-center gap-2">
+                                        <i class="fas fa-check text-green-500 text-sm"></i>
+                                        <span class="text-sm text-gray-700">Exclusive VIP-only properties</span>
+                                    </li>
+                                </ul>
+                                <button onclick="upgradeTo('vip')"
+                                    class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                    Upgrade to VIP
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
+    
         <script>
-            function upgradeMembership(tier) {
-                if (confirm(`Upgrade to ${tier.charAt(0).toUpperCase() + tier.slice(1)} membership?`)) {
-                    alert(`Processing upgrade to ${tier.charAt(0).toUpperCase() + tier.slice(1)} membership...`);
-                }
+            function toggleLevel(levelId) {
+                const content = document.getElementById(levelId + '-content');
+                const icon = document.getElementById(levelId + '-icon');
+
+                // Close all other levels
+                const allContents = document.querySelectorAll('.level-content');
+                const allIcons = document.querySelectorAll('[id$="-icon"]');
+
+                allContents.forEach(content => {
+                    if (content.id !== levelId + '-content') {
+                        content.classList.add('hidden');
+                    }
+                });
+
+                allIcons.forEach(icon => {
+                    if (icon.id !== levelId + '-icon') {
+                        icon.classList.remove('rotate-180');
+                    }
+                });
+
+                // Toggle current level
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
             }
 
-            function redeemReward(type) {
-                const rewards = {
-                    coffee: '$10 Coffee Gift Card',
-                    restaurant: '$25 Restaurant Voucher',
-                    hotel: 'Free Hotel Night'
+            function upgradeTo(level) {
+                const levelNames = {
+                    premium: 'Premium',
+                    elite: 'Elite',
+                    vip: 'VIP'
                 };
 
-                if (confirm(`Redeem ${rewards[type]}?`)) {
-                    alert(`${rewards[type]} has been redeemed! Check your email for details.`);
+                if (confirm(`Upgrade to ${levelNames[level]} membership?`)) {
+                    alert(`Processing upgrade to ${levelNames[level]} membership...`);
                 }
             }
 
-            function inviteFriends() {
-                alert('Opening friend invitation page...');
-            }
-
-            function cancelSubscription() {
-                if (confirm('Are you sure you want to cancel your Premium subscription? You will lose all premium benefits.')) {
-                    alert('Subscription cancelled. Your premium benefits will remain active until July 20, 2025.');
-                }
-            }
-
-            function modifyPlan() {
-                alert('Opening plan modification options...');
-            }
-
-            function updatePayment() {
-                alert('Opening payment method update form...');
-            }
-
-            // Add smooth scroll behavior
-            document.documentElement.style.scrollBehavior = 'smooth';
+            // Add smooth animations
+            document.addEventListener('DOMContentLoaded', function () {
+                const contents = document.querySelectorAll('.level-content');
+                contents.forEach(content => {
+                    content.style.transition = 'all 0.3s ease';
+                });
+            });
         </script>
-    </body>
-
+        </body>
 </html>

@@ -189,7 +189,7 @@
                     </a>
 
                     <!-- Settings -->
-                    <div onclick="navigateToPage('settings')"
+                    <a href="{{ url_for('settings') }}"
                         class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
                         <div class="flex items-center space-x-4">
                             <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
@@ -201,10 +201,10 @@
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
+                    </a>
 
                     <!-- Customer Service -->
-                    <div onclick="navigateToPage('support')"
+                    <a href="{{ url_for('customer_service') }}"
                         class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
                         <div class="flex items-center space-x-4">
                             <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
@@ -216,10 +216,10 @@
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
+                    </a>
 
                     <!-- Feedback -->
-                    <div onclick="navigateToPage('feedback')"
+                    <a href="{{ url_for('feedback') }}"
                         class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
                         <div class="flex items-center space-x-4">
                             <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
@@ -231,10 +231,10 @@
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
+                    </a>
 
                     <!-- Help Center -->
-                    <div onclick="navigateToPage('help')"
+                    <a href="{{ url_for('help_center') }}"
                         class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
                         <div class="flex items-center space-x-4">
                             <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
@@ -246,9 +246,9 @@
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
+                    </a>
                     <!-- Bind Wallet Address -->
-                    <div onclick="navigateToPage('help')"
+                    <a href="{{ url_for('bind_wallet') }}"
                         class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
                         <div class="flex items-center space-x-4">
                             <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
@@ -260,7 +260,7 @@
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
-                    </div>
+                    </a>
                 </div>
             </div>
 

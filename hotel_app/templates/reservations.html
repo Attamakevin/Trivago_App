@@ -150,8 +150,7 @@
                                     <i class="fas fa-chart-line text-xl text-orange-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user.total_commission if
-                                user.total_commission else 0) }}</div>
+                            <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user_stats.total_commission) }}</div>
                             <p class="text-[#101f56] text-sm">Earned Commission</p>
                             <p class="text-xs text-[#101f56] mt-1">Total earnings</p>
                         </div>
@@ -164,8 +163,7 @@
                                     <i class="fas fa-piggy-bank text-xl text-purple-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user.deposit_balance if
-                                user.deposit_balance else 540.00) }}</div>
+                            <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user_stats.deposit_balance) }}</div>
                             <p class="text-[#101f56] text-sm">Booking Deposits</p>
                             <p class="text-xs text-[#101f56] mt-1">
                                 {{ user.active_bookings if user.active_bookings else 5 }} active bookings
@@ -496,3 +494,9 @@
     </body>
 
 </html>
+<script>
+function closeSuccessModal() {
+    document.getElementById('successModal').classList.add('hidden');
+    window.location.href = "{{ url_for('reservations') }}";
+}
+</script>

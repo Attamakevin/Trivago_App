@@ -43,7 +43,7 @@
                     {% for withdrawal in withdrawals.items %}
                     <tr>
                         <td>{{ withdrawal.id }}</td>
-                        <td>{{ withdrawal.user.username if withdrawal.user else 'Unknown' }}</td>
+                        <td>{{ withdrawal.user.contact if withdrawal.user else 'Unknown' }}</td>
                         <td>${{ "%.2f"|format(withdrawal.amount) }}</td>
                         <td>{{ withdrawal.withdrawal_method or 'N/A' }}</td>
                         <td>{{ withdrawal.account_details or 'N/A' }}</td>

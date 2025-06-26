@@ -150,56 +150,19 @@ def credit():
     user = User.query.get(session['user_id'])
     return render_template('credit.html', user=user)
 
-@app.route('/reservations')
-def reservations():
-    if 'user_id' not in session:
-        return redirect(url_for('login'))
-    
-    user = User.query.get(session['user_id'])
-    hotels = Hotel.query.all()
-    
-    # Get user's reservations with hotel details
-    user_reservations = db.session.query(Reservation, Hotel).join(
-        Hotel, Reservation.hotel_id == Hotel.id
-    ).filter(Reservation.user_id == user.id).order_by(Reservation.timestamp.desc()).all()
-    
-    # Format reservations for template (matching your HTML structure)
-    formatted_reservations = []
-    for reservation, hotel in user_reservations:
-        formatted_reservations.append({
-            'id': reservation.id,
-            'hotel_name': hotel.name,
-            'location': f"{hotel.name} Location",  # Since location is not in Hotel model
-            'price': hotel.price,
-            'commission': reservation.commission_earned,
-            'status': reservation.status.lower(),  # Convert to lowercase for CSS classes
-            'created_at': reservation.timestamp,
-            'rated': reservation.rating is not None
-        })
-    
-    # DON'T assign to user.reservations - it's a SQLAlchemy relationship!
-    # user.reservations = formatted_reservations  # <-- This line caused the error
-    
-    # Calculate additional user stats for dashboard
-    user.total_commission = sum([r.commission_earned for r in Reservation.query.filter_by(user_id=user.id).all()])
-    user.trial_bonus = 250.00  # Static value as per your template
-    user.balance += user.total_commission  # Add earned commission to account balance
-    user.deposit_balance = 540.00  # Static value as per your template
-    user.active_bookings = len([r for r in formatted_reservations if r['status'] in ['processing', 'confirmed']])
-    
-    # Pass formatted_reservations as a separate variable to the template
-    return render_template('reservations.html', hotels=hotels, user=user, reservations=formatted_reservations)
-
-@app.route('/reserve/<int:hotel_id>', methods=['POST'])
+# Updated reservation route with automatic completion
+@app.route('/reserve/<int:hotel_id>', methods=['GET', 'POST'])
 def reserve(hotel_id):
     if 'user_id' not in session:
+        if request.method == 'GET':
+            return redirect(url_for('login'))
         return jsonify({'error': 'Not authenticated'}), 401
     
     try:
         user = User.query.get(session['user_id'])
         hotel = Hotel.query.get_or_404(hotel_id)
 
-        # Check daily reservation limit based on VIP level
+        # Check daily reservation limit
         today_reservations = Reservation.query.filter_by(user_id=user.id).filter(
             Reservation.timestamp >= datetime.combine(date.today(), datetime.min.time())).count()
         
@@ -207,6 +170,9 @@ def reserve(hotel_id):
         daily_limit = limits.get(user.vip_level, 5)
 
         if today_reservations >= daily_limit:
+            if request.method == 'GET':
+                flash(f'Daily reservation limit reached ({daily_limit} reservations per day for {user.vip_level})', 'error')
+                return redirect(url_for('reservations'))
             return jsonify({
                 'error': f'Daily reservation limit reached ({daily_limit} reservations per day for {user.vip_level})'
             }), 403
@@ -217,34 +183,127 @@ def reserve(hotel_id):
         # Generate unique order number
         order_number = f"ORD{user.id}{datetime.now().strftime('%Y%m%d%H%M%S')}"
         
-        # Create reservation
+        # Create reservation with immediate completion and commission payment
         reservation = Reservation(
             user_id=user.id,
             hotel_id=hotel.id,
             order_number=order_number,
             commission_earned=commission,
-            status='Processing',  # Using your model's default status
-            timestamp=datetime.utcnow()
+            status='Completed',  # Set to completed immediately
+            timestamp=datetime.utcnow(),
+            commission_paid=True,  # Mark commission as paid immediately
+            commission_paid_at=datetime.utcnow()  # Set payment timestamp
         )
         
-        db.session.add(reservation)
-        db.session.commit()
+        # Add commission to user balance immediately
+        print(f"DEBUG: Adding commission {commission} to user {user.id}")
+        print(f"DEBUG: User balance before: {user.balance}")
         
-        # Simulate some reservations being confirmed immediately
-        if random.choice([True, False]):
-            reservation.status = 'Confirmed'
-            db.session.commit()
+        user.balance += commission
+        
+        print(f"DEBUG: User balance after: {user.balance}")
+        
+        # Add both user and reservation to session
+        db.session.add(reservation)
+        db.session.add(user)
+        db.session.commit()
+        db.session.refresh(user)  # Refresh to get updated data
+        
+        print(f"DEBUG: User balance after commit: {user.balance}")
+        
+        if request.method == 'GET':
+            flash('Reservation completed successfully and commission added to your balance!', 'success')
+            return redirect(url_for('reservations'))
         
         return jsonify({
             'success': True,
-            'message': 'Reservation created successfully',
+            'message': 'Reservation completed successfully and commission added to your balance!',
             'reservation_id': reservation.id,
-            'order_number': order_number
+            'order_number': order_number,
+            'commission_earned': commission,
+            'new_balance': user.balance
         })
         
     except Exception as e:
         db.session.rollback()
+        print(f"ERROR in reserve function: {str(e)}")
+        if request.method == 'GET':
+            flash(f'Error creating reservation: {str(e)}', 'error')
+            return redirect(url_for('reservations'))
         return jsonify({'error': str(e)}), 500
+
+@app.route('/reservations')
+def reservations():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    hotels = Hotel.query.all()
+    
+    # Since commissions are now paid immediately, we don't need to process unpaid ones
+    # But keep this logic for any legacy reservations that might exist
+    unpaid_reservations = Reservation.query.filter_by(
+        user_id=user.id, 
+        status='Completed', 
+        commission_paid=False
+    ).all()
+    
+    # Process any legacy unpaid commissions
+    total_new_commission = 0
+    for reservation in unpaid_reservations:
+        print(f"DEBUG: Processing legacy commission {reservation.commission_earned} for user {user.id}")
+        print(f"DEBUG: User balance before: {user.balance}")
+        
+        user.balance += reservation.commission_earned
+        reservation.commission_paid = True
+        reservation.commission_paid_at = datetime.utcnow()
+        total_new_commission += reservation.commission_earned
+        
+        print(f"DEBUG: User balance after: {user.balance}")
+    
+    # Commit any legacy commission updates
+    if unpaid_reservations:
+        db.session.add(user)
+        db.session.commit()
+        db.session.refresh(user)
+        print(f"DEBUG: User balance after commit: {user.balance}")
+    
+    # Get user's reservations with hotel details
+    user_reservations = db.session.query(Reservation, Hotel).join(
+        Hotel, Reservation.hotel_id == Hotel.id
+    ).filter(Reservation.user_id == user.id).order_by(Reservation.timestamp.desc()).all()
+    
+    # Format reservations for template
+    formatted_reservations = []
+    for reservation, hotel in user_reservations:
+        formatted_reservations.append({
+            'id': reservation.id,
+            'hotel_name': hotel.name,
+            'location': f"{hotel.name} Location",
+            'price': hotel.price,
+            'commission': reservation.commission_earned,
+            'status': reservation.status.lower(),
+            'created_at': reservation.timestamp,
+            'rated': reservation.rating is not None,
+            'commission_paid': reservation.commission_paid
+        })
+    
+    # Calculate user stats for display
+    total_commission = sum([r.commission_earned for r in Reservation.query.filter_by(user_id=user.id, commission_paid=True).all()])
+    trial_bonus = 250.00
+    deposit_balance = 540.00
+    active_bookings = len([r for r in formatted_reservations if r['status'] in ['processing', 'confirmed']])
+    
+    user_stats = {
+        'total_commission': total_commission,
+        'trial_bonus': trial_bonus,
+        'deposit_balance': deposit_balance,
+        'active_bookings': active_bookings
+    }
+    
+    print(f"Final user balance being sent to template: {user.balance}")
+    
+    return render_template('reservations.html', hotels=hotels, user=user, reservations=formatted_reservations, user_stats=user_stats)
 
 @app.route('/rate/<int:reservation_id>', methods=['POST'])
 def rate(reservation_id):
@@ -255,18 +314,16 @@ def rate(reservation_id):
         reservation = Reservation.query.get_or_404(reservation_id)
         user = User.query.get(session['user_id'])
         
-        # Verify reservation belongs to user
         if reservation.user_id != user.id:
             return jsonify({'error': 'Unauthorized'}), 403
         
-        # Check if reservation is completed and not already rated
         if reservation.status.lower() != 'completed':
             return jsonify({'error': 'Can only rate completed reservations'}), 400
             
         if reservation.rating is not None:
             return jsonify({'error': 'Reservation already rated'}), 400
         
-        # Get rating and feedback from request
+        # Get rating and feedback
         if request.is_json:
             rating = request.json.get('rating', 5)
             feedback = request.json.get('feedback', '')
@@ -274,21 +331,22 @@ def rate(reservation_id):
             rating = int(request.form.get('rating', 5))
             feedback = request.form.get('feedback', '')
         
-        # Update reservation
+        # Update reservation with rating
         reservation.rating = rating
         reservation.feedback = feedback
         
-        # Add commission to user balance
-        user.balance += reservation.commission_earned
-        
+        # Since commission is now paid immediately upon reservation creation,
+        # we don't need to add it again here. Just commit the rating.
+        db.session.add(reservation)
         db.session.commit()
+        
+        print(f"DEBUG: Rating submitted for reservation {reservation_id}")
         
         if request.is_json:
             return jsonify({
                 'success': True,
                 'message': 'Rating submitted successfully',
-                'commission_earned': reservation.commission_earned,
-                'new_balance': user.balance
+                'current_balance': user.balance  # Show current balance, no new commission added
             })
         else:
             flash('Rating submitted successfully', 'success')
@@ -296,43 +354,78 @@ def rate(reservation_id):
         
     except Exception as e:
         db.session.rollback()
+        print(f"ERROR in rate function: {str(e)}")
         if request.is_json:
             return jsonify({'error': str(e)}), 500
         else:
             flash(f'Error submitting rating: {str(e)}', 'error')
             return redirect(url_for('reservations'))
 
-@app.route('/cancel-reservation/<int:reservation_id>', methods=['POST'])
-def cancel_reservation(reservation_id):
-    if 'user_id' not in session:
-        return jsonify({'error': 'Not authenticated'}), 401
+# Optional: Keep admin route for any manual processing needs
+@app.route('/admin/process-commissions')
+def process_commissions():
+    """Admin route to process any legacy pending commissions"""
+    if 'admin' not in session:
+        return jsonify({'error': 'Admin access required'}), 403
     
-    try:
-        reservation = Reservation.query.get_or_404(reservation_id)
-        user = User.query.get(session['user_id'])
+    # Only process legacy commissions that somehow didn't get paid
+    unpaid_reservations = Reservation.query.filter_by(
+        status='Completed', 
+        commission_paid=False
+    ).all()
+    
+    processed_count = 0
+    total_commission = 0
+    
+    for reservation in unpaid_reservations:
+        user = User.query.get(reservation.user_id)
+        user.balance += reservation.commission_earned
+        reservation.commission_paid = True
+        reservation.commission_paid_at = datetime.utcnow()
         
-        # Verify reservation belongs to user
-        if reservation.user_id != user.id:
-            return jsonify({'error': 'Unauthorized'}), 403
+        db.session.add(user)
         
-        # Check if reservation can be cancelled
-        if reservation.status.lower() not in ['processing', 'confirmed']:
-            return jsonify({'error': 'Cannot cancel this reservation'}), 400
-        
-        # Update reservation status
-        reservation.status = 'Cancelled'
-        
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'Reservation cancelled successfully'
-        })
-        
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({'error': str(e)}), 500
+        processed_count += 1
+        total_commission += reservation.commission_earned
+    
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': f'Processed {processed_count} legacy reservations',
+        'processed_reservations': processed_count,
+        'total_commission_paid': total_commission
+    })
 
+# Optional: Add a function to simulate processing delay if needed
+def create_reservation_with_delay(user_id, hotel_id, commission, order_number):
+    """Alternative function if you want to simulate processing time"""
+    import threading
+    import time
+    
+    def complete_reservation():
+        time.sleep(5)  # Simulate 5-second processing delay
+        
+        reservation = Reservation.query.filter_by(order_number=order_number).first()
+        user = User.query.get(user_id)
+        
+        if reservation and user:
+            reservation.status = 'Completed'
+            reservation.commission_paid = True
+            reservation.commission_paid_at = datetime.utcnow()
+            
+            user.balance += commission
+            
+            db.session.add(user)
+            db.session.add(reservation)
+            db.session.commit()
+            
+            print(f"Background: Reservation {order_number} completed and commission paid")
+    
+    # Start background thread
+    thread = threading.Thread(target=complete_reservation)
+    thread.daemon = True
+    thread.start()
 @app.route('/order-history')
 def order_history():
     if 'user_id' not in session:
@@ -358,23 +451,33 @@ def order_history():
                          completed=completed,
                          cancelled=cancelled)
 
+from sqlalchemy import func
+
 @app.route('/profile')
 def profile():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
+    # Get the user from the database
     user = User.query.get(session['user_id'])
     
-    # Calculate user statistics
-    total_reservations = Reservation.query.filter_by(user_id=user.id).count()
-    completed_reservations = Reservation.query.filter_by(user_id=user.id).filter(
-        Reservation.status == 'Completed').count()
-    user = user
-    # Calculate completion rate
-    completion_rate = (completed_reservations / total_reservations * 100) if total_reservations > 0 else 0
+    if not user:
+        flash('User not found', 'error')
+        return redirect(url_for('login'))
     
-    # Calculate total commission earned
-    total_commission = sum([r.commission_earned for r in Reservation.query.filter_by(user_id=user.id).all()])
+    # More efficient queries using aggregation
+    reservation_stats = db.session.query(
+        func.count(Reservation.id).label('total_reservations'),
+        func.count(Reservation.id).filter(Reservation.status == 'Completed').label('completed_reservations'),
+        func.coalesce(func.sum(Reservation.commission_earned), 0).label('total_commission')
+    ).filter_by(user_id=user.id).first()
+    
+    # Calculate completion rate
+    total_reservations = reservation_stats.total_reservations or 0
+    completed_reservations = reservation_stats.completed_reservations or 0
+    completion_rate = (completed_reservations / total_reservations * 100) if total_reservations > 0 else 0
+    total_commission = reservation_stats.total_commission or 0
+    print(f"User balance: {user.balance} {user.user_id}")
     
     return render_template('profile.html', 
                          user=user,
@@ -822,7 +925,7 @@ def view_deposits():
     """View all deposit requests - Admin only"""
     try:
         deposits = DepositRequest.query.order_by(DepositRequest.created_at.desc()).all()
-        return render_template('view_deposits.html', deposits=deposits)
+        return render_template('admin_deposits.html', deposits=deposits)
     except Exception as e:
         flash(f'Error loading deposits: {str(e)}', 'error')
         return redirect(url_for('admin_dashboard'))
@@ -849,7 +952,7 @@ def approve_deposit(deposit_id):
     else:
         flash("Deposit has already been processed.", "warning")
     
-    return redirect(url_for('view_deposits'))
+    return redirect(url_for('admin_deposits'))
 
 # REJECT DEPOSIT
 @app.route('/admin/deposits/<int:deposit_id>/reject', methods=['POST'])
@@ -869,7 +972,7 @@ def reject_deposit(deposit_id):
     else:
         flash("Deposit has already been processed.", "warning")
     
-    return redirect(url_for('view_deposits'))
+    return redirect(url_for('admin_deposits'))
 
 # VIEW WITHDRAWALS - Main listing page
 @app.route('/admin/withdrawals')
@@ -878,7 +981,7 @@ def view_withdrawals():
     """View all withdrawal requests - Admin only"""
     try:
         withdrawals = WithdrawalRequest.query.order_by(WithdrawalRequest.created_at.desc()).all()
-        return render_template('view_withdrawals.html', withdrawals=withdrawals)
+        return render_template('admin_withdrawals.html', withdrawals=withdrawals)
     except Exception as e:
         flash(f'Error loading withdrawals: {str(e)}', 'error')
         return redirect(url_for('admin_dashboard'))
@@ -903,7 +1006,7 @@ def approve_withdrawal(withdrawal_id):
     else:
         flash("Withdrawal has already been processed.", "warning")
     
-    return redirect(url_for('view_withdrawals'))  # Fixed: was 'withdrawals'
+    return redirect(url_for('admin_withdrawals'))  # Fixed: was 'withdrawals'
 
 # REJECT WITHDRAWAL
 @app.route('/admin/withdrawals/<int:withdrawal_id>/reject', methods=['POST'])
@@ -928,7 +1031,7 @@ def reject_withdrawal(withdrawal_id):
     else:
         flash("Withdrawal has already been processed.", "warning")
     
-    return redirect(url_for('view_withdrawals'))
+    return redirect(url_for('admin_withdrawals'))
 @app.route('/api/validate-wallet', methods=['POST'])
 def validate_wallet_address():
     """API endpoint to validate wallet address format"""

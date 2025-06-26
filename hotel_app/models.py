@@ -2,6 +2,8 @@ from hotel_app import db
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import random
+import string
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -22,6 +24,18 @@ class User(db.Model, UserMixin):
     reservations = db.relationship('Reservation', backref='user', lazy=True)
     deposit_requests = db.relationship('DepositRequest', backref='user', lazy=True)
     withdrawal_requests = db.relationship('WithdrawalRequest', backref='user', lazy=True)
+   
+    def __init__(self, **kwargs):
+                super(User, self).__init__(**kwargs)
+                if not self.user_id:
+                    self.user_id = self.generate_user_id()
+            
+    def generate_user_id(self):
+    # Generate a 6-digit numeric ID
+        return str(random.randint(100000, 999999))
+    
+        
+            
 
 class InvitationCode(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -477,7 +477,7 @@ def profile():
     completed_reservations = reservation_stats.completed_reservations or 0
     completion_rate = (completed_reservations / total_reservations * 100) if total_reservations > 0 else 0
     total_commission = reservation_stats.total_commission or 0
-    print(f"User balance: {user.balance}")
+    print(f"User balance: {user.balance} {user.user_id}")
     
     return render_template('profile.html', 
                          user=user,

@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Help Center - Trivago</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            .gradient-bg {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .help-gradient {
+                background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            }
+
+            .category-card {
+                transition: all 0.3s ease;
+            }
+
+            .category-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            }
+
+            .faq-item {
+                transition: all 0.3s ease;
+            }
+
+            .faq-item.active .faq-answer {
+                max-height: 200px;
+                opacity: 1;
+                padding: 1rem 0;
+            }
+
+            .faq-answer {
+                max-height: 0;
+                opacity: 0;
+                overflow: hidden;
+                transition: all 0.3s ease;
+                padding: 0;
+            }
+
+            .faq-item.active .faq-icon {
+                transform: rotate(45deg);
+            }
+
+            .search-result {
+                display: none;
+            }
+
+            .search-result.show {
+                display: block;
+            }
+        </style>
+    </head>
+
+    <body class="bg-gray-50 min-h-screen">
+        <!-- Header -->
+        <header class="gradient-bg text-white p-4 md:p-6">
+            <div class="max-w-6xl mx-auto flex items-center justify-between">
+                <button onclick="history.back()" class="text-white hover:text-gray-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-xl md:text-2xl font-bold">Help Center</h1>
+                <div class="w-6"></div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <div class="help-gradient text-white py-16 md:py-20">
+            <div class="max-w-4xl mx-auto px-4 text-center">
+                <h2 class="text-3xl md:text-5xl font-bold mb-6">How can we help you?</h2>
+                <p class="text-lg opacity-90 mb-8">Find answers to your questions or get in touch with our support team
+                </p>
+
+                <!-- Search Bar -->
+                <div class="relative max-w-2xl mx-auto">
+                    <input type="text" id="helpSearch" placeholder="Search for help articles, FAQs, tutorials..."
+                        class="w-full pl-12 pr-16 py-4 text-gray-900 rounded-2xl shadow-lg text-lg focus:outline-none focus:ring-4 focus:ring-white focus:ring-opacity-30"
+                        onkeyup="searchHelp()">
+                    <i
+                        class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl"></i>
+                    <button
+                        class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-gradient-to-r from-pink-500 to-purple-600 text-white px-4 py-2 rounded-xl hover:from-pink-600 hover:to-purple-700 transition-colors">
+                        Search
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 py-12 space-y-12">
+            <!-- Quick Actions -->
+            <div class="grid md:grid-cols-4 gap-6">
+                <div onclick="contactSupport()"
+                    class="category-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
+                    <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-headset text-blue-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Contact Support</h3>
+                    <p class="text-sm text-gray-600">Get direct help from our team</p>
+                </div>
+
+                <div onclick="trackOrder()"
+                    class="category-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
+                    <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-map-marker-alt text-green-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Track Booking</h3>
+                    <p class="text-sm text-gray-600">Check your reservation status</p>
+                </div>
+
+                <div onclick="reportIssue()"
+                    class="category-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
+                    <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-exclamation-triangle text-red-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Report Issue</h3>
+                    <p class="text-sm text-gray-600">Let us know about problems</p>
+                </div>
+
+                <div onclick="requestRefund()"
+                    class="category-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
+                    <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-undo text-yellow-600 text-2xl"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Request Refund</h3>
+                    <p class="text-sm text-gray-600">Process cancellations</p>
+                </div>
+            </div>
+
+            <!-- Help Categories -->
+            <div>
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-8">Browse Help Topics</h3>
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div onclick="showCategory('booking')"
+                        class="category-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-calendar-check text-purple-600 text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-900">Booking & Reservations</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Everything about making, modifying, and cancelling bookings</p>
+                        <div class="text-sm text-gray-500">
+                            <span>15 articles</span> • <span>Most popular</span>
+                        </div>
+                    </div>
+
+                    <div onclick="showCategory('payment')"
+                        class="category-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-credit-card text-green-600 text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-900">Payment & Billing</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Payment methods, billing issues, and refund processes</p>
+                        <div class="text-sm text-gray-500">
+                            <span>12 articles</span> • <span>Updated recently</span>
+                        </div>
+                    </div>
+
+                    <div onclick="showCategory('account')"
+                        class="category-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-user-cog text-blue-600 text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-900">Account Management</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Profile settings, password changes, and account security</p>
+                        <div class="text-sm text-gray-500">
+                            <span>8 articles</span> • <span>Beginner friendly</span>
+                        </div>
+                    </div>
+
+                    <div onclick="showCategory('technical')"
+                        class="category-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-cog text-orange-600 text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-900">Technical Support</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">App issues, website problems, and troubleshooting</p>
+                        <div class="text-sm text-gray-500">
+                            <span>10 articles</span> • <span>Step-by-step guides</span>
+                        </div>
+                    </div>
+
+                    <div onclick="showCategory('travel')"
+                        class="category-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-plane text-teal-600 text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-900">Travel Information</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Travel tips, destination guides, and safety information</p>
+                        <div class="text-sm text-gray-500">
+                            <span>20 articles</span> • <span>Travel tips</span>
+                        </div>
+                    </div>
+
+                    <div onclick="showCategory('policies')"
+                        class="category-card bg-white rounded-2xl shadow-lg p-6 cursor-pointer">
+                        <div class="flex items-center mb-4">
+                            <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+                                <i class="fas fa-file-contract text-indigo-600 text-xl"></i>
+                            </div>
+                            <h4 class="text-xl font-bold text-gray-900">Policies & Terms</h4>
+                        </div>
+                        <p class="text-gray-600 mb-4">Privacy policy, terms of service, and legal information</p>
+                        <div class="text-sm text-gray-500">
+                            <span>6 articles</span> • <span>Legal documents</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular FAQs -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h3 class="text-2xl font-bold text-gray-900">Frequently Asked Questions</h3>
+                </div>
+
+                <div class="divide-y divide-gray-100">
+                    <div class="faq-item p-6 cursor-pointer" onclick="toggleFAQ(this)">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-lg font-medium text-gray-900 pr-4">How do I make a booking through Trivago?
+                            </h4>
+                            <i class="fas fa-plus faq-icon text-gray-400 transition-transform flex-shrink-0"></i>
+                        </div>
+                        <div class="faq-answer text-gray-600">
+                            <p>To make a booking through Trivago: 1) Search for your destination and dates, 2) Compare
+                                prices from different booking sites, 3) Click on your preferred option to be redirected
+                                to the booking site, 4) Complete your reservation on the partner site. Trivago is a
+                                comparison platform that helps you find the best deals.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item p-6 cursor-pointer" onclick="toggleFAQ(this)">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-lg font-medium text-gray-900 pr-4">Can I cancel or modify my booking?</h4>
+                            <i class="fas fa-plus faq-icon text-gray-400 transition-transform flex-shrink-0"></i>
+                        </div>
+                        <div class="faq-answer text-gray-600">
+                            <p>Cancellation and modification policies depend on the booking site and hotel you booked
+                                with. You'll need to contact the booking site directly or check your booking
+                                confirmation email for specific terms. Trivago can help you find the contact information
+                                for your booking site.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item p-6 cursor-pointer" onclick="toggleFAQ(this)">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-lg font-medium text-gray-900 pr-4">Why do I see different prices on
+                                different sites?</h4>
+                            <i class="fas fa-plus faq-icon text-gray-400 transition-transform flex-shrink-0"></i>
+                        </div>
+                        <div class="faq-answer text-gray-600">
+                            <p>Prices can vary between booking sites due to different deals, promotions, or partnerships
+                                they have with hotels. Some sites may include taxes and fees in the displayed price,
+                                while others add them later. Trivago shows you these differences so you can make an
+                                informed choice.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item p-6 cursor-pointer" onclick="toggleFAQ(this)">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-lg font-medium text-gray-900 pr-4">Is Trivago free to use?</h4>
+                            <i class="fas fa-plus faq-icon text-gray-400 transition-transform flex-shrink-0"></i>
+                        </div>
+                        <div class="faq-answer text-gray-600">
+                            <p>Yes, Trivago is completely free for users. We make money through commissions from our
+                                partner booking sites when you complete a reservation. There are no hidden fees or
+                                charges for using our comparison service.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item p-6 cursor-pointer" onclick="toggleFAQ(this)">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-lg font-medium text-gray-900 pr-4">How do I contact customer support?</h4>
+                            <i class="fas fa-plus faq-icon text-gray-400 transition-transform flex-shrink-0"></i>
+                        </div>
+                        <div class="faq-answer text-gray-600">
+                            <p>You can contact us through multiple channels: 1) Live chat (available 24/7), 2) Email
+                                support@trivago.com, 3) Phone +1-800-TRIVAGO, or 4) Through our mobile app. For
+                                booking-related issues, you may need to contact the booking site directly.</p>
+                        </div>
+                    </div>
+
+                    <div class="faq-item p-6 cursor-pointer" onclick="toggleFAQ(this)">
+                        <div class="flex items-center justify-between">
+                            <h4 class="text-lg font-medium text-gray-900 pr-4">What should I do if I have a problem with
+                                my hotel stay?</h4>
+                            <i class="fas fa-plus faq-icon text-gray-400 transition-transform flex-shrink-0"></i>
+                        </div>
+                        <div class="faq-answer text-gray-600">
+                            <p>First, try to resolve the issue directly with the hotel. If that doesn't work, contact
+                                the booking site you used to make the reservation. They are responsible for handling
+                                booking-related issues. You can also contact Trivago support for assistance in finding
+                                the right contact information.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Options -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h3 class="text-2xl font-bold text-gray-900">Still Need Help?</h3>
+                    <p class="text-gray-600 mt-2">Our support team is here to assist you 24/7</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-6 p-6">
+                    <div
+                        class="text-center p-6 border border-gray-200 rounded-xl hover:border-blue-300 transition-colors">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-comments text-blue-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Live Chat</h4>
+                        <p class="text-sm text-gray-600 mb-4">Get instant help from our support team</p>
+                        <button onclick="startChat()"
+                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
+                            Start Chat
+                        </button>
+                        <p class="text-xs text-green-600 mt-2"><i class="fas fa-circle text-xs"></i> Available 24/7</p>
+                    </div>
+
+                    <div
+                        class="text-center p-6 border border-gray-200 rounded-xl hover:border-green-300 transition-colors">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-envelope text-green-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Email Support</h4>
+                        <p class="text-sm text-gray-600 mb-4">Send us a detailed message</p>
+                        <button onclick="sendEmail()"
+                            class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
+                            Send Email
+                        </button>
+                        <p class="text-xs text-gray-500 mt-2">Response within 2 hours</p>
+                    </div>
+
+                    <div
+                        class="text-center p-6 border border-gray-200 rounded-xl hover:border-purple-300 transition-colors">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-phone text-purple-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Phone Support</h4>
+                        <p class="text-sm text-gray-600 mb-4">Speak directly with our team</p>
+                        <button onclick="callSupport()"
+                            class="bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
+                            Call Now
+                        </button>
+                        <p class="text-xs text-gray-500 mt-2">+1-800-TRIVAGO</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Search Results (Hidden by default) -->
+            <div id="searchResults" class="bg-white rounded-2xl shadow-lg overflow-hidden" style="display: none;">
+                <div class="p-6 border-b border-gray-100">
+                    <h3 class="text-xl font-bold text-gray-900">Search Results</h3>
+                    <p class="text-gray-600" id="searchResultsCount">Found 0 results</p>
+                </div>
+                <div id="searchResultsList" class="divide-y divide-gray-100">
+                    <!-- Search results will be populated here -->
+                </div>
+            </div>
+
+            <!-- Video Tutorials -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <h3 class="text-2xl font-bold text-gray-900">Video Tutorials</h3>
+                    <p class="text-gray-600 mt-2">Learn how to use Trivago with our step-by-step guides</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6 p-6">
+                    <div class="group cursor-pointer" onclick="playVideo('booking-tutorial')">
+                        <div class="relative bg-gray-200 rounded-xl overflow-hidden mb-4">
+                            <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&h=200&fit=crop"
+                                alt="Booking Tutorial" class="w-full h-48 object-cover">
+                            <div
+                                class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center group-hover:bg-opacity-40 transition-colors">
+                                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                                    <i class="fas fa-play text-gray-800 text-xl ml-1"></i>
+                                </div>
+                            </div>
+                            <div
+                                class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                                3:45
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">How to Make Your First Booking</h4>
+                        <p class="text-sm text-gray-600">Learn the basics of searching and booking hotels through
+                            Trivago</p>
+                    </div>
+
+                    <div class="group cursor-pointer" onclick="playVideo('comparison-tutorial')">
+                        <div class="relative bg-gray-200 rounded-xl overflow-hidden mb-4">
+                            <img src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=400&h=200&fit=crop"
+                                alt="Comparison Tutorial" class="w-full h-48 object-cover">
+                            <div
+                                class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center group-hover:bg-opacity-40 transition-colors">
+                                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                                    <i class="fas fa-play text-gray-800 text-xl ml-1"></i>
+                                </div>
+                            </div>
+                            <div
+                                class="absolute bottom-2 right-2 bg-black bg-opacity-70 text-white px-2 py-1 rounded text-xs">
+                                5:12
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-900 mb-2">Understanding Price Comparisons</h4>
+                        <p class="text-sm text-gray-600">Get the most out of our comparison features and find the best
+                            deals</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Sample help articles data
+            const helpArticles = [
+                { title: "How to make a booking", category: "booking", content: "Step-by-step guide to making your first booking" },
+                { title: "Payment methods accepted", category: "payment", content: "We accept all major credit cards and PayPal" },
+                { title: "How to change your password", category: "account", content: "Security settings and password management" },
+                { title: "App not loading", category: "technical", content: "Troubleshooting common app issues" },
+                { title: "Travel insurance options", category: "travel", content: "Understanding travel insurance coverage" },
+                { title: "Privacy policy", category: "policies", content: "How we protect your personal information" },
+                { title: "Cancellation policy", category: "booking", content: "Understanding cancellation terms and conditions" },
+                { title: "Refund processing time", category: "payment", content: "How long refunds take to process" },
+                { title: "Two-factor authentication", category: "account", content: "Setting up 2FA for enhanced security" },
+                { title: "Website troubleshooting", category: "technical", content: "Common website issues and solutions" }
+            ];
+
+            function toggleFAQ(element) {
+                const isActive = element.classList.contains('active');
+
+                // Close all FAQ items
+                document.querySelectorAll('.faq-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+
+                // Open clicked item if it wasn't active
+                if (!isActive) {
+                    element.classList.add('active');
+                }
+            }
+
+            function searchHelp() {
+                const query = document.getElementById('helpSearch').value.toLowerCase().trim();
+                const resultsContainer = document.getElementById('searchResults');
+                const resultsList = document.getElementById('searchResultsList');
+                const resultsCount = document.getElementById('searchResultsCount');
+
+                if (query.length < 2) {
+                    resultsContainer.style.display = 'none';
+                    return;
+                }
+
+                const results = helpArticles.filter(article =>
+                    article.title.toLowerCase().includes(query) ||
+                    article.content.toLowerCase().includes(query) ||
+                    article.category.toLowerCase().includes(query)
+                );
+
+                resultsCount.textContent = `Found ${results.length} result${results.length !== 1 ? 's' : ''}`;
+                resultsList.innerHTML = '';
+
+                results.forEach(article => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'p-6 hover:bg-gray-50 cursor-pointer';
+                    resultItem.onclick = () => openArticle(article);
+                    resultItem.innerHTML = `
+                    <h4 class="text-lg font-medium text-gray-900 mb-2">${article.title}</h4>
+                    <p class="text-sm text-gray-600 mb-2">${article.content}</p>
+                    <span class="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">${article.category}</span>
+                `;
+                    resultsList.appendChild(resultItem);
+                });
+
+                resultsContainer.style.display = 'block';
+            }
+
+            function openArticle(article) {
+                alert(`Opening article: ${article.title}\n\nCategory: ${article.category}\nContent: ${article.content}`);
+            }
+
+            function showCategory(category) {
+                alert(`Showing all articles in category: ${category}`);
+            }
+
+            function contactSupport() {
+                alert('Opening contact support form...');
+            }
+
+            function trackOrder() {
+                const orderId = prompt('Please enter your booking reference number:');
+                if (orderId) {
+                    alert(`Tracking booking: ${orderId}`);
+                }
+            }
+
+            function reportIssue() {
+                alert('Opening issue report form...');
+            }
+
+            function requestRefund() {
+                alert('Opening refund request form...');
+            }
+
+            function startChat() {
+                alert('Starting live chat session...');
+            }
+
+            function sendEmail() {
+                alert('Opening email form...');
+            }
+
+            function callSupport() {
+                alert('Calling +1-800-TRIVAGO...');
+            }
+
+            function playVideo(videoId) {
+                alert(`Playing video: ${videoId}`);
+            }
+
+            // Add smooth scroll behavior
+            document.documentElement.style.scrollBehavior = 'smooth';
+
+            // Focus search input when page loads
+            window.addEventListener('load', () => {
+                document.getElementById('helpSearch').focus();
+            });
+        </script>
+    </body>
+
+</html>

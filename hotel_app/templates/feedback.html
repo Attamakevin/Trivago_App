@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Feedback - Trivago</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            .gradient-bg {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .feedback-gradient {
+                background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            }
+
+            .feedback-card {
+                transition: all 0.3s ease;
+            }
+
+            .feedback-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            }
+
+            .star-rating {
+                display: flex;
+                gap: 0.25rem;
+            }
+
+            .star {
+                font-size: 1.5rem;
+                color: #d1d5db;
+                cursor: pointer;
+                transition: color 0.2s ease;
+            }
+
+            .star:hover,
+            .star.active {
+                color: #fbbf24;
+            }
+
+            .emoji-selector {
+                display: flex;
+                gap: 1rem;
+                justify-content: center;
+                margin: 1rem 0;
+            }
+
+            .emoji {
+                font-size: 3rem;
+                cursor: pointer;
+                opacity: 0.3;
+                transition: all 0.3s ease;
+            }
+
+            .emoji:hover,
+            .emoji.selected {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+
+            .feedback-item {
+                transition: all 0.3s ease;
+            }
+
+            .feedback-item:hover {
+                background-color: #f9fafb;
+            }
+
+            .category-tab {
+                transition: all 0.3s ease;
+            }
+
+            .category-tab.active {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+        </style>
+    </head>
+
+    <body class="bg-gray-50 min-h-screen">
+        <!-- Header -->
+        <header class="gradient-bg text-white p-4 md:p-6">
+            <div class="max-w-6xl mx-auto flex items-center justify-between">
+                <button onclick="history.back()" class="text-white hover:text-gray-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-xl md:text-2xl font-bold">Feedback</h1>
+                <div class="w-6"></div>
+            </div>
+        </header>
+
+        <!-- Hero Section -->
+        <div class="feedback-gradient py-16 md:py-20">
+            <div class="max-w-4xl mx-auto px-4 text-center">
+                <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                    <i class="fas fa-comment-dots text-3xl text-orange-600"></i>
+                </div>
+                <h2 class="text-3xl md:text-5xl font-bold text-gray-900 mb-6">Your Voice Matters</h2>
+                <p class="text-lg text-gray-700 mb-8">Help us improve by sharing your thoughts, suggestions, and
+                    experiences. Every piece of feedback makes Trivago better for everyone.</p>
+
+                <!-- Quick Feedback Buttons -->
+                <div class="flex flex-wrap justify-center gap-4">
+                    <button onclick="showFeedbackForm('general')"
+                        class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-6 rounded-xl transition-colors flex items-center">
+                        <i class="fas fa-edit mr-2"></i>Share Feedback
+                    </button>
+                    <button onclick="showFeedbackForm('bug')"
+                        class="bg-white hover:bg-gray-50 text-gray-900 font-medium py-3 px-6 rounded-xl transition-colors flex items-center border">
+                        <i class="fas fa-bug mr-2"></i>Report Bug
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="max-w-6xl mx-auto px-4 py-12 space-y-12">
+            <!-- Quick Rating -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="p-6 text-center">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">How was your experience today?</h3>
+                    <p class="text-gray-600 mb-6">Rate your overall experience with Trivago</p>
+
+                    <!-- Emoji Rating -->
+                    <div class="emoji-selector mb-6">
+                        <span class="emoji" onclick="selectEmoji(this, 1)" data-rating="1">😞</span>
+                        <span class="emoji" onclick="selectEmoji(this, 2)" data-rating="2">😐</span>
+                        <span class="emoji" onclick="selectEmoji(this, 3)" data-rating="3">🙂</span>
+                        <span class="emoji" onclick="selectEmoji(this, 4)" data-rating="4">😊</span>
+                        <span class="emoji" onclick="selectEmoji(this, 5)" data-rating="5">🤩</span>
+                    </div>
+
+                    <!-- Star Rating -->
+                    <div class="star-rating justify-center mb-6">
+                        <span class="star" onclick="selectStar(1)">★</span>
+                        <span class="star" onclick="selectStar(2)">★</span>
+                        <span class="star" onclick="selectStar(3)">★</span>
+                        <span class="star" onclick="selectStar(4)">★</span>
+                        <span class="star" onclick="selectStar(5)">★</span>
+                    </div>
+
+                    <div id="ratingMessage" class="text-gray-600 mb-4" style="display: none;"></div>
+
+                    <button onclick="submitQuickRating()" id="submitRatingBtn"
+                        class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-6 rounded-xl transition-colors"
+                        disabled>
+                        Submit Rating
+                    </button>
+                </div>
+            </div>
+
+            <!-- Feedback Categories -->
+            <div>
+                <h3 class="text-2xl md:text-3xl font-bold text-gray-900 text-center mb-8">What would you like to share?
+                </h3>
+
+                <div class="grid md:grid-cols-3 gap-6">
+                    <div onclick="showFeedbackForm('general')"
+                        class="feedback-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-comment text-blue-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">General Feedback</h4>
+                        <p class="text-sm text-gray-600">Share your thoughts about our service, features, or overall
+                            experience</p>
+                    </div>
+
+                    <div onclick="showFeedbackForm('bug')"
+                        class="feedback-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
+                        <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-bug text-red-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Report a Bug</h4>
+                        <p class="text-sm text-gray-600">Found something that's not working? Let us know about technical
+                            issues</p>
+                    </div>
+
+                    <div onclick="showFeedbackForm('feature')"
+                        class="feedback-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
+                        <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-lightbulb text-green-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Feature Request</h4>
+                        <p class="text-sm text-gray-600">Suggest new features or improvements you'd like to see</p>
+                    </div>
+
+                    <div onclick="showFeedbackForm('compliment')"
+                        class="feedback-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
+                        <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-heart text-purple-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Compliment</h4>
+                        <p class="text-sm text-gray-600">Tell us what we're doing well - we love hearing good news!</p>
+                    </div>
+
+                    <div onclick="showFeedbackForm('complaint')"
+                        class="feedback-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
+                        <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-frown text-yellow-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Complaint</h4>
+                        <p class="text-sm text-gray-600">Something didn't meet your expectations? We want to make it
+                            right</p>
+                    </div>
+
+                    <div onclick="showFeedbackForm('booking')"
+                        class="feedback-card bg-white rounded-2xl shadow-lg p-6 text-center cursor-pointer">
+                        <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-calendar-check text-indigo-600 text-2xl"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-gray-900 mb-2">Booking Experience</h4>
+                        <p class="text-sm text-gray-600">Share feedback about your recent booking or reservation process
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Feedback Form -->
+            <div id="feedbackForm" class="bg-white rounded-2xl shadow-lg overflow-hidden" style="display: none;">
+                <div class="p-6 border-b border-gray-100">
+                    <h3 class="text-2xl font-bold text-gray-900" id="formTitle">Share Your Feedback</h3>
+                    <p class="text-gray-600 mt-2" id="formDescription">Your feedback helps us improve our service for
+                        everyone</p>
+                </div>
+
+                <div class="p-6">
+                    <form onsubmit="submitFeedback(event)" class="space-y-6">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+                                <select id="feedbackCategory" required
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                    <option value="">Select category</option>
+                                    <option value="general">General Feedback</option>
+                                    <option value="bug">Bug Report</option>
+                                    <option value="feature">Feature Request</option>
+                                    <option value="compliment">Compliment</option>
+                                    <option value="complaint">Complaint</option>
+                                    <option value="booking">Booking Experience</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Priority</label>
+                                <select id="feedbackPriority"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Subject</label>
+                            <input type="text" id="feedbackSubject" required
+                                placeholder="Brief summary of your feedback"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Detailed Feedback</label>
+                            <textarea rows="6" id="feedbackMessage" required
+                                placeholder="Please provide as much detail as possible..."
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent"></textarea>
+                            <p class="text-xs text-gray-500 mt-1">Minimum 50 characters required</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Rating (Optional)</label>
+                            <div class="star-rating">
+                                <span class="star" onclick="selectFormStar(1)">★</span>
+                                <span class="star" onclick="selectFormStar(2)">★</span>
+                                <span class="star" onclick="selectFormStar(3)">★</span>
+                                <span class="star" onclick="selectFormStar(4)">★</span>
+                                <span class="star" onclick="selectFormStar(5)">★</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Screenshots (Optional)</label>
+                            <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center">
+                                <i class="fas fa-image text-gray-400 text-3xl mb-3"></i>
+                                <p class="text-gray-600 mb-2">Upload screenshots to help us understand your feedback</p>
+                                <p class="text-xs text-gray-500">Max file size: 5MB. Supported formats: JPG, PNG</p>
+                                <input type="file" multiple accept="image/*" class="hidden" id="screenshotUpload">
+                                <button type="button" onclick="document.getElementById('screenshotUpload').click()"
+                                    class="mt-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-2 px-4 rounded-xl transition-colors">
+                                    Choose Images
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center space-x-3">
+                            <input type="checkbox" id="followUp" class="w-4 h-4 text-orange-600 rounded">
+                            <label for="followUp" class="text-sm text-gray-700">I would like to be contacted about this
+                                feedback</label>
+                        </div>
+
+                        <div class="flex space-x-4">
+                            <button type="submit"
+                                class="flex-1 bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 px-6 rounded-xl transition-colors">
+                                <i class="fas fa-paper-plane mr-2"></i>Submit Feedback
+                            </button>
+                            <button type="button" onclick="hideFeedbackForm()"
+                                class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors">
+                                Cancel
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Recent Feedback -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="p-6 border-b border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-2xl font-bold text-gray-900">Your Recent Feedback</h3>
+                        <div class="flex space-x-2">
+                            <button onclick="filterFeedback('all')"
+                                class="category-tab active px-3 py-1 rounded-full text-sm font-medium border">All</button>
+                            <button onclick="filterFeedback('pending')"
+                                class="category-tab px-3 py-1 rounded-full text-sm font-medium border">Pending</button>
+                            <button onclick="filterFeedback('resolved')"
+                                class="category-tab px-3 py-1 rounded-full text-sm font-medium border">Resolved</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="divide-y divide-gray-100" id="feedbackList">
+                    <div class="feedback-item p-6">
+                        <div class="flex items-start justify-between mb-2">
+                            <h4 class="font-medium text-gray-900">App loading speed improvement</h4>
+                            <div class="flex items-center">
+                                <span
+                                    class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full mr-2">Pending</span>
+                                <div class="star-rating text-sm">
+                                    <span class="star active">★</span>
+                                    <span class="star active">★</span>
+                                    <span class="star active">★</span>
+                                    <span class="star active">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">The mobile app takes too long to load search results. It
+                            would be great if this could be optimized for faster browsing.</p>
+                        <div class="flex items-center text-xs text-gray-500">
+                            <span>Feature Request</span>
+                            <span class="mx-2">•</span>
+                            <span>Submitted 2 days ago</span>
+                            <span class="mx-2">•</span>
+                            <span>FB-001234</span>
+                        </div>
+                    </div>
+
+                    <div class="feedback-item p-6">
+                        <div class="flex items-start justify-between mb-2">
+                            <h4 class="font-medium text-gray-900">Great customer service experience</h4>
+                            <div class="flex items-center">
+                                <span
+                                    class="px-2 py-1 bg-green-100 text-green-800 text-xs rounded-full mr-2">Resolved</span>
+                                <div class="star-rating text-sm">
+                                    <span class="star active">★</span>
+                                    <span class="star active">★</span>
+                                    <span class="star active">★</span>
+                                    <span class="star active">★</span>
+                                    <span class="star active">★</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">Sarah from customer support was extremely helpful with my
+                            booking issue. Quick response and professional service!</p>
+                        <div class="flex items-center text-xs text-gray-500">
+                            <span>Compliment</span>
+                            <span class="mx-2">•</span>
+                            <span>Submitted 1 week ago</span>
+                            <span class="mx-2">•</span>
+                            <span>FB-001198</span>
+                        </div>
+                        <div class="mt-2 p-3 bg-green-50 rounded-lg">
+                            <p class="text-xs text-green-700"><strong>Response:</strong> Thank you for the kind words!
+                                We've shared your feedback with Sarah and the customer service team.</p>
+                        </div>
+                    </div>
+
+                    <div class="feedback-item p-6">
+                        <div class="flex items-start justify-between mb-2">
+                            <h4 class="font-medium text-gray-900">Website search filter bug</h4>
+                            <div class="flex items-center">
+                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-full mr-2">In
+                                    Progress</span>
+                                <div class="star-rating text-sm">
+                                    <span class="star active">★</span>
+                                    <span class="star active">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-sm text-gray-600 mb-2">The price filter doesn't work properly on the hotel search
+                            page. It keeps resetting to default values.</p>
+                        <div class="flex items-center text-xs text-gray-500">
+                            <span>Bug Report</span>
+                            <span class="mx-2">•</span>
+                            <span>Submitted 3 days ago</span>
+                            <span class="mx-2">•</span>
+                            <span>FB-001289</span>
+                        </div>
+                        <div class="mt-2 p-3 bg-blue-50 rounded-lg">
+                            <p class="text-xs text-blue-700"><strong>Update:</strong> Our development team is currently
+                                working on fixing this issue. Expected resolution: Next week.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            let currentRating = 0;
+            let currentFormRating = 0;
+
+            function selectEmoji(element, rating) {
+                // Remove selection from all emojis
+                document.querySelectorAll('.emoji').forEach(e => e.classList.remove('selected'));
+                // Add selection to clicked emoji
+                element.classList.add('selected');
+                currentRating = rating;
+
+                // Update star rating to match
+                selectStar(rating);
+
+                const messages = {
+                    1: "We're sorry to hear that! Please tell us how we can improve.",
+                    2: "Thanks for your feedback. We'd love to know how to make your experience better.",
+                    3: "Thanks for the feedback! How can we make your experience even better?",
+                    4: "Great! We're glad you had a good experience. Any suggestions for improvement?",
+                    5: "Awesome! We're thrilled you love using Trivago. Thank you!"
+                };
+
+                document.getElementById('ratingMessage').textContent = messages[rating];
+                document.getElementById('ratingMessage').style.display = 'block';
+                document.getElementById('submitRatingBtn').disabled = false;
+                document.getElementById('submitRatingBtn').classList.remove('bg-gray-400');
+                document.getElementById('submitRatingBtn').classList.add('bg-orange-600', 'hover:bg-orange-700');
+            }
+
+            function selectStar(rating) {
+                currentRating = rating;
+                const stars = document.querySelectorAll('.star-rating .star');
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
+                    }
+                });
+
+                document.getElementById('submitRatingBtn').disabled = false;
+                document.getElementById('submitRatingBtn').classList.remove('bg-gray-400');
+                document.getElementById('submitRatingBtn').classList.add('bg-orange-600', 'hover:bg-orange-700');
+            }
+
+            function selectFormStar(rating) {
+                currentFormRating = rating;
+                const stars = document.querySelectorAll('#feedbackForm .star-rating .star');
+                stars.forEach((star, index) => {
+                    if (index < rating) {
+                        star.classList.add('active');
+                    } else {
+                        star.classList.remove('active');
+                    }
+                });
+            }
+
+            function submitQuickRating() {
+                if (currentRating > 0) {
+                    alert(`Thank you for rating us ${currentRating} star${currentRating > 1 ? 's' : ''}! Your feedback helps us improve.`);
+
+                    // Reset the rating
+                    currentRating = 0;
+                    document.querySelectorAll('.emoji').forEach(e => e.classList.remove('selected'));
+                    document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+                    document.getElementById('ratingMessage').style.display = 'none';
+                    document.getElementById('submitRatingBtn').disabled = true;
+                    document.getElementById('submitRatingBtn').classList.add('bg-gray-400');
+                    document.getElementById('submitRatingBtn').classList.remove('bg-orange-600', 'hover:bg-orange-700');
+                }
+            }
+
+            function showFeedbackForm(category) {
+                const form = document.getElementById('feedbackForm');
+                const categorySelect = document.getElementById('feedbackCategory');
+
+                categorySelect.value = category;
+
+                const titles = {
+                    general: 'Share Your General Feedback',
+                    bug: 'Report a Bug',
+                    feature: 'Request a Feature',
+                    compliment: 'Share a Compliment',
+                    complaint: 'Submit a Complaint',
+                    booking: 'Booking Experience Feedback'
+                };
+
+                const descriptions = {
+                    general: 'Tell us about your overall experience with Trivago',
+                    bug: 'Help us fix technical issues by providing detailed information',
+                    feature: 'Suggest new features or improvements you\'d like to see',
+                    compliment: 'We love hearing what we\'re doing well!',
+                    complaint: 'We want to make things right - please tell us what went wrong',
+                    booking: 'Share your experience with our booking process'
+                };
+
+                document.getElementById('formTitle').textContent = titles[category] || 'Share Your Feedback';
+                document.getElementById('formDescription').textContent = descriptions[category] || 'Your feedback helps us improve our service for everyone';
+
+                form.style.display = 'block';
+                form.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            function hideFeedbackForm() {
+                document.getElementById('feedbackForm').style.display = 'none';
+            }
+
+            function submitFeedback(event) {
+                event.preventDefault();
+
+                const subject = document.getElementById('feedbackSubject').value;
+                const message = document.getElementById('feedbackMessage').value;
+                const category = document.getElementById('feedbackCategory').value;
+
+                if (message.length < 50) {
+                    alert('Please provide at least 50 characters in your detailed feedback.');
+                    return;
+                }
+
+                alert(`Feedback submitted successfully!\n\nSubject: ${subject}\nCategory: ${category}\n\nThank you for helping us improve Trivago!`);
+
+                // Reset form
+                event.target.reset();
+                currentFormRating = 0;
+                document.querySelectorAll('#feedbackForm .star').forEach(s => s.classList.remove('active'));
+                hideFeedbackForm();
+            }
+
+            function filterFeedback(filter) {
+                // Update tab appearance
+                document.querySelectorAll('.category-tab').forEach(tab => {
+                    tab.classList.remove('active');
+                });
+                event.target.classList.add('active');
+
+                // In a real application, this would filter the feedback list
+                console.log('Filtering feedback by:', filter);
+            }
+
+            // Add smooth scroll behavior
+            document.documentElement.style.scrollBehavior = 'smooth';
+        </script>
+    </body>
+
+</html>

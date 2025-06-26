@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Settings - Trivago</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <style>
+            .gradient-bg {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            .settings-card {
+                transition: all 0.3s ease;
+            }
+
+            .settings-card:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            }
+
+            .toggle-switch {
+                position: relative;
+                display: inline-block;
+                width: 48px;
+                height: 24px;
+            }
+
+            .toggle-switch input {
+                opacity: 0;
+                width: 0;
+                height: 0;
+            }
+
+            .slider {
+                position: absolute;
+                cursor: pointer;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background-color: #ccc;
+                transition: .4s;
+                border-radius: 24px;
+            }
+
+            .slider:before {
+                position: absolute;
+                content: "";
+                height: 18px;
+                width: 18px;
+                left: 3px;
+                bottom: 3px;
+                background-color: white;
+                transition: .4s;
+                border-radius: 50%;
+            }
+
+            input:checked+.slider {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+
+            input:checked+.slider:before {
+                transform: translateX(24px);
+            }
+
+            .danger-zone {
+                background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            }
+        </style>
+    </head>
+
+    <body class="bg-gray-50 min-h-screen">
+        <!-- Header -->
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+            <div class="flex items-center justify-start gap-8 text-white h-full">
+                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-white text-sm md:text-md font-bold">Settings</h1>
+            </div>
+        </header>
+
+        <div class="max-w-4xl mx-auto px-4 py-6 space-y-6">
+            <!-- Profile Settings -->
+            <!-- <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="p-4 border-b border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-user text-blue-600 mr-3"></i>
+                        Profile Settings
+                    </h3>
+                </div>
+
+                <div class="p-6 space-y-6">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
+                            <input type="text" value="John Anderson"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
+                            <input type="email" value="john.anderson@email.com"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                            <input type="tel" value="+1 (555) 123-4567"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Location</label>
+                            <input type="text" value="New York, USA"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">Bio</label>
+                        <textarea rows="3"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            placeholder="Tell us about yourself...">Premium member since 2020. Love traveling and discovering new places.</textarea>
+                    </div>
+
+                    <button onclick="saveProfile()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-xl transition-colors">
+                        <i class="fas fa-save mr-2"></i>Save Profile
+                    </button>
+                </div>
+            </div> -->
+
+            <!-- Preferences -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="p-4 border-b border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-cog text-gray-600 mr-3"></i>
+                        Preferences
+                    </h3>
+                </div>
+
+                <div class="divide-y divide-gray-100">
+                    <div class="p-6">
+                        <div class="grid md:grid-cols-1 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Language</label>
+                                <select
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-gray-500 focus:border-transparent">
+                                    <option value="en">English</option>
+                                    <option value="es">Spanish</option>
+                                    <option value="fr">French</option>
+                                    <option value="de">German</option>
+                                    <option value="it">Italian</option>
+                                </select>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Settings -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <div class="p-4 border-b border-gray-100">
+                    <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                        <i class="fas fa-shield-alt text-green-600 mr-3"></i>
+                        Security & Privacy
+                    </h3>
+                </div>
+
+                <div class="divide-y divide-gray-100">
+                    <div class="p-6">
+                        <h4 class="font-medium text-gray-900 mb-4">Password</h4>
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Current Password</label>
+                                <input type="password"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            </div>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">New Password</label>
+                                    <input type="password"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                                    <input type="password"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                </div>
+                            </div>
+                            <button onclick="changePassword()"
+                                class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
+                                Update Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Danger Zone -->
+            <div class="danger-zone rounded-2xl shadow-lg overflow-hidden">
+                <div class="p-4 border-b border-red-200">
+                    <h3 class="text-lg font-semibold text-white flex items-center">
+                        <i class="fas fa-exclamation-triangle mr-3"></i>
+                        Danger Zone
+                    </h3>
+                </div>
+
+                <div class="p-6 space-y-4">
+                    <div class="bg-white bg-opacity-90 rounded-xl p-4">
+                        <h4 class="font-medium text-gray-900 mb-2">Deactivate Account</h4>
+                        <p class="text-sm text-gray-600 mb-4">Temporarily disable your account. You can reactivate it
+                            anytime.</p>
+                        <button onclick="deactivateAccount()"
+                            class="bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
+                            Deactivate Account
+                        </button>
+                    </div>
+
+                    <div class="bg-white bg-opacity-90 rounded-xl p-4">
+                        <h4 class="font-medium text-gray-900 mb-2">Delete Account</h4>
+                        <p class="text-sm text-gray-600 mb-4">Permanently delete your account and all associated data.
+                            This action cannot be undone.</p>
+                        <button onclick="deleteAccount()"
+                            class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
+                            Delete Account
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function saveProfile() {
+                alert('Profile saved successfully!');
+            }
+
+            function changePassword() {
+                alert('Password updated successfully!');
+            }
+
+            function toggleTwoFactor() {
+                const checkbox = document.getElementById('twoFactor');
+                if (checkbox.checked) {
+                    alert('Two-factor authentication enabled. Please check your email for setup instructions.');
+                } else {
+                    if (confirm('Are you sure you want to disable two-factor authentication?')) {
+                        alert('Two-factor authentication disabled.');
+                    } else {
+                        checkbox.checked = true;
+                    }
+                }
+            }
+
+            function endSession(device) {
+                if (confirm(`End session on ${device}?`)) {
+                    alert(`Session ended on ${device}.`);
+                }
+            }
+
+            function toggleNotification(type) {
+                alert(`${type.toUpperCase()} notifications updated.`);
+            }
+
+            function toggleDarkMode() {
+                alert('Dark mode preference saved. Changes will take effect on next page load.');
+            }
+
+            function downloadData() {
+                alert('Your data export has been requested. You will receive an email with download instructions within 24 hours.');
+            }
+
+            function exportAccount() {
+                alert('Account export initiated. This may take a few minutes to complete.');
+            }
+
+            function toggleAnalytics() {
+                alert('Analytics preference updated.');
+            }
+
+            function deactivateAccount() {
+                if (confirm('Are you sure you want to deactivate your account? You can reactivate it anytime by logging in.')) {
+                    alert('Account deactivation initiated. You will receive a confirmation email shortly.');
+                }
+            }
+
+            function deleteAccount() {
+                const confirmation = prompt('Type "DELETE" to confirm account deletion:');
+                if (confirmation === 'DELETE') {
+                    if (confirm('This will permanently delete your account and all data. This action cannot be undone. Are you absolutely sure?')) {
+                        alert('Account deletion initiated. You will receive a final confirmation email.');
+                    }
+                } else if (confirmation !== null) {
+                    alert('Account deletion cancelled. Please type "DELETE" exactly to confirm.');
+                }
+            }
+
+            // Add smooth scroll behavior
+            document.documentElement.style.scrollBehavior = 'smooth';
+        </script>
+    </body>
+
+</html>

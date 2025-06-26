@@ -769,6 +769,36 @@ def settings():
                 flash('Passwords do not match!', 'error')
     return render_template('settings.html', user=user)
 
+@app.route('/customer_service')
+def customer_service():
+    return render_template('customer_service.html')
+
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback():
+    if request.method == 'POST':
+        feedback_text = request.form.get('feedback_text', '').strip()
+        if not feedback_text:
+            flash('Feedback cannot be empty', 'error')
+        else:
+            # Here you would save the feedback to the database
+            # For now, just flash a success message
+            flash('Thank you for your feedback!', 'success')
+            return redirect(url_for('feedback'))
+    return render_template('feedback.html')
+
+@app.route('/help_center')
+def help_center():
+    return render_template('help_center.html')
+
+@app.route('/bind_wallet')
+def bind_wallet():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
+    user = User.query.get(session['user_id'])
+    return render_template('bind_wallet.html', user=user)
+
+
 
 # Admin Setup Functions
 from functools import wraps

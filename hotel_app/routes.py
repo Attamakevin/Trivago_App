@@ -924,7 +924,12 @@ def view_user_details(user_id):
 def view_deposits():
     """View all deposit requests - Admin only"""
     try:
-        deposits = DepositRequest.query.order_by(DepositRequest.created_at.desc()).all()
+        page = request.args.get('page', 1, type=int)
+        deposits = DepositRequest.query.order_by(DepositRequest.created_at.desc()).paginate(
+            page=page,
+            per_page=20,  # Adjust as needed
+            error_out=False
+        )
         return render_template('admin_deposits.html', deposits=deposits)
     except Exception as e:
         flash(f'Error loading deposits: {str(e)}', 'error')
@@ -980,12 +985,16 @@ def reject_deposit(deposit_id):
 def view_withdrawals():
     """View all withdrawal requests - Admin only"""
     try:
-        withdrawals = WithdrawalRequest.query.order_by(WithdrawalRequest.created_at.desc()).all()
+        page = request.args.get('page', 1, type=int)
+        withdrawals = WithdrawalRequest.query.order_by(WithdrawalRequest.created_at.desc()).paginate(
+            page=page,
+            per_page=20,  # Adjust as needed
+            error_out=False
+        )
         return render_template('admin_withdrawals.html', withdrawals=withdrawals)
     except Exception as e:
         flash(f'Error loading withdrawals: {str(e)}', 'error')
         return redirect(url_for('admin_dashboard'))
-
 # APPROVE WITHDRAWAL - Individual withdrawal approval
 @app.route('/admin/withdrawals/<int:withdrawal_id>/approve', methods=['POST'])
 @admin_required

@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+        <title>Feedback - trivago</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
+        <!-- TailwindCSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+        <!-- Custom Script -->
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/translate.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+    </head>
+
+    <body class="luxury-bg min-h-screen">
+        <!-- Header -->
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+            <div class="flex items-center justify-start gap-8 text-white h-full">
+                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-white text-sm md:text-md font-bold">Feedback</h1>
+            </div>
+        </header>
+
+        <div class="max-w-2xl mx-auto px-4 py-8">
+            <!-- Feedback Form -->
+            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+                <!-- Header Section -->
+                <div class="bg-[#2563eb] p-6 text-center text-white">
+                    <div
+                        class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fas fa-comment-dots text-2xl"></i>
+                    </div>
+                    <h2 class="text-2xl md:text-3xl font-bold mb-2">Share Your Feedback</h2>
+                    <p class="text-orange-100">Your thoughts help us improve our service</p>
+                </div>
+
+                <!-- Form Section -->
+                <div class="p-6">
+                    <form onsubmit="submitFeedback(event)" class="space-y-6">
+                        <!-- Name and Email -->
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-user text-gray-400 mr-2"></i>Name
+                                </label>
+                                <input type="text" id="userName" required placeholder="Your full name"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-envelope text-gray-400 mr-2"></i>Email
+                                </label>
+                                <input type="email" id="userEmail" required placeholder="your.email@example.com"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all">
+                            </div>
+                        </div>
+
+                        <!-- Feedback Type -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-tags text-gray-400 mr-2"></i>Feedback Type
+                            </label>
+                            <select id="feedbackType" required
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all">
+                                <option value="">Select feedback type</option>
+                                <option value="general">General Feedback</option>
+                                <option value="bug">Bug Report</option>
+                                <option value="feature">Feature Request</option>
+                                <option value="compliment">Compliment</option>
+                                <option value="complaint">Complaint</option>
+                                <option value="suggestion">Suggestion</option>
+                            </select>
+                        </div>
+
+                        <!-- Subject -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-heading text-gray-400 mr-2"></i>Subject
+                            </label>
+                            <input type="text" id="feedbackSubject" required
+                                placeholder="Brief summary of your feedback"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all">
+                        </div>
+
+                        <!-- Rating -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                <i class="fas fa-star text-gray-400 mr-2"></i>Overall Rating (Optional)
+                            </label>
+                            <div class="flex items-center gap-2">
+                                <div class="flex gap-1" id="starRating">
+                                    <span
+                                        class="star cursor-pointer text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                        onclick="setRating(1)">★</span>
+                                    <span
+                                        class="star cursor-pointer text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                        onclick="setRating(2)">★</span>
+                                    <span
+                                        class="star cursor-pointer text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                        onclick="setRating(3)">★</span>
+                                    <span
+                                        class="star cursor-pointer text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                        onclick="setRating(4)">★</span>
+                                    <span
+                                        class="star cursor-pointer text-2xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                        onclick="setRating(5)">★</span>
+                                </div>
+                                <span id="ratingText" class="text-sm text-gray-500 ml-2"></span>
+                            </div>
+                        </div>
+
+                        <!-- Message -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-comment text-gray-400 mr-2"></i>Your Feedback
+                            </label>
+                            <textarea rows="6" id="feedbackMessage" required
+                                placeholder="Please share your detailed feedback, suggestions, or report any issues you've encountered..."
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all resize-none"></textarea>
+                            <div class="flex justify-between items-center mt-1">
+                                <span class="text-xs text-gray-500">Minimum 20 characters required</span>
+                                <span id="charCount" class="text-xs text-gray-400">0 characters</span>
+                            </div>
+                        </div>
+
+                        <!-- Image Upload -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                <i class="fas fa-image text-gray-400 mr-2"></i>Upload Images (Optional)
+                            </label>
+                            <div
+                                class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-orange-400 transition-colors">
+                                <div class="mb-4">
+                                    <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3"></i>
+                                    <p class="text-gray-600 mb-2">Drop images here or click to upload</p>
+                                    <p class="text-xs text-gray-500">Supports: JPG, PNG, GIF (Max: 5MB each, up to 5
+                                        images)</p>
+                                </div>
+                                <input type="file" multiple accept="image/*" class="hidden" id="imageUpload"
+                                    onchange="handleImageUpload(event)">
+                                <button type="button" onclick="document.getElementById('imageUpload').click()"
+                                    class="bg-[#2563eb] hover:bg-[#2567eb] text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>Choose Images
+                                </button>
+                            </div>
+
+                            <!-- Image Preview -->
+                            <div id="imagePreview" class="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3 hidden"></div>
+                        </div>
+
+                        <!-- Contact Preference -->
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <div class="flex items-start gap-3">
+                                <input type="checkbox" id="contactMe"
+                                    class="w-4 h-4 text-orange-600 rounded mt-1 focus:ring-orange-500">
+                                <div>
+                                    <label for="contactMe" class="text-sm font-medium text-gray-900">Contact me about
+                                        this feedback</label>
+                                    <p class="text-xs text-gray-600 mt-1">Check this if you'd like us to follow up on
+                                        your feedback via email</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex flex-col sm:flex-row gap-3">
+                            <button type="submit" id="submitBtn"
+                                class="flex-1 bg-[#2563eb] hover:bg-[#2567eb] text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-md hover:shadow-lg">
+                                <i class="fas fa-paper-plane mr-2"></i>Submit Feedback
+                            </button>
+                            <button type="button" onclick="resetForm()"
+                                class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                <i class="fas fa-undo mr-2"></i>Reset
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4 hidden">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                    <div>
+                        <h4 class="font-medium text-green-800">Feedback Submitted Successfully!</h4>
+                        <p class="text-sm text-green-700 mt-1">Thank you for your feedback. We'll review it and get back
+                            to you if needed.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+
+</html>

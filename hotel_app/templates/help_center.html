@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+        <title>Help Center - trivago</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
+        <!-- TailwindCSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+        <!-- Custom Script -->
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/translate.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+    </head>
+
+    <body class="luxury-bg min-h-screen">
+        <!-- Header -->
+        <header
+            class="sticky h-16 top-0 z-50 bg-[#2563eb] py-2 md:py-4 px-4 md:px-8">
+            <div class="flex items-center justify-start gap-8 text-white h-full px-4 md:px-8">
+                <button onclick="history.back()" class="text-white hover:text-yellow-300 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-white text-sm md:text-md font-bold">Help Center</h1>
+            </div>
+        </header>
+
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <!-- Hero Section -->
+            <!-- <div class="text-center mb-12">
+                <div class="glass-effect rounded-2xl p-8 mb-8">
+                    <div
+                        class="w-20 h-20 bg-yellow-500 bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-concierge-bell text-4xl text-yellow-300"></i>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">Luxury Service Guide</h2>
+                    <p class="text-lg text-gray-700">Learn how our rating features work to enhance your experience</p>
+                </div>
+            </div> -->
+
+            <!-- Help Topics -->
+            <div class="space-y-4">
+                <!-- Deposit -->
+                <div class="glass-effect topic-card deposit rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('deposit')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-plus-circle text-green-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Deposit</h3>
+                                    <p class="text-sm text-gray-600">How to add funds to your account</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="deposit-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="deposit-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-green-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">How Deposits Work</h4>
+                                    <p class="text-gray-700 mb-3">
+                                        Deposits allow you to add funds to your account for future bookings and
+                                        services.
+                                        This ensures quick and seamless transactions when making luxury reservations.
+                                    </p>
+                                    <ul class="space-y-2 text-sm text-gray-700">
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-check text-green-500 mt-1"></i>
+                                            <span>Instant processing for most payment methods</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-check text-green-500 mt-1"></i>
+                                            <span>Secure encryption for all transactions</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-check text-green-500 mt-1"></i>
+                                            <span>Multiple payment methods accepted</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <i class="fas fa-check text-green-500 mt-1"></i>
+                                            <span>Minimum deposit: $100, Maximum: $50,000</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Withdraw -->
+                <div class="glass-effect topic-card withdraw rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('withdraw')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-minus-circle text-yellow-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Withdraw</h3>
+                                    <p class="text-sm text-gray-600">How to withdraw funds from your account</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="withdraw-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="withdraw-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-yellow-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Withdrawal Process</h4>
+                                    <p class="text-gray-700 mb-3">
+                                        Withdraw your available balance back to your preferred payment method.
+                                        All withdrawals are subject to verification for security purposes.
+                                    </p>
+                                    <div class="grid md:grid-cols-2 gap-4">
+                                        <div>
+                                            <h5 class="font-medium text-gray-900 mb-2">Processing Times:</h5>
+                                            <ul class="space-y-1 text-sm text-gray-700">
+                                                <li>• Bank Transfer: 3-5 business days</li>
+                                                <li>• Credit Card: 5-7 business days</li>
+                                                <li>• Digital Wallet: 1-2 business days</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium text-gray-900 mb-2">Requirements:</h5>
+                                            <ul class="space-y-1 text-sm text-gray-700">
+                                                <li>• Minimum withdrawal: $50</li>
+                                                <li>• Account verification required</li>
+                                                <li>• Same method as deposit (when possible)</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Credit Score -->
+                <div class="glass-effect topic-card credit rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('credit')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-chart-line text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Credit Score</h3>
+                                    <p class="text-sm text-gray-600">Your booking reliability rating</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="credit-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="credit-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-blue-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Understanding Your Credit Score</h4>
+                                    <p class="text-gray-700 mb-3">
+                                        Your credit score reflects your booking history, payment reliability, and
+                                        account standing.
+                                        Higher scores unlock premium benefits and better rates.
+                                    </p>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 bg-red-500 rounded"></div>
+                                            <span class="text-sm"><strong>Poor (300-599):</strong> Basic booking
+                                                access</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 bg-yellow-500 rounded"></div>
+                                            <span class="text-sm"><strong>Fair (600-699):</strong> Standard
+                                                benefits</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 bg-blue-500 rounded"></div>
+                                            <span class="text-sm"><strong>Good (700-799):</strong> Priority booking &
+                                                discounts</span>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-4 h-4 bg-green-500 rounded"></div>
+                                            <span class="text-sm"><strong>Excellent (800+):</strong> VIP access & luxury
+                                                perks</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pending and On Hold -->
+                <div class="glass-effect topic-card pending rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('pending')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-clock text-purple-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Pending & On Hold</h3>
+                                    <p class="text-sm text-gray-600">Understanding booking and payment statuses</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="pending-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="pending-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-purple-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Status Explanations</h4>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <h5 class="font-medium text-purple-800 mb-2">
+                                                <i class="fas fa-hourglass-half mr-2"></i>Pending Status
+                                            </h5>
+                                            <p class="text-sm text-gray-700">
+                                                Your booking or transaction is being processed. This typically takes
+                                                2-24 hours
+                                                depending on verification requirements and hotel confirmation.
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium text-orange-800 mb-2">
+                                                <i class="fas fa-pause-circle mr-2"></i>On Hold Status
+                                            </h5>
+                                            <p class="text-sm text-gray-700">
+                                                Your request requires additional verification or manual review. This may
+                                                happen
+                                                for high-value transactions, first-time bookings, or when additional
+                                                documentation is needed.
+                                            </p>
+                                        </div>
+                                        <div class="mt-3 p-3 bg-purple-100 rounded">
+                                            <p class="text-xs text-purple-800">
+                                                <strong>Note:</strong> You'll receive email notifications for all status
+                                                changes.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent Rewards -->
+                <div class="glass-effect topic-card agent rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('agent')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-award text-red-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Agent Rewards</h3>
+                                    <p class="text-sm text-gray-600">Earn rewards for referrals and partnerships</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="agent-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="agent-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-red-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Agent Reward Program</h4>
+                                    <p class="text-gray-700 mb-3">
+                                        Our exclusive agent program rewards partners and high-volume users with
+                                        commissions,
+                                        bonuses, and exclusive access to luxury properties.
+                                    </p>
+                                    <div class="grid md:grid-cols-2 gap-4">
+                                        <div>
+                                            <h5 class="font-medium text-gray-900 mb-2">Reward Tiers:</h5>
+                                            <ul class="space-y-1 text-sm text-gray-700">
+                                                <li>• Bronze Agent: 2% commission</li>
+                                                <li>• Silver Agent: 3.5% commission</li>
+                                                <li>• Gold Agent: 5% commission</li>
+                                                <li>• Platinum Agent: 7% + bonuses</li>
+                                            </ul>
+                                        </div>
+                                        <div>
+                                            <h5 class="font-medium text-gray-900 mb-2">Benefits:</h5>
+                                            <ul class="space-y-1 text-sm text-gray-700">
+                                                <li>• Monthly commission payouts</li>
+                                                <li>• Exclusive property access</li>
+                                                <li>• Priority customer support</li>
+                                                <li>• Marketing materials provided</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Agent Avenue -->
+                <div class="glass-effect topic-card avenue rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('avenue')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-cyan-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-road text-cyan-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Agent Avenue</h3>
+                                    <p class="text-sm text-gray-600">Your dedicated agent dashboard and tools</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="avenue-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="avenue-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-cyan-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Agent Avenue Platform</h4>
+                                    <p class="text-gray-700 mb-3">
+                                        Agent Avenue is your comprehensive dashboard for managing bookings, tracking
+                                        commissions,
+                                        and accessing exclusive agent-only features and inventory.
+                                    </p>
+                                    <div class="space-y-3">
+                                        <div class="flex items-start gap-3">
+                                            <i class="fas fa-chart-bar text-cyan-600 mt-1"></i>
+                                            <div>
+                                                <h5 class="font-medium text-gray-900">Analytics Dashboard</h5>
+                                                <p class="text-sm text-gray-600">Track your performance, commissions,
+                                                    and client bookings</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-3">
+                                            <i class="fas fa-users text-cyan-600 mt-1"></i>
+                                            <div>
+                                                <h5 class="font-medium text-gray-900">Client Management</h5>
+                                                <p class="text-sm text-gray-600">Manage client profiles and booking
+                                                    preferences</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start gap-3">
+                                            <i class="fas fa-key text-cyan-600 mt-1"></i>
+                                            <div>
+                                                <h5 class="font-medium text-gray-900">Exclusive Access</h5>
+                                                <p class="text-sm text-gray-600">Access to agent-only rates and hidden
+                                                    inventory</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Luxury Reservations -->
+                <div class="glass-effect topic-card luxury rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('luxury')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-crown text-amber-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Luxury Reservations</h3>
+                                    <p class="text-sm text-gray-600">Premium booking service for exclusive properties
+                                    </p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="luxury-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="luxury-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-amber-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Luxury Booking Experience</h4>
+                                    <p class="text-gray-700 mb-3">
+                                        Our luxury reservation service provides access to the world's most exclusive
+                                        hotels,
+                                        resorts, and private properties with white-glove concierge service.
+                                    </p>
+                                    <div class="space-y-4">
+                                        <div>
+                                            <h5 class="font-medium text-amber-800 mb-2">What's Included:</h5>
+                                            <div class="grid md:grid-cols-2 gap-3">
+                                                <ul class="space-y-1 text-sm text-gray-700">
+                                                    <li>• Dedicated luxury concierge</li>
+                                                    <li>• Room upgrades when available</li>
+                                                    <li>• Welcome amenities</li>
+                                                    <li>• Priority check-in/out</li>
+                                                </ul>
+                                                <ul class="space-y-1 text-sm text-gray-700">
+                                                    <li>• Restaurant reservations</li>
+                                                    <li>• Transportation arrangements</li>
+                                                    <li>• 24/7 emergency support</li>
+                                                    <li>• Exclusive property access</li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                        <div class="bg-amber-100 rounded p-3">
+                                            <p class="text-sm text-amber-800">
+                                                <strong>Minimum spend:</strong> $500 per night | <strong>Available
+                                                    to:</strong> Gold-level members and above
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            function toggleTopic(topicId) {
+                const content = document.getElementById(topicId + '-content');
+                const icon = document.getElementById(topicId + '-icon');
+
+                // Close all other topics
+                const allContents = document.querySelectorAll('.topic-content');
+                const allIcons = document.querySelectorAll('[id$="-icon"]');
+
+                allContents.forEach(content => {
+                    if (content.id !== topicId + '-content') {
+                        content.classList.add('hidden');
+                    }
+                });
+
+                allIcons.forEach(icon => {
+                    if (icon.id !== topicId + '-icon') {
+                        icon.classList.remove('rotate-180');
+                    }
+                });
+
+                // Toggle current topic
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            }
+
+            // Add smooth animations
+            document.addEventListener('DOMContentLoaded', function () {
+                const contents = document.querySelectorAll('.topic-content');
+                contents.forEach(content => {
+                    content.style.transition = 'all 0.3s ease';
+                });
+            });
+        </script>
+    </body>
+
+</html>

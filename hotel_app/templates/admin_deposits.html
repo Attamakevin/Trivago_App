@@ -1,3 +1,4 @@
+<!-- FIXED DEPOSIT TEMPLATE (admin_deposits.html) -->
 {% extends "admin_base.html" %}
 
 {% block title %}Deposit Management{% endblock %}
@@ -42,29 +43,50 @@
                     {% for deposit in deposits.items %}
                     <tr>
                         <td>{{ deposit.id }}</td>
-                        <td>{{ deposit.user.username if deposit.user else 'Unknown' }}</td>
+                        <td>{{ deposit.user.contact if deposit.user else 'Unknown' }}</td>
                         <td>${{ "%.2f"|format(deposit.amount) }}</td>
                         <td>{{ deposit.payment_method or 'N/A' }}</td>
                         <td>
-                            <span class="badge bg-{{ 'warning' if deposit.status == 'pending' else ('success' if deposit.status == 'approved' else 'danger') }}">
-                                {{ deposit.status.title() }}
+                            <span class="badge bg-{{ 'warning' if deposit.status == 'Pending' else ('success' if deposit.status == 'Approved' else 'danger') }}">
+                                {{ deposit.status }}
                             </span>
                         </td>
                         <td>{{ deposit.created_at.strftime('%Y-%m-%d %H:%M') if deposit.created_at else 'N/A' }}</td>
                         <td>
-                            {% if deposit.status == 'pending' %}
-                            <div class="btn-group btn-group-sm">
+                            {% if deposit.status == 'Pending' %}
+                            <div class="btn-group btn-group-sm" role="group">
+                                <!-- Approve Form -->
                                 <form method="POST" action="{{ url_for('approve_deposit', deposit_id=deposit.id) }}" class="d-inline">
-                                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                                    {% if csrf_token %}
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    {% endif %}
+                                    <input type="hidden" name="admin_notes" value="Approved by admin"/>
+                                    <button type="submit" class="btn btn-success btn-sm" 
+                                            onclick="return confirm('Are you sure you want to approve this deposit of ${{ deposit.amount }}?')">
+                                        Approve
+                                    </button>
                                 </form>
+                                
+                                <!-- Reject Form -->
                                 <form method="POST" action="{{ url_for('reject_deposit', deposit_id=deposit.id) }}" class="d-inline">
-                                    <button type="submit" class="btn btn-danger btn-sm">Reject</button>
+                                    {% if csrf_token %}
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    {% endif %}
+                                    <input type="hidden" name="admin_notes" value="Rejected by admin"/>
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Are you sure you want to reject this deposit of ${{ deposit.amount }}?')">
+                                        Reject
+                                    </button>
                                 </form>
                             </div>
                             {% else %}
                             <span class="text-muted">Processed</span>
                             {% endif %}
                         </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">No deposit requests found.</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -75,6 +97,12 @@
         {% if deposits.pages > 1 %}
         <nav aria-label="Deposit pagination">
             <ul class="pagination justify-content-center">
+                {% if deposits.has_prev %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('view_deposits', page=deposits.prev_num, status=status_filter) }}">Previous</a>
+                </li>
+                {% endif %}
+
                 {% for page_num in deposits.iter_pages() %}
                     {% if page_num %}
                         {% if page_num != deposits.page %}
@@ -92,6 +120,12 @@
                         </li>
                     {% endif %}
                 {% endfor %}
+
+                {% if deposits.has_next %}
+                <li class="page-item">
+                    <a class="page-link" href="{{ url_for('view_deposits', page=deposits.next_num, status=status_filter) }}">Next</a>
+                </li>
+                {% endif %}
             </ul>
         </nav>
         {% endif %}

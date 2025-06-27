@@ -15,6 +15,13 @@ from hotel_app.models import User, InvitationCode  # ✅ Only import User now
 
 
 import random
+import logging
+from datetime import datetime
+from flask import request, render_template, redirect, url_for, flash, session, jsonify
+
+# Set up logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 def generate_captcha():
     """Generate a new captcha code and store it in session"""
@@ -944,24 +951,35 @@ def view_user_details(user_id):
                          deposits=deposits, 
                          withdrawals=withdrawals)
 
-# Deposit Management
-# Updated admin deposit approval with wallet address display
-# Add these routes to your routes.py file
-
-# VIEW DEPOSITS - Main listing page
+## VIEW DEPOSITS - Main listing page
 @app.route('/admin/deposits')
 @admin_required
 def view_deposits():
     """View all deposit requests - Admin only"""
     try:
+        logger.debug("Accessing view_deposits route")
         page = request.args.get('page', 1, type=int)
+        
+        # Debug: Check if DepositRequest model exists and has data
+        total_deposits = DepositRequest.query.count()
+        logger.debug(f"Total deposits in database: {total_deposits}")
+        
         deposits = DepositRequest.query.order_by(DepositRequest.created_at.desc()).paginate(
             page=page,
-            per_page=20,  # Adjust as needed
+            per_page=20,
             error_out=False
         )
+        
+        logger.debug(f"Deposits found for page {page}: {len(deposits.items)}")
+        
+        # Debug: Log first few deposits
+        for i, deposit in enumerate(deposits.items[:3]):
+            logger.debug(f"Deposit {i}: ID={deposit.id}, Status={deposit.status}, Amount=${deposit.amount}")
+        
         return render_template('admin_deposits.html', deposits=deposits)
+        
     except Exception as e:
+        logger.error(f"Error in view_deposits: {str(e)}")
         flash(f'Error loading deposits: {str(e)}', 'error')
         return redirect(url_for('admin_dashboard'))
 
@@ -969,45 +987,95 @@ def view_deposits():
 @app.route('/admin/deposits/<int:deposit_id>/approve', methods=['POST'])
 @admin_required
 def approve_deposit(deposit_id):
-    deposit = DepositRequest.query.get_or_404(deposit_id)
-    admin = Admin.query.get(session['admin_id'])
-    
-    if deposit.status == 'Pending':
-        deposit.status = 'Approved'
-        deposit.processed_at = datetime.utcnow()
-        deposit.processed_by = admin.id
-        deposit.admin_notes = request.form.get('admin_notes', '')
+    try:
+        logger.debug(f"Approving deposit {deposit_id}")
+        logger.debug(f"Request form data: {dict(request.form)}")
         
-        # Update user balance
-        user = User.query.get(deposit.user_id)
-        user.balance += deposit.amount
+        # Validate the request
+        if not request.form:
+            logger.warning("No form data received")
+            flash("Invalid request data", "error")
+            return redirect(url_for('view_deposits'))
         
-        db.session.commit()
-        flash(f"Deposit of ${deposit.amount} approved for user {user.nickname}.", "success")
-    else:
-        flash("Deposit has already been processed.", "warning")
+        deposit = DepositRequest.query.get_or_404(deposit_id)
+        logger.debug(f"Found deposit: {deposit.id}, Status: {deposit.status}")
+        
+        admin = Admin.query.get(session.get('admin_id'))
+        
+        if not admin:
+            logger.error("Admin not found in session")
+            flash("Admin session invalid", "error")
+            return redirect(url_for('admin_login'))
+        
+        if deposit.status == 'Pending':
+            deposit.status = 'Approved'
+            deposit.processed_at = datetime.utcnow()
+            deposit.processed_by = admin.id
+            deposit.admin_notes = request.form.get('admin_notes', '')
+            
+            # Update user balance
+            user = User.query.get(deposit.user_id)
+            if user:
+                old_balance = user.balance
+                user.balance += deposit.amount
+                logger.debug(f"Updated user {user.id} balance from ${old_balance} to ${user.balance}")
+                
+                db.session.commit()
+                flash(f"Deposit of ${deposit.amount} approved for user {user.nickname}.", "success")
+            else:
+                logger.error(f"User {deposit.user_id} not found")
+                flash("User not found", "error")
+        else:
+            logger.warning(f"Deposit {deposit_id} already processed with status: {deposit.status}")
+            flash("Deposit has already been processed.", "warning")
     
-    return redirect(url_for('admin_deposits'))
+    except Exception as e:
+        logger.error(f"Error processing deposit {deposit_id}: {str(e)}")
+        db.session.rollback()
+        flash(f"Error processing deposit: {str(e)}", "error")
+    
+    return redirect(url_for('view_deposits'))
 
 # REJECT DEPOSIT
 @app.route('/admin/deposits/<int:deposit_id>/reject', methods=['POST'])
 @admin_required
 def reject_deposit(deposit_id):
-    deposit = DepositRequest.query.get_or_404(deposit_id)
-    admin = Admin.query.get(session['admin_id'])
-    
-    if deposit.status == 'Pending':
-        deposit.status = 'Rejected'
-        deposit.processed_at = datetime.utcnow()
-        deposit.processed_by = admin.id
-        deposit.admin_notes = request.form.get('admin_notes', '')
+    try:
+        logger.debug(f"Rejecting deposit {deposit_id}")
+        logger.debug(f"Request form data: {dict(request.form)}")
         
-        db.session.commit()
-        flash(f"Deposit of ${deposit.amount} rejected.", "success")
-    else:
-        flash("Deposit has already been processed.", "warning")
+        # Validate the request
+        if not request.form:
+            logger.warning("No form data received")
+            flash("Invalid request data", "error")
+            return redirect(url_for('view_deposits'))
+        
+        deposit = DepositRequest.query.get_or_404(deposit_id)
+        admin = Admin.query.get(session.get('admin_id'))
+        
+        if not admin:
+            logger.error("Admin not found in session")
+            flash("Admin session invalid", "error")
+            return redirect(url_for('admin_login'))
+        
+        if deposit.status == 'Pending':
+            deposit.status = 'Rejected'
+            deposit.processed_at = datetime.utcnow()
+            deposit.processed_by = admin.id
+            deposit.admin_notes = request.form.get('admin_notes', '')
+            
+            db.session.commit()
+            flash(f"Deposit of ${deposit.amount} rejected.", "success")
+        else:
+            logger.warning(f"Deposit {deposit_id} already processed with status: {deposit.status}")
+            flash("Deposit has already been processed.", "warning")
     
-    return redirect(url_for('admin_deposits'))
+    except Exception as e:
+        logger.error(f"Error processing deposit {deposit_id}: {str(e)}")
+        db.session.rollback()
+        flash(f"Error processing deposit: {str(e)}", "error")
+    
+    return redirect(url_for('view_deposits'))
 
 # VIEW WITHDRAWALS - Main listing page
 @app.route('/admin/withdrawals')
@@ -1015,62 +1083,130 @@ def reject_deposit(deposit_id):
 def view_withdrawals():
     """View all withdrawal requests - Admin only"""
     try:
+        logger.debug("Accessing view_withdrawals route")
         page = request.args.get('page', 1, type=int)
+        
+        # Debug: Check if WithdrawalRequest model exists and has data
+        total_withdrawals = WithdrawalRequest.query.count()
+        logger.debug(f"Total withdrawals in database: {total_withdrawals}")
+        
         withdrawals = WithdrawalRequest.query.order_by(WithdrawalRequest.created_at.desc()).paginate(
             page=page,
-            per_page=20,  # Adjust as needed
+            per_page=20,
             error_out=False
         )
+        
+        logger.debug(f"Withdrawals found for page {page}: {len(withdrawals.items)}")
+        
         return render_template('admin_withdrawals.html', withdrawals=withdrawals)
+        
     except Exception as e:
+        logger.error(f"Error in view_withdrawals: {str(e)}")
         flash(f'Error loading withdrawals: {str(e)}', 'error')
         return redirect(url_for('admin_dashboard'))
+
 # APPROVE WITHDRAWAL - Individual withdrawal approval
 @app.route('/admin/withdrawals/<int:withdrawal_id>/approve', methods=['POST'])
 @admin_required
 def approve_withdrawal(withdrawal_id):
-    withdrawal = WithdrawalRequest.query.get_or_404(withdrawal_id)
-    admin = Admin.query.get(session['admin_id'])
-    
-    if withdrawal.status == 'Pending':
-        withdrawal.status = 'Approved'
-        withdrawal.processed_at = datetime.utcnow()
-        withdrawal.processed_by = admin.id
-        withdrawal.admin_notes = request.form.get('admin_notes', '')
-        withdrawal.transaction_hash = request.form.get('transaction_hash', '')
-        withdrawal.transaction_fee = float(request.form.get('transaction_fee', 0))
+    try:
+        logger.debug(f"Approving withdrawal {withdrawal_id}")
+        logger.debug(f"Request form data: {dict(request.form)}")
         
-        db.session.commit()
-        flash(f"Withdrawal of ${withdrawal.amount} approved.", "success")
-    else:
-        flash("Withdrawal has already been processed.", "warning")
+        # Validate the request
+        if not request.form:
+            logger.warning("No form data received")
+            flash("Invalid request data", "error")
+            return redirect(url_for('view_withdrawals'))
+        
+        withdrawal = WithdrawalRequest.query.get_or_404(withdrawal_id)
+        admin = Admin.query.get(session.get('admin_id'))
+        
+        if not admin:
+            logger.error("Admin not found in session")
+            flash("Admin session invalid", "error")
+            return redirect(url_for('admin_login'))
+        
+        if withdrawal.status == 'Pending':
+            withdrawal.status = 'Approved'
+            withdrawal.processed_at = datetime.utcnow()
+            withdrawal.processed_by = admin.id
+            withdrawal.admin_notes = request.form.get('admin_notes', '')
+            withdrawal.transaction_hash = request.form.get('transaction_hash', '')
+            
+            # Safely handle transaction_fee conversion
+            try:
+                transaction_fee = float(request.form.get('transaction_fee', 0))
+                withdrawal.transaction_fee = transaction_fee
+            except (ValueError, TypeError):
+                withdrawal.transaction_fee = 0.0
+            
+            db.session.commit()
+            flash(f"Withdrawal of ${withdrawal.amount} approved.", "success")
+        else:
+            logger.warning(f"Withdrawal {withdrawal_id} already processed with status: {withdrawal.status}")
+            flash("Withdrawal has already been processed.", "warning")
     
-    return redirect(url_for('admin_withdrawals'))  # Fixed: was 'withdrawals'
+    except Exception as e:
+        logger.error(f"Error processing withdrawal {withdrawal_id}: {str(e)}")
+        db.session.rollback()
+        flash(f"Error processing withdrawal: {str(e)}", "error")
+    
+    return redirect(url_for('view_withdrawals'))
 
 # REJECT WITHDRAWAL
 @app.route('/admin/withdrawals/<int:withdrawal_id>/reject', methods=['POST'])
 @admin_required
 def reject_withdrawal(withdrawal_id):
-    withdrawal = WithdrawalRequest.query.get_or_404(withdrawal_id)
-    admin = Admin.query.get(session['admin_id'])
-    
-    if withdrawal.status == 'Pending':
-        withdrawal.status = 'Rejected'
-        withdrawal.processed_at = datetime.utcnow()
-        withdrawal.processed_by = admin.id
-        withdrawal.admin_notes = request.form.get('admin_notes', '')
-        withdrawal.rejection_reason = request.form.get('rejection_reason', '')
+    try:
+        logger.debug(f"Rejecting withdrawal {withdrawal_id}")
+        logger.debug(f"Request form data: {dict(request.form)}")
         
-        # Refund the amount to user's balance
-        user = User.query.get(withdrawal.user_id)
-        user.balance += withdrawal.amount
+        # Validate the request
+        if not request.form:
+            logger.warning("No form data received")
+            flash("Invalid request data", "error")
+            return redirect(url_for('view_withdrawals'))
         
-        db.session.commit()
-        flash(f"Withdrawal of ${withdrawal.amount} rejected and amount refunded.", "success")
-    else:
-        flash("Withdrawal has already been processed.", "warning")
+        withdrawal = WithdrawalRequest.query.get_or_404(withdrawal_id)
+        admin = Admin.query.get(session.get('admin_id'))
+        
+        if not admin:
+            logger.error("Admin not found in session")
+            flash("Admin session invalid", "error")
+            return redirect(url_for('admin_login'))
+        
+        if withdrawal.status == 'Pending':
+            withdrawal.status = 'Rejected'
+            withdrawal.processed_at = datetime.utcnow()
+            withdrawal.processed_by = admin.id
+            withdrawal.admin_notes = request.form.get('admin_notes', '')
+            withdrawal.rejection_reason = request.form.get('rejection_reason', '')
+            
+            # Refund the amount to user's balance
+            user = User.query.get(withdrawal.user_id)
+            if user:
+                old_balance = user.balance
+                user.balance += withdrawal.amount
+                logger.debug(f"Refunded user {user.id} balance from ${old_balance} to ${user.balance}")
+                
+                db.session.commit()
+                flash(f"Withdrawal of ${withdrawal.amount} rejected and amount refunded.", "success")
+            else:
+                logger.error(f"User {withdrawal.user_id} not found")
+                flash("User not found", "error")
+        else:
+            logger.warning(f"Withdrawal {withdrawal_id} already processed with status: {withdrawal.status}")
+            flash("Withdrawal has already been processed.", "warning")
     
-    return redirect(url_for('admin_withdrawals'))
+    except Exception as e:
+        logger.error(f"Error processing withdrawal {withdrawal_id}: {str(e)}")
+        db.session.rollback()
+        flash(f"Error processing withdrawal: {str(e)}", "error")
+    
+    return redirect(url_for('view_withdrawals'))
+
+# API endpoint for wallet validation
 @app.route('/api/validate-wallet', methods=['POST'])
 def validate_wallet_address():
     """API endpoint to validate wallet address format"""
@@ -1094,7 +1230,6 @@ def validate_wallet_address():
         
     except Exception as e:
         return jsonify({'valid': False, 'message': str(e)}), 500
-# Hotel Management
 @app.route('/admin/hotels', methods=['GET', 'POST'])
 @admin_required
 def manage_hotels():
@@ -1340,3 +1475,57 @@ def clear_logs():
 def reset_sessions():
     # Implement session reset logic
     return jsonify({'success': True, 'message': 'All sessions reset successfully'})
+# Add this test route temporarily to debug your deposit system
+@app.route('/admin/test-deposits')
+@admin_required
+def test_deposits():
+    """Test route to debug deposit issues"""
+    try:
+        # Check if models exist
+        from your_app import DepositRequest, User, Admin  # Replace 'your_app' with your actual app module
+        
+        # Get basic stats
+        total_deposits = DepositRequest.query.count()
+        pending_deposits = DepositRequest.query.filter_by(status='Pending').count()
+        
+        # Get sample data
+        sample_deposits = DepositRequest.query.limit(5).all()
+        
+        debug_info = {
+            'total_deposits': total_deposits,
+            'pending_deposits': pending_deposits,
+            'sample_deposits': []
+        }
+        
+        for deposit in sample_deposits:
+            debug_info['sample_deposits'].append({
+                'id': deposit.id,
+                'amount': deposit.amount,
+                'status': deposit.status,
+                'user_id': deposit.user_id,
+                'created_at': deposit.created_at.strftime('%Y-%m-%d %H:%M') if deposit.created_at else 'N/A'
+            })
+        
+        return f"""
+        <h2>Deposit Debug Info</h2>
+        <p><strong>Total Deposits:</strong> {debug_info['total_deposits']}</p>
+        <p><strong>Pending Deposits:</strong> {debug_info['pending_deposits']}</p>
+        <h3>Sample Deposits:</h3>
+        <ul>
+        """ + "\n".join([f"<li>ID: {d['id']}, Amount: ${d['amount']}, Status: {d['status']}, Date: {d['created_at']}</li>" for d in debug_info['sample_deposits']]) + """
+        </ul>
+        <p><a href="/admin/deposits">Go to Deposits Page</a></p>
+        """
+        
+    except Exception as e:
+        return f"<h2>Error:</h2><p>{str(e)}</p><pre>{traceback.format_exc()}</pre>"
+
+# Also add this route to check if your admin_required decorator is working
+@app.route('/admin/test-auth')
+def test_auth():
+    """Test admin authentication"""
+    if 'admin_id' in session:
+        admin = Admin.query.get(session['admin_id'])
+        return f"<h2>Admin Auth Test</h2><p>Logged in as Admin ID: {session['admin_id']}</p><p>Admin: {admin.username if admin else 'Not found'}</p>"
+    else:
+        return "<h2>Admin Auth Test</h2><p>Not logged in as admin</p>"

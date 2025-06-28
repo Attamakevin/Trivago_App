@@ -100,7 +100,7 @@ class DepositRequest(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     network = db.Column(db.String(20), nullable=False)  # BTC, ETH, USDT, etc.
-    wallet_address = db.Column(db.String(200), nullable=False)  # User's wallet address
+    wallet_address = db.Column(db.String(200), nullable=True)  # User's wallet address
     transaction_hash = db.Column(db.String(200))  # Optional: for transaction verification
     status = db.Column(db.String(20), default='Pending')  # Pending, Approved, Rejected
     admin_notes = db.Column(db.Text)  # Admin can add notes

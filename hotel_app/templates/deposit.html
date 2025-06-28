@@ -44,6 +44,18 @@
                     </div>
                 </div>
             </div>
+             <!-- Flash Messages (shown for both forms) -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    <div class="mb-4">
+                        {% for category, message in messages %}
+                        <div class="p-3 rounded-lg {% if category == 'success' %}bg-green-100 text-green-800{% elif category == 'warning' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
+                            {{ message }}
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    {% endwith %}
 
             <!-- Form wrapper -->
             <form method="POST" onsubmit="return handleFormSubmit(event)">

@@ -53,7 +53,7 @@ def login_post():
     user = User.query.filter_by(contact=phone).first()
     if user and check_password_hash(user.password_hash, password):
         if not user.is_active:
-            flash('Account not yet activated by admin', 'warning')
+            flash('Account not yet activated', 'warning')
             return redirect(url_for('auth'))
 
         session['user_id'] = user.id

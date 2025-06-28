@@ -33,7 +33,7 @@
                 <h1 class="text-white text-sm md:text-md font-bold">Membership Levels</h1>
             </div>
         </header>
-    
+
         <div class="max-w-4xl mx-auto px-4 py-8">
             <!-- Level Cards -->
             <div class="space-y-4">
@@ -47,8 +47,8 @@
                                     <i class="fas fa-user text-gray-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-bold text-gray-900">Level 1 - Basic</h3>
-                                    <p class="text-sm text-gray-600">Free • Perfect for new users</p>
+                                    <h3 class="text-xl font-bold text-gray-900">VIP 0</h3>
+                                    <!-- <p class="text-sm text-gray-600">Free • Perfect for new users</p> -->
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
@@ -58,7 +58,7 @@
                             </div>
                         </div>
                     </div>
-    
+
                     <div class="level-content hidden" id="level1-content">
                         <div class="px-6 pb-6 border-t border-gray-100">
                             <div class="pt-4">
@@ -66,26 +66,26 @@
                                 <ul class="space-y-2">
                                     <li class="flex items-center gap-2">
                                         <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Basic hotel comparison</span>
+                                        <span class="text-sm text-gray-700">Task Order: 35</span>
                                     </li>
                                     <li class="flex items-center gap-2">
                                         <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Email support</span>
+                                        <span class="text-sm text-gray-700">Commission ratio: 0.36%</span>
                                     </li>
                                     <li class="flex items-center gap-2">
                                         <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Mobile app access</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Trip history</span>
+                                        <span class="text-sm text-gray-700">Daily Tasks: 2</span>
                                     </li>
                                 </ul>
+                                <div
+                                    class="mt-4 w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                    Activated
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-    
+
                 <!-- Level 2 - Premium -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-orange-400">
                     <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
@@ -96,8 +96,8 @@
                                     <i class="fas fa-crown text-orange-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-bold text-gray-900">Level 2 - Premium</h3>
-                                    <p class="text-sm text-gray-600">$9.99/month • Best for frequent travelers</p>
+                                    <h3 class="text-xl font-bold text-gray-900">VIP 1</h3>
+                                    <!-- <p class="text-sm text-gray-600">$9.99/month • Best for frequent travelers</p> -->
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
@@ -108,42 +108,34 @@
                             </div>
                         </div>
                     </div>
-    
+
                     <div class="level-content hidden" id="level2-content">
                         <div class="px-6 pb-6 border-t border-gray-100">
                             <div class="pt-4">
-                                <h4 class="font-semibold text-gray-900 mb-3">Everything in Basic, plus:</h4>
+                                <!-- <h4 class="font-semibold text-gray-900 mb-3">Everything in Basic, plus:</h4> -->
                                 <ul class="space-y-2">
                                     <li class="flex items-center gap-2">
                                         <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Priority customer support</span>
+                                        <span class="text-sm text-gray-700">Task Order: 38</span>
                                     </li>
                                     <li class="flex items-center gap-2">
                                         <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Exclusive member deals</span>
+                                        <span class="text-sm text-gray-700">Commissio ratio: 0.45%</span>
                                     </li>
                                     <li class="flex items-center gap-2">
                                         <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Price alerts & tracking</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">5% cashback on bookings</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">No booking fees</span>
+                                        <span class="text-sm text-gray-700">Daily Task: 4</span>
                                     </li>
                                 </ul>
-                                <button onclick="upgradeTo('premium')"
-                                    class="mt-4 w-full bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                    Upgrade to Premium
-                                </button>
+                                <div
+                                    class="mt-4 w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                    Not Activated
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-    
+
                 <!-- Level 3 - Elite -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-teal-400">
                     <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
@@ -154,52 +146,44 @@
                                     <i class="fas fa-gem text-teal-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-bold text-gray-900">Level 3 - Elite</h3>
-                                    <p class="text-sm text-gray-600">$19.99/month • For luxury travel enthusiasts</p>
+                                    <h3 class="text-xl font-bold text-gray-900">VIP 2</h3>
+                                    <!-- <p class="text-sm text-gray-600">$19.99/month • For luxury travel enthusiasts</p> -->
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
+                                <span class="px-3 py-1 bg-teal-100 text-teal-700 text-xs rounded-full">Premium</span>
                                 <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
                                     id="level3-icon"></i>
                             </div>
                         </div>
                     </div>
-    
+
                     <div class="level-content hidden" id="level3-content">
                         <div class="px-6 pb-6 border-t border-gray-100">
                             <div class="pt-4">
-                                <h4 class="font-semibold text-gray-900 mb-3">Everything in Premium, plus:</h4>
+                                <!-- <h4 class="font-semibold text-gray-900 mb-3">Everything in Premium, plus:</h4> -->
                                 <ul class="space-y-2">
                                     <li class="flex items-center gap-2">
                                         <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">10% cashback on bookings</span>
+                                        <span class="text-sm text-gray-700">Task Order: 40</span>
                                     </li>
                                     <li class="flex items-center gap-2">
                                         <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Free room upgrades</span>
+                                        <span class="text-sm text-gray-700">Commissio ratio: 0.54%</span>
                                     </li>
                                     <li class="flex items-center gap-2">
                                         <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Personal travel concierge</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Airport lounge access</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Travel insurance included</span>
-                                    </li>
+                                        <span class="text-sm text-gray-700">Daily Task: 6</span>
                                 </ul>
-                                <button onclick="upgradeTo('elite')"
+                                <div
                                     class="mt-4 w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                    Upgrade to Elite
-                                </button>
+                                    Not Activated
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-    
+
                 <!-- Level 4 - VIP -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-purple-400">
                     <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
@@ -210,55 +194,47 @@
                                     <i class="fas fa-star text-purple-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-bold text-gray-900">Level 4 - VIP</h3>
-                                    <p class="text-sm text-gray-600">$39.99/month • Ultimate luxury experience</p>
+                                    <h3 class="text-xl font-bold text-gray-900">VIP 3</h3>
+                                    <!-- <p class="text-sm text-gray-600">$39.99/month • Ultimate luxury experience</p> -->
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Exclusive</span>
+                                <span
+                                    class="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Exclusive</span>
                                 <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
                                     id="level4-icon"></i>
                             </div>
                         </div>
                     </div>
-    
+
                     <div class="level-content hidden" id="level4-content">
                         <div class="px-6 pb-6 border-t border-gray-100">
                             <div class="pt-4">
-                                <h4 class="font-semibold text-gray-900 mb-3">Everything in Elite, plus:</h4>
+                                <!-- <h4 class="font-semibold text-gray-900 mb-3">Everything in Elite, plus:</h4> -->
                                 <ul class="space-y-2">
                                     <li class="flex items-center gap-2">
                                         <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">15% cashback on bookings</span>
+                                        <span class="text-sm text-gray-700">Task Order: 44</span>
                                     </li>
                                     <li class="flex items-center gap-2">
                                         <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">24/7 dedicated VIP support</span>
+                                        <span class="text-sm text-gray-700">Commissio ratio: 0.66%</span>
                                     </li>
                                     <li class="flex items-center gap-2">
                                         <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Complimentary suite upgrades</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Private jet booking assistance</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Exclusive VIP-only properties</span>
-                                    </li>
+                                        <span class="text-sm text-gray-700">Daily Task: 8</span>
                                 </ul>
-                                <button onclick="upgradeTo('vip')"
+                                <div 
                                     class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                    Upgrade to VIP
-                                </button>
+                                    Not Activated
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    
+
         <script>
             function toggleLevel(levelId) {
                 const content = document.getElementById(levelId + '-content');
@@ -305,5 +281,6 @@
                 });
             });
         </script>
-        </body>
+    </body>
+
 </html>

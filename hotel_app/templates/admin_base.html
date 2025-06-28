@@ -21,7 +21,7 @@
             <!-- Mobile Overlay -->
             <div class="mobile-overlay" id="mobileOverlay"></div>
 
-            <div class="row">
+            <div class="row no-gutters">
                 <!-- Sidebar -->
                 <nav class="col-md-3 col-lg-2 d-md-block sidebar" id="sidebar">
                     <button class="nav-close" id="navClose">
@@ -119,65 +119,86 @@
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
         <script>
-            // Mobile Navigation Toggle
-            document.addEventListener('DOMContentLoaded', function () {
-                const mobileNavToggle = document.getElementById('mobileNavToggle');
-                const sidebar = document.getElementById('sidebar');
-                const mobileOverlay = document.getElementById('mobileOverlay');
-                const navClose = document.getElementById('navClose');
+    // Mobile Navigation Toggle - Updated for proper 768px support
+    document.addEventListener('DOMContentLoaded', function () {
+        const mobileNavToggle = document.getElementById('mobileNavToggle');
+        const sidebar = document.getElementById('sidebar');
+        const mobileOverlay = document.getElementById('mobileOverlay');
+        const navClose = document.getElementById('navClose');
 
-                function openNav() {
-                    sidebar.classList.add('show');
-                    mobileOverlay.classList.add('show');
-                    mobileNavToggle.classList.add('active');
-                    document.body.style.overflow = 'hidden';
+        function openNav() {
+            sidebar.classList.add('show');
+            mobileOverlay.classList.add('show');
+            mobileNavToggle.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeNav() {
+            sidebar.classList.remove('show');
+            mobileOverlay.classList.remove('show');
+            mobileNavToggle.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Check if we're in mobile/tablet mode (below 992px)
+        function isMobileOrTablet() {
+            return window.innerWidth < 992;
+        }
+
+        // Toggle navigation
+        if (mobileNavToggle) {
+            mobileNavToggle.addEventListener('click', function () {
+                if (sidebar.classList.contains('show')) {
+                    closeNav();
+                } else {
+                    openNav();
                 }
-
-                function closeNav() {
-                    sidebar.classList.remove('show');
-                    mobileOverlay.classList.remove('show');
-                    mobileNavToggle.classList.remove('active');
-                    document.body.style.overflow = '';
-                }
-
-                // Toggle navigation
-                mobileNavToggle.addEventListener('click', function () {
-                    if (sidebar.classList.contains('show')) {
-                        closeNav();
-                    } else {
-                        openNav();
-                    }
-                });
-
-                // Close navigation when clicking overlay
-                mobileOverlay.addEventListener('click', closeNav);
-
-                // Close navigation when clicking close button
-                if (navClose) {
-                    navClose.addEventListener('click', function (e) {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        closeNav();
-                    });
-                }
-
-                // Close navigation when clicking on nav links (mobile)
-                const navLinks = sidebar.querySelectorAll('.nav-link');
-                navLinks.forEach(link => {
-                    link.addEventListener('click', function () {
-                        if (window.innerWidth <= 768) {
-                            closeNav();
-                        }
-                    });
-                });
-
-                // Handle window resize
-                window.addEventListener('resize', function () {
-                    if (window.innerWidth > 768) {
-                        closeNav();
-                    }
-                });
             });
+        }
+
+        // Close navigation when clicking overlay
+        if (mobileOverlay) {
+            mobileOverlay.addEventListener('click', closeNav);
+        }
+
+        // Close navigation when clicking close button
+        if (navClose) {
+            navClose.addEventListener('click', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeNav();
+            });
+        }
+
+        // Close navigation when clicking on nav links (mobile/tablet only)
+        const navLinks = sidebar.querySelectorAll('.nav-link');
+        navLinks.forEach(link => {
+            link.addEventListener('click', function () {
+                if (isMobileOrTablet()) {
+                    closeNav();
+                }
+            });
+        });
+
+        // Handle window resize - Updated to handle 768px properly
+        window.addEventListener('resize', function () {
+            if (!isMobileOrTablet()) {
+                // Desktop mode - close any open mobile navigation
+                closeNav();
+            }
+        });
+
+        // Initialize proper state on page load
+        function initializeNavState() {
+            if (!isMobileOrTablet()) {
+                // Desktop mode - ensure mobile nav is closed
+                closeNav();
+            }
+        }
+
+        // Call initialization
+        initializeNavState();
+    });
         </script>
 
         {% block scripts %}{% endblock %}

@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+        <title>Bind Wallet - trivago</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
+        <!-- TailwindCSS -->
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+        <!-- Custom Script -->
+        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/translate.js') }}"></script>
+        <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+    </head>
+
+    <body class="bg-gray-50 min-h-screen">
+        <!-- Header -->
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+            <div class="flex items-center justify-start gap-8 text-white h-full">
+                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-white text-sm md:text-md font-bold">Bind Wallet</h1>
+            </div>
+        </header>
+
+        <div class="max-w-4xl mx-auto px-4 py-8">
+            <!-- Page Header -->
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-wallet text-blue-600 text-3xl"></i>
+                </div>
+                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Bind Your Wallets</h2>
+                <p class="text-gray-600">Connect your payment methods for seamless transactions</p>
+            </div>
+
+            <div class="space-y-6">
+                <!-- USDT Wallet 1 -->
+                <div class="bg-white rounded-lg shadow-md border-l-4 border-green-400">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fab fa-bitcoin text-green-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">USDT Wallet #1</h3>
+                                    <p class="text-sm text-gray-600">Primary USDT wallet address</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="usdt1-status"
+                                    class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Not
+                                    Connected</span>
+                                <button onclick="editUSDT('usdt1')" id="usdt1-edit-btn"
+                                    class="text-blue-600 hover:text-blue-700">
+                                    <i class="fas fa-edit text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-wallet text-gray-400 mr-2"></i>USDT Wallet Address
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="usdt1-address"
+                                        placeholder="Enter your USDT wallet address (TRC20/ERC20)"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                                        readonly>
+                                    <button onclick="saveUSDT('usdt1')" id="usdt1-save-btn"
+                                        class="absolute right-2 top-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition-colors hidden">
+                                        Save
+                                    </button>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Supports TRC20 and ERC20 networks</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- USDT Wallet 2 -->
+                <div class="bg-white rounded-lg shadow-md border-l-4 border-green-400">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fab fa-bitcoin text-green-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">USDT Wallet #2</h3>
+                                    <p class="text-sm text-gray-600">Secondary USDT wallet address</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="usdt2-status"
+                                    class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Not
+                                    Connected</span>
+                                <button onclick="editUSDT('usdt2')" id="usdt2-edit-btn"
+                                    class="text-blue-600 hover:text-blue-700">
+                                    <i class="fas fa-edit text-lg"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-wallet text-gray-400 mr-2"></i>USDT Wallet Address
+                                </label>
+                                <div class="relative">
+                                    <input type="text" id="usdt2-address"
+                                        placeholder="Enter your USDT wallet address (TRC20/ERC20)"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+                                        readonly>
+                                    <button onclick="saveUSDT('usdt2')" id="usdt2-save-btn"
+                                        class="absolute right-2 top-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition-colors hidden">
+                                        Save
+                                    </button>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Supports TRC20 and ERC20 networks</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Revolut Wallet -->
+                <div class="bg-white rounded-lg shadow-md border-l-4 border-blue-400">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-university text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Revolut Account</h3>
+                                    <p class="text-sm text-gray-600">Connect your Revolut banking details</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="revolut-status"
+                                    class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Not
+                                    Connected</span>
+                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform cursor-pointer"
+                                    id="revolut-icon" onclick="toggleRevolut()"></i>
+                            </div>
+                        </div>
+
+                        <!-- Revolut Form (Hidden by default) -->
+                        <div class="revolut-form hidden" id="revolut-form">
+                            <div class="border-t border-gray-200 pt-6 space-y-4">
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-credit-card text-gray-400 mr-2"></i>Account Number
+                                        </label>
+                                        <input type="text" id="revolut-account" placeholder="Enter account number"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-university text-gray-400 mr-2"></i>IBAN
+                                        </label>
+                                        <input type="text" id="revolut-iban" placeholder="GB29 REVO 0099 7012 3456 78"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class="fas fa-tag text-gray-400 mr-2"></i>Revtag (Optional)
+                                    </label>
+                                    <input type="text" id="revolut-revtag" placeholder="@yourusername"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                    <p class="text-xs text-gray-500 mt-1">Your unique Revolut username for easy
+                                        transfers</p>
+                                </div>
+
+                                <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <div class="flex items-start gap-3">
+                                        <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                                        <div>
+                                            <h5 class="font-medium text-blue-800 mb-1">Important Information</h5>
+                                            <ul class="text-sm text-blue-700 space-y-1">
+                                                <li>• Ensure your Revolut account supports international transfers</li>
+                                                <li>• Account number and IBAN are required for bank transfers</li>
+                                                <li>• Revtag allows for instant Revolut-to-Revolut transfers</li>
+                                                <li>• All information is encrypted and securely stored</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                                    <button onclick="saveRevolut()"
+                                        class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+                                        <i class="fas fa-save mr-2"></i>Save Revolut Details
+                                    </button>
+                                    <button onclick="cancelRevolut()"
+                                        class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-times mr-2"></i>Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Revolut Summary (When connected) -->
+                        <div class="revolut-summary hidden" id="revolut-summary">
+                            <div class="border-t border-gray-200 pt-6">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h5 class="font-medium text-gray-900 mb-3">Connected Account Details</h5>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Account Number:</span>
+                                            <span class="font-medium" id="saved-account">****1234</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">IBAN:</span>
+                                            <span class="font-medium" id="saved-iban">GB29****78</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Revtag:</span>
+                                            <span class="font-medium" id="saved-revtag">@username</span>
+                                        </div>
+                                    </div>
+                                    <button onclick="editRevolut()"
+                                        class="mt-3 text-blue-600 hover:text-blue-700 text-sm">
+                                        <i class="fas fa-edit mr-1"></i>Edit Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div id="successMessage" class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4 hidden">
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                    <div>
+                        <h4 class="font-medium text-green-800">Wallet Connected Successfully!</h4>
+                        <p class="text-sm text-green-700 mt-1" id="successText">Your wallet has been securely connected
+                            to your account.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // USDT Wallet Functions
+            function editUSDT(walletId) {
+                const input = document.getElementById(walletId + '-address');
+                const editBtn = document.getElementById(walletId + '-edit-btn');
+                const saveBtn = document.getElementById(walletId + '-save-btn');
+
+                input.removeAttribute('readonly');
+                input.focus();
+                input.classList.add('ring-2', 'ring-green-500');
+                editBtn.classList.add('hidden');
+                saveBtn.classList.remove('hidden');
+            }
+
+            function saveUSDT(walletId) {
+                const input = document.getElementById(walletId + '-address');
+                const editBtn = document.getElementById(walletId + '-edit-btn');
+                const saveBtn = document.getElementById(walletId + '-save-btn');
+                const status = document.getElementById(walletId + '-status');
+
+                const address = input.value.trim();
+
+                if (!address) {
+                    alert('Please enter a valid USDT wallet address');
+                    return;
+                }
+
+                // Basic validation for USDT address format
+                if (address.length < 25 || address.length > 45) {
+                    alert('Please enter a valid USDT wallet address');
+                    return;
+                }
+
+                // Save the wallet
+                input.setAttribute('readonly', '');
+                input.classList.remove('ring-2', 'ring-green-500');
+                editBtn.classList.remove('hidden');
+                saveBtn.classList.add('hidden');
+
+                // Update status
+                status.textContent = 'Connected';
+                status.className = 'px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full';
+
+                // Show success message
+                showSuccessMessage(`USDT Wallet ${walletId === 'usdt1' ? '#1' : '#2'} connected successfully!`);
+            }
+
+            // Revolut Functions
+            function toggleRevolut() {
+                const form = document.getElementById('revolut-form');
+                const icon = document.getElementById('revolut-icon');
+                const summary = document.getElementById('revolut-summary');
+
+                // If summary is showing, switch to edit mode
+                if (!summary.classList.contains('hidden')) {
+                    summary.classList.add('hidden');
+                    form.classList.remove('hidden');
+                    icon.classList.add('rotate-180');
+                    return;
+                }
+
+                // Toggle form
+                form.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+            }
+
+            function saveRevolut() {
+                const account = document.getElementById('revolut-account').value.trim();
+                const iban = document.getElementById('revolut-iban').value.trim();
+                const revtag = document.getElementById('revolut-revtag').value.trim();
+                const status = document.getElementById('revolut-status');
+
+                // Validation
+                if (!account || !iban) {
+                    alert('Please fill in both Account Number and IBAN');
+                    return;
+                }
+
+                // Basic IBAN validation (simplified)
+                if (iban.length < 15 || iban.length > 34) {
+                    alert('Please enter a valid IBAN');
+                    return;
+                }
+
+                // Save data and update display
+                document.getElementById('saved-account').textContent = '**** ' + account.slice(-4);
+                document.getElementById('saved-iban').textContent = iban.substring(0, 6) + '****' + iban.slice(-2);
+                document.getElementById('saved-revtag').textContent = revtag || 'Not provided';
+
+                // Hide form, show summary
+                document.getElementById('revolut-form').classList.add('hidden');
+                document.getElementById('revolut-summary').classList.remove('hidden');
+                document.getElementById('revolut-icon').classList.remove('rotate-180');
+
+                // Update status
+                status.textContent = 'Connected';
+                status.className = 'px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full';
+
+                // Show success message
+                showSuccessMessage('Revolut account connected successfully!');
+            }
+
+            function cancelRevolut() {
+                // Clear form
+                document.getElementById('revolut-account').value = '';
+                document.getElementById('revolut-iban').value = '';
+                document.getElementById('revolut-revtag').value = '';
+
+                // Hide form
+                document.getElementById('revolut-form').classList.add('hidden');
+                document.getElementById('revolut-icon').classList.remove('rotate-180');
+            }
+
+            function editRevolut() {
+                const form = document.getElementById('revolut-form');
+                const summary = document.getElementById('revolut-summary');
+                const icon = document.getElementById('revolut-icon');
+
+                summary.classList.add('hidden');
+                form.classList.remove('hidden');
+                icon.classList.add('rotate-180');
+            }
+
+            function showSuccessMessage(message) {
+                const successMsg = document.getElementById('successMessage');
+                const successText = document.getElementById('successText');
+
+                successText.textContent = message;
+                successMsg.classList.remove('hidden');
+                successMsg.scrollIntoView({ behavior: 'smooth' });
+
+                // Hide after 5 seconds
+                setTimeout(() => {
+                    successMsg.classList.add('hidden');
+                }, 5000);
+            }
+
+            // Add smooth animations
+            document.addEventListener('DOMContentLoaded', function () {
+                const forms = document.querySelectorAll('.revolut-form, .revolut-summary');
+                forms.forEach(form => {
+                    form.style.transition = 'all 0.3s ease';
+                });
+            });
+        </script>
+    </body>
+
+</html>

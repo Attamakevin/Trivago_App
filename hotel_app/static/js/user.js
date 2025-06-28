@@ -10,10 +10,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const sliderContainer = document.querySelector('.relative');
     const totalSlides = slides.length;
 
-    console.log('Found', totalSlides, 'slides and', indicators.length, 'indicators');
+    // console.log('Found', totalSlides, 'slides and', indicators.length, 'indicators');
 
     if (totalSlides === 0) {
-        console.error('No slides found! Check HTML structure.');
+        // console.error('No slides found! Check HTML structure.');
         return;
     }
 
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize slider
     function initSlider() {
-        console.log('Initializing slider with', totalSlides, 'slides');
+        // console.log('Initializing slider with', totalSlides, 'slides');
         if (totalSlides > 0) {
             showSlide(0);
             startAutoplay();
@@ -291,7 +291,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 })
                 .catch(error => {
                     // Error case
-                    console.error('Error:', error);
+                    // console.error('Error:', error);
                     const errorMessage = error.error || 'An unexpected error occurred';
                     document.getElementById('errorMessage').textContent = errorMessage;
                     document.getElementById('errorModal').classList.remove('hidden');
@@ -622,7 +622,7 @@ function handleFormSubmit(event) {
             }
         })
         .catch(error => {
-            console.error('Error:', error);
+            // console.error('Error:', error);
             showStyledAlert('An error occurred processing your deposit', 'error');
         })
         .finally(() => {
@@ -918,27 +918,27 @@ function handleWithdrawFormSubmit(event) {
     const walletAddress = document.getElementById('walletAddress').value.trim();
 
     if (amount < 25) {
-        window.showWithdrawAlert('Minimum withdrawal amount is $25.00', 'error');
+        alert('Minimum withdrawal amount is $25.00', 'error');
         return false;
     }
 
     if (amount > availableBalance) {
-        window.showWithdrawAlert(`Insufficient funds. Your available balance is $${availableBalance.toFixed(2)}`, 'error');
+        alert(`Insufficient funds. Your available balance is $${availableBalance.toFixed(2)}`, 'error');
         return false;
     }
 
     if (!networkInput) {
-        window.showWithdrawAlert('Please select a withdrawal method', 'error');
+        alert('Please select a withdrawal method', 'error');
         return false;
     }
 
     if (!walletAddress) {
-        window.showWithdrawAlert('Please enter your wallet address', 'error');
+        alert('Please enter your wallet address', 'error');
         return false;
     }
 
     if (walletAddress.length < 10) {
-        window.showWithdrawAlert('Please enter a valid wallet address', 'error');
+        alert('Please enter a valid wallet address', 'error');
         return false;
     }
 
@@ -949,10 +949,14 @@ function handleWithdrawFormSubmit(event) {
 
     // Submit the form
     setTimeout(() => {
-        event.target.submit();
-    }, 1000);
+        // Instead of just submitting, show success message first
+        showWithdrawAlert('Withdrawal request submitted successfully! You will be redirected to your profile.', 'success');
 
-    return false;
+        // Then submit after a delay
+        setTimeout(() => {
+            event.target.submit();
+        }, 2000);
+    }, 1000);
 }
 
 // Withdraw-specific event listeners

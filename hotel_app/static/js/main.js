@@ -180,9 +180,9 @@ function updateCalendarDisplay(type) {
 }
 
 function generateCalendarDays(monthIndex, year, containerId, type) {
-    console.log('Generating calendar for:', containerId);
+    // console.log('Generating calendar for:', containerId);
     const container = document.getElementById(containerId);
-    console.log('Container found:', container);
+    // console.log('Container found:', container);
     if (!container) return;
 
     const grid = container.querySelector('.calendar-grid') || container;
@@ -740,7 +740,7 @@ function selectCountry(code, name) {
     toggleCountryDropdown();
 
     // You can add additional logic here, like updating the website language/region
-    console.log(`Selected country: ${name} (${code})`);
+    // console.log(`Selected country: ${name} (${code})`);
 }
 
 function filterCountries() {

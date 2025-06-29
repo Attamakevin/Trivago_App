@@ -1008,6 +1008,7 @@ def admin_dashboard():
 def view_users():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('search', '')
+    vip_filter = request.args.get('vip_level', '')
     
     users_query = User.query
     if search:
@@ -1016,11 +1017,21 @@ def view_users():
             User.user.agent_id.contains(search)
         )
     
+    if vip_filter:
+        users_query = users_query.filter(User.vip_level == vip_filter)
+    
     users = users_query.order_by(User.id.desc()).paginate(
         page=page, per_page=20, error_out=False
     )
     
-    return render_template('admin_users.html', users=users, search=search)
+    # VIP levels for filter dropdown
+    vip_levels = ['vip0', 'vip1', 'vip2', 'vip3']
+    
+    return render_template('admin_users.html', 
+                         users=users, 
+                         search=search, 
+                         vip_levels=vip_levels,
+                         current_vip_filter=vip_filter)
 
 @app.route('/admin/users/<int:user_id>/toggle', methods=['POST'])
 @admin_required
@@ -1031,6 +1042,88 @@ def toggle_user(user_id):
     
     action = 'activated' if user.is_active else 'deactivated'
     flash(f"User {user.nickname} has been {action}.", "success")
+    return redirect(url_for('view_users'))
+
+@app.route('/admin/users/<int:user_id>/update_vip', methods=['POST'])
+@admin_required
+def update_user_vip(user_id):
+    user = User.query.get_or_404(user_id)
+    new_vip_level = request.form.get('vip_level')
+    
+    # Validate VIP level
+    valid_vip_levels = ['vip0', 'vip1', 'vip2', 'vip3']
+    if new_vip_level not in valid_vip_levels:
+        flash("Invalid VIP level selected.", "error")
+        return redirect(url_for('view_users'))
+    
+    old_vip_level = user.vip_level
+    user.vip_level = new_vip_level
+    db.session.commit()
+    
+    flash(f"User {user.nickname} VIP level updated from {old_vip_level} to {new_vip_level}.", "success")
+    return redirect(url_for('view_users'))
+
+@app.route('/admin/users/<int:user_id>/bulk_update', methods=['POST'])
+@admin_required
+def bulk_update_user(user_id):
+    user = User.query.get_or_404(user_id)
+    
+    # Get form data
+    new_vip_level = request.form.get('vip_level')
+    toggle_status = request.form.get('toggle_status')
+    
+    changes_made = []
+    
+    # Update VIP level if provided
+    if new_vip_level and new_vip_level != user.vip_level:
+        valid_vip_levels = ['vip0', 'vip1', 'vip2', 'vip3']
+        if new_vip_level in valid_vip_levels:
+            old_vip = user.vip_level
+            user.vip_level = new_vip_level
+            changes_made.append(f"VIP level: {old_vip} → {new_vip_level}")
+    
+    # Toggle status if requested
+    if toggle_status == 'toggle':
+        user.is_active = not user.is_active
+        status = 'activated' if user.is_active else 'deactivated'
+        changes_made.append(f"Status: {status}")
+    
+    if changes_made:
+        db.session.commit()
+        flash(f"User {user.nickname} updated: {', '.join(changes_made)}", "success")
+    else:
+        flash("No changes were made.", "info")
+    
+    return redirect(url_for('view_users'))
+
+@app.route('/admin/users/bulk_vip_update', methods=['POST'])
+@admin_required
+def bulk_vip_update():
+    user_ids = request.form.getlist('user_ids')
+    new_vip_level = request.form.get('bulk_vip_level')
+    
+    if not user_ids:
+        flash("No users selected.", "error")
+        return redirect(url_for('view_users'))
+    
+    valid_vip_levels = ['vip0', 'vip1', 'vip2', 'vip3']
+    if new_vip_level not in valid_vip_levels:
+        flash("Invalid VIP level selected.", "error")
+        return redirect(url_for('view_users'))
+    
+    try:
+        # Update multiple users at once
+        updated_count = User.query.filter(User.id.in_(user_ids)).update(
+            {User.vip_level: new_vip_level}, 
+            synchronize_session=False
+        )
+        db.session.commit()
+        
+        flash(f"Successfully updated {updated_count} users to {new_vip_level}.", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash(f"Error updating users: {str(e)}", "error")
+    
     return redirect(url_for('view_users'))
 
 @app.route('/admin/users/<int:user_id>/delete', methods=['POST'])
@@ -1054,11 +1147,54 @@ def view_user_details(user_id):
     deposits = DepositRequest.query.filter_by(user_id=user_id).order_by(DepositRequest.id.desc()).all()
     withdrawals = WithdrawalRequest.query.filter_by(user_id=user_id).order_by(WithdrawalRequest.id.desc()).all()
     
+    # VIP levels for the update form
+    vip_levels = ['vip0', 'vip1', 'vip2', 'vip3']
+    
     return render_template('admin_user_details.html', 
                          user=user, 
                          deposits=deposits, 
-                         withdrawals=withdrawals)
+                         withdrawals=withdrawals,
+                         vip_levels=vip_levels)
 
+# API endpoint for AJAX VIP updates (optional)
+@app.route('/admin/api/users/<int:user_id>/vip', methods=['PUT'])
+@admin_required
+def api_update_user_vip(user_id):
+    user = User.query.get_or_404(user_id)
+    data = request.get_json()
+    
+    new_vip_level = data.get('vip_level')
+    valid_vip_levels = ['vip0', 'vip1', 'vip2', 'vip3']
+    
+    if new_vip_level not in valid_vip_levels:
+        return jsonify({'error': 'Invalid VIP level'}), 400
+    
+    old_vip_level = user.vip_level
+    user.vip_level = new_vip_level
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': f'VIP level updated from {old_vip_level} to {new_vip_level}',
+        'old_vip': old_vip_level,
+        'new_vip': new_vip_level
+    })
+
+# Helper route to get VIP level statistics
+@app.route('/admin/users/vip_stats')
+@admin_required
+def vip_statistics():
+    vip_stats = db.session.query(
+        User.vip_level,
+        db.func.count(User.id).label('count')
+    ).group_by(User.vip_level).all()
+    
+    stats_dict = {level: 0 for level in ['vip0', 'vip1', 'vip2', 'vip3']}
+    for stat in vip_stats:
+        if stat.vip_level in stats_dict:
+            stats_dict[stat.vip_level] = stat.count
+    
+    return jsonify(stats_dict)
 # IMPROVED ADMIN ROUTES FOR DEPOSITS AND WITHDRAWALS
 
 # VIEW DEPOSITS - Main listing page with better error handling and debugging

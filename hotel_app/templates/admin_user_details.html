@@ -42,6 +42,11 @@
                     </div>
                     <div class="col-md-6">
                         <p><strong>Balance:</strong> ${{ "%.2f"|format(user.balance) }}</p>
+                        <p><strong>VIP Level:</strong> 
+                            <span class="badge bg-{{ 'primary' if user.vip_level == 'vip3' else ('info' if user.vip_level == 'vip2' else ('warning' if user.vip_level == 'vip1' else 'secondary')) }}">
+                                {{ user.vip_level.upper() if user.vip_level else 'VIP0' }}
+                            </span>
+                        </p>
                         <p><strong>Status:</strong> 
                             <span class="badge bg-{{ 'success' if user.is_active else 'danger' }}">
                                 {{ 'Active' if user.is_active else 'Inactive' }}
@@ -98,6 +103,60 @@
             </div>
         </div>
 
+        <!-- VIP Level Management -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="card-title mb-0">VIP Level Management</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('update_user_vip', user_id=user.id) }}">
+                    <div class="row align-items-end">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="vip_level" class="form-label">Current VIP Level: 
+                                    <span class="badge bg-{{ 'primary' if user.vip_level == 'vip3' else ('info' if user.vip_level == 'vip2' else ('warning' if user.vip_level == 'vip1' else 'secondary')) }}">
+                                        {{ user.vip_level.upper() if user.vip_level else 'VIP0' }}
+                                    </span>
+                                </label>
+                                <select class="form-select" id="vip_level" name="vip_level" required>
+                                    <option value="">Select New VIP Level</option>
+                                    {% for level in ['vip0', 'vip1', 'vip2', 'vip3'] %}
+                                    <option value="{{ level }}" {{ 'selected' if user.vip_level == level else '' }}>
+                                        {{ level.upper() }} 
+                                        {% if level == 'vip0' %}(Basic)
+                                        {% elif level == 'vip1' %}(Bronze)
+                                        {% elif level == 'vip2' %}(Silver)
+                                        {% elif level == 'vip3' %}(Gold)
+                                        {% endif %}
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to update this user\'s VIP level?')">
+                                    <i class="fas fa-crown"></i> Update VIP Level
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-12">
+                            <small class="text-muted">
+                                <strong>VIP Level Benefits:</strong><br>
+                                <i class="fas fa-circle text-secondary"></i> VIP0 (Basic): Standard benefits<br>
+                                <i class="fas fa-circle text-warning"></i> VIP1 (Bronze): 5% bonus on deposits<br>
+                                <i class="fas fa-circle text-info"></i> VIP2 (Silver): 10% bonus + priority support<br>
+                                <i class="fas fa-circle text-primary"></i> VIP3 (Gold): 15% bonus + exclusive perks
+                            </small>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
         <!-- Recent Bookings -->
         <div class="card mt-3">
             <div class="card-header">
@@ -149,6 +208,35 @@
                 <h5 class="card-title mb-0">Quick Actions</h5>
             </div>
             <div class="card-body">
+                <!-- Quick VIP Level Update -->
+                <div class="mb-3">
+                    <label class="form-label">Quick VIP Update</label>
+                    <div class="btn-group d-grid gap-2" role="group">
+                        <form method="POST" action="{{ url_for('update_user_vip', user_id=user.id) }}" style="display: inline;">
+                            <input type="hidden" name="vip_level" value="vip0">
+                            <button type="submit" class="btn btn-outline-secondary btn-sm {{ 'active' if user.vip_level == 'vip0' else '' }}" 
+                                    onclick="return confirm('Set VIP level to VIP0?')">VIP0</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('update_user_vip', user_id=user.id) }}" style="display: inline;">
+                            <input type="hidden" name="vip_level" value="vip1">
+                            <button type="submit" class="btn btn-outline-warning btn-sm {{ 'active' if user.vip_level == 'vip1' else '' }}" 
+                                    onclick="return confirm('Set VIP level to VIP1?')">VIP1</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('update_user_vip', user_id=user.id) }}" style="display: inline;">
+                            <input type="hidden" name="vip_level" value="vip2">
+                            <button type="submit" class="btn btn-outline-info btn-sm {{ 'active' if user.vip_level == 'vip2' else '' }}" 
+                                    onclick="return confirm('Set VIP level to VIP2?')">VIP2</button>
+                        </form>
+                        <form method="POST" action="{{ url_for('update_user_vip', user_id=user.id) }}" style="display: inline;">
+                            <input type="hidden" name="vip_level" value="vip3">
+                            <button type="submit" class="btn btn-outline-primary btn-sm {{ 'active' if user.vip_level == 'vip3' else '' }}" 
+                                    onclick="return confirm('Set VIP level to VIP3?')">VIP3</button>
+                        </form>
+                    </div>
+                </div>
+
+                <hr>
+
                 <!-- Toggle User Status -->
                 <form method="POST" action="{{ url_for('view_user_details', user_id=user.id) }}" class="mb-3">
                     
@@ -207,6 +295,13 @@
                         <h4 class="text-success">${{ "%.2f"|format(user.deposits.map(attribute='amount')|sum if user.deposits else 0) }}</h4>
                         <p class="text-muted mb-0">Total Deposits</p>
                     </div>
+                </div>
+                <hr>
+                <div class="text-center">
+                    <p class="mb-1"><strong>VIP Level:</strong></p>
+                    <h3 class="text-{{ 'primary' if user.vip_level == 'vip3' else ('info' if user.vip_level == 'vip2' else ('warning' if user.vip_level == 'vip1' else 'secondary')) }}">
+                        <i class="fas fa-crown"></i> {{ user.vip_level.upper() if user.vip_level else 'VIP0' }}
+                    </h3>
                 </div>
             </div>
         </div>

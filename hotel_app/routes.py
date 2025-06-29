@@ -1140,10 +1140,73 @@ def delete_user(user_id):
     flash(f"User {username} has been deleted.", "success")
     return redirect(url_for('view_users'))
 
-@app.route('/admin/users/<int:user_id>/view')
+@app.route('/admin/users/<int:user_id>/view', methods=['GET', 'POST'])
 @admin_required
 def view_user_details(user_id):
     user = User.query.get_or_404(user_id)
+    
+    if request.method == 'POST':
+        action = request.form.get('action')
+        
+        if action == 'adjust_balance':
+            adjustment_type = request.form.get('adjustment_type')
+            amount = request.form.get('amount')
+            reason = request.form.get('reason', 'Admin adjustment')
+            
+            # Validate inputs
+            if not adjustment_type or not amount:
+                flash("Please provide adjustment type and amount.", "error")
+                return redirect(url_for('view_user_details', user_id=user_id))
+            
+            try:
+                amount = float(amount)
+                if amount < 0:
+                    flash("Amount must be positive.", "error")
+                    return redirect(url_for('view_user_details', user_id=user_id))
+            except ValueError:
+                flash("Invalid amount format.", "error")
+                return redirect(url_for('view_user_details', user_id=user_id))
+            
+            # Store original balance for logging
+            original_balance = user.balance
+            
+            # Perform balance adjustment
+            if adjustment_type == 'add':
+                user.balance += amount
+                action_description = f"Added ${amount:.2f} to balance"
+            elif adjustment_type == 'subtract':
+                if user.balance < amount:
+                    flash(f"Cannot subtract ${amount:.2f}. User only has ${user.balance:.2f} in balance.", "error")
+                    return redirect(url_for('view_user_details', user_id=user_id))
+                user.balance -= amount
+                action_description = f"Subtracted ${amount:.2f} from balance"
+            elif adjustment_type == 'set':
+                user.balance = amount
+                action_description = f"Set balance to ${amount:.2f}"
+            else:
+                flash("Invalid adjustment type.", "error")
+                return redirect(url_for('view_user_details', user_id=user_id))
+            
+            try:
+                db.session.commit()
+                flash(f"Balance adjustment successful! {action_description}. New balance: ${user.balance:.2f}", "success")
+                
+            except Exception as e:
+                db.session.rollback()
+                flash(f"Error adjusting balance: {str(e)}", "error")
+            
+            return redirect(url_for('view_user_details', user_id=user_id))
+        
+        elif action == 'toggle_status':
+            user.is_active = not user.is_active
+            db.session.commit()
+            status = 'activated' if user.is_active else 'deactivated'
+            flash(f"User {user.nickname} has been {status}.", "success")
+            return redirect(url_for('view_user_details', user_id=user_id))
+        
+        # Add other actions (send_message, reset_password) here as needed
+    
+    # GET request - display user details
     deposits = DepositRequest.query.filter_by(user_id=user_id).order_by(DepositRequest.id.desc()).all()
     withdrawals = WithdrawalRequest.query.filter_by(user_id=user_id).order_by(WithdrawalRequest.id.desc()).all()
     

@@ -1,0 +1,1079 @@
+{% extends "admin_base.html" %}
+
+{% block title %}Edit Hotel - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="modern-admin-container">
+    <div class="page-header-modern">
+        <div class="header-content">
+            <h1><i class="fas fa-hotel"></i> Edit Hotel</h1>
+            <div class="breadcrumb-modern">
+                <a href="{{ url_for('admin_dashboard') }}"><i class="fas fa-tachometer-alt"></i> Dashboard</a>
+                <span class="separator"><i class="fas fa-chevron-right"></i></span>
+                <a href="{{ url_for('manage_hotels') }}"><i class="fas fa-building"></i> Hotels</a>
+                <span class="separator"><i class="fas fa-chevron-right"></i></span>
+                <span class="current">Edit Hotel</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-container-modern">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-messages-modern">
+                    {% for category, message in messages %}
+                        <div class="alert-modern alert-{{ category }}">
+                            <i class="fas fa-{% if category == 'success' %}check-circle{% elif category == 'error' %}exclamation-triangle{% else %}info-circle{% endif %}"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <form method="POST" enctype="multipart/form-data" class="modern-form">
+            <!-- Basic Information Section -->
+            <div class="form-section-modern">
+                <div class="section-header">
+                    <h3><i class="fas fa-info-circle"></i> Basic Information</h3>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group-modern">
+                        <label for="name">Hotel Name <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-hotel input-icon"></i>
+                            <input type="text" id="name" name="name" value="{{ hotel.name if hotel else '' }}" required class="form-control-modern">
+                        </div>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="location">Location <span class="required">*</span></label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-map-marker-alt input-icon"></i>
+                            <input type="text" id="location" name="location" value="{{ hotel.location if hotel else '' }}" required class="form-control-modern">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group-modern">
+                    <label for="description">Description</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-align-left input-icon textarea-icon"></i>
+                        <textarea id="description" name="description" rows="4" placeholder="Enter hotel description" class="form-control-modern">{{ hotel.description if hotel else '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pricing & Rating Section -->
+            <div class="form-section-modern">
+                <div class="section-header">
+                    <h3><i class="fas fa-dollar-sign"></i> Pricing & Rating</h3>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group-modern">
+                        <label for="price">Price per Night <span class="required">*</span></label>
+                        <div class="input-wrapper price-input">
+                            <span class="input-prefix">$</span>
+                            <input type="number" id="price" name="price" step="0.01" min="0" value="{{ hotel.price if hotel else '' }}" required class="form-control-modern">
+                        </div>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="rating">Default Rating</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-star input-icon"></i>
+                            <select id="rating" name="rating" class="form-control-modern">
+                                {% for i in range(1, 6) %}
+                                    <option value="{{ i }}" {% if hotel and hotel.rating == i %}selected{% elif not hotel and i == 5 %}selected{% endif %}>{{ i }} Star{{ 's' if i > 1 else '' }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <small class="form-help">Default rating (actual rating calculated from customer reviews)</small>
+                        {% if hotel %}
+                            <div class="rating-info-modern">
+                                <div class="rating-display">
+                                    <i class="fas fa-chart-line"></i>
+                                    <div>
+                                        <strong>Current Average Rating:</strong> {{ hotel.get_average_rating() }} stars
+                                        <small>(based on {{ hotel.reservations|selectattr('rating')|list|length }} reviews)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hotel Details Section -->
+            <div class="form-section-modern">
+                <div class="section-header">
+                    <h3><i class="fas fa-cogs"></i> Hotel Details</h3>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group-modern">
+                        <label for="commission_multiplier">Commission Multiplier</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-percentage input-icon"></i>
+                            <input type="number" id="commission_multiplier" name="commission_multiplier" 
+                                   step="0.1" min="0" value="{{ hotel.commission_multiplier if hotel else '1.0' }}" class="form-control-modern">
+                        </div>
+                        <small class="form-help">Multiplier for commission calculation (default: 1.0)</small>
+                    </div>
+
+                    <div class="form-group-modern">
+                        <label for="days_available">Days Available</label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-calendar-days input-icon"></i>
+                            <input type="number" id="days_available" name="days_available" 
+                                   min="1" value="{{ hotel.days_available if hotel else '1' }}" class="form-control-modern">
+                        </div>
+                        <small class="form-help">Number of days this hotel is available for booking</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Hotel Image Section -->
+            <div class="form-section-modern">
+                <div class="section-header">
+                    <h3><i class="fas fa-image"></i> Hotel Image</h3>
+                </div>
+                
+                <div class="form-group-modern">
+                    <label for="primary_picture">Hotel Image URL</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-link input-icon"></i>
+                        <input type="url" id="primary_picture" name="primary_picture" 
+                               value="{{ hotel.primary_picture if hotel else '' }}" 
+                               placeholder="https://example.com/hotel-image.jpg" class="form-control-modern">
+                    </div>
+                    <small class="form-help">Enter the full URL of the hotel image</small>
+                    
+                    {% if hotel and hotel.primary_picture %}
+                        <div class="current-image-modern">
+                            <p class="image-label"><i class="fas fa-image"></i> Current Image:</p>
+                            <div class="image-preview-modern">
+                                <img src="{{ hotel.primary_picture }}" alt="{{ hotel.name }}" class="preview-img-modern" 
+                                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                <div class="image-error-modern" style="display:none;">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    <p>Image not found or invalid URL</p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions-modern">
+                <button type="submit" class="btn-modern btn-primary-modern">
+                    <i class="fas fa-save"></i>
+                    <span>Update Hotel</span>
+                </button>
+                <a href="{{ url_for('manage_hotels') }}" class="btn-modern btn-secondary-modern">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Cancel</span>
+                </a>
+                {% if hotel %}
+                    <button type="button" class="btn-modern btn-danger-modern" onclick="confirmDelete()">
+                        <i class="fas fa-trash"></i>
+                        <span>Delete Hotel</span>
+                    </button>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Form validation with modern styling
+    const form = document.querySelector('.modern-form');
+    const nameInput = document.getElementById('name');
+    const locationInput = document.getElementById('location');
+    const priceInput = document.getElementById('price');
+    
+    form.addEventListener('submit', function(e) {
+        let isValid = true;
+        const errors = [];
+
+        // Remove previous error states
+        document.querySelectorAll('.form-control-modern').forEach(input => {
+            input.classList.remove('error-modern');
+            const wrapper = input.closest('.input-wrapper');
+            if (wrapper) wrapper.classList.remove('error-wrapper');
+        });
+
+        // Validate required fields
+        if (!nameInput.value.trim()) {
+            errors.push('Hotel name is required');
+            addErrorState(nameInput);
+            isValid = false;
+        }
+
+        if (!locationInput.value.trim()) {
+            errors.push('Location is required');
+            addErrorState(locationInput);
+            isValid = false;
+        }
+
+        if (!priceInput.value || parseFloat(priceInput.value) <= 0) {
+            errors.push('Valid price is required');
+            addErrorState(priceInput);
+            isValid = false;
+        }
+
+        if (!isValid) {
+            e.preventDefault();
+            showErrorNotification(errors);
+        }
+    });
+
+    function addErrorState(input) {
+        input.classList.add('error-modern');
+        const wrapper = input.closest('.input-wrapper');
+        if (wrapper) wrapper.classList.add('error-wrapper');
+    }
+
+    function showErrorNotification(errors) {
+        // Create modern error notification
+        const notification = document.createElement('div');
+        notification.className = 'error-notification-modern';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <i class="fas fa-exclamation-circle"></i>
+                <div>
+                    <h4>Please fix the following errors:</h4>
+                    <ul>${errors.map(error => `<li>${error}</li>`).join('')}</ul>
+                </div>
+                <button class="close-notification" onclick="this.parentElement.parentElement.remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Auto-remove after 5 seconds
+        setTimeout(() => {
+            if (notification.parentElement) {
+                notification.remove();
+            }
+        }, 5000);
+    }
+
+    // Image URL preview with modern styling
+    const imageUrlInput = document.getElementById('primary_picture');
+    imageUrlInput.addEventListener('input', function(e) {
+        const url = e.target.value.trim();
+        let previewContainer = document.querySelector('.image-preview-modern');
+        
+        if (url && isValidImageUrl(url)) {
+            if (!previewContainer) {
+                const currentImageDiv = document.createElement('div');
+                currentImageDiv.className = 'current-image-modern';
+                const label = document.createElement('p');
+                label.className = 'image-label';
+                label.innerHTML = '<i class="fas fa-eye"></i> Preview:';
+                
+                previewContainer = document.createElement('div');
+                previewContainer.className = 'image-preview-modern';
+                
+                currentImageDiv.appendChild(label);
+                currentImageDiv.appendChild(previewContainer);
+                imageUrlInput.closest('.form-group-modern').appendChild(currentImageDiv);
+            }
+            
+            previewContainer.innerHTML = `
+                <img src="${url}" alt="Hotel Image Preview" class="preview-img-modern" 
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="image-error-modern" style="display:none;">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <p>Unable to load image from this URL</p>
+                </div>
+            `;
+        } else if (previewContainer && !document.querySelector('.current-image-modern img[src="{{ hotel.primary_picture if hotel else '' }}"]')) {
+            previewContainer.parentElement.remove();
+        }
+    });
+    
+    function isValidImageUrl(url) {
+        try {
+            new URL(url);
+            return /\.(jpg|jpeg|png|gif|webp|bmp)$/i.test(url) || url.includes('image') || url.includes('photo');
+        } catch {
+            return false;
+        }
+    }
+});
+
+function confirmDelete() {
+    // Create modern confirmation dialog
+    const overlay = document.createElement('div');
+    overlay.className = 'confirmation-overlay';
+    overlay.innerHTML = `
+        <div class="confirmation-dialog">
+            <div class="confirmation-header">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>Confirm Deletion</h3>
+            </div>
+            <div class="confirmation-body">
+                <p>Are you sure you want to delete this hotel?</p>
+                <p><strong>This action cannot be undone.</strong></p>
+            </div>
+            <div class="confirmation-actions">
+                <button class="btn-modern btn-danger-modern" onclick="proceedDelete()">
+                    <i class="fas fa-trash"></i>
+                    <span>Delete</span>
+                </button>
+                <button class="btn-modern btn-secondary-modern" onclick="cancelDelete()">
+                    <i class="fas fa-times"></i>
+                    <span>Cancel</span>
+                </button>
+            </div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    window.proceedDelete = function() {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ url_for("delete_hotel", hotel_id=hotel.id) if hotel else "#" }}';
+        document.body.appendChild(form);
+        form.submit();
+    };
+    
+    window.cancelDelete = function() {
+        overlay.remove();
+    };
+}
+</script>
+
+<style>
+/* Import modern font */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+.modern-admin-container {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+}
+
+.page-header-modern {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.header-content h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1a202c;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.header-content h1 i {
+    color: #667eea;
+}
+
+.breadcrumb-modern {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.breadcrumb-modern a {
+    color: #667eea;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+}
+
+.breadcrumb-modern a:hover {
+    background: rgba(102, 126, 234, 0.1);
+    color: #764ba2;
+}
+
+.breadcrumb-modern .separator {
+    color: #cbd5e0;
+    font-size: 0.8rem;
+}
+
+.breadcrumb-modern .current {
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.form-container-modern {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    padding: 3rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.flash-messages-modern {
+    margin-bottom: 2rem;
+}
+
+.alert-modern {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    font-weight: 500;
+}
+
+.alert-success {
+    background: linear-gradient(135deg, #d4f6d4 0%, #c8f7c5 100%);
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-error,
+.alert-danger {
+    background: linear-gradient(135deg, #ffe6e6 0%, #ffcccc 100%);
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.form-section-modern {
+    margin-bottom: 3rem;
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 16px;
+    padding: 2rem;
+    border: 1px solid rgba(226, 232, 240, 0.8);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+}
+
+.section-header h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.section-header h3 i {
+    color: #667eea;
+    font-size: 1.2rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.form-group-modern {
+    margin-bottom: 1.5rem;
+}
+
+.form-group-modern label {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
+    color: #374151;
+    font-size: 0.95rem;
+}
+
+.required {
+    color: #ef4444;
+    margin-left: 0.25rem;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    color: #9ca3af;
+    z-index: 1;
+    transition: color 0.2s ease;
+}
+
+.textarea-icon {
+    top: 1rem;
+    left: 1rem;
+}
+
+.form-control-modern {
+    width: 100%;
+    padding: 1rem 1rem 1rem 3rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.form-control-modern:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-control-modern:focus + .input-icon,
+.input-wrapper:focus-within .input-icon {
+    color: #667eea;
+}
+
+.price-input {
+    display: flex;
+    align-items: stretch;
+}
+
+.input-prefix {
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    border: 2px solid #e5e7eb;
+    border-right: none;
+    padding: 1rem;
+    border-radius: 12px 0 0 12px;
+    color: #6b7280;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.price-input .form-control-modern {
+    padding-left: 1rem;
+    border-radius: 0 12px 12px 0;
+    border-left: none;
+}
+
+.form-help {
+    display: block;
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.rating-info-modern {
+    margin-top: 1rem;
+    background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+    border-radius: 12px;
+    padding: 1rem;
+    border-left: 4px solid #2196f3;
+}
+
+.rating-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.rating-display i {
+    color: #2196f3;
+    font-size: 1.2rem;
+}
+
+.current-image-modern {
+    margin-top: 1.5rem;
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 2px solid #e5e7eb;
+}
+
+.image-label {
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.image-preview-modern {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 120px;
+}
+
+.preview-img-modern {
+    max-width: 250px;
+    max-height: 200px;
+    border-radius: 12px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s ease;
+}
+
+.preview-img-modern:hover {
+    transform: scale(1.02);
+}
+
+.image-error-modern {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 2rem;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+    border-radius: 12px;
+    color: #856404;
+    text-align: center;
+}
+
+.image-error-modern i {
+    font-size: 2rem;
+    color: #f39c12;
+}
+
+.form-actions-modern {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e2e8f0;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.btn-modern {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-modern::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.btn-modern:hover::before {
+    left: 100%;
+}
+
+.btn-primary-modern {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+}
+
+.btn-secondary-modern {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(107, 114, 128, 0.4);
+}
+
+.btn-secondary-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(107, 114, 128, 0.6);
+}
+
+.btn-danger-modern {
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+}
+
+.btn-danger-modern:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(239, 68, 68, 0.6);
+}
+
+.error-modern {
+    border-color: #ef4444 !important;
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.error-wrapper {
+    animation: shake 0.5s ease-in-out;
+}
+
+.error-notification-modern {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+    max-width: 400px;
+    animation: slideIn 0.3s ease-out;
+}
+
+.notification-content {
+    padding: 1.5rem;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+}
+
+.notification-content i {
+    color: #ef4444;
+    font-size: 1.5rem;
+    margin-top: 0.25rem;
+}
+
+.notification-content h4 {
+    margin: 0 0 0.5rem 0;
+    color: #1f2937;
+    font-size: 1rem;
+}
+
+.notification-content ul {
+    margin: 0;
+    padding-left: 1rem;
+    color: #6b7280;
+}
+
+.close-notification {
+    background: none;
+    border: none;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.close-notification:hover {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.confirmation-dialog {
+    background: white;
+    border-radius: 16px;
+    max-width: 400px;
+    margin: 1rem;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
+    animation: scaleIn 0.2s ease-out;
+}
+
+.confirmation-header {
+    padding: 2rem 2rem 1rem;
+    text-align: center;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.confirmation-header i {
+    font-size: 3rem;
+    color: #f59e0b;
+    margin-bottom: 1rem;
+}
+
+.confirmation-header h3 {
+    margin: 0;
+    color: #1f2937;
+    font-size: 1.25rem;
+}
+
+.confirmation-body {
+    padding: 1.5rem 2rem;
+    text-align: center;
+    color: #6b7280;
+}
+
+.confirmation-body p {
+    margin: 0 0 0.5rem 0;
+}
+
+.confirmation-actions {
+    padding: 1rem 2rem 2rem;
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.9);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes shake {
+    0%, 100% {
+        transform: translateX(0);
+    }
+    10%, 30%, 50%, 70%, 90% {
+        transform: translateX(-5px);
+    }
+    20%, 40%, 60%, 80% {
+        transform: translateX(5px);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .modern-admin-container {
+        padding: 1rem;
+    }
+    
+    .page-header-modern,
+    .form-container-modern {
+        padding: 1.5rem;
+    }
+    
+    .header-content h1 {
+        font-size: 2rem;
+    }
+    
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-actions-modern {
+        flex-direction: column;
+    }
+    
+    .btn-modern {
+        justify-content: center;
+        width: 100%;
+    }
+    
+    .breadcrumb-modern {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .error-notification-modern {
+        left: 1rem;
+        right: 1rem;
+        max-width: none;
+    }
+    
+    .confirmation-dialog {
+        margin: 1rem;
+        width: calc(100% - 2rem);
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .form-section-modern {
+        background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+        border-color: rgba(71, 85, 105, 0.5);
+    }
+    
+    .section-header h3 {
+        color: #e2e8f0;
+        border-bottom-color: #475569;
+    }
+    
+    .form-group-modern label {
+        color: #cbd5e0;
+    }
+    
+    .form-control-modern {
+        background: #334155;
+        border-color: #475569;
+        color: #e2e8f0;
+    }
+    
+    .form-control-modern:focus {
+        border-color: #667eea;
+        background: #475569;
+    }
+    
+    .current-image-modern {
+        background: #334155;
+        border-color: #475569;
+    }
+    
+    .image-label {
+        color: #cbd5e0;
+    }
+    
+    .form-help {
+        color: #94a3b8;
+    }
+}
+
+/* Print styles */
+@media print {
+    .form-actions-modern,
+    .breadcrumb-modern {
+        display: none;
+    }
+    
+    .modern-admin-container {
+        background: white;
+        padding: 0;
+    }
+    
+    .page-header-modern,
+    .form-container-modern {
+        background: white;
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+}
+
+/* High contrast mode */
+@media (prefers-contrast: high) {
+    .form-control-modern {
+        border-width: 3px;
+    }
+    
+    .btn-modern {
+        border: 2px solid currentColor;
+    }
+    
+    .form-section-modern {
+        border-width: 2px;
+    }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    .btn-modern,
+    .form-control-modern,
+    .preview-img-modern {
+        transition: none;
+    }
+    
+    .btn-modern::before {
+        display: none;
+    }
+    
+    .error-wrapper {
+        animation: none;
+    }
+    
+    .confirmation-overlay,
+    .confirmation-dialog,
+    .error-notification-modern {
+        animation: none;
+    }
+}
+
+/* Focus styles for accessibility */
+.form-control-modern:focus,
+.btn-modern:focus {
+    outline: 2px solid #667eea;
+    outline-offset: 2px;
+}
+
+/* Loading state */
+.btn-modern:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+.btn-modern:disabled::before {
+    display: none;
+}
+
+/* Success state */
+.form-control-modern.success {
+    border-color: #10b981;
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+}
+</style>
+
+{% endblock %}

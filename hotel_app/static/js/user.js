@@ -430,7 +430,7 @@ window.reservationSystem = {
     showNotification
 };
 
-// Deposit Functionality
+// Simplified Deposit Functionality
 let selectedAmount = 0;
 let selectedPaymentMethod = '';
 
@@ -468,10 +468,10 @@ function selectPaymentMethod(method) {
     const parentLabel = radioInput.closest('.payment-card');
     parentLabel.classList.add('selected');
 
-    // Update the visual radio button with BIGGER check mark
+    // Update the visual radio button with check mark
     const radioVisual = document.getElementById(method + '-radio');
     radioVisual.style.backgroundColor = '#3b82f6';
-    radioVisual.innerHTML = '<i class="fas fa-check text-white text-xl"></i>'; // Changed from text-xs to text-base
+    radioVisual.innerHTML = '<i class="fas fa-check text-white text-xl"></i>';
     radioVisual.classList.add('checked');
 
     updateSummary();
@@ -490,11 +490,14 @@ function updateSummary() {
         document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
         document.getElementById('summary').style.display = 'block';
 
+        // Enable submit button
         document.getElementById('depositBtn').disabled = false;
         document.getElementById('depositBtn').classList.remove('bg-gray-400');
         document.getElementById('depositBtn').classList.add('bg-blue-600', 'hover:bg-blue-700');
     } else {
         document.getElementById('summary').style.display = 'none';
+
+        // Disable submit button
         document.getElementById('depositBtn').disabled = true;
         document.getElementById('depositBtn').classList.add('bg-gray-400');
         document.getElementById('depositBtn').classList.remove('bg-blue-600', 'hover:bg-blue-700');
@@ -509,132 +512,25 @@ function calculateFee(amount, method) {
     return fees[method] || 0;
 }
 
-function showStyledAlert(message, type = 'info', title = '', autoClose = false) {
-    const alertConfig = {
-        success: {
-            bgColor: 'bg-green-100',
-            iconColor: 'text-green-600',
-            buttonColor: 'bg-green-600 hover:bg-green-700',
-            icon: 'fa-check-circle',
-            defaultTitle: 'Success!'
-        },
-        error: {
-            bgColor: 'bg-red-100',
-            iconColor: 'text-red-600',
-            buttonColor: 'bg-red-600 hover:bg-red-700',
-            icon: 'fa-exclamation-triangle',
-            defaultTitle: 'Error'
-        }
-    };
-
-    const config = alertConfig[type] || alertConfig.success;
-    const alertTitle = title || config.defaultTitle;
-
-    // Remove existing alert
-    const existingAlert = document.getElementById('styledAlert');
-    if (existingAlert) existingAlert.remove();
-
-    const modalHTML = `
-    <div id="styledAlert" data-type="${type}" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl shadow-xl max-w-md w-full transform transition-all duration-300">
-            <div class="p-6 text-center">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${config.bgColor}">
-                    <i class="fas ${config.icon} ${config.iconColor} text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-3">${alertTitle}</h3>
-                <p class="text-gray-600 mb-6">${message}</p>
-                <button onclick="closeStyledAlert()" class="w-full ${config.buttonColor} text-white font-medium py-3 px-4 rounded-xl transition-colors">
-                    OK
-                </button>
-            </div>
-        </div>
-    </div>
-`;
-
-    document.body.insertAdjacentHTML('beforeend', modalHTML);
-}
-
-function closeStyledAlert() {
-    const modal = document.getElementById('styledAlert');
-    if (modal) {
-        const modalType = modal.dataset.type;
-        modal.remove();
-
-        // Only redirect on success
-        if (modalType === 'success') {
-            // Don't use history.back() here as it causes issues
-            setTimeout(() => {
-                window.location.href = '/profile'; // or wherever you want to redirect
-            }, 500);
-        }
-    }
-}
-
-function showTelegramInstructions(amount, network) {
-    const instructionHTML = `
-        <div id="telegramModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-            <div class="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 text-center">
-                <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
-                    <i class="fas fa-check text-green-600 text-2xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-900 mb-4">Deposit Request Submitted!</h3>
-                
-                <div class="bg-gray-50 rounded-xl p-4 mb-4 text-left">
-                    <p class="text-sm text-gray-600">Amount: <span class="font-medium">$${amount}</span></p>
-                    <p class="text-sm text-gray-600">Network: <span class="font-medium">${network.toUpperCase()}</span></p>
-                </div>
-                
-                <p class="text-sm text-gray-600 mb-6">Click below to contact our admin on Telegram to complete your deposit.</p>
-                
-                <div class="flex space-x-3">
-                    <button onclick="closeTelegramModal()" 
-                            class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-3 px-4 rounded-xl transition-colors">
-                        Close
-                    </button>
-                    <button onclick="openTelegram()" 
-                            class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl transition-colors">
-                        <i class="fab fa-telegram mr-2"></i>Open Telegram
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-
-    document.body.insertAdjacentHTML('beforeend', instructionHTML);
-}
-
-function openTelegram() {
-    window.open('https://t.me/your_admin_telegram', '_blank');
-    closeTelegramModal();
-    // Optionally redirect back to profile
-    window.location.href = '/profile';
-}
-
-function closeTelegramModal() {
-    const modal = document.getElementById('telegramModal');
-    if (modal) modal.remove();
-    // Optionally redirect back to profile
-    window.location.href = '/profile';
-}
-
 function handleFormSubmit(event) {
     event.preventDefault();
 
     const amount = parseFloat(document.getElementById('customAmount').value) || selectedAmount;
     const networkInput = document.querySelector('input[name="network"]:checked');
 
+    // Basic validation
     if (amount < 10) {
-        showStyledAlert('Minimum deposit amount is $10.00', 'error');
+        alert('Minimum deposit amount is $10.00');
         return false;
     }
 
     if (amount > 10000) {
-        showStyledAlert('Maximum deposit amount is $10,000.00', 'error');
+        alert('Maximum deposit amount is $10,000.00');
         return false;
     }
 
     if (!networkInput) {
-        showStyledAlert('Please select a payment method', 'error');
+        alert('Please select a payment method');
         return false;
     }
 
@@ -643,30 +539,10 @@ function handleFormSubmit(event) {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Processing...</span>';
     btn.disabled = true;
 
-    // Submit form in background using fetch
-    const formData = new FormData(event.target);
-
-    fetch('/deposit', {
-        method: 'POST',
-        body: formData
-    })
-        .then(response => {
-            if (response.ok) {
-                // Show Telegram instructions modal instead of redirecting
-                showTelegramInstructions(amount, networkInput.value);
-            } else {
-                showStyledAlert('An error occurred processing your deposit', 'error');
-            }
-        })
-        .catch(error => {
-            // console.error('Error:', error);
-            showStyledAlert('An error occurred processing your deposit', 'error');
-        })
-        .finally(() => {
-            // Reset button state
-            btn.innerHTML = '<i class="fas fa-plus"></i><span>Add Funds</span>';
-            btn.disabled = false;
-        });
+    // Redirect to customer service page
+    setTimeout(() => {
+        window.location.href = '/customer_service';
+    }, 1000); // Small delay to show loading state
 
     return false;
 }
@@ -685,23 +561,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
             updateSummary();
         });
-    }
-
-    // Add smooth scroll behavior
-    document.documentElement.style.scrollBehavior = 'smooth';
-});
-
-// Close on background click
-document.addEventListener('click', function (event) {
-    if (event.target && event.target.id === 'styledAlert') {
-        closeStyledAlert();
-    }
-});
-
-// Close on Escape key
-document.addEventListener('keydown', function (event) {
-    if (event.key === 'Escape' && document.getElementById('styledAlert')) {
-        closeStyledAlert();
     }
 });
 

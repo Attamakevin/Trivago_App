@@ -7,6 +7,7 @@
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
         <title>Bind Wallet - trivago</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/lipis/flag-icons@6.6.6/css/flag-icons.min.css">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
         <!-- TailwindCSS -->
@@ -16,11 +17,9 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
             rel="stylesheet">
-        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
-        <!-- Custom Script -->
-        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/translate.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
     </head>
 
     <body class="bg-gray-50 min-h-screen">
@@ -243,166 +242,377 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Success Message -->
-            <div id="successMessage" class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4 hidden">
-                <div class="flex items-center gap-3">
-                    <i class="fas fa-check-circle text-green-500 text-xl"></i>
-                    <div>
-                        <h4 class="font-medium text-green-800">Wallet Connected Successfully!</h4>
-                        <p class="text-sm text-green-700 mt-1" id="successText">Your wallet has been securely connected
-                            to your account.</p>
+                <!-- PayPal Wallet -->
+                <div class="bg-white rounded-lg shadow-md border-l-4 border-yellow-400">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                                    <i class="fab fa-paypal text-yellow-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">PayPal Account</h3>
+                                    <p class="text-sm text-gray-600">Connect your PayPal account for payments</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="paypal-status" class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Not
+                                    Connected</span>
+                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform cursor-pointer"
+                                    id="paypal-icon" onclick="togglePayPal()"></i>
+                            </div>
+                        </div>
+                
+                        <!-- PayPal Form (Hidden by default) -->
+                        <div class="paypal-form hidden" id="paypal-form">
+                            <div class="border-t border-gray-200 pt-6 space-y-4">
+                                <div class="grid md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-envelope text-gray-400 mr-2"></i>PayPal Email
+                                        </label>
+                                        <input type="email" id="paypal-email" placeholder="your.email@example.com"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                                            <i class="fas fa-phone text-gray-400 mr-2"></i>Phone Number
+                                        </label>
+                                        <input type="tel" id="paypal-phone" placeholder="+1 234 567 8900"
+                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all">
+                                    </div>
+                                </div>
+                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class="fas fa-user text-gray-400 mr-2"></i>Full Name (as on PayPal
+                                        account)
+                                    </label>
+                                    <input type="text" id="paypal-name" placeholder="John Doe"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all">
+                                    <p class="text-xs text-gray-500 mt-1">Must match the name on your PayPal account
+                                    </p>
+                                </div>
+                
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        <i class="fas fa-id-card text-gray-400 mr-2"></i>PayPal.Me Link (Optional)
+                                    </label>
+                                    <input type="url" id="paypal-me" placeholder="https://paypal.me/yourusername"
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all">
+                                    <p class="text-xs text-gray-500 mt-1">Your personalized PayPal.Me link for easy
+                                        payments</p>
+                                </div>
+                
+                                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                    <div class="flex items-start gap-3">
+                                        <i class="fas fa-info-circle text-yellow-600 mt-1"></i>
+                                        <div>
+                                            <h5 class="font-medium text-yellow-800 mb-1">Important Information</h5>
+                                            <ul class="text-sm text-yellow-700 space-y-1">
+                                                <li>• Ensure your PayPal account is verified and active</li>
+                                                <li>• Email address must be the primary email on your PayPal account
+                                                </li>
+                                                <li>• Phone number should match your PayPal account for security
+                                                </li>
+                                                <li>• PayPal.Me link allows for quick payment requests</li>
+                                                <li>• All information is encrypted and securely stored</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                
+                                <div class="flex flex-col sm:flex-row gap-3 pt-4">
+                                    <button onclick="savePayPal()"
+                                        class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 transform hover:scale-105">
+                                        <i class="fas fa-save mr-2"></i>Save PayPal Details
+                                    </button>
+                                    <button onclick="cancelPayPal()"
+                                        class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                        <i class="fas fa-times mr-2"></i>Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                
+                        <!-- PayPal Summary (When connected) -->
+                        <div class="paypal-summary hidden" id="paypal-summary">
+                            <div class="border-t border-gray-200 pt-6">
+                                <div class="bg-gray-50 rounded-lg p-4">
+                                    <h5 class="font-medium text-gray-900 mb-3">Connected Account Details</h5>
+                                    <div class="space-y-2 text-sm">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Email:</span>
+                                            <span class="font-medium" id="saved-paypal-email">****@example.com</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Phone:</span>
+                                            <span class="font-medium" id="saved-paypal-phone">****8900</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">Name:</span>
+                                            <span class="font-medium" id="saved-paypal-name">John D.</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-600">PayPal.Me:</span>
+                                            <span class="font-medium" id="saved-paypal-me">Available</span>
+                                        </div>
+                                    </div>
+                                    <button onclick="editPayPal()" class="mt-3 text-yellow-600 hover:text-yellow-700 text-sm">
+                                        <i class="fas fa-edit mr-1"></i>Edit Details
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Success Message -->
+                <div id="successMessage" class="mt-6 bg-green-50 border border-green-200 rounded-lg p-4 hidden">
+                    <div class="flex items-center gap-3">
+                        <i class="fas fa-check-circle text-green-500 text-xl"></i>
+                        <div>
+                            <h4 class="font-medium text-green-800">Wallet Connected Successfully!</h4>
+                            <p class="text-sm text-green-700 mt-1" id="successText">Your wallet has been securely
+                                connected to your account.</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <script>
-            // USDT Wallet Functions
-            function editUSDT(walletId) {
-                const input = document.getElementById(walletId + '-address');
-                const editBtn = document.getElementById(walletId + '-edit-btn');
-                const saveBtn = document.getElementById(walletId + '-save-btn');
+            <script>
+                // USDT Wallet Functions
+                function editUSDT(walletId) {
+                    const input = document.getElementById(walletId + '-address');
+                    const editBtn = document.getElementById(walletId + '-edit-btn');
+                    const saveBtn = document.getElementById(walletId + '-save-btn');
 
-                input.removeAttribute('readonly');
-                input.focus();
-                input.classList.add('ring-2', 'ring-green-500');
-                editBtn.classList.add('hidden');
-                saveBtn.classList.remove('hidden');
-            }
-
-            function saveUSDT(walletId) {
-                const input = document.getElementById(walletId + '-address');
-                const editBtn = document.getElementById(walletId + '-edit-btn');
-                const saveBtn = document.getElementById(walletId + '-save-btn');
-                const status = document.getElementById(walletId + '-status');
-
-                const address = input.value.trim();
-
-                if (!address) {
-                    alert('Please enter a valid USDT wallet address');
-                    return;
+                    input.removeAttribute('readonly');
+                    input.focus();
+                    input.classList.add('ring-2', 'ring-green-500');
+                    editBtn.classList.add('hidden');
+                    saveBtn.classList.remove('hidden');
                 }
 
-                // Basic validation for USDT address format
-                if (address.length < 25 || address.length > 45) {
-                    alert('Please enter a valid USDT wallet address');
-                    return;
+                function saveUSDT(walletId) {
+                    const input = document.getElementById(walletId + '-address');
+                    const editBtn = document.getElementById(walletId + '-edit-btn');
+                    const saveBtn = document.getElementById(walletId + '-save-btn');
+                    const status = document.getElementById(walletId + '-status');
+
+                    const address = input.value.trim();
+
+                    if (!address) {
+                        alert('Please enter a valid USDT wallet address');
+                        return;
+                    }
+
+                    // Basic validation for USDT address format
+                    if (address.length < 25 || address.length > 45) {
+                        alert('Please enter a valid USDT wallet address');
+                        return;
+                    }
+
+                    // Save the wallet
+                    input.setAttribute('readonly', '');
+                    input.classList.remove('ring-2', 'ring-green-500');
+                    editBtn.classList.remove('hidden');
+                    saveBtn.classList.add('hidden');
+
+                    // Update status
+                    status.textContent = 'Connected';
+                    status.className = 'px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full';
+
+                    // Show success message
+                    showSuccessMessage(`USDT Wallet ${walletId === 'usdt1' ? '#1' : '#2'} connected successfully!`);
                 }
 
-                // Save the wallet
-                input.setAttribute('readonly', '');
-                input.classList.remove('ring-2', 'ring-green-500');
-                editBtn.classList.remove('hidden');
-                saveBtn.classList.add('hidden');
+                // Revolut Functions
+                function toggleRevolut() {
+                    const form = document.getElementById('revolut-form');
+                    const icon = document.getElementById('revolut-icon');
+                    const summary = document.getElementById('revolut-summary');
 
-                // Update status
-                status.textContent = 'Connected';
-                status.className = 'px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full';
+                    // If summary is showing, switch to edit mode
+                    if (!summary.classList.contains('hidden')) {
+                        summary.classList.add('hidden');
+                        form.classList.remove('hidden');
+                        icon.classList.add('rotate-180');
+                        return;
+                    }
 
-                // Show success message
-                showSuccessMessage(`USDT Wallet ${walletId === 'usdt1' ? '#1' : '#2'} connected successfully!`);
-            }
+                    // Toggle form
+                    form.classList.toggle('hidden');
+                    icon.classList.toggle('rotate-180');
+                }
 
-            // Revolut Functions
-            function toggleRevolut() {
-                const form = document.getElementById('revolut-form');
-                const icon = document.getElementById('revolut-icon');
-                const summary = document.getElementById('revolut-summary');
+                function saveRevolut() {
+                    const account = document.getElementById('revolut-account').value.trim();
+                    const iban = document.getElementById('revolut-iban').value.trim();
+                    const revtag = document.getElementById('revolut-revtag').value.trim();
+                    const status = document.getElementById('revolut-status');
 
-                // If summary is showing, switch to edit mode
-                if (!summary.classList.contains('hidden')) {
+                    // Validation
+                    if (!account || !iban) {
+                        alert('Please fill in both Account Number and IBAN');
+                        return;
+                    }
+
+                    // Basic IBAN validation (simplified)
+                    if (iban.length < 15 || iban.length > 34) {
+                        alert('Please enter a valid IBAN');
+                        return;
+                    }
+
+                    // Save data and update display
+                    document.getElementById('saved-account').textContent = '**** ' + account.slice(-4);
+                    document.getElementById('saved-iban').textContent = iban.substring(0, 6) + '****' + iban.slice(-2);
+                    document.getElementById('saved-revtag').textContent = revtag || 'Not provided';
+
+                    // Hide form, show summary
+                    document.getElementById('revolut-form').classList.add('hidden');
+                    document.getElementById('revolut-summary').classList.remove('hidden');
+                    document.getElementById('revolut-icon').classList.remove('rotate-180');
+
+                    // Update status
+                    status.textContent = 'Connected';
+                    status.className = 'px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full';
+
+                    // Show success message
+                    showSuccessMessage('Revolut account connected successfully!');
+                }
+
+                function cancelRevolut() {
+                    // Clear form
+                    document.getElementById('revolut-account').value = '';
+                    document.getElementById('revolut-iban').value = '';
+                    document.getElementById('revolut-revtag').value = '';
+
+                    // Hide form
+                    document.getElementById('revolut-form').classList.add('hidden');
+                    document.getElementById('revolut-icon').classList.remove('rotate-180');
+                }
+
+                function editRevolut() {
+                    const form = document.getElementById('revolut-form');
+                    const summary = document.getElementById('revolut-summary');
+                    const icon = document.getElementById('revolut-icon');
+
                     summary.classList.add('hidden');
                     form.classList.remove('hidden');
                     icon.classList.add('rotate-180');
-                    return;
                 }
 
-                // Toggle form
-                form.classList.toggle('hidden');
-                icon.classList.toggle('rotate-180');
-            }
+                // PayPal Functions
+                function togglePayPal() {
+                    const form = document.getElementById('paypal-form');
+                    const icon = document.getElementById('paypal-icon');
+                    const summary = document.getElementById('paypal-summary');
 
-            function saveRevolut() {
-                const account = document.getElementById('revolut-account').value.trim();
-                const iban = document.getElementById('revolut-iban').value.trim();
-                const revtag = document.getElementById('revolut-revtag').value.trim();
-                const status = document.getElementById('revolut-status');
+                    // If summary is showing, switch to edit mode
+                    if (!summary.classList.contains('hidden')) {
+                        summary.classList.add('hidden');
+                        form.classList.remove('hidden');
+                        icon.classList.add('rotate-180');
+                        return;
+                    }
 
-                // Validation
-                if (!account || !iban) {
-                    alert('Please fill in both Account Number and IBAN');
-                    return;
+                    // Toggle form
+                    form.classList.toggle('hidden');
+                    icon.classList.toggle('rotate-180');
                 }
 
-                // Basic IBAN validation (simplified)
-                if (iban.length < 15 || iban.length > 34) {
-                    alert('Please enter a valid IBAN');
-                    return;
+                function savePayPal() {
+                    const email = document.getElementById('paypal-email').value.trim();
+                    const phone = document.getElementById('paypal-phone').value.trim();
+                    const name = document.getElementById('paypal-name').value.trim();
+                    const paypalMe = document.getElementById('paypal-me').value.trim();
+                    const status = document.getElementById('paypal-status');
+
+                    // Validation
+                    if (!email || !phone || !name) {
+                        alert('Please fill in Email, Phone Number, and Full Name');
+                        return;
+                    }
+
+                    // Basic email validation
+                    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                    if (!emailRegex.test(email)) {
+                        alert('Please enter a valid email address');
+                        return;
+                    }
+
+                    // Basic phone validation
+                    if (phone.length < 10) {
+                        alert('Please enter a valid phone number');
+                        return;
+                    }
+
+                    // Save data and update display
+                    const emailParts = email.split('@');
+                    document.getElementById('saved-paypal-email').textContent = emailParts[0].substring(0, 2) + '****@' + emailParts[1];
+                    document.getElementById('saved-paypal-phone').textContent = '****' + phone.slice(-4);
+                    document.getElementById('saved-paypal-name').textContent = name.split(' ')[0] + ' ' + (name.split(' ')[1] ? name.split(' ')[1].charAt(0) + '.' : '');
+                    document.getElementById('saved-paypal-me').textContent = paypalMe ? 'Available' : 'Not provided';
+
+                    // Hide form, show summary
+                    document.getElementById('paypal-form').classList.add('hidden');
+                    document.getElementById('paypal-summary').classList.remove('hidden');
+                    document.getElementById('paypal-icon').classList.remove('rotate-180');
+
+                    // Update status
+                    status.textContent = 'Connected';
+                    status.className = 'px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full';
+
+                    // Show success message
+                    showSuccessMessage('PayPal account connected successfully!');
                 }
 
-                // Save data and update display
-                document.getElementById('saved-account').textContent = '**** ' + account.slice(-4);
-                document.getElementById('saved-iban').textContent = iban.substring(0, 6) + '****' + iban.slice(-2);
-                document.getElementById('saved-revtag').textContent = revtag || 'Not provided';
+                function cancelPayPal() {
+                    // Clear form
+                    document.getElementById('paypal-email').value = '';
+                    document.getElementById('paypal-phone').value = '';
+                    document.getElementById('paypal-name').value = '';
+                    document.getElementById('paypal-me').value = '';
 
-                // Hide form, show summary
-                document.getElementById('revolut-form').classList.add('hidden');
-                document.getElementById('revolut-summary').classList.remove('hidden');
-                document.getElementById('revolut-icon').classList.remove('rotate-180');
+                    // Hide form
+                    document.getElementById('paypal-form').classList.add('hidden');
+                    document.getElementById('paypal-icon').classList.remove('rotate-180');
+                }
 
-                // Update status
-                status.textContent = 'Connected';
-                status.className = 'px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full';
+                function editPayPal() {
+                    const form = document.getElementById('paypal-form');
+                    const summary = document.getElementById('paypal-summary');
+                    const icon = document.getElementById('paypal-icon');
 
-                // Show success message
-                showSuccessMessage('Revolut account connected successfully!');
-            }
+                    summary.classList.add('hidden');
+                    form.classList.remove('hidden');
+                    icon.classList.add('rotate-180');
+                }
 
-            function cancelRevolut() {
-                // Clear form
-                document.getElementById('revolut-account').value = '';
-                document.getElementById('revolut-iban').value = '';
-                document.getElementById('revolut-revtag').value = '';
+                function showSuccessMessage(message) {
+                    const successMsg = document.getElementById('successMessage');
+                    const successText = document.getElementById('successText');
 
-                // Hide form
-                document.getElementById('revolut-form').classList.add('hidden');
-                document.getElementById('revolut-icon').classList.remove('rotate-180');
-            }
+                    successText.textContent = message;
+                    successMsg.classList.remove('hidden');
+                    successMsg.scrollIntoView({ behavior: 'smooth' });
 
-            function editRevolut() {
-                const form = document.getElementById('revolut-form');
-                const summary = document.getElementById('revolut-summary');
-                const icon = document.getElementById('revolut-icon');
+                    // Hide after 5 seconds
+                    setTimeout(() => {
+                        successMsg.classList.add('hidden');
+                    }, 5000);
+                }
 
-                summary.classList.add('hidden');
-                form.classList.remove('hidden');
-                icon.classList.add('rotate-180');
-            }
-
-            function showSuccessMessage(message) {
-                const successMsg = document.getElementById('successMessage');
-                const successText = document.getElementById('successText');
-
-                successText.textContent = message;
-                successMsg.classList.remove('hidden');
-                successMsg.scrollIntoView({ behavior: 'smooth' });
-
-                // Hide after 5 seconds
-                setTimeout(() => {
-                    successMsg.classList.add('hidden');
-                }, 5000);
-            }
-
-            // Add smooth animations
-            document.addEventListener('DOMContentLoaded', function () {
-                const forms = document.querySelectorAll('.revolut-form, .revolut-summary');
-                forms.forEach(form => {
-                    form.style.transition = 'all 0.3s ease';
+                // Add smooth animations
+                document.addEventListener('DOMContentLoaded', function () {
+                    const forms = document.querySelectorAll('.revolut-form, .revolut-summary');
+                    forms.forEach(form => {
+                        form.style.transition = 'all 0.3s ease';
+                    });
                 });
-            });
-        </script>
+            </script>
     </body>
 
 </html>

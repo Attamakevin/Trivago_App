@@ -687,5 +687,64 @@ input:checked+.slider:before {
 }
 
 .topic-card.luxury {
+    border-left-color: #a1d906;
+}
+.topic-card.golden {
     border-left-color: #d97706;
+}
+
+.definition {
+    background: #f8f9fa;
+    padding: 10px;
+    border-left: 3px solid #3498db;
+    margin: 10px 0;
+}
+
+.read-more-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 20px 0;
+    transition: background-color 0.3s;
+}
+
+.read-more-btn:hover {
+    background: #2980b9;
+}
+
+.read-more-btn1 {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin: 20px 0;
+    transition: background-color 0.3s;
+}
+
+.read-more-btn1:hover {
+    background: #2980b9;
+}
+
+.hidden-content {
+    display: none;
+}
+
+.list-item {
+    margin: 8px 0;
+    padding-left: 20px;
+}
+
+.important-note {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    padding: 15px;
+    border-radius: 5px;
+    margin: 15px 0;
 }

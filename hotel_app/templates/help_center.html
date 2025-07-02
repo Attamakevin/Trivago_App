@@ -18,15 +18,14 @@
             rel="stylesheet">
         <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
         <!-- Custom Script -->
-        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/translate.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
     </head>
 
     <body class="luxury-bg min-h-screen">
         <!-- Header -->
-        <header
-            class="sticky h-16 top-0 z-50 bg-[#2563eb] py-2 md:py-4 px-4 md:px-8">
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] py-2 md:py-4 px-4 md:px-8">
             <div class="flex items-center justify-start gap-8 text-white h-full px-4 md:px-8">
                 <button onclick="history.back()" class="text-white hover:text-yellow-300 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
@@ -74,29 +73,32 @@
                             <div class="pt-6 space-y-4">
                                 <div class="bg-green-50 rounded-lg p-4">
                                     <h4 class="font-semibold text-gray-900 mb-3">How Deposits Work</h4>
-                                    <p class="text-gray-700 mb-3">
-                                        Deposits allow you to add funds to your account for future bookings and
-                                        services.
-                                        This ensures quick and seamless transactions when making luxury reservations.
+                                    <p class="text-gray-700 font-medium mb-3">
+                                        Deposit can be done on the "Account" Page. Click on the "Deposit" button to
+                                        redirect to the online deposit customer
+                                        service to assist in remittance Deposit. <br>
+
+                                    <p class="mt-4 font-medium">After transferring the money according to the account
+                                        provided by the platform's customer service, be sure to submit a
+                                        screenshot of the successful transfer to the account. Please make sure that the
+                                        name of the person you are transferring
+                                        to and the amount you are transferring are the same as the one being provided.
                                     </p>
-                                    <ul class="space-y-2 text-sm text-gray-700">
-                                        <li class="flex items-start gap-2">
-                                            <i class="fas fa-check text-green-500 mt-1"></i>
-                                            <span>Instant processing for most payment methods</span>
-                                        </li>
-                                        <li class="flex items-start gap-2">
-                                            <i class="fas fa-check text-green-500 mt-1"></i>
-                                            <span>Secure encryption for all transactions</span>
-                                        </li>
-                                        <li class="flex items-start gap-2">
-                                            <i class="fas fa-check text-green-500 mt-1"></i>
-                                            <span>Multiple payment methods accepted</span>
-                                        </li>
-                                        <li class="flex items-start gap-2">
-                                            <i class="fas fa-check text-green-500 mt-1"></i>
-                                            <span>Minimum deposit: $100, Maximum: $50,000</span>
-                                        </li>
-                                    </ul>
+
+                                    <p class="mt-4 font-medium">If you encounter any unsolvable problems during the
+                                        Deposit process, please contact the on-duty online customer service.</p>
+
+                                    <p class="mt-4 font-medium">Due to a large amount of information, please make sure
+                                        to check the Deposit account number of this platform carefully
+                                        before making Deposit. The platform occasionally changes the Deposit account
+                                        number. If you have any inquiries, please
+                                        contact the platform's online customer service.</p>
+
+                                    <p class="mt-4 font-medium">Please transfer with your bank account, the platform
+                                        Deposit only allows the owner of the account to transfer money,
+                                        other people or anonymous 's transfers will affect the security of the account.
+                                    </p>
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -127,85 +129,19 @@
                             <div class="pt-6 space-y-4">
                                 <div class="bg-yellow-50 rounded-lg p-4">
                                     <h4 class="font-semibold text-gray-900 mb-3">Withdrawal Process</h4>
-                                    <p class="text-gray-700 mb-3">
-                                        Withdraw your available balance back to your preferred payment method.
-                                        All withdrawals are subject to verification for security purposes.
+                                    <p class="text-gray-700 font-medium mb-3">
+                                        After completing every set of reservation, you may submit a withdrawal. Please
+                                        bind your bank information on the
+                                        platform before you submit for withdrawal.
                                     </p>
-                                    <div class="grid md:grid-cols-2 gap-4">
-                                        <div>
-                                            <h5 class="font-medium text-gray-900 mb-2">Processing Times:</h5>
-                                            <ul class="space-y-1 text-sm text-gray-700">
-                                                <li>• Bank Transfer: 3-5 business days</li>
-                                                <li>• Credit Card: 5-7 business days</li>
-                                                <li>• Digital Wallet: 1-2 business days</li>
-                                            </ul>
-                                        </div>
-                                        <div>
-                                            <h5 class="font-medium text-gray-900 mb-2">Requirements:</h5>
-                                            <ul class="space-y-1 text-sm text-gray-700">
-                                                <li>• Minimum withdrawal: $50</li>
-                                                <li>• Account verification required</li>
-                                                <li>• Same method as deposit (when possible)</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Credit Score -->
-                <div class="glass-effect topic-card credit rounded-lg shadow-lg overflow-hidden">
-                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
-                        onclick="toggleTopic('credit')">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-chart-line text-blue-600 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-900">Credit Score</h3>
-                                    <p class="text-sm text-gray-600">Your booking reliability rating</p>
-                                </div>
-                            </div>
-                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
-                                id="credit-icon"></i>
-                        </div>
-                    </div>
-
-                    <div class="topic-content hidden" id="credit-content">
-                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
-                            <div class="pt-6 space-y-4">
-                                <div class="bg-blue-50 rounded-lg p-4">
-                                    <h4 class="font-semibold text-gray-900 mb-3">Understanding Your Credit Score</h4>
-                                    <p class="text-gray-700 mb-3">
-                                        Your credit score reflects your booking history, payment reliability, and
-                                        account standing.
-                                        Higher scores unlock premium benefits and better rates.
+                                    <p class="mt-4 font-medium">Click the "Withdrawal" button after entering the amount
+                                        you want to withdraw and enter your withdrawal password to
+                                        withdraw. The specific arrival time is subject to the bank's arrival time.</p>
+                                    <p class="mt-4 font-medium">Withdrawal charges are subjected to the amount and can
+                                        only be made after have completed the number of reservation
+                                        assigned by the platform.</p>
+                                    <p class="mt-4 text-red-500 font-medium">Note: Withdraw time is 10:00 AM to 22:00 PM
                                     </p>
-                                    <div class="space-y-3">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-4 h-4 bg-red-500 rounded"></div>
-                                            <span class="text-sm"><strong>Poor (300-599):</strong> Basic booking
-                                                access</span>
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-4 h-4 bg-yellow-500 rounded"></div>
-                                            <span class="text-sm"><strong>Fair (600-699):</strong> Standard
-                                                benefits</span>
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-4 h-4 bg-blue-500 rounded"></div>
-                                            <span class="text-sm"><strong>Good (700-799):</strong> Priority booking &
-                                                discounts</span>
-                                        </div>
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-4 h-4 bg-green-500 rounded"></div>
-                                            <span class="text-sm"><strong>Excellent (800+):</strong> VIP access & luxury
-                                                perks</span>
-                                        </div>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -234,37 +170,14 @@
                     <div class="topic-content hidden" id="pending-content">
                         <div class="px-6 pb-6 border-t border-white border-opacity-30">
                             <div class="pt-6 space-y-4">
-                                <div class="bg-purple-50 rounded-lg p-4">
+                                <div class="bg-purple-100 rounded-lg p-4">
                                     <h4 class="font-semibold text-gray-900 mb-3">Status Explanations</h4>
-                                    <div class="space-y-4">
-                                        <div>
-                                            <h5 class="font-medium text-purple-800 mb-2">
-                                                <i class="fas fa-hourglass-half mr-2"></i>Pending Status
-                                            </h5>
-                                            <p class="text-sm text-gray-700">
-                                                Your booking or transaction is being processed. This typically takes
-                                                2-24 hours
-                                                depending on verification requirements and hotel confirmation.
-                                            </p>
-                                        </div>
-                                        <div>
-                                            <h5 class="font-medium text-orange-800 mb-2">
-                                                <i class="fas fa-pause-circle mr-2"></i>On Hold Status
-                                            </h5>
-                                            <p class="text-sm text-gray-700">
-                                                Your request requires additional verification or manual review. This may
-                                                happen
-                                                for high-value transactions, first-time bookings, or when additional
-                                                documentation is needed.
-                                            </p>
-                                        </div>
-                                        <div class="mt-3 p-3 bg-purple-100 rounded">
-                                            <p class="text-xs text-purple-800">
-                                                <strong>Note:</strong> You'll receive email notifications for all status
-                                                changes.
-                                            </p>
-                                        </div>
-                                    </div>
+                                    <p class="mt-4 font-medium">Reservations that is not submitted after receiving an
+                                        order will be in "Processing". All you need to do is click the
+                                        "Order" button to complete the outstanding order.
+                                        The reservations will be temporarily frozen because you have been assigned a
+                                        Luxury reservation. After you complete the
+                                        Luxury Reservation, that reservation will be released.</p>
                                 </div>
                             </div>
                         </div>
@@ -295,31 +208,22 @@
                             <div class="pt-6 space-y-4">
                                 <div class="bg-red-50 rounded-lg p-4">
                                     <h4 class="font-semibold text-gray-900 mb-3">Agent Reward Program</h4>
-                                    <p class="text-gray-700 mb-3">
-                                        Our exclusive agent program rewards partners and high-volume users with
-                                        commissions,
-                                        bonuses, and exclusive access to luxury properties.
+                                    <p class="text-gray-700 font-medium mb-3">
+                                        Platform users can invite others to become downline of the platform through
+                                        the invitation code, as the upline member
+                                        can extract 16% of the commission from the downline.</p>
+                                    <p class="mt-4 font-medium"> -The commission obtained by the upline will be directly
+                                        returned to the upline's platform account, downline must
+                                        complete 35 reservations only can get the upline commission, and as upline can
+                                        also check the team report
                                     </p>
-                                    <div class="grid md:grid-cols-2 gap-4">
-                                        <div>
-                                            <h5 class="font-medium text-gray-900 mb-2">Reward Tiers:</h5>
-                                            <ul class="space-y-1 text-sm text-gray-700">
-                                                <li>• Bronze Agent: 2% commission</li>
-                                                <li>• Silver Agent: 3.5% commission</li>
-                                                <li>• Gold Agent: 5% commission</li>
-                                                <li>• Platinum Agent: 7% + bonuses</li>
-                                            </ul>
-                                        </div>
-                                        <div>
-                                            <h5 class="font-medium text-gray-900 mb-2">Benefits:</h5>
-                                            <ul class="space-y-1 text-sm text-gray-700">
-                                                <li>• Monthly commission payouts</li>
-                                                <li>• Exclusive property access</li>
-                                                <li>• Priority customer support</li>
-                                                <li>• Marketing materials provided</li>
-                                            </ul>
-                                        </div>
-                                    </div>
+                                    <p class="mt-4 font-medium"> -You can get 16% of your Tier 1 agent's commission, 8%
+                                        of your Tier 2 agent's commission and 4% of your Tier 3 agent's
+                                        commission.
+                                    </p>
+                                    <p class="mt-4 font-medium"> -The commission is count for the downline Tier 1/Tier
+                                        2/Tier 3, Total Earning 16%/8%/4%
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -350,37 +254,20 @@
                             <div class="pt-6 space-y-4">
                                 <div class="bg-cyan-50 rounded-lg p-4">
                                     <h4 class="font-semibold text-gray-900 mb-3">Agent Avenue Platform</h4>
-                                    <p class="text-gray-700 mb-3">
-                                        Agent Avenue is your comprehensive dashboard for managing bookings, tracking
-                                        commissions,
-                                        and accessing exclusive agent-only features and inventory.
+                                    <p class="text-gray-700 font-medium mb-3">
+                                        The daily income of an agent is determined by the balance of the individual
+                                        account. The higher the account balance, the higher reservation can be matched.
+                                        Therefore, the commission per order will be higher as well.
                                     </p>
-                                    <div class="space-y-3">
-                                        <div class="flex items-start gap-3">
-                                            <i class="fas fa-chart-bar text-cyan-600 mt-1"></i>
-                                            <div>
-                                                <h5 class="font-medium text-gray-900">Analytics Dashboard</h5>
-                                                <p class="text-sm text-gray-600">Track your performance, commissions,
-                                                    and client bookings</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-start gap-3">
-                                            <i class="fas fa-users text-cyan-600 mt-1"></i>
-                                            <div>
-                                                <h5 class="font-medium text-gray-900">Client Management</h5>
-                                                <p class="text-sm text-gray-600">Manage client profiles and booking
-                                                    preferences</p>
-                                            </div>
-                                        </div>
-                                        <div class="flex items-start gap-3">
-                                            <i class="fas fa-key text-cyan-600 mt-1"></i>
-                                            <div>
-                                                <h5 class="font-medium text-gray-900">Exclusive Access</h5>
-                                                <p class="text-sm text-gray-600">Access to agent-only rates and hidden
-                                                    inventory</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <p class="mt-4 font-semibold">Example:</p>
+                                    <p class="mt-4 font-medium">Level 1 agent, you can get a 0.2% commission for each
+                                        reservation. Total 35 reservation <br>Level 2 agent, you can get a 0.3%
+                                        commission for each reservation. Total 35 reservation <br> Level 3 agent, you
+                                        can get a 0.4% commission for each reservation. Total 38 reservation <br>Level 4
+                                        agent, you can get a 0.5% commission for each reservation. Total 40 reservation
+                                        <br> Level 5 agent, you can get a 0.6% commission for each reservation. Total 40
+                                        reservation
+                                    </p>
                                 </div>
                             </div>
                         </div>
@@ -393,8 +280,8 @@
                         onclick="toggleTopic('luxury')">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-crown text-amber-600 text-xl"></i>
+                                <div class="w-12 h-12 bg-lime-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-crown text-lime-600 text-xl"></i>
                                 </div>
                                 <div>
                                     <h3 class="text-xl font-bold text-gray-900">Luxury Reservations</h3>
@@ -410,38 +297,119 @@
                     <div class="topic-content hidden" id="luxury-content">
                         <div class="px-6 pb-6 border-t border-white border-opacity-30">
                             <div class="pt-6 space-y-4">
-                                <div class="bg-amber-50 rounded-lg p-4">
+                                <div class="bg-lime-100 rounded-lg p-4">
                                     <h4 class="font-semibold text-gray-900 mb-3">Luxury Booking Experience</h4>
-                                    <p class="text-gray-700 mb-3">
+                                    <p class="text-gray-700 font-medium mb-3">
                                         Our luxury reservation service provides access to the world's most exclusive
                                         hotels,
                                         resorts, and private properties with white-glove concierge service.
                                     </p>
-                                    <div class="space-y-4">
-                                        <div>
-                                            <h5 class="font-medium text-amber-800 mb-2">What's Included:</h5>
-                                            <div class="grid md:grid-cols-2 gap-3">
-                                                <ul class="space-y-1 text-sm text-gray-700">
-                                                    <li>• Dedicated luxury concierge</li>
-                                                    <li>• Room upgrades when available</li>
-                                                    <li>• Welcome amenities</li>
-                                                    <li>• Priority check-in/out</li>
-                                                </ul>
-                                                <ul class="space-y-1 text-sm text-gray-700">
-                                                    <li>• Restaurant reservations</li>
-                                                    <li>• Transportation arrangements</li>
-                                                    <li>• 24/7 emergency support</li>
-                                                    <li>• Exclusive property access</li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                        <div class="bg-amber-100 rounded p-3">
-                                            <p class="text-sm text-amber-800">
-                                                <strong>Minimum spend:</strong> $500 per night | <strong>Available
-                                                    to:</strong> Gold-level members and above
-                                            </p>
-                                        </div>
-                                    </div>
+                                    <p class="mt-4 font-medium">The merchants want to increase the sales of their hotel
+                                        reservation and also to attract more agents to help increase the
+                                        turnover of their hotel, which would help them to increase their economic impact
+                                        and visibility, so they created Luxury
+                                        Reservation
+                                    </p>
+                                    <p class="mt-4 font-medium"><span class="text-green-500">What is Luxury
+                                            Reservation?</span><br>
+                                        Deluxe Reservation only exists in 0-3 of the 35 hotel reservations and agents
+                                        will be randomly assigned 0-3 Luxury
+                                        Reservation. However, to be fair, agents will receive multiple random
+                                        commission. The Luxury Reservation are randomly
+                                        assigned by the system and as the commission is multiple random, the chances of
+                                        being assigned are not very high. Your
+                                        account balance will be in a frozen state when you get a Luxury Reservation and
+                                        you will need to contact with on duty
+                                        customer service
+                                    </p>
+                                    <p class="mt-4 font-medium"> <span class="text-blue-500">What is Special
+                                            Reservation?</span> <br>
+                                        The Special Reservation is a benefit given to agents by the merchants, the
+                                        chances of getting it are very low, in order
+                                        to promote high sales and high views so that agents get multiple random
+                                        commission.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Credit Score -->
+                <div class="glass-effect topic-card credit rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('credit')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-chart-line text-blue-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Credit Score</h3>
+                                    <p class="text-sm text-gray-600">Your booking reliability rating</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="credit-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="credit-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-blue-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Understanding Your Credit Score</h4>
+                                    <p class="text-gray-700 font-medium mb-3">
+                                        • Each complete 1 around of reservation will get 2 points, max credit score is
+                                        100 </p>
+                                    <p class="mt-4 font-medium">• If the reservation is not completed for too long, the
+                                        <br>credit score will
+                                        drop</p>
+                                    <p class="mt-4 font-medium">• If a member has 100 credits for 7 consecutive days,
+                                        the member can be upgraded
+                                        to an agent, and then the member can
+                                        apply for a bonus of €500 for 7 consecutive days with the customer service.
+                                    </p>
+                                    <p class="mt-4 font-medium">• If member credit score less then 80, member need to
+                                        pay a fee of 50% for the own credit score purposes, the fees can be
+                                        withdrawn too after 1 hour of verification.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Golden Eggs -->
+                <div class="glass-effect topic-card golden rounded-lg shadow-lg overflow-hidden">
+                    <div class="topic-header p-6 cursor-pointer hover:bg-white hover:bg-opacity-30 transition-colors"
+                        onclick="toggleTopic('golden')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-amber-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-egg text-amber-600 text-xl"></i>
+                                </div>
+                                <div>
+                                    <h3 class="text-xl font-bold text-gray-900">Golden Eggs</h3>
+                                    <p class="text-sm text-gray-600">The Special Treat</p>
+                                </div>
+                            </div>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
+                                id="credit-icon"></i>
+                        </div>
+                    </div>
+
+                    <div class="topic-content hidden" id="golden-content">
+                        <div class="px-6 pb-6 border-t border-white border-opacity-30">
+                            <div class="pt-6 space-y-4">
+                                <div class="bg-amber-50 rounded-lg p-4">
+                                    <h4 class="font-semibold text-gray-900 mb-3">Understanding What Golden Eggs means
+                                    </h4>
+                                    <p class="text-gray-700 font-medium mb-3">
+                                        The Golden Eggs consist of offer.Reward and Golden Eggs Bonus order. Once it is
+                                        commenced or accepted, it cannot be
+                                        revoked or deviated.
+                                    </p>
+                                    <p class="mt-4 font-medium">Each set of orders, there will be only 1 possible chance to get the Golden Egg.</p>
                                 </div>
                             </div>
                         </div>

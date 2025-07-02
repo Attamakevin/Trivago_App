@@ -1,21 +1,49 @@
-// Initialize when DOM is fully loaded
+// Universal Slider JavaScript - Works with any number of slides
 document.addEventListener('DOMContentLoaded', function () {
     let currentSlideIndex = 0;
     let isAutoPlaying = true;
     let autoplayInterval;
 
-    // Select elements after DOM is loaded
-    const slides = document.querySelectorAll('.slide');
+    // Select elements - now looks for both 'slide' and 'event-slide' classes
+    let slides = document.querySelectorAll('.slide');
+    if (slides.length === 0) {
+        slides = document.querySelectorAll('.event-slide');
+    }
+
     const indicators = document.querySelectorAll('.indicator');
     const sliderContainer = document.querySelector('.relative');
     const totalSlides = slides.length;
 
-    // console.log('Found', totalSlides, 'slides and', indicators.length, 'indicators');
+    console.log('Found', totalSlides, 'slides and', indicators.length, 'indicators');
 
     if (totalSlides === 0) {
-        // console.error('No slides found! Check HTML structure.');
+        console.error('No slides found! Check HTML structure.');
         return;
     }
+
+    // Auto-generate indicators if they don't match slide count
+    function generateIndicators() {
+        const indicatorContainer = document.querySelector('.indicator')?.parentElement;
+        if (indicatorContainer && indicators.length !== totalSlides) {
+            // Clear existing indicators
+            indicatorContainer.innerHTML = '';
+
+            // Generate new indicators to match slide count
+            for (let i = 0; i < totalSlides; i++) {
+                const indicator = document.createElement('button');
+                indicator.onclick = () => goToSlide(i);
+                indicator.className = `w-3 h-3 md:w-4 md:h-4 rounded-full bg-white transition-all duration-300 indicator ${i === 0 ? 'scale-110' : 'bg-opacity-50'}`;
+                indicatorContainer.appendChild(indicator);
+            }
+
+            // Update indicators NodeList
+            return document.querySelectorAll('.indicator');
+        }
+        return indicators;
+    }
+
+    // Generate indicators if needed
+    const updatedIndicators = generateIndicators();
 
     // Show specific slide
     function showSlide(index) {
@@ -23,11 +51,15 @@ document.addEventListener('DOMContentLoaded', function () {
         if (index < 0 || index >= totalSlides) return;
 
         // Remove active class from all slides and indicators
-        slides.forEach(slide => {
+        slides.forEach((slide, i) => {
             slide.classList.remove('active', 'prev');
+            // Handle both class naming conventions
+            if (slide.classList.contains('event-slide')) {
+                slide.style.opacity = i === index ? '1' : '0';
+            }
         });
 
-        indicators.forEach(indicator => {
+        updatedIndicators.forEach(indicator => {
             indicator.classList.remove('scale-110');
             indicator.classList.add('bg-opacity-50');
             indicator.classList.remove('bg-white');
@@ -44,11 +76,15 @@ document.addEventListener('DOMContentLoaded', function () {
         // Show new slide
         if (slides[currentSlideIndex]) {
             slides[currentSlideIndex].classList.add('active');
+            // Ensure visibility for event-slide class
+            if (slides[currentSlideIndex].classList.contains('event-slide')) {
+                slides[currentSlideIndex].style.opacity = '1';
+            }
         }
 
-        if (indicators[currentSlideIndex]) {
-            indicators[currentSlideIndex].classList.remove('bg-opacity-50');
-            indicators[currentSlideIndex].classList.add('bg-white', 'scale-110');
+        if (updatedIndicators[currentSlideIndex]) {
+            updatedIndicators[currentSlideIndex].classList.remove('bg-opacity-50');
+            updatedIndicators[currentSlideIndex].classList.add('bg-white', 'scale-110');
         }
     }
 
@@ -93,22 +129,24 @@ document.addEventListener('DOMContentLoaded', function () {
         const playIcon = document.getElementById('playIcon');
         const pauseIcon = document.getElementById('pauseIcon');
 
-        if (isAutoPlaying) {
-            stopAutoplay();
-            isAutoPlaying = false;
-            playIcon.classList.remove('hidden');
-            pauseIcon.classList.add('hidden');
-        } else {
-            isAutoPlaying = true;
-            startAutoplay();
-            playIcon.classList.add('hidden');
-            pauseIcon.classList.remove('hidden');
+        if (playIcon && pauseIcon) {
+            if (isAutoPlaying) {
+                stopAutoplay();
+                isAutoPlaying = false;
+                playIcon.classList.remove('hidden');
+                pauseIcon.classList.add('hidden');
+            } else {
+                isAutoPlaying = true;
+                startAutoplay();
+                playIcon.classList.add('hidden');
+                pauseIcon.classList.remove('hidden');
+            }
         }
     }
 
     // Initialize slider
     function initSlider() {
-        // console.log('Initializing slider with', totalSlides, 'slides');
+        console.log('Initializing slider with', totalSlides, 'slides');
         if (totalSlides > 0) {
             showSlide(0);
             startAutoplay();
@@ -173,6 +211,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Initialize slider
     initSlider();
 
+    // Progress bars animation (if they exist)
     const progressBars = document.querySelectorAll('.progress-fill');
     progressBars.forEach(bar => {
         const width = bar.style.width;
@@ -181,8 +220,6 @@ document.addEventListener('DOMContentLoaded', function () {
             bar.style.width = width;
         }, 500);
     });
-
-    
 });
 
 // Reservation Functionality

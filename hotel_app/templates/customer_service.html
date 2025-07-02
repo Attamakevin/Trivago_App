@@ -18,9 +18,9 @@
             rel="stylesheet">
         <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
         <!-- Custom Script -->
-        <script src="{{ url_for('static', filename='js/main.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/translate.js') }}"></script>
-        <script src="{{ url_for('static', filename='js/user.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
     </head>
 
     <body class="luxury-bg min-h-screen">
@@ -66,104 +66,31 @@
                     </p>
                 </div>
 
-                <!-- Instructions Section -->
-                <div class="px-8 pb-8">
-                    <div class="bg-gray-50 rounded-lg p-6">
-                        <h4 class="font-semibold text-gray-900 mb-4 flex items-center">
-                            <i class="fas fa-info-circle text-blue-500 mr-2"></i>
-                            How to Get Support
-                        </h4>
-
-                        <div class="space-y-3">
-                            <div class="flex items-start gap-3">
-                                <div
-                                    class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                    1</div>
-                                <div>
-                                    <p class="text-sm text-gray-700"><strong>Click the Telegram button</strong> above to
-                                        open our support chat</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start gap-3">
-                                <div
-                                    class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                    2</div>
-                                <div>
-                                    <p class="text-sm text-gray-700"><strong>Start the conversation</strong> by typing
-                                        /start or sending a message</p>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start gap-3">
-                                <div
-                                    class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                    3</div>
-                                <div>
-                                    <p class="text-sm text-gray-700"><strong>Provide your details:</strong></p>
-                                    <ul class="ml-4 mt-1 space-y-1 text-xs text-gray-600">
-                                        <li>• Your full name</li>
-                                        <li>• Email address associated with your account</li>
-                                        <li>• Booking reference number (if applicable)</li>
-                                        <li>• Detailed description of your issue</li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div class="flex items-start gap-3">
-                                <div
-                                    class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0 mt-0.5">
-                                    4</div>
-                                <div>
-                                    <p class="text-sm text-gray-700"><strong>Wait for our agent</strong> to respond and
-                                        assist you</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Quick Tips -->
-                    <div class="mt-6 border border-red-200 rounded-lg p-4">
-                        <h5 class="font-medium text-red-800 mb-2 flex items-center">
-                            <i class="fas fa-lightbulb text-red-600 mr-2"></i>
-                            Attention
-                        </h5>
-                        <ol class="space-y-1 text-sm text-red-700">
-                            <li>1.Recently, there have been multiple cases of fraud where individuals impersonating platform customer service have
-                            deceived members. Please be cautious and make sure to verify.</li>
-                            <li>2.Platform customer service will never contact you privately in any form or manner. If anyone contacts you privately
-                            claiming to be platform customer service, they are definitely scammers.</li>
-                            <li>3.To contact online customer service, please make sure to use the link at the top of the platform.</li>
-                            <li>4.If you encounter suspicious individuals sending private messages, confirm with others and report to the platform.</li>
-                            <li>5.To protect the financial security of all members, please remember these guidelines.</li>
-                        </ol>
-                    </div>
-
-                    <!-- Support Hours -->
-                    <div class="mt-6 text-center">
-                        <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg">
-                            <i class="fas fa-clock"></i>
-                            <span class="text-sm font-medium">24/7 Support Available</span>
-                        </div>
+                <!-- Support Hours -->
+                <div class="mt-6 text-center mb-5">
+                    <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg">
+                        <i class="fas fa-clock"></i>
+                        <span class="text-sm font-medium">24/7 Support Available</span>
                     </div>
                 </div>
             </div>
+        </div>
 
-            <!-- Alternative Contact -->
-            <div class="mt-8 text-center">
-                <p class="text-white text-sm mb-4">Don't have Telegram?</p>
-                <div class="space-y-2 text-sm">
-                    <p class="text-white">
-                        <i class="fas fa-envelope text-white mr-2"></i>
-                        Email us at: <a href="mailto:support@company.com"
-                            class="text-white hover:underline">support@company.com</a>
-                    </p>
-                    <p class="text-white">
-                        <i class="fas fa-phone text-white mr-2"></i>
-                        Call us: <a href="tel:+1-800-SUPPORT" class="text-white hover:underline">+1-800-SUPPORT</a>
-                    </p>
-                </div>
+        <!-- Alternative Contact -->
+        <div class="mt-8 text-center">
+            <p class="text-white text-sm mb-4">Don't have Telegram?</p>
+            <div class="space-y-2 text-sm">
+                <p class="text-white">
+                    <i class="fas fa-envelope text-white mr-2"></i>
+                    Email us at: <a href="mailto:support@company.com"
+                        class="text-white hover:underline">support@company.com</a>
+                </p>
+                <p class="text-white">
+                    <i class="fas fa-phone text-white mr-2"></i>
+                    Call us: <a href="tel:+1-800-SUPPORT" class="text-white hover:underline">+1-800-SUPPORT</a>
+                </p>
             </div>
+        </div>
         </div>
 
         <script>

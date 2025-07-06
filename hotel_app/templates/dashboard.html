@@ -23,7 +23,6 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
             rel="stylesheet">
-        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
         <!-- Custom Script -->
         <script defer src="./static/js/main.js"></script>
         <script defer src="./static/js/translate.js"></script>
@@ -31,68 +30,10 @@
     </head>
 
     <body class="bg-gray-100 min-h-screen">
-        <!-- <div class="max-w-7xl mx-auto px-4"> -->
         <!-- Header -->
         <header class="sticky h-12 top-0 z-50 bg-white shadow-sm">
             <img src="./static/images/logo.png" alt="trivago logo" class="logo">
             <nav class="user-desktop-nav">
-                <!-- Custom Google Translate UI -->
-                <!-- <div id="google_translate_element" class=""></div> -->
-                <!-- Language Selector -->
-                <!-- <div class="relative inline-block border border-gray-200 rounded-lg">
-                    <a href="#" onclick="toggleLanguageDropdown()">
-                        <span id="selectedLanguageFlag" class="fi fi-us flag-icon"></span>
-                        <span data-translate id="selectedLanguageText" class="nav-text">EN</span>
-                        <svg class="w-3 h-3 text-gray-500 transition-transform duration-200" id="languageChevron"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 9l6 6 6-6" />
-                        </svg>
-                    </a> -->
-
-                <!-- Language Dropdown -->
-                <!-- <div id="languageDropdown"
-                        class="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[180px] overflow-hidden hidden">
-                        <div class="py-1">
-                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors bg-blue-50 text-blue-600 font-medium"
-                                onclick="selectLanguage('en', 'us', 'English', 'EN')">
-                                <span class="fi fi-us flag-icon"></span>
-                                <span class="flex-1 text-sm">English</span>
-                                <span class="text-xs text-gray-500">EN</span>
-                            </div>
-                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
-                            onclick="translateToLanguage('pt', 'Português')" data-lang="pt">
-                                <span class="fi fi-pt flag-icon"></span>
-                                <span class="flex-1 text-sm">Português</span>
-                                <span class="text-xs text-gray-500">PT</span>
-                            </div>
-                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
-                            onclick="translateToLanguage('es', 'Español')" data-lang="es">
-                                <span class="fi fi-it flag-icon"></span>
-                                <span class="flex-1 text-sm">Español</span>
-                                <span class="text-xs text-gray-500">ES</span>
-                            </div> 
-                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
-                            onclick="translateToLanguage('it', 'Italiano')" data-lang="it">
-                                <span class="fi fi-it flag-icon"></span>
-                                <span class="flex-1 text-sm">Italiano</span>
-                                <span class="text-xs text-gray-500">IT</span>
-                            </div>
-                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
-                            onclick="translateToLanguage('fr', 'Français')" data-lang="fr">
-                                <span class="fi fi-nl flag-icon"></span>
-                                <span class="flex-1 text-sm">Français</span>
-                                <span class="text-xs text-gray-500">FR</span>
-                            </div>
-                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
-                            onclick="translateToLanguage('de', 'Deutsch')" data-lang="de">
-                                <span class="fi fi-nl flag-icon"></span>
-                                <span class="flex-1 text-sm">Deutsch</span>
-                                <span class="text-xs text-gray-500">DE</span>
-                            </div>
-                        </div>
-                    </div>
-                </div> -->
-
                 <a href="/events">
                     <img src="./static/images/box.png" width="30" height="30" alt="">
                 </a>
@@ -187,8 +128,27 @@
                     class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"
                     onclick="goToSlide(5)"></button>
             </div>
+
         </div>
-        <!-- </div> -->
+
+        <!-- Hotel Image Sections -->
+        <div class="w-full h-96 md:h-[600px] bg-gray-900 overflow- shadow-2xl">
+            <!-- Hotel Dining Interior Section -->
+            <div class="">
+                <!-- Dining Interior Image 1 -->
+                <div class="overflow-hidden">
+                    <img src="./static/images/dining.jpg" alt="Luxury Hotel Dining Interior" class="object-contain">
+                </div>
+            </div>
+
+            <!-- Hotel Front View Section -->
+            <div class="mb-8">
+                <!-- Hotel Front View Image 2 -->
+                <div class="overflow-hidden">
+                    <img src="./static/images/fview.jpg" alt="Modern Hotel Exterior" class="object-contain">
+                </div>
+            </div>
+        </div>
     </body>
 
 </html>

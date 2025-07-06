@@ -16,7 +16,6 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
             rel="stylesheet">
-        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
         <!-- Custom Script -->
         <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
         <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
@@ -34,252 +33,61 @@
             </div>
         </header>
 
-        <div class="max-w-4xl mx-auto px-4 py-8">
-            <!-- Level Cards -->
-            <div class="space-y-4">
-                <!-- Level 1 - Basic -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-gray-400">
-                    <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
-                        onclick="toggleLevel('level1')">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-gray-600 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-900">VIP 0</h3>
-                                    <!-- <p class="text-sm text-gray-600">Free • Perfect for new users</p> -->
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Current</span>
-                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
-                                    id="level1-icon"></i>
-                            </div>
-                        </div>
-                    </div>
+        <div class="max-w-6xl mx-auto px-4 py-8">
+            <!-- VIP Levels Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6">
 
-                    <div class="level-content hidden" id="level1-content">
-                        <div class="px-6 pb-6 border-t border-gray-100">
-                            <div class="pt-4">
-                                <h4 class="font-semibold text-gray-900 mb-3">What you get:</h4>
-                                <ul class="space-y-2">
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Task Order: 35</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Commission ratio: 0.36%</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Daily Tasks: 2</span>
-                                    </li>
-                                </ul>
-                                <div
-                                    class="mt-4 w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                    Activated
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- VIP 0 -->
+                <div
+                    class="vip-level-card rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <img src="{{ url_for('static', filename='images/vip.jpg') }}" alt="VIP 0 Level"
+                        class="w-full h-48 object-contain cursor-pointer hover:scale-105 transition-transform duration-300"
+                        onerror="this.src='https://via.placeholder.com/300x250/6B7280/FFFFFF?text=VIP+0'"
+                        onclick="selectLevel('vip0')">
                 </div>
 
-                <!-- Level 2 - Premium -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-orange-400">
-                    <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
-                        onclick="toggleLevel('level2')">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-crown text-orange-600 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-900">VIP 1</h3>
-                                    <!-- <p class="text-sm text-gray-600">$9.99/month • Best for frequent travelers</p> -->
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-3 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">Most
-                                    Popular</span>
-                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
-                                    id="level2-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="level-content hidden" id="level2-content">
-                        <div class="px-6 pb-6 border-t border-gray-100">
-                            <div class="pt-4">
-                                <!-- <h4 class="font-semibold text-gray-900 mb-3">Everything in Basic, plus:</h4> -->
-                                <ul class="space-y-2">
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Task Order: 38</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Commissio ratio: 0.45%</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Daily Task: 2</span>
-                                    </li>
-                                </ul>
-                                <div
-                                    class="mt-4 w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                    Not Activated
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- VIP 1 -->
+                <div
+                    class="vip-level-card rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <img src="{{ url_for('static', filename='images/vip1.jpg') }}" alt="VIP 1 Level"
+                        class="w-full h-48 object-contain cursor-pointer hover:scale-105 transition-transform duration-300"
+                        onerror="this.src='https://via.placeholder.com/300x250/EA580C/FFFFFF?text=VIP+1'"
+                        onclick="selectLevel('vip1')">
                 </div>
 
-                <!-- Level 3 - Elite -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-teal-400">
-                    <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
-                        onclick="toggleLevel('level3')">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-gem text-teal-600 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-900">VIP 2</h3>
-                                    <!-- <p class="text-sm text-gray-600">$19.99/month • For luxury travel enthusiasts</p> -->
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-3 py-1 bg-teal-100 text-teal-700 text-xs rounded-full">Premium</span>
-                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
-                                    id="level3-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="level-content hidden" id="level3-content">
-                        <div class="px-6 pb-6 border-t border-gray-100">
-                            <div class="pt-4">
-                                <!-- <h4 class="font-semibold text-gray-900 mb-3">Everything in Premium, plus:</h4> -->
-                                <ul class="space-y-2">
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Task Order: 40</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Commissio ratio: 0.54%</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Daily Task: 2</span>
-                                </ul>
-                                <div
-                                    class="mt-4 w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                    Not Activated
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- VIP 2 -->
+                <div
+                    class="vip-level-card rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <img src="{{ url_for('static', filename='images/vip2.jpg') }}" alt="VIP 2 Level"
+                        class="w-full h-48 object-contain cursor-pointer hover:scale-105 transition-transform duration-300"
+                        onerror="this.src='https://via.placeholder.com/300x250/0D9488/FFFFFF?text=VIP+2'"
+                        onclick="selectLevel('vip2')">
                 </div>
 
-                <!-- Level 4 - VIP -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-purple-400">
-                    <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
-                        onclick="toggleLevel('level4')">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-star text-purple-600 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-900">VIP 3</h3>
-                                    <!-- <p class="text-sm text-gray-600">$39.99/month • Ultimate luxury experience</p> -->
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span
-                                    class="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Exclusive</span>
-                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
-                                    id="level4-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="level-content hidden" id="level4-content">
-                        <div class="px-6 pb-6 border-t border-gray-100">
-                            <div class="pt-4">
-                                <!-- <h4 class="font-semibold text-gray-900 mb-3">Everything in Elite, plus:</h4> -->
-                                <ul class="space-y-2">
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Task Order: 44</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Commissio ratio: 0.66%</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Daily Task: 2</span>
-                                </ul>
-                                <div 
-                                    class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                    Not Activated
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <!-- VIP 3 -->
+                <div
+                    class="vip-level-card rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    <img src="{{ url_for('static', filename='images/vip3.jpg') }}" alt="VIP 3 Level"
+                        class="w-full h-48 object-contain cursor-pointer hover:scale-105 transition-transform duration-300"
+                        onerror="this.src='https://via.placeholder.com/300x250/7C3AED/FFFFFF?text=VIP+3'"
+                        onclick="selectLevel('vip3')">
                 </div>
+
             </div>
         </div>
 
         <script>
-            function toggleLevel(levelId) {
-                const content = document.getElementById(levelId + '-content');
-                const icon = document.getElementById(levelId + '-icon');
-
-                // Close all other levels
-                const allContents = document.querySelectorAll('.level-content');
-                const allIcons = document.querySelectorAll('[id$="-icon"]');
-
-                allContents.forEach(content => {
-                    if (content.id !== levelId + '-content') {
-                        content.classList.add('hidden');
-                    }
-                });
-
-                allIcons.forEach(icon => {
-                    if (icon.id !== levelId + '-icon') {
-                        icon.classList.remove('rotate-180');
-                    }
-                });
-
-                // Toggle current level
-                content.classList.toggle('hidden');
-                icon.classList.toggle('rotate-180');
-            }
-
-            function upgradeTo(level) {
+            function selectLevel(level) {
                 const levelNames = {
-                    premium: 'Premium',
-                    elite: 'Elite',
-                    vip: 'VIP'
+                    vip0: 'VIP 0',
+                    vip1: 'VIP 1',
+                    vip2: 'VIP 2',
+                    vip3: 'VIP 3'
                 };
 
-                if (confirm(`Upgrade to ${levelNames[level]} membership?`)) {
-                    alert(`Processing upgrade to ${levelNames[level]} membership...`);
-                }
+                console.log(`Selected ${levelNames[level]} level`);
+                // Add your level selection logic here
             }
-
-            // Add smooth animations
-            document.addEventListener('DOMContentLoaded', function () {
-                const contents = document.querySelectorAll('.level-content');
-                contents.forEach(content => {
-                    content.style.transition = 'all 0.3s ease';
-                });
-            });
         </script>
     </body>
 

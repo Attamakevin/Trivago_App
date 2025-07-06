@@ -195,9 +195,9 @@
                 </div>
 
                 <div class="security-content hidden" id="withdrawal-content">
-                    <div class="px-6 pb-6 border-t border-gray-100">
+                    <div class="px-6 pb-6 border-t border-gray-100 pt-6">
                         <!-- Set Withdrawal Password -->
-                        <div class="bg-orange-50 rounded-lg p-4">
+                        <div class="bg-orange-50 rounded-lg px-4 py-4">
                             <h4 class="font-semibold text-gray-900 mb-4 flex items-center">
                                 <i class="fas fa-lock text-orange-600 mr-2"></i>
                                 Set Withdrawal Password
@@ -252,40 +252,7 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Danger Zone -->
-            <div class="danger-zone rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-4 border-b border-red-200">
-                    <h3 class="text-lg font-semibold text-white flex items-center">
-                        <i class="fas fa-exclamation-triangle mr-3"></i>
-                        Danger Zone
-                    </h3>
-                </div>
-            
-                <div class="p-6 space-y-4">
-                    <div class="bg-white bg-opacity-90 rounded-xl p-4">
-                        <h4 class="font-medium text-gray-900 mb-2">Deactivate Account</h4>
-                        <p class="text-sm text-gray-600 mb-4">Temporarily disable your account. You can reactivate it
-                            anytime.</p>
-                        <button onclick="deactivateAccount()"
-                            class="bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
-                            Deactivate Account
-                        </button>
-                    </div>
-            
-                    <div class="bg-white bg-opacity-90 rounded-xl p-4">
-                        <h4 class="font-medium text-gray-900 mb-2">Delete Account</h4>
-                        <p class="text-sm text-gray-600 mb-4">Permanently delete your account and all associated data.
-                            This action cannot be undone.</p>
-                        <button onclick="deleteAccount()"
-                            class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
-                            Delete Account
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
-
 
         <script>
             // Language Settings Functions
@@ -413,34 +380,6 @@
 
                 alert('Withdrawal password set successfully! This will be required for all future withdrawal requests.');
             }
-
-            function deactivateAccount() {
-                if (confirm('Are you sure you want to deactivate your account? You can reactivate it anytime by logging in.')) {
-                    alert('Account deactivation initiated. You will receive a confirmation email shortly.');
-                }
-            }
-
-            function deleteAccount() {
-                const confirmation = prompt('Type "DELETE" to confirm account deletion:');
-                if (confirmation === 'DELETE') {
-                    if (confirm('This will permanently delete your account and all data. This action cannot be undone. Are you absolutely sure?')) {
-                        alert('Account deletion initiated. You will receive a final confirmation email.');
-                    }
-                } else if (confirmation !== null) {
-                    alert('Account deletion cancelled. Please type "DELETE" exactly to confirm.');
-                }
-            }
-
-            // Close dropdowns when clicking outside
-            // document.addEventListener('click', function (event) {
-            //     const languageDropdown = document.getElementById('languageDropdown');
-            //     const languageButton = event.target.closest('[onclick="toggleLanguageDropdown()"]');
-
-            //     if (!languageButton && !languageDropdown.contains(event.target)) {
-            //         languageDropdown.classList.add('hidden');
-            //         document.getElementById('languageChevron').classList.remove('rotate-180');
-            //     }
-            // });
 
             // Add smooth animations
             document.addEventListener('DOMContentLoaded', function () {

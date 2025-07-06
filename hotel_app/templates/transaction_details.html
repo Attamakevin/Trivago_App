@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+        <title>Transaction History - trivago</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
+        <!-- TailwindCSS -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- FlatPickr -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <!-- Country-list & FlagIcon -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
+        <!-- Custom Script -->
+        <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
+    </head>
+
+    <body class="bg-gray-50 min-h-screen">
+        <!-- Header -->
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+            <div class="flex items-center justify-start gap-8 text-white h-full">
+                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-white text-sm md:text-md font-bold">Transaction History</h1>
+            </div>
+        </header>
+
+        <div class="max-w-6xl mx-auto px-4 py-8">
+            <!-- Summary Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Total Balance -->
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Current Balance</p>
+                            <p class="text-2xl font-bold text-gray-900">$4,250.00</p>
+                        </div>
+                        <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-wallet text-blue-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Deposits -->
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Deposits</p>
+                            <p class="text-2xl font-bold text-green-600">$12,850.00</p>
+                        </div>
+                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-arrow-down text-green-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Withdrawals -->
+                <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-sm font-medium text-gray-600">Total Withdrawals</p>
+                            <p class="text-2xl font-bold text-red-600">$8,600.00</p>
+                        </div>
+                        <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-arrow-up text-red-600 text-xl"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters and Search -->
+            <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+                <div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                    <!-- Search -->
+                    <div class="flex-1 max-w-md">
+                        <div class="relative">
+                            <input type="text" id="searchInput" placeholder="Search transactions..."
+                                class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                onkeyup="filterTransactions()">
+                            <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                        </div>
+                    </div>
+
+                    <!-- Filters -->
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="filterByType('all')" class="filter-btn active" data-type="all">
+                            <i class="fas fa-list mr-2"></i>All
+                        </button>
+                        <button onclick="filterByType('deposit')" class="filter-btn" data-type="deposit">
+                            <i class="fas fa-arrow-down mr-2"></i>Deposits
+                        </button>
+                        <button onclick="filterByType('withdrawal')" class="filter-btn" data-type="withdrawal">
+                            <i class="fas fa-arrow-up mr-2"></i>Withdrawals
+                        </button>
+                    </div>
+
+                    <!-- Date Filter -->
+                    <div class="flex gap-2">
+                        <select id="dateFilter"
+                            class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                            onchange="filterTransactions()">
+                            <option value="all">All Time</option>
+                            <option value="today">Today</option>
+                            <option value="week">This Week</option>
+                            <option value="month">This Month</option>
+                            <option value="year">This Year</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transaction List -->
+            <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                <div class="p-6 border-b border-gray-200">
+                    <h3 class="text-lg font-semibold text-gray-900">Recent Transactions</h3>
+                    <p class="text-sm text-gray-600 mt-1">Your complete transaction history</p>
+                </div>
+
+                <div class="divide-y divide-gray-200" id="transactionsList">
+                    <!-- Transaction Item 1 -->
+                    <div class="transaction-item p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+                        data-type="deposit" data-date="2025-07-05" onclick="showTransactionDetails('TXN001')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-plus text-green-600 text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Deposit via Bank Transfer</h4>
+                                    <p class="text-sm text-gray-600">Bank of America • ****1234</p>
+                                    <p class="text-xs text-gray-500">July 5, 2025 at 2:30 PM</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-semibold text-green-600">+$500.00</p>
+                                <span
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Completed
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction Item 2 -->
+                    <div class="transaction-item p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+                        data-type="withdrawal" data-date="2025-07-04" onclick="showTransactionDetails('TXN002')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-minus text-red-600 text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Withdrawal to USDT Wallet</h4>
+                                    <p class="text-sm text-gray-600">USDT TRC20 • TR7N...8K9M</p>
+                                    <p class="text-xs text-gray-500">July 4, 2025 at 10:15 AM</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-semibold text-red-600">-$200.00</p>
+                                <span
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Completed
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction Item 3 -->
+                    <div class="transaction-item p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+                        data-type="deposit" data-date="2025-07-03" onclick="showTransactionDetails('TXN003')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-plus text-green-600 text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Deposit via PayPal</h4>
+                                    <p class="text-sm text-gray-600">PayPal • user@example.com</p>
+                                    <p class="text-xs text-gray-500">July 3, 2025 at 4:45 PM</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-semibold text-green-600">+$750.00</p>
+                                <span
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Completed
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction Item 4 -->
+                    <div class="transaction-item p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+                        data-type="withdrawal" data-date="2025-07-02" onclick="showTransactionDetails('TXN004')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-minus text-red-600 text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Withdrawal to Revolut</h4>
+                                    <p class="text-sm text-gray-600">Revolut • GB29****78</p>
+                                    <p class="text-xs text-gray-500">July 2, 2025 at 9:20 AM</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-semibold text-red-600">-$300.00</p>
+                                <span
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    Processing
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction Item 5 -->
+                    <div class="transaction-item p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+                        data-type="deposit" data-date="2025-07-01" onclick="showTransactionDetails('TXN005')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-plus text-green-600 text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Deposit via Credit Card</h4>
+                                    <p class="text-sm text-gray-600">Visa • ****4567</p>
+                                    <p class="text-xs text-gray-500">July 1, 2025 at 1:10 PM</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-semibold text-green-600">+$1,200.00</p>
+                                <span
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    Completed
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Transaction Item 6 -->
+                    <div class="transaction-item p-6 hover:bg-gray-50 transition-colors cursor-pointer"
+                        data-type="withdrawal" data-date="2025-06-30" onclick="showTransactionDetails('TXN006')">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-minus text-red-600 text-lg"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">Withdrawal Failed</h4>
+                                    <p class="text-sm text-gray-600">USDT TRC20 • TR7N...8K9M</p>
+                                    <p class="text-xs text-gray-500">June 30, 2025 at 6:30 PM</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-semibold text-red-600">-$150.00</p>
+                                <span
+                                    class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    Failed
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Load More Button -->
+                <div class="p-6 text-center border-t border-gray-200">
+                    <button onclick="loadMoreTransactions()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                        <i class="fas fa-plus mr-2"></i>Load More Transactions
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction Detail Modal -->
+        <div id="transactionModal"
+            class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white rounded-2xl shadow-xl max-w-md w-full" id="modalContent">
+                <!-- Modal Header -->
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-semibold text-gray-900">Transaction Details</h3>
+                        <button onclick="closeTransactionModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6 space-y-4" id="transactionDetails">
+                    <!-- Details will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .filter-btn {
+                @apply px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors;
+            }
+
+            .filter-btn.active {
+                @apply bg-blue-600 text-white border-blue-600;
+            }
+        </style>
+
+        <script>
+            // Sample transaction data
+            const transactionData = {
+                'TXN001': {
+                    id: 'TXN001',
+                    type: 'deposit',
+                    amount: 500.00,
+                    method: 'Bank Transfer',
+                    details: 'Bank of America • ****1234',
+                    date: 'July 5, 2025 at 2:30 PM',
+                    status: 'Completed',
+                    fee: 0.00,
+                    reference: 'REF-789456123'
+                },
+                'TXN002': {
+                    id: 'TXN002',
+                    type: 'withdrawal',
+                    amount: 200.00,
+                    method: 'USDT Wallet',
+                    details: 'USDT TRC20 • TR7N...8K9M',
+                    date: 'July 4, 2025 at 10:15 AM',
+                    status: 'Completed',
+                    fee: 2.00,
+                    reference: 'REF-456123789'
+                },
+                'TXN003': {
+                    id: 'TXN003',
+                    type: 'deposit',
+                    amount: 750.00,
+                    method: 'PayPal',
+                    details: 'PayPal • user@example.com',
+                    date: 'July 3, 2025 at 4:45 PM',
+                    status: 'Completed',
+                    fee: 0.00,
+                    reference: 'REF-123789456'
+                }
+            };
+
+            function filterByType(type) {
+                // Update active button
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                document.querySelector(`[data-type="${type}"]`).classList.add('active');
+
+                // Filter transactions
+                const transactions = document.querySelectorAll('.transaction-item');
+                transactions.forEach(transaction => {
+                    if (type === 'all' || transaction.dataset.type === type) {
+                        transaction.style.display = 'block';
+                    } else {
+                        transaction.style.display = 'none';
+                    }
+                });
+            }
+
+            function filterTransactions() {
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                const dateFilter = document.getElementById('dateFilter').value;
+                const transactions = document.querySelectorAll('.transaction-item');
+
+                transactions.forEach(transaction => {
+                    const text = transaction.textContent.toLowerCase();
+                    const matchesSearch = text.includes(searchTerm);
+
+                    // Simple date filtering (you can enhance this)
+                    let matchesDate = true;
+                    if (dateFilter !== 'all') {
+                        const transactionDate = transaction.dataset.date;
+                        // Add more sophisticated date filtering logic here
+                    }
+
+                    if (matchesSearch && matchesDate) {
+                        transaction.style.display = 'block';
+                    } else {
+                        transaction.style.display = 'none';
+                    }
+                });
+            }
+
+            function showTransactionDetails(transactionId) {
+                const transaction = transactionData[transactionId];
+                if (!transaction) return;
+
+                const modal = document.getElementById('transactionModal');
+                const detailsContainer = document.getElementById('transactionDetails');
+
+                const statusColor = transaction.status === 'Completed' ? 'green' :
+                    transaction.status === 'Processing' ? 'yellow' : 'red';
+
+                detailsContainer.innerHTML = `
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-${transaction.type === 'deposit' ? 'green' : 'red'}-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-${transaction.type === 'deposit' ? 'plus' : 'minus'} text-${transaction.type === 'deposit' ? 'green' : 'red'}-600 text-xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold text-${transaction.type === 'deposit' ? 'green' : 'red'}-600">
+                        ${transaction.type === 'deposit' ? '+' : '-'}$${transaction.amount.toFixed(2)}
+                    </h4>
+                    <p class="text-gray-600">${transaction.method}</p>
+                </div>
+
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Transaction ID:</span>
+                        <span class="font-medium">${transaction.id}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Date & Time:</span>
+                        <span class="font-medium">${transaction.date}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Method:</span>
+                        <span class="font-medium">${transaction.details}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Fee:</span>
+                        <span class="font-medium">$${transaction.fee.toFixed(2)}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Reference:</span>
+                        <span class="font-medium">${transaction.reference}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Status:</span>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-${statusColor}-100 text-${statusColor}-800">
+                            ${transaction.status}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-gray-200">
+                    <button onclick="downloadReceipt('${transactionId}')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-download mr-2"></i>Download Receipt
+                    </button>
+                </div>
+            `;
+
+                modal.classList.remove('hidden');
+            }
+
+            function closeTransactionModal() {
+                document.getElementById('transactionModal').classList.add('hidden');
+            }
+
+            function loadMoreTransactions() {
+                alert('Loading more transactions... (This would load additional transaction data)');
+            }
+
+            function downloadReceipt(transactionId) {
+                alert(`Downloading receipt for transaction ${transactionId}...`);
+            }
+
+            // Close modal when clicking outside
+            document.getElementById('transactionModal').addEventListener('click', function (e) {
+                if (e.target === this) {
+                    closeTransactionModal();
+                }
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && !document.getElementById('transactionModal').classList.contains('hidden')) {
+                    closeTransactionModal();
+                }
+            });
+        </script>
+    </body>
+
+</html>

@@ -7,24 +7,15 @@
         <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
         <title>Reservation Center - trivago</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
         <!-- TailwindCSS -->
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
         <script src="https://cdn.tailwindcss.com"></script>
-        <!-- FlatPickr -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <!-- Country-list & FlagIcon -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
             rel="stylesheet">
-        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
         <!-- Custom Script -->
         <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
         <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
@@ -48,7 +39,7 @@
             <div class="flex flex-col sm:flex-row items-center sm:justify-between p-6">
                 <div class="mb-6 bg-white rounded-lg shadow-sm p-4 text ">
                     <div class="text-sm md:text-sm font-bold text-purple-600 mb-2">
-                        {{ user.reservations|length if user.reservations else 0 }}
+                        {{ reservations|length if reservations else 0 }}
                     </div>
                     <p class="text-xs text-gray-700 font-medium">Total Reservations Made</p>
                     <p class="text-xs text-gray-500">VIP Level: {{ user.vip_level }}</p>
@@ -105,7 +96,7 @@
             <!-- Main Action Card -->
             <div class="overflow-hidden bg-[#101f56]">
                 <!-- Reservation Button -->
-                <div class=" p-8 text-center">
+                <div class="p-8 text-center">
                     <button onclick="openReservationModal()"
                         class="bg-[#f7b437] hover:bg-[#f7b437] font-bold py-4 px-8 rounded-xl transition-colors text-sm text-white shadow-lg">
                         Make Reservation
@@ -123,8 +114,8 @@
                                     <i class="fas fa-gift text-xl"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user.trial_bonus if
-                                user.trial_bonus else 250.00) }}</div>
+                            <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user_stats.trial_bonus) }}
+                            </div>
                             <p class="text-sm text-[#101f56]">Trial Bonus</p>
                             <p class="text-xs text-[#101f56] mt-1">Expires in 15 days</p>
                         </div>
@@ -150,7 +141,8 @@
                                     <i class="fas fa-chart-line text-xl text-orange-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user_stats.total_commission) }}</div>
+                            <div class="text-xl md:text-xl font-bold mb-1">${{
+                                "%.2f"|format(user_stats.total_commission) }}</div>
                             <p class="text-[#101f56] text-sm">Earned Commission</p>
                             <p class="text-xs text-[#101f56] mt-1">Total earnings</p>
                         </div>
@@ -163,11 +155,10 @@
                                     <i class="fas fa-piggy-bank text-xl text-purple-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user_stats.deposit_balance) }}</div>
+                            <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user_stats.deposit_balance)
+                                }}</div>
                             <p class="text-[#101f56] text-sm">Booking Deposits</p>
-                            <p class="text-xs text-[#101f56] mt-1">
-                                {{ user.active_bookings if user.active_bookings else 5 }} active bookings
-                            </p>
+                            <p class="text-xs text-[#101f56] mt-1">{{ user_stats.active_bookings }} active bookings</p>
                         </div>
                     </div>
                 </div>
@@ -203,7 +194,7 @@
                                     <p class="text-gray-600 text-sm mb-3">{{ hotel.location }}</p>
                                     <div class="flex items-center justify-between mb-3">
                                         <div class="flex items-center">
-                                            {% for i in range(hotel.rating|round|int) %} %}
+                                            {% for i in range(hotel.rating|round|int) %}
                                             <i class="fas fa-star text-yellow-400 text-sm"></i>
                                             {% endfor %}
                                             <span class="ml-1 text-sm text-gray-600">({{ hotel.rating }}.0)</span>
@@ -239,69 +230,6 @@
             </div>
         </div>
 
-
-        <!-- Rules Modal -->
-        <!-- <div id="rulesModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
-            <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="bg-white rounded-2xl shadow-xl w-full max-w-2xl slide-up max-h-[80vh] overflow-y-auto">
-                    <div class="p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-xl font-bold text-gray-900">Tasks Description</h3>
-                            <button onclick="closeRulesModal()" class="text-gray-400 hover:text-gray-600">
-                                <i class="fas fa-times text-xl"></i>
-                            </button>
-                        </div>
-
-                        <div class="space-y-4">
-                            <div class="bg-blue-50 rounded-xl p-4">
-                                <ul class="text-sm text-blue-800 space-y-1">
-                                    <li>● Only one mobile phone number can be registered for one account. In order to
-                                        prevent misoperation or a series of
-                                        illegal acts, let the platform set corresponding progress rules. The system will
-                                        automatically match orders when the
-                                        agent member makes a reservation. After completing the reservation every day,
-                                        the amount can be withdrawn to the preset
-                                        or escrow bank account. Platform recharge only allows the account owner to
-                                        transfer money. Other people or anonymous
-                                        transfers will affect the security of the account.
-                                    </li>
-                                    <li>● Each account must complete all reservations every day, otherwise it will
-                                        affect the credit score
-                                    </li>
-                                    <li>● All reservations are randomly assigned by the system and cannot be modified,
-                                        canceled or skipped after receiving the
-                                        reservation.
-                                    </li>
-                                    <li>● Each order is provided by a different trader, so the profit is naturally
-                                        different. Therefore, before each deposit,
-                                        you must get the deposit address from the customer service to complete the
-                                        Luxury. You must reconfirm the deposit
-                                        address with the customer service.
-                                    </li>
-                                    <li>● If there is still no deposit after 30 minutes, you need to reconfirm your
-                                        deposit address with the customer service.
-                                        Avoid unnecessary problems in ongoing transactions.
-                                    </li>
-                                    <li>● If the transfer is to the wrong or overdue verification deposit address, the
-                                        platform does not assume any
-                                        responsibility
-                                    </li>
-                                    <li>● Once the account information is associated with a single account, it cannot be
-                                        changed unless the account cannot
-                                        receive withdrawals.
-                                    </li>
-                                    <li>Note: Please do not use the same person's information to repeatedly register an
-                                        account on this platform to avoid data
-                                        errors.
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
-
         <!-- Order History Modal -->
         <div id="orderHistoryModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
@@ -320,21 +248,9 @@
                                     class="filter-btn active px-4 py-2 rounded-lg text-sm font-medium bg-blue-600 text-white">
                                     All Orders
                                 </button>
-                                <button onclick="filterOrders('pending')"
-                                    class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">
-                                    Pending
-                                </button>
-                                <button onclick="filterOrders('confirmed')"
-                                    class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">
-                                    Confirmed
-                                </button>
                                 <button onclick="filterOrders('completed')"
                                     class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">
                                     Completed
-                                </button>
-                                <button onclick="filterOrders('cancelled')"
-                                    class="filter-btn px-4 py-2 rounded-lg text-sm font-medium bg-gray-200 text-gray-700 hover:bg-gray-300">
-                                    Cancelled
                                 </button>
                             </div>
                         </div>
@@ -342,19 +258,16 @@
                         <div id="ordersList" class="space-y-4">
                             {% if reservations %}
                             {% for reservation in reservations %}
+                            <!-- CHANGE: Added data-reservation-id attribute -->
                             <div class="order-item bg-white border border-gray-200 rounded-xl p-4 hover:shadow-md transition-shadow"
-                                data-status="{{ reservation.status }}">
+                                data-status="{{ reservation.status }}" data-reservation-id="{{ reservation.id }}">
                                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-3 mb-2">
                                             <h4 class="font-semibold text-lg text-gray-900">{{ reservation.hotel_name }}
                                             </h4>
-                                            <span class="status-badge px-2 py-1 rounded-full text-xs font-medium
-                                            {% if reservation.status == 'pending' %}bg-yellow-100 text-yellow-800
-                                            {% elif reservation.status == 'confirmed' %}bg-blue-100 text-blue-800
-                                            {% elif reservation.status == 'completed' %}bg-green-100 text-green-800
-                                            {% elif reservation.status == 'cancelled' %}bg-red-100 text-red-800
-                                            {% endif %}">
+                                            <span
+                                                class="status-badge px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
                                                 {{ reservation.status|title }}
                                             </span>
                                         </div>
@@ -365,23 +278,26 @@
                                             </p>
                                             <p><i class="fas fa-dollar-sign mr-2"></i>Price: ${{
                                                 "%.2f"|format(reservation.price) }}</p>
-                                            {% if reservation.commission %}
-                                            <p><i class="fas fa-coins mr-2"></i>Commission: ${{
+                                            <p><i class="fas fa-coins mr-2"></i>Commission Earned: ${{
                                                 "%.2f"|format(reservation.commission) }}</p>
+                                            <!-- CHANGE: Show commission payment status -->
+                                            {% if reservation.commission_paid %}
+                                            <p class="text-green-600"><i class="fas fa-check-circle mr-2"></i>Commission
+                                                Paid</p>
                                             {% endif %}
                                         </div>
                                     </div>
                                     <div class="flex flex-col gap-2 min-w-[120px]">
+                                        <!-- CHANGE: Updated button text and logic -->
                                         {% if reservation.status == 'completed' and not reservation.rated %}
                                         <button onclick="rateReservation({{ reservation.id }})"
                                             class="bg-green-600 hover:bg-green-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors">
-                                            <i class="fas fa-star mr-1"></i>Rate & Earn
+                                            <i class="fas fa-star mr-1"></i>Rate Experience
                                         </button>
-                                        {% elif reservation.status == 'pending' %}
-                                        <button onclick="cancelReservation({{ reservation.id }})"
-                                            class="bg-red-600 hover:bg-red-700 text-white text-xs font-medium py-2 px-3 rounded-lg transition-colors">
-                                            <i class="fas fa-times mr-1"></i>Cancel
-                                        </button>
+                                        {% elif reservation.rated %}
+                                        <span class="text-green-600 text-xs font-medium text-center">
+                                            <i class="fas fa-check-circle mr-1"></i>Rated
+                                        </span>
                                         {% endif %}
                                         <span class="text-xs text-gray-500 text-center">Order #{{ reservation.id
                                             }}</span>
@@ -394,10 +310,83 @@
                                 <i class="fas fa-history text-gray-300 text-6xl mb-4"></i>
                                 <h4 class="text-xl font-semibold text-gray-600 mb-2">No Order History</h4>
                                 <p class="text-gray-500">You haven't made any reservations yet. Start by making your
-                                    first
-                                    reservation!</p>
+                                    first reservation!</p>
                             </div>
                             {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CHANGE: Added Rating Modal -->
+        <div id="ratingModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-2xl shadow-xl w-full max-w-md slide-up">
+                    <div class="p-6">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-xl font-bold text-gray-900">Rate Your Experience</h3>
+                            <button onclick="closeRatingModal()" class="text-gray-400 hover:text-gray-600">
+                                <i class="fas fa-times text-xl"></i>
+                            </button>
+                        </div>
+
+                        <div class="text-center mb-6">
+                            <h4 id="ratingHotelName" class="text-lg font-semibold text-gray-800 mb-4"></h4>
+
+                            <!-- Star Rating -->
+                            <div class="flex justify-center mb-4">
+                                <div class="flex space-x-1" id="starRating">
+                                    <button type="button"
+                                        class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                        data-rating="1">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button type="button"
+                                        class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                        data-rating="2">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button type="button"
+                                        class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                        data-rating="3">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button type="button"
+                                        class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                        data-rating="4">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                    <button type="button"
+                                        class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                        data-rating="5">
+                                        <i class="fas fa-star"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <p class="text-sm text-gray-600 mb-4" id="ratingText">Click stars to rate</p>
+                        </div>
+
+                        <!-- Feedback -->
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Feedback (Optional)</label>
+                            <textarea id="ratingFeedback"
+                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                rows="3" placeholder="Tell us about your experience..."></textarea>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex gap-3">
+                            <button onclick="closeRatingModal()"
+                                class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors">
+                                Cancel
+                            </button>
+                            <button id="submitRatingBtn" onclick="submitRating()"
+                                class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+                                disabled>
+                                Submit Rating
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -419,8 +408,7 @@
                         <div class="space-y-4">
                             <div class="bg-blue-50 rounded-xl p-4">
                                 <h4 class="font-semibold text-blue-900 mb-2"><i
-                                        class="fas fa-check-circle mr-2"></i>Daily
-                                    Limits</h4>
+                                        class="fas fa-check-circle mr-2"></i>Daily Limits</h4>
                                 <ul class="text-sm text-blue-800 space-y-1">
                                     <li>• VIP0: 5 reservations per day</li>
                                     <li>• VIP1: 10 reservations per day</li>
@@ -433,10 +421,11 @@
                                 <h4 class="font-semibold text-green-900 mb-2"><i
                                         class="fas fa-money-bill-wave mr-2"></i>Commission System</h4>
                                 <ul class="text-sm text-green-800 space-y-1">
+                                    <!-- CHANGE: Updated commission system description -->
                                     <li>• Earn 2% commission on each reservation</li>
+                                    <li>• Commission paid immediately when you reserve</li>
                                     <li>• Commission multiplier varies by hotel</li>
-                                    <li>• Rate your experience to receive commission</li>
-                                    <li>• Funds added to your balance after rating</li>
+                                    <li>• Funds added to your balance automatically</li>
                                 </ul>
                             </div>
 
@@ -444,7 +433,8 @@
                                 <h4 class="font-semibold text-yellow-900 mb-2"><i
                                         class="fas fa-exclamation-triangle mr-2"></i>Important Notes</h4>
                                 <ul class="text-sm text-yellow-800 space-y-1">
-                                    <li>• You must rate completed reservations to earn commission</li>
+                                    <!-- CHANGE: Updated note about rating -->
+                                    <li>• Rating your experience helps us improve</li>
                                     <li>• Withdrawal password required for fund withdrawals</li>
                                     <li>• Customer support available 24/7</li>
                                     <li>• Check order history for reservation status</li>
@@ -464,7 +454,9 @@
                         <i class="fas fa-check text-green-600 text-3xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-2">Reservation Successful!</h3>
-                    <p class="text-gray-600 mb-6">Your hotel reservation has been created successfully.</p>
+                    <!-- CHANGE: Updated success message -->
+                    <p class="text-gray-600 mb-6">Your hotel reservation has been completed and commission has been
+                        added to your balance!</p>
                     <button onclick="closeSuccessModal()"
                         class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-xl transition-colors">
                         <i class="fas fa-thumbs-up mr-2"></i>Great!
@@ -491,12 +483,309 @@
             </div>
         </div>
 
+        <!-- CHANGE: Complete JavaScript Section - This is where all the changes are -->
+        <script>
+            // UPDATED: Complete JavaScript to match your backend
+            let currentReservationId = null;
+            let currentHotelName = null;
+            let selectedRating = 0;
+
+            // Modal Functions
+            function openReservationModal() {
+                document.getElementById('reservationModal').classList.remove('hidden');
+            }
+
+            function closeReservationModal() {
+                document.getElementById('reservationModal').classList.add('hidden');
+            }
+
+            function openRulesModal() {
+                document.getElementById('rulesModal').classList.remove('hidden');
+            }
+
+            function closeRulesModal() {
+                document.getElementById('rulesModal').classList.add('hidden');
+            }
+
+            function openOrderHistoryModal() {
+                document.getElementById('orderHistoryModal').classList.remove('hidden');
+            }
+
+            function closeOrderHistoryModal() {
+                document.getElementById('orderHistoryModal').classList.add('hidden');
+            }
+
+            function closeSuccessModal() {
+                document.getElementById('successModal').classList.add('hidden');
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            }
+
+            function closeErrorModal() {
+                document.getElementById('errorModal').classList.add('hidden');
+            }
+
+            // CHANGE: Updated rating function to match your backend
+            function rateReservation(reservationId) {
+                console.log('Rating reservation:', reservationId);
+                currentReservationId = reservationId;
+                selectedRating = 0;
+
+                // Get hotel name from the DOM
+                const orderItem = document.querySelector(`[data-reservation-id="${reservationId}"]`);
+                if (orderItem) {
+                    currentHotelName = orderItem.querySelector('h4').textContent.trim();
+                } else {
+                    currentHotelName = 'Hotel';
+                }
+
+                // Reset star rating
+                document.querySelectorAll('.star-btn').forEach(btn => {
+                    btn.classList.remove('text-yellow-400');
+                    btn.classList.add('text-gray-300');
+                });
+
+                // Reset form
+                document.getElementById('ratingFeedback').value = '';
+                document.getElementById('ratingText').textContent = 'Click stars to rate';
+                document.getElementById('submitRatingBtn').disabled = true;
+
+                // Set hotel name and show modal
+                document.getElementById('ratingHotelName').textContent = currentHotelName;
+                document.getElementById('ratingModal').classList.remove('hidden');
+            }
+
+            function closeRatingModal() {
+                document.getElementById('ratingModal').classList.add('hidden');
+                currentReservationId = null;
+                currentHotelName = null;
+                selectedRating = 0;
+            }
+
+            // CHANGE: Updated to use your backend endpoint
+            function submitRating() {
+                if (!selectedRating || selectedRating < 1 || selectedRating > 5) {
+                    showNotification('Please select a rating', 'warning');
+                    return;
+                }
+
+                const feedback = document.getElementById('ratingFeedback').value;
+                const submitBtn = document.getElementById('submitRatingBtn');
+
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+
+                // CHANGE: Using your backend's endpoint format
+                fetch(`/rate/${currentReservationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        rating: selectedRating,
+                        feedback: feedback
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showNotification(data.message, 'success');
+                            closeRatingModal();
+                            setTimeout(() => {
+                                window.location.reload();
+                            }, 1500);
+                        } else {
+                            showNotification(data.error || 'Failed to submit rating', 'error');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Network error:', error);
+                        showNotification('Network error. Please try again.', 'error');
+                    })
+                    .finally(() => {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Submit Rating';
+                    });
+            }
+
+            // Order filtering functions
+            function filterOrders(status) {
+                const orderItems = document.querySelectorAll('.order-item');
+                const filterBtns = document.querySelectorAll('.filter-btn');
+
+                filterBtns.forEach(btn => {
+                    btn.classList.remove('active', 'bg-blue-600', 'text-white');
+                    btn.classList.add('bg-gray-200', 'text-gray-700');
+                });
+
+                const clickedBtn = event.target;
+                clickedBtn.classList.add('active', 'bg-blue-600', 'text-white');
+                clickedBtn.classList.remove('bg-gray-200', 'text-gray-700');
+
+                orderItems.forEach(item => {
+                    const itemStatus = item.dataset.status.toLowerCase();
+                    if (status === 'all' || itemStatus === status.toLowerCase()) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            }
+
+            function cancelReservation(reservationId) {
+                if (confirm('Are you sure you want to cancel this reservation?')) {
+                    showNotification('Reservation cancellation requested', 'info');
+                }
+            }
+
+            // Star rating functionality
+            function updateStarDisplay() {
+                document.querySelectorAll('.star-btn').forEach((btn, index) => {
+                    if (index < selectedRating) {
+                        btn.classList.add('text-yellow-400');
+                        btn.classList.remove('text-gray-300');
+                    } else {
+                        btn.classList.remove('text-yellow-400');
+                        btn.classList.add('text-gray-300');
+                    }
+                });
+            }
+
+            function highlightStars(rating) {
+                document.querySelectorAll('.star-btn').forEach((btn, index) => {
+                    if (index < rating) {
+                        btn.classList.add('text-yellow-400');
+                        btn.classList.remove('text-gray-300');
+                    } else {
+                        btn.classList.remove('text-yellow-400');
+                        btn.classList.add('text-gray-300');
+                    }
+                });
+            }
+
+            function updateRatingText() {
+                const ratingTexts = {
+                    1: 'Poor - 1 star',
+                    2: 'Fair - 2 stars',
+                    3: 'Good - 3 stars',
+                    4: 'Very Good - 4 stars',
+                    5: 'Excellent - 5 stars'
+                };
+                document.getElementById('ratingText').textContent = ratingTexts[selectedRating] || 'Click stars to rate';
+            }
+
+            function showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${type === 'success' ? 'bg-green-500 text-white' :
+                        type === 'error' ? 'bg-red-500 text-white' :
+                            type === 'warning' ? 'bg-yellow-500 text-black' :
+                                'bg-blue-500 text-white'
+                    }`;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                setTimeout(() => {
+                    notification.remove();
+                }, 5000);
+            }
+
+            // Initialize when DOM is loaded
+            document.addEventListener('DOMContentLoaded', function () {
+                // Star rating click handlers
+                document.querySelectorAll('.star-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        selectedRating = parseInt(this.dataset.rating);
+                        updateStarDisplay();
+                        updateRatingText();
+                        document.getElementById('submitRatingBtn').disabled = false;
+                    });
+
+                    btn.addEventListener('mouseenter', function () {
+                        const hoverRating = parseInt(this.dataset.rating);
+                        highlightStars(hoverRating);
+                    });
+                });
+
+                const starRating = document.getElementById('starRating');
+                if (starRating) {
+                    starRating.addEventListener('mouseleave', function () {
+                        updateStarDisplay();
+                    });
+                }
+
+                // CHANGE: Updated reservation form handling
+                const forms = document.querySelectorAll('form[action*="reserve"]');
+                forms.forEach(form => {
+                    form.addEventListener('submit', function (e) {
+                        e.preventDefault();
+                        const formData = new FormData(form);
+                        const url = form.action;
+                        const submitBtn = form.querySelector('button[type="submit"]');
+                        const originalText = submitBtn.textContent;
+
+                        submitBtn.disabled = true;
+                        submitBtn.textContent = 'Reserving...';
+
+                        fetch(url, {
+                            method: 'POST',
+                            body: formData,
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    closeReservationModal();
+                                    showNotification(data.message, 'success');
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 2000);
+                                } else {
+                                    showNotification(data.error || 'Failed to create reservation', 'error');
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                showNotification('An unexpected error occurred', 'error');
+                            })
+                            .finally(() => {
+                                submitBtn.textContent = originalText;
+                                submitBtn.disabled = false;
+                            });
+                    });
+                });
+
+                // Close modals when clicking outside
+                const modals = document.querySelectorAll('[id$="Modal"]');
+                modals.forEach(modal => {
+                    modal.addEventListener('click', function (e) {
+                        if (e.target === modal) {
+                            modal.classList.add('hidden');
+                        }
+                    });
+                });
+
+                // Close modals with Escape key
+                document.addEventListener('keydown', function (e) {
+                    if (e.key === 'Escape') {
+                        modals.forEach(modal => {
+                            if (!modal.classList.contains('hidden')) {
+                                modal.classList.add('hidden');
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+
+        <!-- CHANGE: Added script to handle success modal on page load -->
+        <script>
+            function closeSuccessModal() {
+                document.getElementById('successModal').classList.add('hidden');
+                window.location.href = "{{ url_for('reservations') }}";
+            }
+        </script>
     </body>
 
 </html>
-<script>
-function closeSuccessModal() {
-    document.getElementById('successModal').classList.add('hidden');
-    window.location.href = "{{ url_for('reservations') }}";
-}
-</script>

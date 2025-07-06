@@ -889,24 +889,306 @@ def feedback():
 def help_center():
     return render_template('help_center.html')
 
-@app.route('/bind_wallet')
+@app.route('/bind_wallet', methods=['GET', 'POST'])
 def bind_wallet():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
-    return render_template('bind_wallet.html', user=user)
+    if not user:
+        flash('User not found', 'error')
+        return redirect(url_for('login'))
+    
+    # Check if user already has a bound wallet
+    if hasattr(user, 'bound_wallet_address') and user.bound_wallet_address:
+        if request.method == 'POST':
+            return jsonify({
+                'success': False, 
+                'message': 'Wallet already bound. You cannot change your wallet address once it has been set.'
+            }), 400
+        
+        # GET request - show current wallet info
+        return render_template('bind_wallet.html', user=user, wallet_already_bound=True)
+    
+    if request.method == 'POST':
+        data = request.get_json() if request.is_json else request.form
+        
+        wallet_type = data.get('wallet_type', '').strip().upper()
+        wallet_address = data.get('wallet_address', '').strip()
+        
+        # Validation
+        if not wallet_type:
+            return jsonify({'success': False, 'message': 'Wallet type is required'}), 400
+        
+        if not wallet_address:
+            return jsonify({'success': False, 'message': 'Wallet address is required'}), 400
+        
+        # Validate wallet type
+        valid_wallet_types = ['USDT', 'ETH', 'PAYPAL', 'REVOLUT']
+        if wallet_type not in valid_wallet_types:
+            return jsonify({'success': False, 'message': 'Invalid wallet type'}), 400
+        
+        # Validate wallet address format based on type
+        validation_result = validate_wallet_format(wallet_address, wallet_type)
+        if not validation_result['valid']:
+            return jsonify({'success': False, 'message': validation_result['message']}), 400
+        
+        try:
+            # Bind wallet to user (you may need to add these columns to User model)
+            user.bound_wallet_type = wallet_type
+            user.bound_wallet_address = wallet_address
+            user.wallet_bound_at = datetime.utcnow()
+            
+            db.session.commit()
+            
+            flash('Wallet bound successfully!', 'success')
+            return jsonify({
+                'success': True, 
+                'message': 'Wallet bound successfully! You can now use this wallet for transactions.',
+                'wallet_type': wallet_type,
+                'wallet_address': wallet_address
+            })
+            
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'success': False, 'message': 'An error occurred while binding wallet'}), 500
+    
+    # GET request - render bind wallet form
+    return render_template('bind_wallet.html', user=user, wallet_already_bound=False)
+
+def validate_wallet_format(address, wallet_type):
+    """
+    Validate wallet address format based on wallet type
+    """
+    import re
+    
+    if not address or not wallet_type:
+        return {'valid': False, 'message': 'Address and wallet type are required'}
+    
+    wallet_type = wallet_type.upper()
+    
+    # USDT wallet validation (using existing validation from DepositRequest)
+    if wallet_type == 'USDT':
+        # For USDT, we need to know the network, so we'll accept common formats
+        # ETH/ERC-20 format
+        if re.match(r'^0x[a-fA-F0-9]{40}$', address):
+            return {'valid': True, 'message': 'Valid USDT (ERC-20) address'}
+        # TRON/TRC-20 format
+        elif re.match(r'^T[A-Za-z1-9]{33}$', address):
+            return {'valid': True, 'message': 'Valid USDT (TRC-20) address'}
+        # Bitcoin/Omni format
+        elif re.match(r'^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$', address):
+            return {'valid': True, 'message': 'Valid USDT (Omni) address'}
+        else:
+            return {'valid': False, 'message': 'Invalid USDT wallet address format'}
+    
+    # ETH wallet validation
+    elif wallet_type == 'ETH':
+        if re.match(r'^0x[a-fA-F0-9]{40}$', address):
+            return {'valid': True, 'message': 'Valid Ethereum address'}
+        else:
+            return {'valid': False, 'message': 'Invalid Ethereum address format'}
+    
+    # PayPal validation (email format)
+    elif wallet_type == 'PAYPAL':
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        if re.match(email_pattern, address):
+            return {'valid': True, 'message': 'Valid PayPal email address'}
+        else:
+            return {'valid': False, 'message': 'Invalid PayPal email format'}
+    
+    # Revolut validation (phone number or email)
+    elif wallet_type == 'REVOLUT':
+        # Check if it's an email
+        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        # Check if it's a phone number (basic validation)
+        phone_pattern = r'^\+?[1-9]\d{1,14}$'
+        
+        if re.match(email_pattern, address):
+            return {'valid': True, 'message': 'Valid Revolut email address'}
+        elif re.match(phone_pattern, address):
+            return {'valid': True, 'message': 'Valid Revolut phone number'}
+        else:
+            return {'valid': False, 'message': 'Invalid Revolut account (use email or phone number)'}
+    
+    else:
+        return {'valid': False, 'message': 'Unsupported wallet type'}
+
+@app.route('/get_wallet_info')
+def get_wallet_info():
+    """Get current user's bound wallet information"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Not logged in'}), 401
+    
+    user = User.query.get(session['user_id'])
+    if not user:
+        return jsonify({'success': False, 'message': 'User not found'}), 404
+    
+    # Check if user has bound wallet
+    if hasattr(user, 'bound_wallet_address') and user.bound_wallet_address:
+        return jsonify({
+            'success': True,
+            'wallet_bound': True,
+            'wallet_type': user.bound_wallet_type,
+            'wallet_address': user.bound_wallet_address,
+            'wallet_bound_at': user.wallet_bound_at.strftime('%Y-%m-%d %H:%M:%S') if user.wallet_bound_at else None
+        })
+    else:
+        return jsonify({
+            'success': True,
+            'wallet_bound': False,
+            'message': 'No wallet bound yet'
+        })
 
 @app.route('/transaction_details')
 def transaction_details():
     if 'user_id' not in session:
-        return redirect(url_for('login'))
+        return jsonify({'redirect': url_for('login')}), 401
     
     user = User.query.get(session['user_id'])
     
-    return render_template('transaction_details.html', user=user)
+    # Get all deposits for the user
+    deposits = DepositRequest.query.filter_by(user_id=session['user_id']).all()
+    
+    # Get all withdrawals for the user
+    withdrawals = WithdrawalRequest.query.filter_by(user_id=session['user_id']).all()
+    
+    # Combine deposits and withdrawals into a single list
+    transaction_list = []
+    
+    # Add deposits to transaction list
+    for deposit in deposits:
+        transaction_list.append({
+            'id': deposit.id,
+            'type': 'deposit',
+            'amount': float(deposit.amount),
+            'network': deposit.network,
+            'wallet_address': deposit.wallet_address,
+            'transaction_hash': deposit.transaction_hash,
+            'status': deposit.status,
+            'date': deposit.created_at.strftime('%Y-%m-%d'),
+            'time': deposit.created_at.strftime('%H:%M:%S'),
+            'datetime': deposit.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'admin_notes': deposit.admin_notes,
+            'processed_at': deposit.processed_at.strftime('%Y-%m-%d %H:%M:%S') if deposit.processed_at else None
+        })
+    
+    # Add withdrawals to transaction list
+    for withdrawal in withdrawals:
+        transaction_list.append({
+            'id': withdrawal.id,
+            'type': 'withdrawal',
+            'amount': float(withdrawal.amount),
+            'network': withdrawal.network,
+            'wallet_address': withdrawal.wallet_address,
+            'transaction_hash': withdrawal.transaction_hash,
+            'transaction_fee': float(withdrawal.transaction_fee),
+            'status': withdrawal.status,
+            'date': withdrawal.created_at.strftime('%Y-%m-%d'),
+            'time': withdrawal.created_at.strftime('%H:%M:%S'),
+            'datetime': withdrawal.created_at.strftime('%Y-%m-%d %H:%M:%S'),
+            'admin_notes': withdrawal.admin_notes,
+            'rejection_reason': withdrawal.rejection_reason,
+            'processed_at': withdrawal.processed_at.strftime('%Y-%m-%d %H:%M:%S') if withdrawal.processed_at else None
+        })
+    
+    # Sort all transactions by date (newest first)
+    transaction_list.sort(key=lambda x: x['datetime'], reverse=True)
+    
+    return jsonify({
+        'success': True,
+        'user': {
+            'id': user.id,
+            'nickname': user.nickname,
+            'user_id': user.user_id,
+            'balance': float(user.balance),
+            'member_points': user.member_points,
+            'vip_level': user.vip_level
+        },
+        'transactions': transaction_list,
+        'total_transactions': len(transaction_list)
+    })
 
+@app.route('/password_reset', methods=['GET', 'POST'])
+def password_reset():
+    """Customer password reset route"""
+    if request.method == 'POST':
+        data = request.get_json() if request.is_json else request.form
+        
+        # Get user identifier (could be user_id, contact, or nickname)
+        user_identifier = data.get('user_identifier', '').strip()
+        new_password = data.get('new_password', '').strip()
+        confirm_password = data.get('confirm_password', '').strip()
+        
+        # Validation
+        if not user_identifier:
+            return jsonify({'success': False, 'message': 'User identifier is required'}), 400
+        
+        if not new_password:
+            return jsonify({'success': False, 'message': 'New password is required'}), 400
+        
+        if len(new_password) < 6:
+            return jsonify({'success': False, 'message': 'Password must be at least 6 characters long'}), 400
+        
+        if new_password != confirm_password:
+            return jsonify({'success': False, 'message': 'Passwords do not match'}), 400
+        
+        # Find user by user_id, contact, or nickname
+        user = User.query.filter(
+            (User.user_id == user_identifier) | 
+            (User.contact == user_identifier) | 
+            (User.nickname == user_identifier)
+        ).first()
+        
+        if not user:
+            return jsonify({'success': False, 'message': 'User not found'}), 404
+        
+        try:
+            # Update user's password
+            user.password_hash = generate_password_hash(new_password)
+            db.session.commit()
+            
+            # Clear any existing sessions for this user (optional security measure)
+            # Note: This would require session management implementation
+            
+            return jsonify({
+                'success': True, 
+                'message': 'Password reset successfully. You can now login with your new password.',
+                'redirect': url_for('login')
+            })
+            
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'success': False, 'message': 'An error occurred while resetting password'}), 500
+    
+    # GET request - render password reset form
+    return render_template('password_reset.html')
 
+@app.route('/change_withdrawal_password', methods=['POST'])
+def change_withdrawal_password():
+    """Change user's withdrawal password"""
+    if 'user_id' not in session:
+        return jsonify({'success': False, 'message': 'Please login first', 'redirect': url_for('login')}), 401
+    
+    data = request.get_json() if request.is_json else request.form
+    
+    current_password = data.get('current_password', '').strip()
+    new_password = data.get('new_password', '').strip()
+    confirm_password = data.get('confirm_password', '').strip()
+    
+    # Validation
+    if not new_password:
+        return jsonify({'success': False, 'message': 'New withdrawal password is required'}), 400
+    
+    if len(new_password) < 6:
+        return jsonify({'success': False, 'message': 'Withdrawal password must be at least 6 characters long'}), 400
+    
+    if new_password != confirm_password:
+        return jsonify({'success': False, 'message': 'Passwords do not match'}), 400
+    
+    user = User.query.get(session['user_id'])
+    if not user:
+        return jsonify({'success': False, 'message': 'User not found'}), 404
 
 # Admin Setup Functions
 from functools import wraps

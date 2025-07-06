@@ -19,6 +19,10 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(100))
     is_active = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    # New wallet binding fields
+    bound_wallet_type = db.Column(db.String(20))  # USDT, ETH, PAYPAL, REVOLUT
+    bound_wallet_address = db.Column(db.String(200))  # Wallet address/email/phone
+    wallet_bound_at = db.Column(db.DateTime)  # When wallet was bound
     
     # Relationships
     reservations = db.relationship('Reservation', backref='user', lazy=True)

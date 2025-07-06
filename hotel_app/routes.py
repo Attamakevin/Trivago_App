@@ -649,7 +649,7 @@ def withdraw():
             # Check if withdrawal password is set
             if not user.withdrawal_password:
                 flash('Please set a withdrawal password first', 'error')
-                return redirect(url_for('set_withdrawal_password'))
+                return redirect(url_for('set-withdrawal-password'))
             
             # Validate withdrawal password
             if not withdrawal_password:
@@ -730,15 +730,15 @@ def set_withdrawal_password():
             
             if not password:
                 flash('Password is required', 'error')
-                return render_template('set_password.html')
+                return render_template('set-withdrawal-password.html')
             
             if confirm_password and password != confirm_password:
                 flash('Passwords do not match', 'error')
-                return render_template('set_password.html')
+                return render_template('set-withdrawal-password.html')
             
             if len(password) < 6:
                 flash('Password must be at least 6 characters long', 'error')
-                return render_template('set_password.html')
+                return render_template('set-withdrawal-password.html')
             
             user.withdrawal_password = password
             db.session.commit()
@@ -749,9 +749,9 @@ def set_withdrawal_password():
         except Exception as e:
             db.session.rollback()
             flash(f'Error setting password: {str(e)}', 'error')
-            return render_template('set_password.html')
+            return render_template('set-withdrawal-password.html')
     
-    return render_template('set_password.html')
+    return render_template('set-withdrawal-password.html', user=user)
 # API endpoints for AJAX calls from the frontend
 @app.route('/api/user-stats')
 def api_user_stats():
@@ -866,22 +866,6 @@ def about_us():
 @app.route('/settings', methods=['GET', 'POST'])
 def settings():
     user = User.query.get(session['user_id'])
-    if request.method == 'POST':
-        if 'language' in request.form:
-            session['language'] = request.form['language']
-        elif 'nickname' in request.form:
-            user.nickname = request.form['nickname']
-            db.session.commit()
-            flash('Nickname updated successfully!', 'success')
-        elif 'password' in request.form:
-            new_password = request.form['new_password']
-            confirm_password = request.form['confirm_password']
-            if new_password == confirm_password:
-                user.password_hash = generate_password_hash(new_password)
-                db.session.commit()
-                flash('Password updated successfully!', 'success')
-            else:
-                flash('Passwords do not match!', 'error')
     return render_template('settings.html', user=user)
 
 @app.route('/customer_service')

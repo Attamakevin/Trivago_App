@@ -428,6 +428,9 @@ class WithdrawalRequest(db.Model):
     processed_at = db.Column(db.DateTime)
     processed_by = db.Column(db.Integer, db.ForeignKey('admin.id'))
     
+    # Add relationship to User model
+    #user = db.relationship('User', backref='withdrawal_requests', lazy=True)
+    
     @staticmethod
     def validate_wallet_address(address, network):
         """Use the same validation as DepositRequest"""

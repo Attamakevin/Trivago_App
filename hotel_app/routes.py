@@ -586,6 +586,8 @@ def withdraw():
             wallet_address = request.form['wallet_address'].strip()
             withdrawal_password = request.form.get('withdrawal_password', '').strip()
             
+            print(f"DEBUG: Form data - amount: {amount_str}, network: {network}, wallet: {wallet_address}")
+            
             # Validate amount
             if not amount_str:
                 flash('Amount cannot be empty', 'error')
@@ -631,10 +633,8 @@ def withdraw():
                 flash('Insufficient balance', 'error')
                 return render_template('withdraw.html', user=user)
             
-            # Validate wallet address format
-            if not WithdrawalRequest.validate_wallet_address(wallet_address, network):
-                flash(f'Invalid wallet address format for {network} network', 'error')
-                return render_template('withdraw.html', user=user)
+            print(f"DEBUG: All validations passed. User balance: {user.balance}, Withdrawal amount: {amount}")
+            
             
             # Create withdrawal request
             withdrawal_request = WithdrawalRequest(
@@ -645,30 +645,58 @@ def withdraw():
                 status='Pending'
             )
             
+            print(f"DEBUG: Withdrawal request created: {withdrawal_request}")
+            print(f"DEBUG: User ID: {user.id}, Amount: {amount}, Network: {network}")
+            
             # Temporarily reduce balance (will be restored if withdrawal is rejected)
+            original_balance = user.balance
             user.balance -= amount
             
+            print(f"DEBUG: Balance reduced from {original_balance} to {user.balance}")
+            
             db.session.add(withdrawal_request)
+            print("DEBUG: Withdrawal request added to session")
+            
+            # Commit the transaction
             db.session.commit()
+            print("DEBUG: Transaction committed successfully")
+            
+            # Verify the withdrawal was saved
+            saved_withdrawal = WithdrawalRequest.query.filter_by(user_id=user.id).order_by(WithdrawalRequest.id.desc()).first()
+            if saved_withdrawal:
+                print(f"DEBUG: Withdrawal saved with ID: {saved_withdrawal.id}")
+            else:
+                print("DEBUG: WARNING - Withdrawal not found after commit!")
             
             flash('Withdrawal request submitted successfully. Please wait for approval.', 'success')
             return redirect(url_for('profile'))
             
         except KeyError as e:
+            print(f"DEBUG: KeyError - {str(e)}")
             flash(f'Missing required field: {str(e)}', 'error')
             return render_template('withdraw.html', user=user)
         except ValueError as e:
+            print(f"DEBUG: ValueError - {str(e)}")
             flash(f'Invalid data format: {str(e)}', 'error')
             return render_template('withdraw.html', user=user)
         except Exception as e:
+            print(f"DEBUG: General Exception - {str(e)}")
+            print(f"DEBUG: Exception type - {type(e)}")
+            import traceback
+            traceback.print_exc()
+            
             db.session.rollback()
+            print("DEBUG: Transaction rolled back")
+            
             # Restore balance if it was already deducted
             try:
                 if 'amount' in locals() and amount > 0:
                     user.balance += amount
                     db.session.commit()
-            except:
-                pass  # If restoration fails, log it in production
+                    print(f"DEBUG: Balance restored to {user.balance}")
+            except Exception as restore_error:
+                print(f"DEBUG: Balance restoration failed: {str(restore_error)}")
+            
             flash(f'Error processing withdrawal: {str(e)}', 'error')
             return render_template('withdraw.html', user=user)
     
@@ -1660,7 +1688,6 @@ def reject_deposit(deposit_id):
     
     return redirect(url_for('view_deposits'))
 
-# VIEW WITHDRAWALS - Main listing page (IMPROVED)
 @app.route('/admin/withdrawals')
 @admin_required
 def view_withdrawals():
@@ -1668,14 +1695,14 @@ def view_withdrawals():
     try:
         logger.debug("Accessing view_withdrawals route")
         page = request.args.get('page', 1, type=int)
-        status_filter = request.args.get('status', '')  # Optional status filter
+        status_filter = request.args.get('status', '')
         
-        # Debug: Check if WithdrawalRequest model exists and has data
+        # Debug: Check total withdrawals
         total_withdrawals = WithdrawalRequest.query.count()
         logger.debug(f"Total withdrawals in database: {total_withdrawals}")
         
-        # Build query with optional filters
-        withdrawals_query = WithdrawalRequest.query
+        # Build query with join to User table for better performance
+        withdrawals_query = WithdrawalRequest.query.options(db.joinedload(WithdrawalRequest.user))
         
         # Apply status filter if provided
         if status_filter and status_filter in ['Pending', 'Approved', 'Rejected']:
@@ -1690,21 +1717,15 @@ def view_withdrawals():
         )
         
         logger.debug(f"Withdrawals found for page {page}: {len(withdrawals.items)}")
+        logger.debug(f"Total pages: {withdrawals.pages}, Total items: {withdrawals.total}")
         
-        # Debug: Log first few withdrawals with user info
+        # Debug: Log first few withdrawals
         for i, withdrawal in enumerate(withdrawals.items[:3]):
-            user = User.query.get(withdrawal.user_id) if withdrawal.user_id else None
-            logger.debug(f"Withdrawal {i}: ID={withdrawal.id}, Status={withdrawal.status}, Amount=${withdrawal.amount}, User={user.nickname if user else 'Unknown'}")
+            logger.debug(f"Withdrawal {i}: ID={withdrawal.id}, Status={withdrawal.status}, Amount=${withdrawal.amount}, User={withdrawal.user.nickname if withdrawal.user else 'No user'}")
         
-        # If no withdrawals found, let's check what's in the database
-        if not withdrawals.items:
-            all_withdrawals = WithdrawalRequest.query.all()
-            logger.debug(f"Raw withdrawals query returned: {len(all_withdrawals)} items")
-            for wd in all_withdrawals[:5]:  # Log first 5 for debugging
-                user = User.query.get(wd.user_id) if wd.user_id else None
-                logger.debug(f"Withdrawal ID: {wd.id}, Amount: {wd.amount}, Status: {wd.status}, User ID: {wd.user_id}, User: {user.nickname if user else 'Unknown'}")
-        
-        return render_template('admin_withdrawals.html', withdrawals=withdrawals, current_status=status_filter)
+        return render_template('admin_withdrawals.html', 
+                             withdrawals=withdrawals, 
+                             current_status=status_filter)
         
     except Exception as e:
         logger.error(f"Error in view_withdrawals: {str(e)}")
@@ -1713,7 +1734,6 @@ def view_withdrawals():
         logger.error(f"Traceback: {traceback.format_exc()}")
         flash(f'Error loading withdrawals: {str(e)}', 'error')
         return redirect(url_for('admin_dashboard'))
-
 # APPROVE WITHDRAWAL - Individual withdrawal approval (IMPROVED)
 @app.route('/admin/withdrawals/<int:withdrawal_id>/approve', methods=['POST'])
 @admin_required

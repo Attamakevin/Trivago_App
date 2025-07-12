@@ -14,13 +14,19 @@
         <form method="GET" class="d-flex">
             <select name="status" class="form-select me-2">
                 <option value="">All Status</option>
-                <option value="pending" {{ 'selected' if status_filter == 'pending' }}>Pending</option>
-                <option value="approved" {{ 'selected' if status_filter == 'approved' }}>Approved</option>
-                <option value="rejected" {{ 'selected' if status_filter == 'rejected' }}>Rejected</option>
+                <option value="Pending" {{ 'selected' if current_status == 'Pending' }}>Pending</option>
+                <option value="Approved" {{ 'selected' if current_status == 'Approved' }}>Approved</option>
+                <option value="Rejected" {{ 'selected' if current_status == 'Rejected' }}>Rejected</option>
             </select>
             <button type="submit" class="btn btn-outline-primary">Filter</button>
         </form>
     </div>
+</div>
+
+<!-- Debug info (remove after testing) -->
+<div class="alert alert-info">
+    <strong>Debug:</strong> Found {{ withdrawals.items|length }} withdrawals on this page. 
+    Total: {{ withdrawals.total if withdrawals.total else 'Unknown' }}
 </div>
 
 <!-- Withdrawals Table -->
@@ -33,8 +39,8 @@
                         <th>ID</th>
                         <th>User</th>
                         <th>Amount</th>
-                        <th>Withdrawal Method</th>
-                        <th>Account Details</th>
+                        <th>Network</th>
+                        <th>Wallet Address</th>
                         <th>Status</th>
                         <th>Date</th>
                         <th>Actions</th>
@@ -44,10 +50,19 @@
                     {% for withdrawal in withdrawals.items %}
                     <tr>
                         <td>{{ withdrawal.id }}</td>
-                        <td>{{ withdrawal.user.contact if withdrawal.user else 'Unknown' }}</td>
+                        <td>
+                            {% if withdrawal.user_id %}
+                                {% set user = withdrawal.user if withdrawal.user else 'Loading...' %}
+                                {{ user.nickname if user and user.nickname else user.contact if user and user.contact else 'User #' + withdrawal.user_id|string }}
+                            {% else %}
+                                Unknown User
+                            {% endif %}
+                        </td>
                         <td>${{ "%.2f"|format(withdrawal.amount) }}</td>
-                        <td>{{ withdrawal.withdrawal_method or 'N/A' }}</td>
-                        <td>{{ withdrawal.account_details or 'N/A' }}</td>
+                        <td>{{ withdrawal.network or 'N/A' }}</td>
+                        <td>
+                            <span class="text-monospace">{{ withdrawal.wallet_address[:20] + '...' if withdrawal.wallet_address and withdrawal.wallet_address|length > 20 else withdrawal.wallet_address or 'N/A' }}</span>
+                        </td>
                         <td>
                             <span class="badge bg-{{ 'warning' if withdrawal.status == 'Pending' else ('success' if withdrawal.status == 'Approved' else 'danger') }}">
                                 {{ withdrawal.status }}
@@ -85,7 +100,10 @@
                                 </form>
                             </div>
                             {% else %}
-                            <span class="text-muted">No actions available</span>
+                            <span class="text-muted">{{ withdrawal.status }}</span>
+                            {% if withdrawal.transaction_hash %}
+                            <br><small class="text-muted">TX: {{ withdrawal.transaction_hash[:10] }}...</small>
+                            {% endif %}
                             {% endif %}
                         </td>
                     </tr>
@@ -106,7 +124,7 @@
     <ul class="pagination justify-content-center">
         {% if withdrawals.has_prev %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('view_withdrawals', page=withdrawals.prev_num, status=status_filter) }}">Previous</a>
+            <a class="page-link" href="{{ url_for('view_withdrawals', page=withdrawals.prev_num, status=current_status) }}">Previous</a>
         </li>
         {% endif %}
 
@@ -114,7 +132,7 @@
             {% if page_num %}
                 {% if page_num != withdrawals.page %}
                 <li class="page-item">
-                    <a class="page-link" href="{{ url_for('view_withdrawals', page=page_num, status=status_filter) }}">{{ page_num }}</a>
+                    <a class="page-link" href="{{ url_for('view_withdrawals', page=page_num, status=current_status) }}">{{ page_num }}</a>
                 </li>
                 {% else %}
                 <li class="page-item active">
@@ -130,7 +148,7 @@
 
         {% if withdrawals.has_next %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('view_withdrawals', page=withdrawals.next_num, status=status_filter) }}">Next</a>
+            <a class="page-link" href="{{ url_for('view_withdrawals', page=withdrawals.next_num, status=current_status) }}">Next</a>
         </li>
         {% endif %}
     </ul>

@@ -174,8 +174,8 @@ class InvitationCode(db.Model):
     code = db.Column(db.String(20), unique=True, nullable=False)
     is_used = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    used_by = db.Column(db.Integer, db.ForeignKey('user.id'))
-    used_at = db.Column(db.DateTime)
+    #used_by = db.Column(db.Integer, db.ForeignKey('user.id'))
+    #used_at = db.Column(db.DateTime)
     
     @staticmethod
     def generate_code():

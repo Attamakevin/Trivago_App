@@ -1,0 +1,374 @@
+<!-- Enhanced admin_bulk_assign_hotels.html template -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Assign Hotels</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Bulk Assign Hotels</h2>
+                
+                <!-- Assignment Type Selection -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Assignment Method</h5>
+                        <form method="POST" id="bulkAssignForm">
+                            <div class="row mb-3">
+                                <div class="col-md-6">
+                                    <label for="session_type" class="form-label">Session Type</label>
+                                    <select name="session_type" id="session_type" class="form-select" required>
+                                        <option value="first">First Session</option>
+                                        <option value="second">Second Session</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="assignment_type" class="form-label">Assignment Type</label>
+                                    <select name="assignment_type" id="assignment_type" class="form-select" required>
+                                        <option value="category">By Category</option>
+                                        <option value="price_range">By Price Range</option>
+                                        <option value="specific">Select Specific Hotels</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- User Selection -->
+                            <div class="mb-4">
+                                <h6>Select Users</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="btn-group mb-2" role="group">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="selectAllUsers()">
+                                                Select All
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="deselectAllUsers()">
+                                                Deselect All
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row" style="max-height: 200px; overflow-y: auto;">
+                                    {% for user in users %}
+                                    <div class="col-md-6 col-lg-4">
+                                        <div class="form-check">
+                                            <input class="form-check-input user-checkbox" type="checkbox" 
+                                                   name="user_ids" value="{{ user.id }}" id="user_{{ user.id }}">
+                                            <label class="form-check-label" for="user_{{ user.id }}">
+                                                {{ user.nickname }} ({{ user.email }})
+                                            </label>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Category Assignment -->
+                            <div id="categoryAssignment" class="assignment-section">
+                                <h6>Category Assignment</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="category" class="form-label">Category</label>
+                                        <select name="category" id="category" class="form-select">
+                                            <option value="regular">Regular</option>
+                                            <option value="luxury">Luxury</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label for="base_commission" class="form-label">Base Commission ($)</label>
+                                        <input type="number" name="base_commission" id="base_commission" 
+                                               class="form-control" value="10.00" step="0.01" min="0">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Price Range Assignment -->
+                            <div id="priceRangeAssignment" class="assignment-section" style="display: none;">
+                                <h6>Price Range Assignment</h6>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label for="min_price" class="form-label">Min Price ($)</label>
+                                        <input type="number" name="min_price" id="min_price_bulk" 
+                                               class="form-control" value="{{ min_price or 200 }}" step="0.01" min="0">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="max_price" class="form-label">Max Price ($)</label>
+                                        <input type="number" name="max_price" id="max_price_bulk" 
+                                               class="form-control" value="{{ max_price or 2000 }}" step="0.01" min="0">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="category_filter" class="form-label">Category (Optional)</label>
+                                        <select name="category_filter" id="category_filter" class="form-select">
+                                            <option value="">All Categories</option>
+                                            <option value="regular">Regular Only</option>
+                                            <option value="luxury">Luxury Only</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="base_commission_price" class="form-label">Base Commission ($)</label>
+                                        <input type="number" name="base_commission" id="base_commission_price" 
+                                               class="form-control" value="15.00" step="0.01" min="0">
+                                    </div>
+                                </div>
+                                
+                                <!-- Quick Price Presets -->
+                                <div class="mt-3">
+                                    <label class="form-label">Quick Price Ranges:</label>
+                                    <div class="btn-group" role="group">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPriceRange(0, 500, 10)">
+                                            Budget ($0-$500)
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPriceRange(500, 1500, 15)">
+                                            Mid-Range ($500-$1500)
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPriceRange(1500, null, 20)">
+                                            Luxury ($1500+)
+                                        </button>
+                                        <button type="button" class="btn btn-outline-warning btn-sm" onclick="setPriceRange(200, 2000, 12)">
+                                            Custom ($200-$2000)
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Preview Button -->
+                                <div class="mt-3">
+                                    <button type="button" class="btn btn-info" onclick="previewPriceRange()">
+                                        Preview Hotels in Range
+                                    </button>
+                                    <div id="priceRangePreview" class="mt-2"></div>
+                                </div>
+                            </div>
+
+                            <!-- Specific Hotel Assignment -->
+                            <div id="specificAssignment" class="assignment-section" style="display: none;">
+                                <h6>Specific Hotel Assignment</h6>
+                                
+                                <!-- Hotel Filtering -->
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <label for="hotel_category_filter" class="form-label">Category Filter</label>
+                                        <select id="hotel_category_filter" class="form-select" onchange="filterHotels()">
+                                            <option value="">All Categories</option>
+                                            <option value="regular">Regular</option>
+                                            <option value="luxury">Luxury</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="hotel_min_price" class="form-label">Min Price ($)</label>
+                                        <input type="number" id="hotel_min_price" class="form-control" 
+                                               step="0.01" min="0" onchange="filterHotels()">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label for="hotel_max_price" class="form-label">Max Price ($)</label>
+                                        <input type="number" id="hotel_max_price" class="form-control" 
+                                               step="0.01" min="0" onchange="filterHotels()">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">&nbsp;</label>
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" onclick="selectAllHotels()">
+                                                Select All
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="deselectAllHotels()">
+                                                Deselect All
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Hotels List -->
+                                <div class="row" id="hotelsList" style="max-height: 400px; overflow-y: auto;">
+                                    {% for hotel in hotels %}
+                                    <div class="col-md-6 col-lg-4 mb-2 hotel-item" 
+                                         data-category="{{ hotel.category }}" 
+                                         data-price="{{ hotel.price }}">
+                                        <div class="card">
+                                            <div class="card-body p-2">
+                                                <div class="form-check">
+                                                    <input class="form-check-input hotel-checkbox" type="checkbox" 
+                                                           name="hotel_ids" value="{{ hotel.id }}" id="hotel_bulk_{{ hotel.id }}">
+                                                    <label class="form-check-label" for="hotel_bulk_{{ hotel.id }}">
+                                                        <strong>{{ hotel.name }}</strong>
+                                                    </label>
+                                                </div>
+                                                
+                                                <div class="mt-1">
+                                                    <span class="badge bg-primary">${{ hotel.price }}</span>
+                                                    <span class="badge bg-secondary">{{ hotel.category }}</span>
+                                                </div>
+                                                
+                                                <div class="mt-1">
+                                                    <label for="commission_{{ hotel.id }}" class="form-label small">Commission ($)</label>
+                                                    <input type="number" class="form-control form-control-sm" 
+                                                           name="commission_{{ hotel.id }}" id="commission_bulk_{{ hotel.id }}"
+                                                           value="{{ hotel.commission_multiplier * 10 }}" step="0.01" min="0">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    Bulk Assign Hotels
+                                </button>
+                                <a href="{{ url_for('manage_hotel_assignments') }}" class="btn btn-secondary">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Toggle assignment sections based on type
+        document.getElementById('assignment_type').addEventListener('change', function() {
+            const sections = document.querySelectorAll('.assignment-section');
+            sections.forEach(section => section.style.display = 'none');
+            
+            const selectedType = this.value;
+            if (selectedType === 'category') {
+                document.getElementById('categoryAssignment').style.display = 'block';
+            } else if (selectedType === 'price_range') {
+                document.getElementById('priceRangeAssignment').style.display = 'block';
+            } else if (selectedType === 'specific') {
+                document.getElementById('specificAssignment').style.display = 'block';
+            }
+        });
+
+        // User selection functions
+        function selectAllUsers() {
+            document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+                checkbox.checked = true;
+            });
+        }
+
+        function deselectAllUsers() {
+            document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        // Hotel selection functions
+        function selectAllHotels() {
+            document.querySelectorAll('.hotel-checkbox:not([style*="display: none"])').forEach(checkbox => {
+                if (checkbox.closest('.hotel-item').style.display !== 'none') {
+                    checkbox.checked = true;
+                }
+            });
+        }
+
+        function deselectAllHotels() {
+            document.querySelectorAll('.hotel-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+        }
+
+        // Price range functions
+        function setPriceRange(min, max, commission) {
+            document.getElementById('min_price_bulk').value = min;
+            document.getElementById('max_price_bulk').value = max || '';
+            document.getElementById('base_commission_price').value = commission;
+        }
+
+        function previewPriceRange() {
+            const minPrice = parseFloat(document.getElementById('min_price_bulk').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('max_price_bulk').value) || Infinity;
+            const category = document.getElementById('category_filter').value;
+            
+            // Filter hotels based on criteria
+            const hotels = document.querySelectorAll('.hotel-item');
+            let matchingHotels = [];
+            
+            hotels.forEach(hotel => {
+                const price = parseFloat(hotel.dataset.price);
+                const hotelCategory = hotel.dataset.category;
+                
+                if (price >= minPrice && price <= maxPrice) {
+                    if (!category || hotelCategory === category) {
+                        matchingHotels.push({
+                            name: hotel.querySelector('label').textContent.trim(),
+                            price: price,
+                            category: hotelCategory
+                        });
+                    }
+                }
+            });
+            
+            const preview = document.getElementById('priceRangePreview');
+            if (matchingHotels.length > 0) {
+                let html = `<div class="alert alert-info">
+                    <strong>${matchingHotels.length} hotels found:</strong><br>
+                    <small>`;
+                
+                matchingHotels.slice(0, 5).forEach(hotel => {
+                    html += `${hotel.name} (${hotel.price}, ${hotel.category})<br>`;
+                });
+                
+                if (matchingHotels.length > 5) {
+                    html += `... and ${matchingHotels.length - 5} more`;
+                }
+                
+                html += '</small></div>';
+                preview.innerHTML = html;
+            } else {
+                preview.innerHTML = '<div class="alert alert-warning">No hotels found in this price range.</div>';
+            }
+        }
+
+        // Hotel filtering
+        function filterHotels() {
+            const categoryFilter = document.getElementById('hotel_category_filter').value;
+            const minPrice = parseFloat(document.getElementById('hotel_min_price').value) || 0;
+            const maxPrice = parseFloat(document.getElementById('hotel_max_price').value) || Infinity;
+            
+            document.querySelectorAll('.hotel-item').forEach(hotel => {
+                const price = parseFloat(hotel.dataset.price);
+                const category = hotel.dataset.category;
+                
+                let show = true;
+                
+                if (categoryFilter && category !== categoryFilter) {
+                    show = false;
+                }
+                
+                if (price < minPrice || price > maxPrice) {
+                    show = false;
+                }
+                
+                hotel.style.display = show ? 'block' : 'none';
+            });
+        }
+
+        // Form validation
+        document.getElementById('bulkAssignForm').addEventListener('submit', function(e) {
+            const selectedUsers = document.querySelectorAll('.user-checkbox:checked');
+            if (selectedUsers.length === 0) {
+                alert('Please select at least one user.');
+                e.preventDefault();
+                return;
+            }
+            
+            const assignmentType = document.getElementById('assignment_type').value;
+            if (assignmentType === 'specific') {
+                const selectedHotels = document.querySelectorAll('.hotel-checkbox:checked');
+                if (selectedHotels.length === 0) {
+                    alert('Please select at least one hotel.');
+                    e.preventDefault();
+                    return;
+                }
+            }
+        });
+    </script>
+</body>
+</html>

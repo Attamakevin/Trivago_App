@@ -1,9 +1,9 @@
 # hotel_app/routes.py
-from flask import render_template, redirect, url_for, flash, request, jsonify, session
+from flask import render_template, redirect, url_for, flash, request,jsonify, session
 from hotel_app import app, db
-from hotel_app.models import User, Hotel, Reservation, DepositRequest, WithdrawalRequest, EventAd, Admin, InvitationCode
+from hotel_app.models import User, Hotel,UserHotelAssignment,Reservation, DepositRequest, WithdrawalRequest, EventAd, Admin, InvitationCode
 from datetime import datetime, date
-from flask_login import login_required
+from flask_login import login_required, login_user, logout_user, current_user
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -11,6 +11,7 @@ from flask import render_template, request, redirect, url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import random
 from hotel_app import db
+from flask import g
  # ✅ Only import User now
 
 
@@ -157,7 +158,7 @@ def credit():
     user = User.query.get(session['user_id'])
     return render_template('credit.html', user=user)
 
-# Updated reservation route with automatic completion
+# Updated reservation route with automatic completion and rating
 @app.route('/reserve/<int:hotel_id>', methods=['GET', 'POST'])
 def reserve(hotel_id):
     if 'user_id' not in session:
@@ -169,12 +170,37 @@ def reserve(hotel_id):
         user = User.query.get(session['user_id'])
         hotel = Hotel.query.get_or_404(hotel_id)
 
+        # Check if user has access to this hotel
+        hotel_assignment = UserHotelAssignment.query.filter_by(
+            user_id=user.id, 
+            hotel_id=hotel_id
+        ).first()
+        
+        if not hotel_assignment:
+            if request.method == 'GET':
+                flash('You do not have access to this hotel', 'error')
+                return redirect(url_for('reservations'))
+            return jsonify({'error': 'You do not have access to this hotel'}), 403
+
+        # Check if user has already reserved and rated this hotel
+        existing_reservation = Reservation.query.filter_by(
+            user_id=user.id,
+            hotel_id=hotel_id,
+            status='Completed'
+        ).filter(Reservation.rating.isnot(None)).first()
+        
+        if existing_reservation:
+            if request.method == 'GET':
+                flash('You have already completed this hotel reservation', 'error')
+                return redirect(url_for('reservations'))
+            return jsonify({'error': 'You have already completed this hotel reservation'}), 400
+
         # Check daily reservation limit
         today_reservations = Reservation.query.filter_by(user_id=user.id).filter(
             Reservation.timestamp >= datetime.combine(date.today(), datetime.min.time())).count()
         
-        limits = {'VIP0': 5, 'VIP1': 10, 'VIP2': 15}
-        daily_limit = limits.get(user.vip_level, 5)
+        limits = {'VIP0': 70, 'VIP1': 80, 'VIP2': 80}
+        daily_limit = limits.get(user.vip_level, 70)
 
         if today_reservations >= daily_limit:
             if request.method == 'GET':
@@ -190,7 +216,7 @@ def reserve(hotel_id):
         # Generate unique order number
         order_number = f"ORD{user.id}{datetime.now().strftime('%Y%m%d%H%M%S')}"
         
-        # Create reservation with immediate completion and commission payment
+        # Create reservation with immediate completion, commission payment, and automatic rating
         reservation = Reservation(
             user_id=user.id,
             hotel_id=hotel.id,
@@ -199,7 +225,8 @@ def reserve(hotel_id):
             status='Completed',  # Set to completed immediately
             timestamp=datetime.utcnow(),
             commission_paid=True,  # Mark commission as paid immediately
-            commission_paid_at=datetime.utcnow()  # Set payment timestamp
+            commission_paid_at=datetime.utcnow(),  # Set payment timestamp
+            rating=5  # Auto-rate as 5 stars to mark as completed
         )
         
         # Add commission to user balance immediately
@@ -217,6 +244,7 @@ def reserve(hotel_id):
         db.session.refresh(user)  # Refresh to get updated data
         
         print(f"DEBUG: User balance after commit: {user.balance}")
+        print(f"DEBUG: Reservation created for hotel {hotel_id} with rating {reservation.rating}")
         
         if request.method == 'GET':
             flash('Reservation completed successfully and commission added to your balance!', 'success')
@@ -245,7 +273,52 @@ def reservations():
         return redirect(url_for('login'))
     
     user = User.query.get(session['user_id'])
-    hotels = Hotel.query.all()
+    
+    # Get all hotels assigned to this user
+    all_assigned_hotels = db.session.query(Hotel).join(
+        UserHotelAssignment, 
+        Hotel.id == UserHotelAssignment.hotel_id
+    ).filter(
+        UserHotelAssignment.user_id == user.id
+    ).order_by(Hotel.id).all()  # Order by ID for consistent ordering
+    
+    # Get hotels that have been reserved AND rated by this user
+    completed_reservations = db.session.query(Reservation).filter(
+        Reservation.user_id == user.id,
+        Reservation.status == 'Completed',
+        Reservation.rating.isnot(None)  # Has been rated
+    ).all()
+    
+    # Extract unique hotel IDs from completed reservations
+    completed_hotel_ids = list(set([reservation.hotel_id for reservation in completed_reservations]))
+    
+    # Filter out hotels that have been completed (reserved and rated)
+    available_hotels = [hotel for hotel in all_assigned_hotels if hotel.id not in completed_hotel_ids]
+    
+    # Get the next hotel to display (first available hotel)
+    current_hotel = available_hotels[0] if available_hotels else None
+    
+    # Debug information
+    print(f"DEBUG: User {user.id} has {len(all_assigned_hotels)} total assigned hotels")
+    print(f"DEBUG: Completed reservations: {len(completed_reservations)}")
+    print(f"DEBUG: Completed hotel IDs: {completed_hotel_ids}")
+    print(f"DEBUG: Available hotels: {len(available_hotels)}")
+    
+    # Debug: Show all reservations for this user
+    all_user_reservations = Reservation.query.filter_by(user_id=user.id).all()
+    print(f"DEBUG: All user reservations ({len(all_user_reservations)}):")
+    for res in all_user_reservations:
+        print(f"  - Hotel ID: {res.hotel_id}, Status: {res.status}, Rating: {res.rating}")
+    
+    # Debug: Show available hotels
+    print(f"DEBUG: Available hotels:")
+    for hotel in available_hotels:
+        print(f"  - {hotel.name} (ID: {hotel.id})")
+    
+    if current_hotel:
+        print(f"DEBUG: Current hotel to display: {current_hotel.name} (ID: {current_hotel.id})")
+    else:
+        print("DEBUG: No more hotels available for this user - all completed!")
     
     # Since commissions are now paid immediately, we don't need to process unpaid ones
     # But keep this logic for any legacy reservations that might exist
@@ -292,7 +365,8 @@ def reservations():
             'status': reservation.status.lower(),
             'created_at': reservation.timestamp,
             'rated': reservation.rating is not None,
-            'commission_paid': reservation.commission_paid
+            'commission_paid': reservation.commission_paid,
+            'rating': reservation.rating
         })
     
     # Calculate user stats for display
@@ -305,134 +379,21 @@ def reservations():
         'total_commission': total_commission,
         'trial_bonus': trial_bonus,
         'deposit_balance': deposit_balance,
-        'active_bookings': active_bookings
+        'active_bookings': active_bookings,
+        'completed_hotels': len(completed_hotel_ids),
+        'total_assigned_hotels': len(all_assigned_hotels),
+        'remaining_hotels': len(available_hotels)
     }
     
     print(f"Final user balance being sent to template: {user.balance}")
     
-    return render_template('reservations.html', hotels=hotels, user=user, reservations=formatted_reservations, user_stats=user_stats)
-
-@app.route('/rate/<int:reservation_id>', methods=['POST'])
-def rate(reservation_id):
-    if 'user_id' not in session:
-        return jsonify({'error': 'Not authenticated'}), 401
-    
-    try:
-        reservation = Reservation.query.get_or_404(reservation_id)
-        user = User.query.get(session['user_id'])
-        
-        if reservation.user_id != user.id:
-            return jsonify({'error': 'Unauthorized'}), 403
-        
-        if reservation.status.lower() != 'completed':
-            return jsonify({'error': 'Can only rate completed reservations'}), 400
-            
-        if reservation.rating is not None:
-            return jsonify({'error': 'Reservation already rated'}), 400
-        
-        # Get rating and feedback
-        if request.is_json:
-            rating = request.json.get('rating', 5)
-            feedback = request.json.get('feedback', '')
-        else:
-            rating = int(request.form.get('rating', 5))
-            feedback = request.form.get('feedback', '')
-        
-        # Update reservation with rating
-        reservation.rating = rating
-        reservation.feedback = feedback
-        
-        # Since commission is now paid immediately upon reservation creation,
-        # we don't need to add it again here. Just commit the rating.
-        db.session.add(reservation)
-        db.session.commit()
-        
-        print(f"DEBUG: Rating submitted for reservation {reservation_id}")
-        
-        if request.is_json:
-            return jsonify({
-                'success': True,
-                'message': 'Rating submitted successfully',
-                'current_balance': user.balance  # Show current balance, no new commission added
-            })
-        else:
-            flash('Rating submitted successfully', 'success')
-            return redirect(url_for('reservations'))
-        
-    except Exception as e:
-        db.session.rollback()
-        print(f"ERROR in rate function: {str(e)}")
-        if request.is_json:
-            return jsonify({'error': str(e)}), 500
-        else:
-            flash(f'Error submitting rating: {str(e)}', 'error')
-            return redirect(url_for('reservations'))
-
-# Optional: Keep admin route for any manual processing needs
-@app.route('/admin/process-commissions')
-def process_commissions():
-    """Admin route to process any legacy pending commissions"""
-    if 'admin' not in session:
-        return jsonify({'error': 'Admin access required'}), 403
-    
-    # Only process legacy commissions that somehow didn't get paid
-    unpaid_reservations = Reservation.query.filter_by(
-        status='Completed', 
-        commission_paid=False
-    ).all()
-    
-    processed_count = 0
-    total_commission = 0
-    
-    for reservation in unpaid_reservations:
-        user = User.query.get(reservation.user_id)
-        user.balance += reservation.commission_earned
-        reservation.commission_paid = True
-        reservation.commission_paid_at = datetime.utcnow()
-        
-        db.session.add(user)
-        
-        processed_count += 1
-        total_commission += reservation.commission_earned
-    
-    db.session.commit()
-    
-    return jsonify({
-        'success': True,
-        'message': f'Processed {processed_count} legacy reservations',
-        'processed_reservations': processed_count,
-        'total_commission_paid': total_commission
-    })
-
-# Optional: Add a function to simulate processing delay if needed
-def create_reservation_with_delay(user_id, hotel_id, commission, order_number):
-    """Alternative function if you want to simulate processing time"""
-    import threading
-    import time
-    
-    def complete_reservation():
-        time.sleep(5)  # Simulate 5-second processing delay
-        
-        reservation = Reservation.query.filter_by(order_number=order_number).first()
-        user = User.query.get(user_id)
-        
-        if reservation and user:
-            reservation.status = 'Completed'
-            reservation.commission_paid = True
-            reservation.commission_paid_at = datetime.utcnow()
-            
-            user.balance += commission
-            
-            db.session.add(user)
-            db.session.add(reservation)
-            db.session.commit()
-            
-            print(f"Background: Reservation {order_number} completed and commission paid")
-    
-    # Start background thread
-    thread = threading.Thread(target=complete_reservation)
-    thread.daemon = True
-    thread.start()
+    # Pass only the current hotel (or None if all are completed) and additional stats
+    return render_template('reservations.html', 
+                         hotels=[current_hotel] if current_hotel else [], 
+                         current_hotel=current_hotel,
+                         user=user, 
+                         reservations=formatted_reservations, 
+                         user_stats=user_stats)
 @app.route('/order-history')
 def order_history():
     if 'user_id' not in session:
@@ -625,6 +586,8 @@ def withdraw():
             wallet_address = request.form['wallet_address'].strip()
             withdrawal_password = request.form.get('withdrawal_password', '').strip()
             
+            print(f"DEBUG: Form data - amount: {amount_str}, network: {network}, wallet: {wallet_address}")
+            
             # Validate amount
             if not amount_str:
                 flash('Amount cannot be empty', 'error')
@@ -670,10 +633,8 @@ def withdraw():
                 flash('Insufficient balance', 'error')
                 return render_template('withdraw.html', user=user)
             
-            # Validate wallet address format
-            if not WithdrawalRequest.validate_wallet_address(wallet_address, network):
-                flash(f'Invalid wallet address format for {network} network', 'error')
-                return render_template('withdraw.html', user=user)
+            print(f"DEBUG: All validations passed. User balance: {user.balance}, Withdrawal amount: {amount}")
+            
             
             # Create withdrawal request
             withdrawal_request = WithdrawalRequest(
@@ -684,30 +645,58 @@ def withdraw():
                 status='Pending'
             )
             
+            print(f"DEBUG: Withdrawal request created: {withdrawal_request}")
+            print(f"DEBUG: User ID: {user.id}, Amount: {amount}, Network: {network}")
+            
             # Temporarily reduce balance (will be restored if withdrawal is rejected)
+            original_balance = user.balance
             user.balance -= amount
             
+            print(f"DEBUG: Balance reduced from {original_balance} to {user.balance}")
+            
             db.session.add(withdrawal_request)
+            print("DEBUG: Withdrawal request added to session")
+            
+            # Commit the transaction
             db.session.commit()
+            print("DEBUG: Transaction committed successfully")
+            
+            # Verify the withdrawal was saved
+            saved_withdrawal = WithdrawalRequest.query.filter_by(user_id=user.id).order_by(WithdrawalRequest.id.desc()).first()
+            if saved_withdrawal:
+                print(f"DEBUG: Withdrawal saved with ID: {saved_withdrawal.id}")
+            else:
+                print("DEBUG: WARNING - Withdrawal not found after commit!")
             
             flash('Withdrawal request submitted successfully. Please wait for approval.', 'success')
             return redirect(url_for('profile'))
             
         except KeyError as e:
+            print(f"DEBUG: KeyError - {str(e)}")
             flash(f'Missing required field: {str(e)}', 'error')
             return render_template('withdraw.html', user=user)
         except ValueError as e:
+            print(f"DEBUG: ValueError - {str(e)}")
             flash(f'Invalid data format: {str(e)}', 'error')
             return render_template('withdraw.html', user=user)
         except Exception as e:
+            print(f"DEBUG: General Exception - {str(e)}")
+            print(f"DEBUG: Exception type - {type(e)}")
+            import traceback
+            traceback.print_exc()
+            
             db.session.rollback()
+            print("DEBUG: Transaction rolled back")
+            
             # Restore balance if it was already deducted
             try:
                 if 'amount' in locals() and amount > 0:
                     user.balance += amount
                     db.session.commit()
-            except:
-                pass  # If restoration fails, log it in production
+                    print(f"DEBUG: Balance restored to {user.balance}")
+            except Exception as restore_error:
+                print(f"DEBUG: Balance restoration failed: {str(restore_error)}")
+            
             flash(f'Error processing withdrawal: {str(e)}', 'error')
             return render_template('withdraw.html', user=user)
     
@@ -776,7 +765,7 @@ def api_user_stats():
         'balance': user.balance,
         'total_commission': total_commission,
         'trial_bonus': 250.00,  # Static value as per your template
-        'deposit_balance': 540.00,  # Static value as per your template
+        'deposit_balance': user.deposit_balance, # Static value as per your template
         'today_reservations': today_reservations,
         'daily_limit': daily_limit,
         'vip_level': user.vip_level,
@@ -1196,7 +1185,6 @@ from flask import session, flash, redirect, url_for, request, render_template
 import string
 import random
 from hotel_app.models import Admin
-# Admin authentication decorator
 def admin_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -1211,9 +1199,10 @@ def admin_required(f):
             flash("Admin access denied.", "danger")
             return redirect(url_for('admin_login'))
         
+        # Make admin available to the route
+        g.current_admin = admin
         return f(*args, **kwargs)
     return wrapper
-
 # Separate admin login route
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
@@ -1699,7 +1688,6 @@ def reject_deposit(deposit_id):
     
     return redirect(url_for('view_deposits'))
 
-# VIEW WITHDRAWALS - Main listing page (IMPROVED)
 @app.route('/admin/withdrawals')
 @admin_required
 def view_withdrawals():
@@ -1707,14 +1695,14 @@ def view_withdrawals():
     try:
         logger.debug("Accessing view_withdrawals route")
         page = request.args.get('page', 1, type=int)
-        status_filter = request.args.get('status', '')  # Optional status filter
+        status_filter = request.args.get('status', '')
         
-        # Debug: Check if WithdrawalRequest model exists and has data
+        # Debug: Check total withdrawals
         total_withdrawals = WithdrawalRequest.query.count()
         logger.debug(f"Total withdrawals in database: {total_withdrawals}")
         
-        # Build query with optional filters
-        withdrawals_query = WithdrawalRequest.query
+        # Build query with join to User table for better performance
+        withdrawals_query = WithdrawalRequest.query.options(db.joinedload(WithdrawalRequest.user))
         
         # Apply status filter if provided
         if status_filter and status_filter in ['Pending', 'Approved', 'Rejected']:
@@ -1729,21 +1717,15 @@ def view_withdrawals():
         )
         
         logger.debug(f"Withdrawals found for page {page}: {len(withdrawals.items)}")
+        logger.debug(f"Total pages: {withdrawals.pages}, Total items: {withdrawals.total}")
         
-        # Debug: Log first few withdrawals with user info
+        # Debug: Log first few withdrawals
         for i, withdrawal in enumerate(withdrawals.items[:3]):
-            user = User.query.get(withdrawal.user_id) if withdrawal.user_id else None
-            logger.debug(f"Withdrawal {i}: ID={withdrawal.id}, Status={withdrawal.status}, Amount=${withdrawal.amount}, User={user.nickname if user else 'Unknown'}")
+            logger.debug(f"Withdrawal {i}: ID={withdrawal.id}, Status={withdrawal.status}, Amount=${withdrawal.amount}, User={withdrawal.user.nickname if withdrawal.user else 'No user'}")
         
-        # If no withdrawals found, let's check what's in the database
-        if not withdrawals.items:
-            all_withdrawals = WithdrawalRequest.query.all()
-            logger.debug(f"Raw withdrawals query returned: {len(all_withdrawals)} items")
-            for wd in all_withdrawals[:5]:  # Log first 5 for debugging
-                user = User.query.get(wd.user_id) if wd.user_id else None
-                logger.debug(f"Withdrawal ID: {wd.id}, Amount: {wd.amount}, Status: {wd.status}, User ID: {wd.user_id}, User: {user.nickname if user else 'Unknown'}")
-        
-        return render_template('admin_withdrawals.html', withdrawals=withdrawals, current_status=status_filter)
+        return render_template('admin_withdrawals.html', 
+                             withdrawals=withdrawals, 
+                             current_status=status_filter)
         
     except Exception as e:
         logger.error(f"Error in view_withdrawals: {str(e)}")
@@ -1752,7 +1734,6 @@ def view_withdrawals():
         logger.error(f"Traceback: {traceback.format_exc()}")
         flash(f'Error loading withdrawals: {str(e)}', 'error')
         return redirect(url_for('admin_dashboard'))
-
 # APPROVE WITHDRAWAL - Individual withdrawal approval (IMPROVED)
 @app.route('/admin/withdrawals/<int:withdrawal_id>/approve', methods=['POST'])
 @admin_required
@@ -1867,268 +1848,33 @@ def reject_withdrawal(withdrawal_id):
     
     return redirect(url_for('view_withdrawals'))
 
-# ADDITIONAL DEBUGGING ROUTES - Add these temporarily to check your data
-@app.route('/admin/debug/data')
-@admin_required
-def debug_data():
-    """Debugging route to check database contents"""
-    try:
-        # Check deposits
-        deposits = DepositRequest.query.all()
-        deposit_info = []
-        for d in deposits:
-            user = User.query.get(d.user_id)
-            deposit_info.append({
-                'id': d.id,
-                'amount': float(d.amount) if d.amount else 0,
-                'status': d.status,
-                'user_id': d.user_id,
-                'user_nickname': user.nickname if user else 'Unknown',
-                'created_at': d.created_at.strftime('%Y-%m-%d %H:%M:%S') if d.created_at else None,
-                'processed_at': d.processed_at.strftime('%Y-%m-%d %H:%M:%S') if d.processed_at else None
-            })
-        
-        # Check withdrawals
-        withdrawals = WithdrawalRequest.query.all()
-        withdrawal_info = []
-        for w in withdrawals:
-            user = User.query.get(w.user_id)
-            withdrawal_info.append({
-                'id': w.id,
-                'amount': float(w.amount) if w.amount else 0,
-                'status': w.status,
-                'user_id': w.user_id,
-                'user_nickname': user.nickname if user else 'Unknown',
-                'created_at': w.created_at.strftime('%Y-%m-%d %H:%M:%S') if w.created_at else None,
-                'processed_at': w.processed_at.strftime('%Y-%m-%d %H:%M:%S') if w.processed_at else None,
-                'wallet_address': getattr(w, 'wallet_address', 'N/A')
-            })
-        
-        # Check users
-        users = User.query.all()
-        user_info = []
-        for u in users[:10]:  # First 10 users
-            user_info.append({
-                'id': u.id,
-                'nickname': u.nickname,
-                'email': u.email,
-                'balance': float(u.balance) if u.balance else 0,
-                'created_at': u.created_at.strftime('%Y-%m-%d %H:%M:%S') if hasattr(u, 'created_at') and u.created_at else None
-            })
-        
-        return jsonify({
-            'deposits': deposit_info,
-            'withdrawals': withdrawal_info,
-            'users': user_info,
-            'total_deposits': len(deposits),
-            'total_withdrawals': len(withdrawals),
-            'total_users': len(users),
-            'pending_deposits': len([d for d in deposits if d.status == 'Pending']),
-            'pending_withdrawals': len([w for w in withdrawals if w.status == 'Pending'])
-        })
-        
-    except Exception as e:
-        logger.error(f"Debug data error: {str(e)}")
-        import traceback
-        logger.error(f"Traceback: {traceback.format_exc()}")
-        return jsonify({'error': str(e), 'traceback': traceback.format_exc()})
 
-@app.route('/admin/debug/models')
-@admin_required
-def debug_models():
-    """Check if models are properly defined"""
-    try:
-        # Check DepositRequest model structure
-        deposit_columns = []
-        if hasattr(DepositRequest, '__table__'):
-            deposit_columns = [col.name for col in DepositRequest.__table__.columns]
-        
-        # Check WithdrawalRequest model structure
-        withdrawal_columns = []
-        if hasattr(WithdrawalRequest, '__table__'):
-            withdrawal_columns = [col.name for col in WithdrawalRequest.__table__.columns]
-            
-        # Check User model structure
-        user_columns = []
-        if hasattr(User, '__table__'):
-            user_columns = [col.name for col in User.__table__.columns]
-        
-        return jsonify({
-            'deposit_model_columns': deposit_columns,
-            'withdrawal_model_columns': withdrawal_columns,
-            'user_model_columns': user_columns,
-            'deposit_model_exists': hasattr(DepositRequest, '__table__'),
-            'withdrawal_model_exists': hasattr(WithdrawalRequest, '__table__'),
-            'user_model_exists': hasattr(User, '__table__')
-        })
-        
-    except Exception as e:
-        return jsonify({'error': str(e)})
-
-# BATCH OPERATIONS - Useful for admin efficiency
-@app.route('/admin/deposits/bulk-action', methods=['POST'])
-@admin_required
-def bulk_deposit_action():
-    """Handle bulk actions on deposits"""
-    try:
-        action = request.form.get('action')
-        deposit_ids = request.form.getlist('deposit_ids')
-        admin_notes = request.form.get('bulk_admin_notes', '')
-        
-        if not action or not deposit_ids:
-            flash('Please select an action and at least one deposit.', 'error')
-            return redirect(url_for('view_deposits'))
-        
-        admin = Admin.query.get(session.get('admin_id'))
-        if not admin:
-            flash('Admin session invalid', 'error')
-            return redirect(url_for('admin_login'))
-        
-        processed_count = 0
-        error_count = 0
-        
-        for deposit_id in deposit_ids:
-            try:
-                deposit = DepositRequest.query.get(int(deposit_id))
-                if not deposit or deposit.status != 'Pending':
-                    continue
-                
-                if action == 'approve':
-                    deposit.status = 'Approved'
-                    deposit.processed_at = datetime.utcnow()
-                    deposit.processed_by = admin.id
-                    deposit.admin_notes = admin_notes
-                    
-                    # Update user balance
-                    user = User.query.get(deposit.user_id)
-                    if user:
-                        user.balance += deposit.amount
-                        processed_count += 1
-                    else:
-                        error_count += 1
-                        
-                elif action == 'reject':
-                    deposit.status = 'Rejected'
-                    deposit.processed_at = datetime.utcnow()
-                    deposit.processed_by = admin.id
-                    deposit.admin_notes = admin_notes
-                    processed_count += 1
-                    
-            except Exception as e:
-                logger.error(f"Error processing deposit {deposit_id}: {str(e)}")
-                error_count += 1
-        
-        db.session.commit()
-        
-        if processed_count > 0:
-            flash(f'Successfully {action}d {processed_count} deposits.', 'success')
-        if error_count > 0:
-            flash(f'{error_count} deposits had errors and were not processed.', 'warning')
-            
-    except Exception as e:
-        logger.error(f"Bulk deposit action error: {str(e)}")
-        db.session.rollback()
-        flash(f'Error processing bulk action: {str(e)}', 'error')
-    
-    return redirect(url_for('view_deposits'))
-
-@app.route('/admin/withdrawals/bulk-action', methods=['POST'])
-@admin_required
-def bulk_withdrawal_action():
-    """Handle bulk actions on withdrawals"""
-    try:
-        action = request.form.get('action')
-        withdrawal_ids = request.form.getlist('withdrawal_ids')
-        admin_notes = request.form.get('bulk_admin_notes', '')
-        
-        if not action or not withdrawal_ids:
-            flash('Please select an action and at least one withdrawal.', 'error')
-            return redirect(url_for('view_withdrawals'))
-        
-        admin = Admin.query.get(session.get('admin_id'))
-        if not admin:
-            flash('Admin session invalid', 'error')
-            return redirect(url_for('admin_login'))
-        
-        processed_count = 0
-        error_count = 0
-        
-        for withdrawal_id in withdrawal_ids:
-            try:
-                withdrawal = WithdrawalRequest.query.get(int(withdrawal_id))
-                if not withdrawal or withdrawal.status != 'Pending':
-                    continue
-                
-                if action == 'approve':
-                    withdrawal.status = 'Approved'
-                    withdrawal.processed_at = datetime.utcnow()
-                    withdrawal.processed_by = admin.id
-                    withdrawal.admin_notes = admin_notes
-                    processed_count += 1
-                    
-                elif action == 'reject':
-                    withdrawal.status = 'Rejected'
-                    withdrawal.processed_at = datetime.utcnow()
-                    withdrawal.processed_by = admin.id
-                    withdrawal.admin_notes = admin_notes
-                    
-                    # Refund amount to user balance
-                    user = User.query.get(withdrawal.user_id)
-                    if user:
-                        user.balance += withdrawal.amount
-                        processed_count += 1
-                    else:
-                        error_count += 1
-                        
-            except Exception as e:
-                logger.error(f"Error processing withdrawal {withdrawal_id}: {str(e)}")
-                error_count += 1
-        
-        db.session.commit()
-        
-        if processed_count > 0:
-            flash(f'Successfully {action}d {processed_count} withdrawals.', 'success')
-        if error_count > 0:
-            flash(f'{error_count} withdrawals had errors and were not processed.', 'warning')
-            
-    except Exception as e:
-        logger.error(f"Bulk withdrawal action error: {str(e)}")
-        db.session.rollback()
-        flash(f'Error processing bulk action: {str(e)}', 'error')
-    
-    return redirect(url_for('view_withdrawals'))
 @app.route('/admin/hotels', methods=['GET', 'POST'])
-@admin_required
 def manage_hotels():
     if request.method == 'POST':
-        name = request.form['name']
-        primary_picture = request.form['primary_picture']
-        price = float(request.form['price'])
-        commission_multiplier = float(request.form.get('commission_multiplier', 1.0))
-        days_available = int(request.form.get('days_available', 1))
-        description = request.form.get('description', '')
-        location = request.form.get('location', '')
-
-        new_hotel = Hotel(
-            name=name,
-            primary_picture=primary_picture,
-            price=price,
-            commission_multiplier=commission_multiplier,
-            days_available=days_available,
-            description=description,
-            location=location
+        # Handle hotel creation
+        hotel = Hotel(
+            name=request.form['name'],
+            location=request.form['location'],
+            primary_picture=request.form['primary_picture'],
+            price=float(request.form['price']),
+            commission_multiplier=float(request.form['commission_multiplier']),
+            days_available=int(request.form['days_available']),
+            rating=int(request.form['rating']),
+            category=request.form['category'],
+            description=request.form['description'],
+            is_active=bool(request.form.get('is_active'))
         )
-        db.session.add(new_hotel)
+        db.session.add(hotel)
         db.session.commit()
-        flash('Hotel added successfully', 'success')
+        flash('Hotel added successfully!', 'success')
         return redirect(url_for('manage_hotels'))
-
-    page = request.args.get('page', 1, type=int)
-    hotels = Hotel.query.order_by(Hotel.id.desc()).paginate(
-        page=page, per_page=20, error_out=False
-    )
+    
+    hotels = Hotel.query.order_by(Hotel.name).all()
+    for hotel in hotels:
+        if hotel.category is None:
+            hotel.category = 'Uncategorized'
     return render_template('admin_hotels.html', hotels=hotels)
-
 @app.route('/admin/hotels/<int:hotel_id>/edit', methods=['GET', 'POST'])
 @admin_required
 def edit_hotel(hotel_id):
@@ -2390,3 +2136,434 @@ def logout():
         session.clear()
         flash('Logged out successfully.', 'success')
         return redirect(url_for('login'))
+    # Updated routes with price filtering functionality
+
+@app.route('/admin/assign-hotels', methods=['GET', 'POST'])
+@admin_required
+def assign_hotels_to_user():
+    """Assign hotels to a specific user with price and category filtering"""
+    if request.method == 'POST':
+        user_id = int(request.form['user_id'])
+        session_type = request.form['session_type']
+        hotel_ids = request.form.getlist('hotel_ids')
+        
+        user = User.query.get_or_404(user_id)
+        assignments_created = 0
+        
+        for hotel_id in hotel_ids:
+            commission = float(request.form.get(f'commission_{hotel_id}', 0.0))
+            
+            # Check if assignment already exists
+            existing = UserHotelAssignment.query.filter_by(
+                user_id=user_id,
+                hotel_id=hotel_id,
+                session_type=session_type
+            ).first()
+            
+            if existing:
+                # Update existing assignment
+                existing.custom_commission = commission
+                flash(f'Updated commission for hotel {hotel_id}', 'info')
+            else:
+                # Create new assignment
+                new_assignment = UserHotelAssignment(
+                    user_id=user_id,
+                    hotel_id=hotel_id,
+                    session_type=session_type,
+                    custom_commission=commission,
+                    assigned_by=g.current_admin.id
+                )
+                db.session.add(new_assignment)
+                assignments_created += 1
+        
+        db.session.commit()
+        flash(f'Created {assignments_created} new hotel assignments for user {user.nickname}', 'success')
+        return redirect(url_for('manage_hotels'))
+    
+    # GET request - show form with filtering
+    user_id = request.args.get('user_id')
+    category_filter = request.args.get('category', '')
+    min_price = request.args.get('min_price', type=float)
+    max_price = request.args.get('max_price', type=float)
+    
+    users = User.query.filter_by(is_active=True).all()
+    
+    # Build hotel query with filters
+    query = Hotel.query.filter_by(is_active=True)
+    
+    if category_filter:
+        query = query.filter_by(category=category_filter)
+    
+    if min_price is not None:
+        query = query.filter(Hotel.price >= min_price)
+    
+    if max_price is not None:
+        query = query.filter(Hotel.price <= max_price)
+    
+    hotels = query.order_by(Hotel.category, Hotel.price, Hotel.name).all()
+    
+    selected_user = None
+    if user_id:
+        selected_user = User.query.get(user_id)
+    
+    # Get price range for the form
+    price_stats = db.session.query(
+        db.func.min(Hotel.price).label('min_price'),
+        db.func.max(Hotel.price).label('max_price')
+    ).filter_by(is_active=True).first()
+    
+    return render_template('admin_assign_hotels.html', 
+                         users=users, 
+                         hotels=hotels, 
+                         selected_user=selected_user,
+                         category_filter=category_filter,
+                         min_price=min_price,
+                         max_price=max_price,
+                         price_stats=price_stats)
+
+@app.route('/admin/bulk-assign-hotels', methods=['GET', 'POST'])
+@admin_required
+def bulk_assign_hotels():
+    """Bulk assign hotels to multiple users with enhanced filtering"""
+    if request.method == 'POST':
+        user_ids = request.form.getlist('user_ids')
+        session_type = request.form['session_type']
+        assignment_type = request.form['assignment_type']  # 'category', 'price_range', or 'specific'
+        
+        assignments_created = 0
+        
+        if assignment_type == 'category':
+            # Assign by category
+            category = request.form['category']
+            base_commission = float(request.form['base_commission'])
+            
+            hotels = Hotel.query.filter_by(category=category, is_active=True).all()
+            
+            for user_id in user_ids:
+                for hotel in hotels:
+                    # Check if assignment already exists
+                    existing = UserHotelAssignment.query.filter_by(
+                        user_id=user_id,
+                        hotel_id=hotel.id,
+                        session_type=session_type
+                    ).first()
+                    
+                    if not existing:
+                        new_assignment = UserHotelAssignment(
+                            user_id=user_id,
+                            hotel_id=hotel.id,
+                            session_type=session_type,
+                            custom_commission=base_commission,
+                            assigned_by=current_user.id
+                        )
+                        db.session.add(new_assignment)
+                        assignments_created += 1
+        
+        elif assignment_type == 'price_range':
+            # NEW: Assign by price range
+            min_price = float(request.form['min_price'])
+            max_price = float(request.form['max_price'])
+            category = request.form.get('category_filter', '')
+            base_commission = float(request.form['base_commission'])
+            
+            query = Hotel.query.filter(
+                Hotel.price >= min_price,
+                Hotel.price <= max_price,
+                Hotel.is_active == True
+            )
+            
+            if category:
+                query = query.filter_by(category=category)
+            
+            hotels = query.all()
+            
+            for user_id in user_ids:
+                for hotel in hotels:
+                    # Check if assignment already exists
+                    existing = UserHotelAssignment.query.filter_by(
+                        user_id=user_id,
+                        hotel_id=hotel.id,
+                        session_type=session_type
+                    ).first()
+                    
+                    if not existing:
+                        new_assignment = UserHotelAssignment(
+                            user_id=user_id,
+                            hotel_id=hotel.id,
+                            session_type=session_type,
+                            custom_commission=base_commission,
+                            assigned_by=current_user.id
+                        )
+                        db.session.add(new_assignment)
+                        assignments_created += 1
+        
+        else:  # specific hotels
+            hotel_ids = request.form.getlist('hotel_ids')
+            
+            for user_id in user_ids:
+                for hotel_id in hotel_ids:
+                    commission = float(request.form.get(f'commission_{hotel_id}', 0.0))
+                    
+                    # Check if assignment already exists
+                    existing = UserHotelAssignment.query.filter_by(
+                        user_id=user_id,
+                        hotel_id=hotel_id,
+                        session_type=session_type
+                    ).first()
+                    
+                    if not existing:
+                        new_assignment = UserHotelAssignment(
+                            user_id=user_id,
+                            hotel_id=hotel_id,
+                            session_type=session_type,
+                            custom_commission=commission,
+                            assigned_by=current_user.id
+                        )
+                        db.session.add(new_assignment)
+                        assignments_created += 1
+        
+        db.session.commit()
+        flash(f'Created {assignments_created} new hotel assignments', 'success')
+        return redirect(url_for('manage_hotels'))
+    
+    # GET request - show form with filtering
+    category_filter = request.args.get('category', '')
+    min_price = request.args.get('min_price', type=float)
+    max_price = request.args.get('max_price', type=float)
+    
+    users = User.query.filter_by(is_active=True).all()
+    
+    # Build hotel query with filters
+    query = Hotel.query.filter_by(is_active=True)
+    
+    if category_filter:
+        query = query.filter_by(category=category_filter)
+    
+    if min_price is not None:
+        query = query.filter(Hotel.price >= min_price)
+    
+    if max_price is not None:
+        query = query.filter(Hotel.price <= max_price)
+    
+    hotels = query.order_by(Hotel.category, Hotel.price, Hotel.name).all()
+    
+    # Get price range for the form
+    price_stats = db.session.query(
+        db.func.min(Hotel.price).label('min_price'),
+        db.func.max(Hotel.price).label('max_price')
+    ).filter_by(is_active=True).first()
+    
+    return render_template('admin_bulk_assign_hotels.html', 
+                         users=users, 
+                         hotels=hotels,
+                         category_filter=category_filter,
+                         min_price=min_price,
+                         max_price=max_price,
+                         price_stats=price_stats)
+
+# NEW: API endpoint for dynamic hotel filtering
+@app.route('/admin/api/hotels/filter')
+@admin_required
+def filter_hotels_api():
+    """API endpoint to filter hotels dynamically"""
+    category = request.args.get('category', '')
+    min_price = request.args.get('min_price', type=float)
+    max_price = request.args.get('max_price', type=float)
+    
+    # Build query
+    query = Hotel.query.filter_by(is_active=True)
+    
+    if category:
+        query = query.filter_by(category=category)
+    
+    if min_price is not None:
+        query = query.filter(Hotel.price >= min_price)
+    
+    if max_price is not None:
+        query = query.filter(Hotel.price <= max_price)
+    
+    hotels = query.order_by(Hotel.category, Hotel.price, Hotel.name).all()
+    
+    result = []
+    for hotel in hotels:
+        result.append({
+            'id': hotel.id,
+            'name': hotel.name,
+            'category': hotel.category,
+            'price': float(hotel.price),
+            'location': hotel.location,
+            'commission_multiplier': float(hotel.commission_multiplier)
+        })
+    
+    return jsonify({
+        'hotels': result,
+        'count': len(result),
+        'total_hotels': Hotel.query.filter_by(is_active=True).count()
+    })
+
+# NEW: Quick assignment presets
+@app.route('/admin/assignment-presets')
+@admin_required
+def assignment_presets():
+    """Predefined assignment presets for common scenarios"""
+    presets = {
+        'budget_hotels': {
+            'name': 'Budget Hotels',
+            'description': 'Hotels under $500',
+            'max_price': 500,
+            'suggested_commission': 10.0
+        },
+        'mid_range_hotels': {
+            'name': 'Mid-Range Hotels', 
+            'description': 'Hotels between $500-$1500',
+            'min_price': 500,
+            'max_price': 1500,
+            'suggested_commission': 15.0
+        },
+        'luxury_hotels': {
+            'name': 'Luxury Hotels',
+            'description': 'Hotels above $1500',
+            'min_price': 1500,
+            'suggested_commission': 20.0
+        },
+        'regular_category': {
+            'name': 'Regular Category',
+            'description': 'All regular category hotels',
+            'category': 'regular',
+            'suggested_commission': 12.0
+        },
+        'luxury_category': {
+            'name': 'Luxury Category',
+            'description': 'All luxury category hotels',
+            'category': 'luxury',
+            'suggested_commission': 18.0
+        }
+    }
+    
+    return render_template('admin_assignment_presets.html', presets=presets)
+
+@app.route('/admin/apply-preset', methods=['POST'])
+@admin_required
+def apply_assignment_preset():
+    """Apply a predefined assignment preset"""
+    preset_name = request.form['preset']
+    user_ids = request.form.getlist('user_ids')
+    session_type = request.form['session_type']
+    
+    # Define preset configurations
+    presets = {
+        'budget_hotels': {'max_price': 500, 'commission': 10.0},
+        'mid_range_hotels': {'min_price': 500, 'max_price': 1500, 'commission': 15.0},
+        'luxury_hotels': {'min_price': 1500, 'commission': 20.0},
+        'regular_category': {'category': 'regular', 'commission': 12.0},
+        'luxury_category': {'category': 'luxury', 'commission': 18.0}
+    }
+    
+    if preset_name not in presets:
+        flash('Invalid preset selected', 'error')
+        return redirect(url_for('assignment_presets'))
+    
+    preset_config = presets[preset_name]
+    
+    # Build hotel query based on preset
+    query = Hotel.query.filter_by(is_active=True)
+    
+    if 'category' in preset_config:
+        query = query.filter_by(category=preset_config['category'])
+    
+    if 'min_price' in preset_config:
+        query = query.filter(Hotel.price >= preset_config['min_price'])
+    
+    if 'max_price' in preset_config:
+        query = query.filter(Hotel.price <= preset_config['max_price'])
+    
+    hotels = query.all()
+    assignments_created = 0
+    
+    for user_id in user_ids:
+        for hotel in hotels:
+            # Check if assignment already exists
+            existing = UserHotelAssignment.query.filter_by(
+                user_id=user_id,
+                hotel_id=hotel.id,
+                session_type=session_type
+            ).first()
+            
+            if not existing:
+                new_assignment = UserHotelAssignment(
+                    user_id=user_id,
+                    hotel_id=hotel.id,
+                    session_type=session_type,
+                    custom_commission=preset_config['commission'],
+                    assigned_by=current_user.id
+                )
+                db.session.add(new_assignment)
+                assignments_created += 1
+    
+    db.session.commit()
+    flash(f'Applied {preset_name} preset: Created {assignments_created} new assignments', 'success')
+    return redirect(url_for('manage_hotel_assignments'))
+
+# Enhanced hotel management with price-based insights
+@app.route('/admin/hotels/price-analysis')
+@admin_required
+def hotel_price_analysis():
+    """Analyze hotel pricing and assignment patterns"""
+    from sqlalchemy import func
+    
+    # Price distribution analysis
+    price_ranges = [
+        {'name': 'Budget', 'min': 0, 'max': 500},
+        {'name': 'Mid-Range', 'min': 500, 'max': 1500},
+        {'name': 'Luxury', 'min': 1500, 'max': float('inf')}
+    ]
+    
+    analysis = []
+    for range_info in price_ranges:
+        query = Hotel.query.filter_by(is_active=True)
+        
+        if range_info['max'] == float('inf'):
+            query = query.filter(Hotel.price >= range_info['min'])
+        else:
+            query = query.filter(
+                Hotel.price >= range_info['min'],
+                Hotel.price < range_info['max']
+            )
+        
+        hotels_in_range = query.all()
+        total_assignments = sum(
+            UserHotelAssignment.query.filter_by(hotel_id=hotel.id).count()
+            for hotel in hotels_in_range
+        )
+        
+        analysis.append({
+            'range_name': range_info['name'],
+            'hotel_count': len(hotels_in_range),
+            'total_assignments': total_assignments,
+            'avg_price': sum(hotel.price for hotel in hotels_in_range) / len(hotels_in_range) if hotels_in_range else 0,
+            'price_range': f"${range_info['min']:.0f} - ${range_info['max']:.0f}" if range_info['max'] != float('inf') else f"${range_info['min']:.0f}+"
+        })
+    
+    # Category-based analysis
+    category_analysis = []
+    for category in ['regular', 'luxury']:
+        hotels = Hotel.query.filter_by(category=category, is_active=True).all()
+        if hotels:
+            avg_price = sum(hotel.price for hotel in hotels) / len(hotels)
+            total_assignments = sum(
+                UserHotelAssignment.query.filter_by(hotel_id=hotel.id).count()
+                for hotel in hotels
+            )
+            
+            category_analysis.append({
+                'category': category,
+                'hotel_count': len(hotels),
+                'avg_price': avg_price,
+                'total_assignments': total_assignments,
+                'min_price': min(hotel.price for hotel in hotels),
+                'max_price': max(hotel.price for hotel in hotels)
+            })
+    
+    return render_template('admin_hotel_price_analysis.html',
+                         price_analysis=analysis,
+                         category_analysis=category_analysis)

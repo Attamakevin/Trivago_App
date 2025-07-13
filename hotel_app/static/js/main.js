@@ -1176,33 +1176,3 @@ window.quickRedirectToTrivago = function () {
 };
 
 // Login/Signup Functions
-
-function switchTab(tabType) {
-        if (tabType === 'login') {
-            // Redirect to login URL (refresh page)
-            window.location.href = '/login';
-        } else {
-            // Redirect to register URL (refresh page)
-            window.location.href = '/register';
-        }
-    }
-
-    // On page load, detect which tab to show based on URL
-    window.addEventListener('DOMContentLoaded', function () {
-        const loginForm = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
-        const loginTab = document.getElementById('loginTab');
-        const signupTab = document.getElementById('signupTab');
-
-        if (window.location.pathname === '/login') {
-            loginForm.classList.remove('hidden');
-            signupForm.classList.add('hidden');
-            loginTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 bg-white text-blue-600 shadow-sm';
-            signupTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 text-gray-500 hover:text-gray-700';
-        } else if (window.location.pathname === '/register') {
-            signupForm.classList.remove('hidden');
-            loginForm.classList.add('hidden');
-            signupTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 bg-white text-green-600 shadow-sm';
-            loginTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 text-gray-500 hover:text-gray-700';
-        }
-    });

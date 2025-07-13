@@ -1379,3 +1379,165 @@ footer {
         height: 20px;
     }
 }
+
+:root {
+    --primary: #3b82f6;
+    --primary-green: #10b981;
+}
+
+.select-box {
+    position: relative;
+    width: 100%;
+}
+
+.select-box input {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 16px;
+    border: 1px solid #d1d5db;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+input[type="tel"] {
+    border-radius: 0 8px 8px 0;
+}
+
+.select-box input:focus {
+    border: 1px solid var(--primary);
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
+}
+
+.signup-form .select-box input:focus {
+    border: 1px solid var(--primary-green);
+    box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+}
+
+.selected-option {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border: 1px solid #d1d5db;
+}
+
+.selected-option div {
+    position: relative;
+    width: 80px;
+    padding: 0 40px 0 8px;
+    text-align: center;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border-right: 1px solid #d1d5db;
+}
+
+.selected-option div::after {
+    position: absolute;
+    content: "";
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid var(--primary);
+    border-bottom: 2px solid var(--primary);
+    transition: 0.2s;
+}
+
+.selected-option div.active::after {
+    transform: translateY(-50%) rotate(225deg);
+}
+
+.select-box .options {
+    position: absolute;
+    top: 100%;
+    width: 100%;
+    background-color: #fff;
+    border-radius: 8px;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border: 1px solid #d1d5db;
+}
+
+.select-box .options.active {
+    display: block;
+}
+
+.select-box .options::before {
+    position: absolute;
+    content: "";
+    left: 16px;
+    top: -12px;
+    width: 0;
+    height: 0;
+    border: 6px solid transparent;
+    border-bottom-color: var(--primary);
+}
+
+input.search-box {
+    background-color: var(--primary);
+    color: #fff;
+    border-radius: 8px 8px 0 0;
+    padding: 12px 16px;
+    border: none;
+}
+
+.select-box ol {
+    list-style: none;
+    max-height: 200px;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
+}
+
+.select-box ol::-webkit-scrollbar {
+    width: 6px;
+}
+
+.select-box ol::-webkit-scrollbar-thumb {
+    width: 4px;
+    height: 30px;
+    background-color: #ccc;
+    border-radius: 4px;
+}
+
+.select-box ol li {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+    align-items: center;
+}
+
+.select-box ol li.hide {
+    display: none;
+}
+
+.select-box ol li:not(:last-child) {
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.select-box ol li:hover {
+    background-color: #f3f4f6;
+}
+
+.select-box ol li .country-name {
+    margin-left: 8px;
+    font-size: 14px;
+}
+
+.select-box ol li div {
+    display: flex;
+    align-items: center;
+}
+
+.select-box ol li strong {
+    font-size: 14px;
+    color: #6b7280;
+}

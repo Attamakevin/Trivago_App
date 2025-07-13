@@ -64,6 +64,60 @@ def login_post():
         flash('Invalid phone number or password', 'error')
         return redirect(url_for('auth'))
 
+def get_user_ip():
+    """Get the real IP address of the user"""
+    # Check for forwarded IP first (in case of proxy/load balancer)
+    if request.headers.get('X-Forwarded-For'):
+        ip = request.headers.get('X-Forwarded-For').split(',')[0].strip()
+    elif request.headers.get('X-Real-IP'):
+        ip = request.headers.get('X-Real-IP')
+    else:
+        ip = request.remote_addr
+    return ip
+
+def get_location_from_ip(ip_address):
+    """Get location information from IP address using a free IP geolocation service"""
+    try:
+        # Using ipapi.co (free tier allows 1000 requests/day)
+        import requests
+        response = requests.get(f'https://ipapi.co/{ip_address}/json/', timeout=5)
+        
+        if response.status_code == 200:
+            data = response.json()
+            return {
+                'country': data.get('country_name', 'Unknown'),
+                'country_code': data.get('country_code', 'Unknown'),
+                'region': data.get('region', 'Unknown'),
+                'city': data.get('city', 'Unknown'),
+                'latitude': data.get('latitude'),
+                'longitude': data.get('longitude'),
+                'timezone': data.get('timezone', 'Unknown'),
+                'isp': data.get('org', 'Unknown')
+            }
+    except Exception as e:
+        print(f"Error getting location: {e}")
+        return {
+            'country': 'Unknown',
+            'country_code': 'Unknown',
+            'region': 'Unknown',
+            'city': 'Unknown',
+            'latitude': None,
+            'longitude': None,
+            'timezone': 'Unknown',
+            'isp': 'Unknown'
+        }
+    
+    return {
+        'country': 'Unknown',
+        'country_code': 'Unknown',
+        'region': 'Unknown',
+        'city': 'Unknown',
+        'latitude': None,
+        'longitude': None,
+        'timezone': 'Unknown',
+        'isp': 'Unknown'
+    }
+
 @app.route('/register', methods=['POST'])
 def register_post():
     phone = request.form.get('phone')
@@ -99,15 +153,30 @@ def register_post():
         return redirect(url_for('register'))
 
     try:
+        # Silently collect user's IP address and location data
+        user_ip = get_user_ip()
+        location_data = get_location_from_ip(user_ip)
+        
         # Mark invitation code as used
         code_entry.is_used = True
         
-        # Create new user with inactive status
+        # Create new user with inactive status, IP, and location data (collected silently)
         new_user = User(
             contact=phone,
             password_hash=generate_password_hash(password),
             is_active=False,
-            invitation_code=invitation_code
+            invitation_code=invitation_code,
+            # Silently collected IP and location fields
+            ip_address=user_ip,
+            country=location_data['country'],
+            country_code=location_data['country_code'],
+            region=location_data['region'],
+            city=location_data['city'],
+            latitude=location_data['latitude'],
+            longitude=location_data['longitude'],
+            timezone=location_data['timezone'],
+            isp=location_data['isp'],
+            last_location_update=datetime.utcnow()
         )
         db.session.add(new_user)
         db.session.commit()
@@ -123,6 +192,40 @@ def register_post():
         flash('Registration failed. Please try again.', 'error')
         return redirect(url_for('register'))
 
+# Additional route to update user location (optional - for existing users)
+@app.route('/update_location', methods=['POST'])
+def update_user_location():
+    """Update current user's location information"""
+    if 'user_id' not in session:
+        return redirect(url_for('auth'))
+    
+    try:
+        user = User.query.get(session['user_id'])
+        if user:
+            user_ip = get_user_ip()
+            location_data = get_location_from_ip(user_ip)
+            
+            # Update user's location info
+            user.ip_address = user_ip
+            user.country = location_data['country']
+            user.country_code = location_data['country_code']
+            user.region = location_data['region']
+            user.city = location_data['city']
+            user.latitude = location_data['latitude']
+            user.longitude = location_data['longitude']
+            user.timezone = location_data['timezone']
+            user.isp = location_data['isp']
+            user.last_location_update = datetime.utcnow()
+            
+            db.session.commit()
+            flash('Location updated successfully', 'success')
+        else:
+            flash('User not found', 'error')
+    except Exception as e:
+        db.session.rollback()
+        flash('Failed to update location', 'error')
+    
+    return redirect(url_for('dashboard'))
 import string
 
 @app.route('/dashboard')

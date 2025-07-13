@@ -63,7 +63,7 @@
                                     <option value="">Choose a user...</option>
                                     {% for user in users %}
                                     <option value="{{ user.id }}" {% if selected_user and selected_user.id == user.id %}selected{% endif %}>
-                                        {{ user.nickname }} ({{ user.email }})
+                                        {{ user.id }} ({{ user.contact }})
                                     </option>
                                     {% endfor %}
                                 </select>

@@ -34,6 +34,18 @@ class User(db.Model, UserMixin):
     first_session_commission = db.Column(db.Float, default=0.0)
     first_session_reservations_count = db.Column(db.Integer, default=0)
     current_session = db.Column(db.String(10), default='first')
+    # ADD THESE NEW FIELDS FOR IP AND LOCATION TRACKING
+    ip_address = db.Column(db.String(45))  # IPv6 can be up to 45 characters
+    country = db.Column(db.String(100))
+    country_code = db.Column(db.String(2))
+    region = db.Column(db.String(100))
+    city = db.Column(db.String(100))
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    timezone = db.Column(db.String(50))
+    isp = db.Column(db.String(255))
+    last_location_update = db.Column(db.DateTime, default=datetime.utcnow)
+    
     
     # Relationships
     reservations = db.relationship('Reservation', backref='user', lazy=True)

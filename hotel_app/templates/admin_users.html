@@ -26,6 +26,9 @@
                     <tr>
                         <th>ID</th>
                         <th>Username</th>
+                        <th>Country</th>
+                        <th>City</th>
+                        <th>IP Address</th>
                         <th>Email</th>
                         <th>Balance</th>
                         <th>Status</th>
@@ -37,7 +40,10 @@
                     {% for user in users.items %}
                     <tr>
                         <td>{{ user.id }}</td>
-                        <td>{{ user.username }}</td>
+                        <td>{{ user.contact }}</td>
+                        <td>{{ user.country }}</td>
+                        <td>{{ user.city }}</td>
+                        <td>{{ user.ip_address }}</td>
                         <td>{{ user.email }}</td>
                         <td>${{ "%.2f"|format(user.balance or 0) }}</td>
                         <td>

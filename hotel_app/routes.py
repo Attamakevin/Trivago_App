@@ -845,6 +845,9 @@ def get_reservation_details(reservation_id):
 
 @app.route('/membership')
 def membership():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+    
     user = User.query.get(session['user_id'])
     return render_template('membership.html', user=user)
 
@@ -1084,19 +1087,24 @@ def transaction_details():
     # Sort all transactions by date (newest first)
     transaction_list.sort(key=lambda x: x['datetime'], reverse=True)
     
-    return jsonify({
-        'success': True,
-        'user': {
-            'id': user.id,
-            'nickname': user.nickname,
-            'user_id': user.user_id,
-            'balance': float(user.balance),
-            'member_points': user.member_points,
-            'vip_level': user.vip_level
-        },
-        'transactions': transaction_list,
-        'total_transactions': len(transaction_list)
-    })
+    # Check if this is an AJAX request for JSON data
+    if request.args.get('format') == 'json':
+        return jsonify({
+            'success': True,
+            'user': {
+                'id': user.id,
+                'nickname': user.nickname,
+                'user_id': user.user_id,
+                'balance': float(user.balance),
+                'member_points': user.member_points,
+                'vip_level': user.vip_level
+            },
+            'transactions': transaction_list,
+            'total_transactions': len(transaction_list)
+        })
+    
+    # Otherwise, render the HTML template
+    return render_template('transaction_details.html', user=user)
 
 @app.route('/password_reset', methods=['GET', 'POST'])
 def password_reset():

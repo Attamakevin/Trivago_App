@@ -335,10 +335,28 @@ function handleFormSubmit(event) {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Processing...</span>';
     btn.disabled = true;
 
-    // Redirect to customer service page
-    setTimeout(() => {
-        window.location.href = '/customer_service';
-    }, 1000); // Small delay to show loading state
+    // Submit the form data to backend first
+    const form = event.target;
+    const formData = new FormData(form);
+
+    fetch('/deposit', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.text())
+        .then(result => {
+            // After successful submission to backend, redirect to customer service
+            console.log('Deposit submitted successfully');
+            window.location.href = '/customer_service';
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error submitting deposit. Please try again.');
+
+            // Reset button state
+            btn.innerHTML = '<i class="fas fa-plus"></i><span>Add Funds</span>';
+            btn.disabled = false;
+        });
 
     return false;
 }
@@ -359,7 +377,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-
 
 // Clipboard functionality
 function copyToClipboard(text, buttonElement = null) {

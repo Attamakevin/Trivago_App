@@ -75,27 +75,34 @@ def get_user_ip():
         ip = request.remote_addr
     return ip
 
-def get_location_from_ip(ip_address):
-    """Get location information from IP address using a free IP geolocation service"""
+import ipaddress
+
+def is_private_ip(ip):
+    """Check if an IP address is private"""
     try:
-        # Using ipapi.co (free tier allows 1000 requests/day)
+        return ipaddress.ip_address(ip).is_private
+    except ValueError:
+        return False
+
+def get_location_from_ip(ip_address):
+    """Get location information from IP address"""
+    # Check if it's a private IP
+    if is_private_ip(ip_address):
+        print(f"Cannot geolocate private IP: {ip_address}")
+        return {
+            'country': 'Private Network',
+            'country_code': 'N/A',
+            'region': 'Local Network',
+            'city': 'Local Network',
+            'latitude': None,
+            'longitude': None,
+            'timezone': 'Unknown',
+            'isp': 'Private Network'
+        }
+    try:
         import requests
-        response = requests.get(f'https://ipapi.co/{ip_address}/json/', timeout=5)
-        
-        if response.status_code == 200:
-            data = response.json()
-            return {
-                'country': data.get('country_name', 'Unknown'),
-                'country_code': data.get('country_code', 'Unknown'),
-                'region': data.get('region', 'Unknown'),
-                'city': data.get('city', 'Unknown'),
-                'latitude': data.get('latitude'),
-                'longitude': data.get('longitude'),
-                'timezone': data.get('timezone', 'Unknown'),
-                'isp': data.get('org', 'Unknown')
-            }
-    except Exception as e:
-        print(f"Error getting location: {e}")
+    except ImportError:
+        print("requests library not installed. Install with: pip install requests")
         return {
             'country': 'Unknown',
             'country_code': 'Unknown',
@@ -107,6 +114,24 @@ def get_location_from_ip(ip_address):
             'isp': 'Unknown'
         }
     
+    try:
+        response = requests.get(f'https://ipapi.co/{ip_address}/json/', timeout=5)
+        
+        if response.status_code == 200:
+            data = response.json()
+            return {  # Don't forget this return!
+                'country': data.get('country_name', 'Unknown'),
+                'country_code': data.get('country_code', 'Unknown'),
+                'region': data.get('region', 'Unknown'),
+                'city': data.get('city', 'Unknown'),
+                'latitude': data.get('latitude'),
+                'longitude': data.get('longitude'),
+                'timezone': data.get('timezone', 'Unknown'),
+                'isp': data.get('org', 'Unknown')
+            }
+    except Exception as e:
+        print(f"Error getting location: {e}")
+    
     return {
         'country': 'Unknown',
         'country_code': 'Unknown',
@@ -117,7 +142,6 @@ def get_location_from_ip(ip_address):
         'timezone': 'Unknown',
         'isp': 'Unknown'
     }
-
 @app.route('/register', methods=['POST'])
 def register_post():
     phone = request.form.get('phone')
@@ -184,7 +208,7 @@ def register_post():
         # Clear captcha from session after successful registration
         session.pop('captcha_code', None)
         
-        flash('Registration successful! Your account will be activated by the admin.', 'success')
+        flash('Registration successful! ', 'success')
         return redirect(url_for('auth'))  # Redirect to login form
     
     except Exception as e:

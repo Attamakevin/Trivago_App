@@ -134,7 +134,7 @@ const TranslationSystem = {
     // Debug logging
     log(message, type = 'info') {
         if (this.state.debugMode) {
-            console.log(`[Translation] ${message}`);
+            // console.log(`[Translation] ${message}`);
         }
     },
 
@@ -424,12 +424,12 @@ const TranslationSystem = {
     },
 
     showError(message) {
-        console.error('[Translation Error]', message);
+        // console.error('[Translation Error]', message);
         // You can implement custom error display here
     },
 
     showSuccess(message) {
-        console.log('[Translation Success]', message);
+        // console.log('[Translation Success]', message);
         // You can implement custom success display here
     },
 

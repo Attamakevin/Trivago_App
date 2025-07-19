@@ -987,14 +987,12 @@ function closeCompactModal() {
 
 // Redirect Functions (customize these URLs)
 function redirectToLogin() {
-    alert('Redirecting to login page...');
     window.location.href = "./login";
     closeLoginModal();
     closeCompactModal();
 }
 
 function redirectToSignup() {
-    alert('Redirecting to signup page... ');
     window.location.href = "./register";
     closeLoginModal();
 }

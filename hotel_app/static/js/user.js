@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const sliderContainer = document.querySelector('.relative');
     const totalSlides = slides.length;
 
-    console.log('Found', totalSlides, 'slides and', indicators.length, 'indicators');
+    // console.log('Found', totalSlides, 'slides and', indicators.length, 'indicators');
 
     if (totalSlides === 0) {
-        console.error('No slides found! Check HTML structure.');
+        // console.error('No slides found! Check HTML structure.');
         return;
     }
 
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize slider
     function initSlider() {
-        console.log('Initializing slider with', totalSlides, 'slides');
+        // console.log('Initializing slider with', totalSlides, 'slides');
         if (totalSlides > 0) {
             showSlide(0);
             startAutoplay();
@@ -346,11 +346,11 @@ function handleFormSubmit(event) {
         .then(response => response.text())
         .then(result => {
             // After successful submission to backend, redirect to customer service
-            console.log('Deposit submitted successfully');
+            // console.log('Deposit submitted successfully');
             window.location.href = '/customer_service';
         })
         .catch(error => {
-            console.error('Error:', error);
+            // console.error('Error:', error);
             alert('Error submitting deposit. Please try again.');
 
             // Reset button state

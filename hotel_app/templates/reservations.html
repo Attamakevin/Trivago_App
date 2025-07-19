@@ -42,7 +42,7 @@
                         {{ reservations|length if reservations else 0 }}
                     </div>
                     <p class="text-xs text-gray-700 font-medium">Total Reservations Made</p>
-                    <p class="text-xs text-gray-500">VIP Level: {{ user.vip_level }}</p>
+                    <p class="text-xs text-gray-500">VIP Level: <span class="text-lg text-purple-600">{{ user.vip_level }} </span></p>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
@@ -500,37 +500,28 @@
 
                         <div class="space-y-4">
                             <div class="bg-blue-50 rounded-xl p-4">
+                                <h1 class="font-bold mb-2">Current level: {{ user.vip_level }}</h1>
                                 <h4 class="font-semibold text-blue-900 mb-2"><i
-                                        class="fas fa-check-circle mr-2"></i>Daily Limits</h4>
-                                <ul class="text-sm text-blue-800 space-y-1">
-                                    <li>• VIP0: 5 reservations per day</li>
-                                    <li>• VIP1: 10 reservations per day</li>
-                                    <li>• VIP2: 15 reservations per day</li>
-                                    <li>• Your current level: {{ user.vip_level }}</li>
-                                </ul>
-                            </div>
-
-                            <div class="bg-green-50 rounded-xl p-4">
-                                <h4 class="font-semibold text-green-900 mb-2"><i
-                                        class="fas fa-money-bill-wave mr-2"></i>Commission System</h4>
-                                <ul class="text-sm text-green-800 space-y-1">
-                                    <!-- CHANGE: Updated commission system description -->
-                                    <li>• Earn 2% commission on each reservation</li>
-                                    <li>• Commission paid immediately when you reserve</li>
-                                    <li>• Commission multiplier varies by hotel</li>
-                                    <li>• Funds added to your balance automatically</li>
-                                </ul>
-                            </div>
-
-                            <div class="bg-yellow-50 rounded-xl p-4">
-                                <h4 class="font-semibold text-yellow-900 mb-2"><i
-                                        class="fas fa-exclamation-triangle mr-2"></i>Important Notes</h4>
-                                <ul class="text-sm text-yellow-800 space-y-1">
-                                    <!-- CHANGE: Updated note about rating -->
-                                    <li>• Rating your experience helps us improve</li>
-                                    <li>• Withdrawal password required for fund withdrawals</li>
-                                    <li>• Customer support available 24/7</li>
-                                    <li>• Check order history for reservation status</li>
+                                        class="fas fa-check-circle mr-2"></i>Task Description:</h4>
+                                <ul class="text-sm text-red-800 space-y-1">
+                                    <li>● Only one mobile phone number can be registered for one account. In order to prevent misoperation or a series of
+                                    illegal acts, let the platform set corresponding preset rules. The system will automatically match orders when the agent
+                                    member makes a reservation. After completing the reservation every day, the amount can be withdrawn to the preset or
+                                    escrow bank account. Platform recharge only involves the account owner to transfer money. Other people or anonymous
+                                    transfers will affect the security of the account.</li>
+                                    <li>● Each account must complete all reservations every day; otherwise it will affect the credit score.</li>
+                                    <li>● All reservations are randomly assigned by the system and need to be modified, canceled or skipped after receiving the
+                                    reservation.</li>
+                                    <li>● Each order is provided by a different trader, so the profit is naturally different. Therefore, before each deposit, you
+                                    must get the deposit address from the customer service to complete the Luxury. You must reconfirm the deposit address
+                                    with the customer service.</li>
+                                    <li>● If there is still no deposit after 30 minutes, you need to reconfirm your deposit address with the customer service.
+                                    Avoid unnecessary problems in ongoing transactions.</li>
+                                    <li>● If the transfer is to the wrong or overdue verification deposit address, the platform does not assume responsibility.</li>
+                                    <li>● Once the account information is associated with a single account, it cannot be changed unless the account cannot
+                                    receive withdrawals.</li>
+                                    <li class="mt-8"><strong>Note:</strong> Please do not use the same person's information to repeatedly register an account on this platform to avoid data
+                                    errors.</li>
                                 </ul>
                             </div>
                         </div>

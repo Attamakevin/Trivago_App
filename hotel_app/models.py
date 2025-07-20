@@ -487,3 +487,28 @@ class SystemSettings(db.Model):
             db.session.add(setting)
         db.session.commit()
         return setting
+    # Database Model (add to your models.py)
+class LuxuryOrder(db.Model):
+    __tablename__ = 'luxury_orders'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    title = db.Column(db.String(255), nullable=False)
+    description = db.Column(db.Text)
+    amount = db.Column(db.Float, nullable=False)
+    image_url = db.Column(db.String(500))
+    status = db.Column(db.String(50), default='active')  # active, claimed, expired
+    created_by = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)  # Admin who created it
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    claimed_at = db.Column(db.DateTime)
+    expires_at = db.Column(db.DateTime)  # Optional expiration
+    
+    # Relationships
+    user = db.relationship('User', foreign_keys=[user_id], backref='luxury_orders')
+    admin = db.relationship('User', foreign_keys=[created_by])
+    
+    def is_expired(self):
+        return self.expires_at and datetime.utcnow() > self.expires_at
+    
+    def can_claim(self):
+        return self.status == 'active' and not self.is_expired()

@@ -1,13 +1,13 @@
 # hotel_app/routes.py
 from flask import render_template, redirect, url_for, flash, request,jsonify, session
 from hotel_app import app, db
-from hotel_app.models import User, Hotel,UserHotelAssignment,Reservation, DepositRequest, WithdrawalRequest, EventAd, Admin, InvitationCode
-from datetime import datetime, date
+from hotel_app.models import User, Hotel,LuxuryOrder, UserHotelAssignment,Reservation, DepositRequest, WithdrawalRequest, EventAd, Admin, InvitationCode
+from datetime import datetime, date,timedelta
 from flask_login import login_required, login_user, logout_user, current_user
 @app.route('/')
 def home():
     return render_template('home.html')
-from flask import render_template, request, redirect, url_for, flash, session
+from flask import render_template, request,  url_for, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 import random
 from hotel_app import db
@@ -338,7 +338,7 @@ def reserve(hotel_id):
             }), 403
 
         # Calculate commission
-        commission = 0.02 * hotel.price * hotel.commission_multiplier
+        commission = hotel_assignment.custom_commission * hotel.commission_multiplier
         
         # Generate unique order number
         order_number = f"ORD{user.id}{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -401,13 +401,30 @@ def reservations():
     
     user = User.query.get(session['user_id'])
     
-    # Get all hotels assigned to this user
-    all_assigned_hotels = db.session.query(Hotel).join(
+    # Get all hotels assigned to this user WITH commission information
+    assigned_hotels_query = db.session.query(
+        Hotel, 
+        UserHotelAssignment.custom_commission,
+        UserHotelAssignment.created_at
+    ).join(
         UserHotelAssignment, 
         Hotel.id == UserHotelAssignment.hotel_id
     ).filter(
         UserHotelAssignment.user_id == user.id
-    ).order_by(Hotel.id).all()  # Order by ID for consistent ordering
+    ).order_by(Hotel.id)  # Order by ID for consistent ordering
+    
+    all_assigned_hotels_data = assigned_hotels_query.all()
+    all_assigned_hotels = [hotel for hotel, commission, assigned_at in all_assigned_hotels_data]
+    
+    # Create a mapping of hotel_id to commission for easy lookup
+    hotel_commission_map = {
+        hotel.id: commission for hotel, commission, assigned_at in all_assigned_hotels_data
+    }
+    
+    # Create a mapping of hotel_id to assignment date for easy lookup
+    hotel_assignment_date_map = {
+        hotel.id: assigned_at for hotel, commission, assigned_at in all_assigned_hotels_data
+    }
     
     # Get hotels that have been reserved AND rated by this user
     completed_reservations = db.session.query(Reservation).filter(
@@ -425,11 +442,28 @@ def reservations():
     # Get the next hotel to display (first available hotel)
     current_hotel = available_hotels[0] if available_hotels else None
     
+    # Get current hotel's commission if available
+    current_hotel_commission = hotel_commission_map.get(current_hotel.id) if current_hotel else None
+    current_hotel_assignment_date = hotel_assignment_date_map.get(current_hotel.id) if current_hotel else None
+    
     # Debug information
     print(f"DEBUG: User {user.id} has {len(all_assigned_hotels)} total assigned hotels")
     print(f"DEBUG: Completed reservations: {len(completed_reservations)}")
     print(f"DEBUG: Completed hotel IDs: {completed_hotel_ids}")
     print(f"DEBUG: Available hotels: {len(available_hotels)}")
+    
+    # Debug: Show commission information
+    print(f"DEBUG: Hotel commission mapping:")
+    for hotel_id, commission in hotel_commission_map.items():
+        hotel_name = next((h.name for h in all_assigned_hotels if h.id == hotel_id), "Unknown")
+        print(f"  - Hotel ID {hotel_id} ({hotel_name}): ${commission}")
+    
+    if current_hotel:
+        print(f"DEBUG: Current hotel to display: {current_hotel.name} (ID: {current_hotel.id})")
+        print(f"DEBUG: Current hotel commission: ${current_hotel_commission}")
+        print(f"DEBUG: Current hotel assigned at: {current_hotel_assignment_date}")
+    else:
+        print("DEBUG: No more hotels available for this user - all completed!")
     
     # Debug: Show all reservations for this user
     all_user_reservations = Reservation.query.filter_by(user_id=user.id).all()
@@ -437,15 +471,11 @@ def reservations():
     for res in all_user_reservations:
         print(f"  - Hotel ID: {res.hotel_id}, Status: {res.status}, Rating: {res.rating}")
     
-    # Debug: Show available hotels
+    # Debug: Show available hotels with their commissions
     print(f"DEBUG: Available hotels:")
     for hotel in available_hotels:
-        print(f"  - {hotel.name} (ID: {hotel.id})")
-    
-    if current_hotel:
-        print(f"DEBUG: Current hotel to display: {current_hotel.name} (ID: {current_hotel.id})")
-    else:
-        print("DEBUG: No more hotels available for this user - all completed!")
+        commission = hotel_commission_map.get(hotel.id, 'Unknown')
+        print(f"  - {hotel.name} (ID: {hotel.id}) - Commission: ${commission}")
     
     # Since commissions are now paid immediately, we don't need to process unpaid ones
     # But keep this logic for any legacy reservations that might exist
@@ -480,20 +510,23 @@ def reservations():
         Hotel, Reservation.hotel_id == Hotel.id
     ).filter(Reservation.user_id == user.id).order_by(Reservation.timestamp.desc()).all()
     
-    # Format reservations for template
+    # Format reservations for template with assignment commission information
     formatted_reservations = []
     for reservation, hotel in user_reservations:
+        assignment_commission = hotel_commission_map.get(hotel.id, 0)  # Get commission from assignment
         formatted_reservations.append({
             'id': reservation.id,
             'hotel_name': hotel.name,
             'location': f"{hotel.name} Location",
             'price': hotel.price,
-            'commission': reservation.commission_earned,
+            'commission': reservation.commission_earned,  # Commission from reservation
+            'assignment_commission': assignment_commission,  # Commission from assignment
             'status': reservation.status.lower(),
             'created_at': reservation.timestamp,
             'rated': reservation.rating is not None,
             'commission_paid': reservation.commission_paid,
-            'rating': reservation.rating
+            'rating': reservation.rating,
+            'assigned_at': hotel_assignment_date_map.get(hotel.id)
         })
     
     # Calculate user stats for display
@@ -502,6 +535,9 @@ def reservations():
     deposit_balance = 540.00
     active_bookings = len([r for r in formatted_reservations if r['status'] in ['processing', 'confirmed']])
     
+    # Calculate total potential commission from all assignments
+    total_potential_commission = sum(hotel_commission_map.values())
+    
     user_stats = {
         'total_commission': total_commission,
         'trial_bonus': trial_bonus,
@@ -509,15 +545,29 @@ def reservations():
         'active_bookings': active_bookings,
         'completed_hotels': len(completed_hotel_ids),
         'total_assigned_hotels': len(all_assigned_hotels),
-        'remaining_hotels': len(available_hotels)
+        'remaining_hotels': len(available_hotels),
+        'total_potential_commission': total_potential_commission,  # New stat
+        'current_hotel_commission': current_hotel_commission  # New stat
     }
     
     print(f"Final user balance being sent to template: {user.balance}")
+    print(f"Total potential commission from assignments: ${total_potential_commission}")
+    
+    # Pass the current hotel with its commission information
+    current_hotel_data = None
+    if current_hotel:
+        current_hotel_data = {
+            'hotel': current_hotel,
+            'commission': current_hotel_commission,
+            'assigned_at': current_hotel_assignment_date
+        }
     
     # Pass only the current hotel (or None if all are completed) and additional stats
     return render_template('reservations.html', 
                          hotels=[current_hotel] if current_hotel else [], 
                          current_hotel=current_hotel,
+                         current_hotel_data=current_hotel_data,  # New data with commission
+                         hotel_commission_map=hotel_commission_map,  # All hotel commissions
                          user=user, 
                          reservations=formatted_reservations, 
                          user_stats=user_stats)
@@ -1641,6 +1691,26 @@ def api_update_user_vip(user_id):
         'old_vip': old_vip_level,
         'new_vip': new_vip_level
     })
+    # API endpoint for AJAX VIP updates (optional)
+@app.route('/admin/api/users/<int:user_id>/member_point', methods=['PUT'])
+@admin_required
+def api_update_user_member_point(user_id):
+    user = User.query.get_or_404(user_id)
+    data = request.get_json()
+    
+    new_member_point = data.get('member_point')
+    
+    
+    old_member_point = user.member_points
+    user.member_points = new_member_point
+    db.session.commit()
+    
+    return jsonify({
+        'success': True,
+        'message': f'member point updated from {old_member_point} to {new_member_point}',
+        'old_member_point': old_member_point,
+        'new_member_point': new_member_point
+    })
 
 # Helper route to get VIP level statistics
 @app.route('/admin/users/vip_stats')
@@ -2702,3 +2772,173 @@ def hotel_price_analysis():
     return render_template('admin_hotel_price_analysis.html',
                          price_analysis=analysis,
                          category_analysis=category_analysis)
+# Admin Route to Create Luxury Order
+@app.route('/admin/luxury_orders/create', methods=['GET', 'POST'])
+@admin_required
+def admin_create_luxury_order():
+    if request.method == 'GET':
+        users = User.query.filter_by(is_admin=False).order_by(User.username).all()
+        return render_template('admin/create_luxury_order.html', users=users)
+    
+    try:
+        data = request.get_json() if request.is_json else request.form
+        
+        # Validate required fields
+        required_fields = ['user_id', 'title', 'amount']
+        for field in required_fields:
+            if not data.get(field):
+                return jsonify({'error': f'{field} is required'}), 400
+        
+        # Get user
+        user = User.query.get_or_404(data['user_id'])
+        
+        # Create luxury order
+        luxury_order = LuxuryOrder(
+            user_id=user.id,
+            title=data['title'],
+            description=data.get('description', ''),
+            amount=float(data['amount']),
+            image_url=data.get('image_url', ''),
+            created_by=session['user_id']
+        )
+        
+        # Set expiration if provided
+        if data.get('expires_in_hours'):
+            expires_in_hours = int(data['expires_in_hours'])
+            luxury_order.expires_at = datetime.utcnow() + timedelta(hours=expires_in_hours)
+        
+        db.session.add(luxury_order)
+        db.session.commit()
+        
+        if request.is_json:
+            return jsonify({
+                'success': True,
+                'message': f'Luxury order created successfully for {user.contact}',
+                'order_id': luxury_order.id
+            })
+        else:
+            flash(f'Luxury order created successfully for {user.contact}!', 'success')
+            return redirect(url_for('admin_luxury_orders'))
+            
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error creating luxury order: {str(e)}")
+        if request.is_json:
+            return jsonify({'error': str(e)}), 500
+        else:
+            flash(f'Error creating luxury order: {str(e)}', 'error')
+            return redirect(url_for('admin_create_luxury_order'))
+
+
+# Admin Route to View All Luxury Orders
+@app.route('/admin/luxury_orders')
+@admin_required
+def admin_luxury_orders():
+    page = request.args.get('page', 1, type=int)
+    per_page = 20
+    
+    orders = LuxuryOrder.query.join(User, LuxuryOrder.user_id == User.id)\
+                             .order_by(LuxuryOrder.created_at.desc())\
+                             .paginate(page=page, per_page=per_page, error_out=False)
+    
+    return render_template('admin/luxury_orders.html', orders=orders)
+
+
+# User Route to Get Active Luxury Orders (for popup)
+@app.route('/api/luxury_orders/active')
+def get_active_luxury_orders():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    user_id = session['user_id']
+    
+    active_orders = LuxuryOrder.query.filter_by(
+        user_id=user_id,
+        status='active'
+    ).filter(
+        db.or_(
+            LuxuryOrder.expires_at.is_(None),
+            LuxuryOrder.expires_at > datetime.utcnow()
+        )
+    ).order_by(LuxuryOrder.created_at.desc()).all()
+    
+    orders_data = []
+    for order in active_orders:
+        orders_data.append({
+            'id': order.id,
+            'title': order.title,
+            'description': order.description,
+            'amount': order.amount,
+            'image_url': order.image_url,
+            'created_at': order.created_at.strftime('%Y-%m-%d %H:%M'),
+            'expires_at': order.expires_at.strftime('%Y-%m-%d %H:%M') if order.expires_at else None
+        })
+    
+    return jsonify({'orders': orders_data})
+
+
+# User Route to Claim Luxury Order
+@app.route('/api/luxury_orders/<int:order_id>/claim', methods=['POST'])
+def claim_luxury_order(order_id):
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        user_id = session['user_id']
+        user = User.query.get(user_id)
+        luxury_order = LuxuryOrder.query.get_or_404(order_id)
+        
+        # Validate ownership
+        if luxury_order.user_id != user_id:
+            return jsonify({'error': 'Access denied'}), 403
+        
+        # Check if can claim
+        if not luxury_order.can_claim():
+            return jsonify({'error': 'This order cannot be claimed'}), 400
+        
+        # Credit user account
+        old_balance = user.balance
+        user.balance += luxury_order.amount
+        
+        # Update order status
+        luxury_order.status = 'claimed'
+        luxury_order.claimed_at = datetime.utcnow()
+        
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': f'${luxury_order.amount:.2f} has been credited to your account!',
+            'amount_credited': luxury_order.amount,
+            'old_balance': old_balance,
+            'new_balance': user.balance,
+            'order_title': luxury_order.title
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error claiming luxury order: {str(e)}")
+        return jsonify({'error': str(e)}), 500
+
+
+# Admin API Route to Delete/Cancel Luxury Order
+@app.route('/admin/api/luxury_orders/<int:order_id>/cancel', methods=['DELETE'])
+@admin_required
+def admin_cancel_luxury_order(order_id):
+    try:
+        luxury_order = LuxuryOrder.query.get_or_404(order_id)
+        
+        if luxury_order.status == 'claimed':
+            return jsonify({'error': 'Cannot cancel already claimed order'}), 400
+        
+        luxury_order.status = 'expired'
+        db.session.commit()
+        
+        return jsonify({
+            'success': True,
+            'message': 'Luxury order cancelled successfully'
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 500

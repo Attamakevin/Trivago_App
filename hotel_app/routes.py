@@ -207,7 +207,7 @@ def register_post():
 
         # Clear captcha from session after successful registration
         session.pop('captcha_code', None)
-        
+        new_user.trial_bonus = 564.00
         flash('Registration successful! ', 'success')
         return redirect(url_for('auth'))  # Redirect to login form
     
@@ -497,7 +497,8 @@ def reservations():
         total_new_commission += reservation.commission_earned
         
         print(f"DEBUG: User balance after: {user.balance}")
-    
+        user.trial_bonus = 0.0 # reset trial bonus after processing commissions
+
     # Commit any legacy commission updates
     if unpaid_reservations:
         db.session.add(user)
@@ -1820,6 +1821,7 @@ def approve_deposit(deposit_id):
                 if user:
                     old_balance = user.balance
                     user.balance += deposit.amount
+                    user.deposit_balance += deposit.amount
                     logger.debug(f"Updated user {user.id} balance from ${old_balance} to ${user.balance}")
                     
                     # Commit all changes together

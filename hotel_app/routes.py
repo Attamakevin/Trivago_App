@@ -2843,7 +2843,7 @@ def admin_luxury_orders():
                              .order_by(LuxuryOrder.created_at.desc())\
                              .paginate(page=page, per_page=per_page, error_out=False)
     
-    return render_template('admin/luxury_orders.html', orders=orders)
+    return render_template('admin_luxury_orders.html', orders=orders)
 
 
 # User Route to Get Active Luxury Orders (for popup)

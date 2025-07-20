@@ -532,8 +532,8 @@ def reservations():
     
     # Calculate user stats for display
     total_commission = sum([r.commission_earned for r in Reservation.query.filter_by(user_id=user.id, commission_paid=True).all()])
-    trial_bonus = 250.00
-    deposit_balance = 540.00
+    trial_bonus = user.trial_bonus if hasattr(user, 'trial_bonus') else 0.0
+    deposit_balance = user.deposit_balance if hasattr(user, 'deposit_balance') else 0.0
     active_bookings = len([r for r in formatted_reservations if r['status'] in ['processing', 'confirmed']])
     
     # Calculate total potential commission from all assignments

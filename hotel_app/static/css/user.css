@@ -748,3 +748,34 @@ input:checked+.slider:before {
     border-radius: 5px;
     margin: 15px 0;
 }
+.luxury-popup-slide-in {
+    animation: luxurySlideIn 0.5s ease-out forwards;
+}
+
+@keyframes luxurySlideIn {
+    from {
+        transform: translateY(-100%) scale(0.8);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+/* Luxury order card gradient */
+.luxury-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+/* Pulse animation for claim button */
+.pulse-glow {
+    animation: pulseGlow 2s infinite;
+}
+
+/* Shimmer effect for luxury items */
+.luxury-shimmer::before {
+    content: '';
+    position: absolute;
+    /* ... shimmer animation ... */
+}

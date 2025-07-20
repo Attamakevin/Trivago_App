@@ -53,7 +53,7 @@
                 <div class="text-center">
                     <h3 class="text-lg font-semibold opacity-90">Available Balance</h3>
                     <div class="mt-2">
-                        <span class="text-3xl md:text-4xl font-bold">${{ "%.2f"|format(user.balance) }}</span>
+                        <span class="text-3xl md:text-4xl font-bold">£{{ "%.2f"|format(user.balance) }}</span>
                     </div>
                 </div>
             </div>
@@ -67,19 +67,19 @@
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                         <button type="button" onclick="selectWithdrawAmount(100)"
                             class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-green-400">
-                            $100
+                            £100
                         </button>
                         <button type="button" onclick="selectWithdrawAmount(250)"
                             class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-green-400">
-                            $250
+                            £250
                         </button>
                         <button type="button" onclick="selectWithdrawAmount(500)"
                             class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-green-400">
-                            $500
+                            £500
                         </button>
                         <button type="button" onclick="selectWithdrawAmount(1000)"
                             class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-green-400">
-                            $1,000
+                            £1,000
                         </button>
                     </div>
 
@@ -88,12 +88,12 @@
                         <label class="block text-sm font-medium text-gray-700">Custom Amount</label>
                         <div class="relative">
                             <span
-                                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
+                                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">£</span>
                             <input type="number" id="customAmount" name="amount" placeholder="0.00" required
                                 class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
                                 min="25" max="{{ user.balance }}" step="0.01">
                         </div>
-                        <p class="text-sm text-gray-500">Minimum withdrawal: $25.00 | Maximum: ${{
+                        <p class="text-sm text-gray-500">Minimum withdrawal: £25.00 | Maximum: £{{
                             "%.2f"|format(user.balance) }} (your available balance)</p>
                     </div>
                 </div>
@@ -181,15 +181,15 @@
                     <div class="space-y-3">
                         <div class="flex justify-between py-2 border-b border-gray-100">
                             <span class="text-gray-600">Withdrawal Amount</span>
-                            <span class="font-medium" id="summaryAmount">$0.00</span>
+                            <span class="font-medium" id="summaryAmount">£0.00</span>
                         </div>
                         <div class="flex justify-between py-2 border-b border-gray-100">
                             <span class="text-gray-600">Processing Fee</span>
-                            <span class="font-medium" id="summaryFee">$0.00</span>
+                            <span class="font-medium" id="summaryFee">£0.00</span>
                         </div>
                         <div class="flex justify-between py-2 font-semibold text-lg">
                             <span>You'll Receive</span>
-                            <span id="summaryTotal">$0.00</span>
+                            <span id="summaryTotal">£0.00</span>
                         </div>
                     </div>
                 </div>
@@ -241,9 +241,9 @@
                                         <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
                                         <p class="text-xs text-yellow-800">
                                             <strong>Withdrawal Summary:</strong><br>
-                                            Amount: <span id="modalSummaryAmount">$0.00</span><br>
-                                            Fee: <span id="modalSummaryFee">$0.00</span><br>
-                                            You'll receive: <span id="modalSummaryTotal">$0.00</span>
+                                            Amount: <span id="modalSummaryAmount">£0.00</span><br>
+                                            Fee: <span id="modalSummaryFee">£0.00</span><br>
+                                            You'll receive: <span id="modalSummaryTotal">£0.00</span>
                                         </p>
                                     </div>
                                 </div>
@@ -313,9 +313,9 @@
                 const total = amount - fee;
 
                 // Update modal summary
-                document.getElementById('modalSummaryAmount').textContent = '$' + amount.toFixed(2);
-                document.getElementById('modalSummaryFee').textContent = '$' + fee.toFixed(2);
-                document.getElementById('modalSummaryTotal').textContent = '$' + total.toFixed(2);
+                document.getElementById('modalSummaryAmount').textContent = '£' + amount.toFixed(2);
+                document.getElementById('modalSummaryFee').textContent = '£' + fee.toFixed(2);
+                document.getElementById('modalSummaryTotal').textContent = '£' + total.toFixed(2);
 
                 document.getElementById('passwordVerificationModal').classList.remove('hidden');
             }
@@ -441,7 +441,7 @@
                 const hasWalletAddress = document.getElementById('walletAddress').value.trim();
 
                 if (amount > availableBalance) {
-                    alert(`Insufficient funds. Your available balance is $${availableBalance.toFixed(2)}`);
+                    alert(`Insufficient funds. Your available balance is £${availableBalance.toFixed(2)}`);
                     document.getElementById('customAmount').value = '';
                     withdrawSelectedAmount = 0;
                     document.querySelectorAll('.amount-btn').forEach(btn => {
@@ -454,9 +454,9 @@
                     const fee = calculateWithdrawFee(amount, hasPaymentMethod.value);
                     const total = amount - fee;
 
-                    document.getElementById('summaryAmount').textContent = '$' + amount.toFixed(2);
-                    document.getElementById('summaryFee').textContent = '$' + fee.toFixed(2);
-                    document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
+                    document.getElementById('summaryAmount').textContent = '£' + amount.toFixed(2);
+                    document.getElementById('summaryFee').textContent = '£' + fee.toFixed(2);
+                    document.getElementById('summaryTotal').textContent = '£' + total.toFixed(2);
                     document.getElementById('summary').style.display = 'block';
 
                     const btn = document.getElementById('withdrawBtn');
@@ -489,12 +489,12 @@
 
                 // Validations
                 if (amount < 25) {
-                    alert('Minimum withdrawal amount is $25.00');
+                    alert('Minimum withdrawal amount is £25.00');
                     return false;
                 }
 
                 if (amount > availableBalance) {
-                    alert(`Insufficient funds. Your available balance is $${availableBalance.toFixed(2)}`);
+                    alert(`Insufficient funds. Your available balance is £${availableBalance.toFixed(2)}`);
                     return false;
                 }
 

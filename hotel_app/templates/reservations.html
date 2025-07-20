@@ -42,7 +42,8 @@
                         {{ reservations|length if reservations else 0 }}
                     </div>
                     <p class="text-xs text-gray-700 font-medium">Total Reservations Made</p>
-                    <p class="text-xs text-gray-500">VIP Level: <span class="text-lg text-purple-600">{{ user.vip_level }} </span></p>
+                    <p class="text-xs text-gray-500">VIP Level: <span
+                            class="text-lg text-purple-600">{{ user.vip_level }} </span></p>
                 </div>
 
                 <div class="flex flex-col sm:flex-row gap-4 justify-center">
@@ -114,7 +115,7 @@
                                     <i class="fas fa-gift text-xl"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user_stats.trial_bonus) }}
+                            <div class="text-xl md:text-xl font-bold mb-1">£{{ "%.2f"|format(user_stats.trial_bonus) }}
                             </div>
                             <p class="text-sm text-[#101f56]">Trial Bonus</p>
                             <p class="text-xs text-[#101f56] mt-1">Expires in 15 days</p>
@@ -128,7 +129,7 @@
                                     <i class="fas fa-wallet text-xl text-teal-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user.balance) }}</div>
+                            <div class="text-xl md:text-xl font-bold mb-1">£{{ "%.2f"|format(user.balance) }}</div>
                             <p class="text-[#101f56] text-sm">Account Balance</p>
                             <p class="text-xs text-[#101f56] mt-1">Available for withdrawal</p>
                         </div>
@@ -141,7 +142,7 @@
                                     <i class="fas fa-chart-line text-xl text-orange-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">${{
+                            <div class="text-xl md:text-xl font-bold mb-1">£{{
                                 "%.2f"|format(user_stats.total_commission) }}</div>
                             <p class="text-[#101f56] text-sm">Earned Commission</p>
                             <p class="text-xs text-[#101f56] mt-1">Total earnings</p>
@@ -155,12 +156,51 @@
                                     <i class="fas fa-piggy-bank text-xl text-purple-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">${{ "%.2f"|format(user_stats.deposit_balance)
+                            <div class="text-xl md:text-xl font-bold mb-1">£{{ "%.2f"|format(user_stats.deposit_balance)
                                 }}</div>
                             <p class="text-[#101f56] text-sm">Booking Deposits</p>
                             <p class="text-xs text-[#101f56] mt-1">{{ user_stats.active_bookings }} active bookings</p>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LUXURY ORDER POPUP MODAL -->
+        <div id="luxuryOrderModal" class="fixed inset-0 bg-black bg-opacity-70 modal z-[100] hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div
+                    class="bg-white rounded-3xl shadow-2xl w-full max-w-md luxury-popup-slide-in relative overflow-hidden">
+                    <!-- Luxury Header -->
+                    <div class="luxury-gradient p-6 text-white text-center relative overflow-hidden">
+                        <div class="luxury-shimmer absolute inset-0"></div>
+                        <div class="relative z-10">
+                            <div
+                                class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-crown text-yellow-300 text-2xl"></i>
+                            </div>
+                            <h3 class="text-2xl font-bold mb-2">🎉 Luxury Order Available!</h3>
+                            <p class="text-sm opacity-90">Exclusive opportunity just for you</p>
+                        </div>
+                        <!-- ... close button ... -->
+                    </div>
+                    <!-- Luxury Order Content -->
+                    <div class="p-6" id="luxuryOrderContent">
+                        <!-- Content will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- LUXURY SUCCESS MODAL -->
+        <div id="luxurySuccessModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-[110] hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm slide-up text-center p-8">
+                    <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-crown text-yellow-600 text-3xl"></i>
+                    </div>
+                    <h3 class="text-2xl font-bold text-gray-900 mb-2">Luxury Order Claimed!</h3>
+                    <!-- ... success content ... -->
                 </div>
             </div>
         </div>
@@ -178,6 +218,90 @@
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-1 gap-6 px-6 py-6">
+                            {% if current_hotel_data %}
+                            <div
+                                class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
+                                <div class="relative">
+                                    <img src="{{ url_for('static', filename='images/hotel1.jpg') }}"
+                                        alt="{{ current_hotel_data.hotel.name }}" class="w-full h-48 object-cover">
+                                    <div
+                                        class="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                        Available
+                                    </div>
+                                    <!-- Commission Badge -->
+                                    <div
+                                        class="absolute top-3 left-3 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                        £{{ "%.2f"|format(current_hotel_data.commission) }} Commission
+                                    </div>
+                                </div>
+                                <div class="p-4">
+                                    <h4 class="font-bold text-lg text-gray-900 mb-2">{{ current_hotel_data.hotel.name }}
+                                    </h4>
+                                    <p class="text-gray-600 text-sm mb-3">{{ current_hotel_data.hotel.location }}</p>
+
+                                    <!-- Assignment Info -->
+                                    {% if current_hotel_data.assigned_at %}
+                                    <div class="text-xs text-gray-500 mb-2">
+                                        <i class="fas fa-calendar-alt mr-1"></i>
+                                        Assigned: {{ current_hotel_data.assigned_at.strftime('%B %d, %Y') }}
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="flex items-center justify-between mb-3">
+                                        <div class="flex items-center">
+                                            <!-- Clickable Star Rating Display -->
+                                            <div class="flex items-center">
+                                                {% for i in range(5) %}
+                                                <button type="button"
+                                                    class="hotel-star-btn text-sm transition-colors duration-200 {% if i < current_hotel_data.hotel.rating|round|int %}text-yellow-400{% else %}text-gray-300{% endif %}"
+                                                    data-hotel-id="{{ current_hotel_data.hotel.id }}"
+                                                    data-rating="{{ i + 1 }}"
+                                                    onclick="rateHotel({{ current_hotel_data.hotel.id }}, {{ i + 1 }})">
+                                                    <i class="fas fa-star"></i>
+                                                </button>
+                                                {% endfor %}
+                                                <span class="ml-2 text-sm text-gray-600">({{
+                                                    "%.1f"|format(current_hotel_data.hotel.rating) }})</span>
+                                            </div>
+                                        </div>
+                                        <span class="text-lg font-bold text-green-600">£{{
+                                            "%.2f"|format(current_hotel_data.hotel.price) }}</span>
+                                    </div>
+
+                                    <!-- Commission Details -->
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm font-medium text-blue-800">
+                                                <i class="fas fa-dollar-sign mr-1"></i>
+                                                Your Commission
+                                            </span>
+                                            <span class="text-lg font-bold text-blue-600">
+                                                £{{ "%.2f"|format(current_hotel_data.commission) }}
+                                                x
+                                                {{ "%.2f"|format(current_hotel_data.hotel.commission_multiplier or 1.0) }}
+                                            </span>
+
+                                        </div>
+
+                                        <p class="text-xs text-blue-600 mt-1">
+
+                                            Earn this amount when you complete your reservation and rating
+                                        </p>
+                                    </div>
+
+                                    <form method="POST"
+                                        action="{{ url_for('reserve', hotel_id=current_hotel_data.hotel.id) }}"
+                                        class="w-full">
+                                        <button type="button"
+                                            onclick="openPreReservationModal({{ current_hotel_data.hotel.id }}, '{{ current_hotel_data.hotel.name }}', {{ current_hotel_data.commission }})"
+                                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                            <i class="fas fa-calendar-plus mr-2"></i>Reserve Now
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            {% else %}
+                            <!-- Show when using legacy hotels list (fallback) -->
                             {% for hotel in hotels %}
                             <div
                                 class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
@@ -188,6 +312,13 @@
                                         class="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">
                                         Available
                                     </div>
+                                    <!-- Commission Badge from mapping -->
+                                    {% if hotel_commission_map and hotel.id in hotel_commission_map %}
+                                    <div
+                                        class="absolute top-3 left-3 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                                        £{{ "%.2f"|format(hotel_commission_map[hotel.id]) }} Commission
+                                    </div>
+                                    {% endif %}
                                 </div>
                                 <div class="p-4">
                                     <h4 class="font-bold text-lg text-gray-900 mb-2">{{ hotel.name }}</h4>
@@ -208,17 +339,33 @@
                                                     }})</span>
                                             </div>
                                         </div>
-                                        <span class="text-lg font-bold text-green-600">${{ "%.2f"|format(hotel.price)
+                                        <span class="text-lg font-bold text-green-600">£{{ "%.2f"|format(hotel.price)
                                             }}</span>
                                     </div>
-                                    <div class="text-xs text-gray-500 mb-3">
-                                        Commission: ${{ "%.2f"|format(0.02 * hotel.price * hotel.commission_multiplier)
-                                        }}
+
+                                    <!-- Commission Details -->
+                                    {% if hotel_commission_map and hotel.id in hotel_commission_map %}
+                                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm font-medium text-blue-800">
+                                                <i class="fas fa-dollar-sign mr-1"></i>
+                                                Your Commission
+                                            </span>
+                                            <span class="text-lg font-bold text-blue-600">
+                                                £{{ "%.2f"|format(hotel_commission_map[hotel.id]) }}
+                                            </span>
+                                        </div>
+                                        <p class="text-xs text-blue-600 mt-1">
+                                            x {{ "%.2f"|format(hotel.commission_multiplier or 1.0) }}
+                                            Earn this amount when you complete your reservation and rating
+                                        </p>
                                     </div>
+                                    {% endif %}
+
                                     <form method="POST" action="{{ url_for('reserve', hotel_id=hotel.id) }}"
                                         class="w-full">
                                         <button type="button"
-                                            onclick="openPreReservationModal({{ hotel.id }}, '{{ hotel.name }}')"
+                                            onclick="openPreReservationModal({{ hotel.id }}, '{{ hotel.name }}', {{ hotel_commission_map[hotel.id] if hotel_commission_map and hotel.id in hotel_commission_map else 0 }})"
                                             class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
                                             <i class="fas fa-calendar-plus mr-2"></i>Reserve Now
                                         </button>
@@ -226,87 +373,26 @@
                                 </div>
                             </div>
                             {% endfor %}
+                            {% endif %}
                         </div>
 
-                        {% if not hotels %}
+                        {% if not current_hotel_data and not hotels %}
                         <div class="text-center py-12">
-                            <i class="fas fa-hotel text-gray-300 text-6xl mb-4"></i>
-                            <h4 class="text-xl font-semibold text-gray-600 mb-2">No Hotels Available</h4>
-                            <p class="text-gray-500">Please check back later for available hotels.</p>
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Pre-Reservation Survey Modal -->
-        <div id="preReservationModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
-            <div class="flex items-center justify-center min-h-screen p-4">
-                <div class="bg-white rounded-2xl shadow-xl w-full max-w-md slide-up">
-                    <div class="p-6">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-xl font-bold text-gray-900">Tell us more about stay</h3>
-                            <button onclick="closePreReservationModal()" class="text-gray-400 hover:text-gray-600">
-                                <i class="fas fa-times text-xl"></i>
-                            </button>
-                        </div>
-
-                        <div class="mb-6">
-                            <h4 id="preReservationHotelName" class="text-lg font-semibold text-gray-800 mb-4"></h4>
-                            <p class="text-sm text-gray-600 mb-4">Please answer these quick questions before completing
-                                your reservation:</p>
-
-                            <!-- Survey Questions -->
-                            <div class="space-y-4">
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="serviceQuality"
-                                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                    <label for="serviceQuality" class="ml-3 text-sm text-gray-700">Are you satisfied
-                                        with our service quality?</label>
+                            <i class="fas fa-check-circle text-green-400 text-6xl mb-4"></i>
+                            <h4 class="text-xl font-semibold text-gray-600 mb-2">All Hotels Completed!</h4>
+                            <p class="text-gray-500 mb-4">Congratulations! You've completed all your assigned hotels,
+                                Contact Customer service for more hotel tasks.</p>
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-4 mx-4">
+                                <div class="flex items-center justify-center">
+                                    <i class="fas fa-trophy text-green-500 mr-2"></i>
+                                    <span class="text-green-700 font-medium">
+                                        Total Earned: £{{ "%.2f"|format(user_stats.total_commission) }}
+                                    </span>
                                 </div>
 
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="roomCleanliness"
-                                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                    <label for="roomCleanliness" class="ml-3 text-sm text-gray-700">Was the room clean
-                                        as expected?</label>
-                                </div>
-
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="staffFriendliness"
-                                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                    <label for="staffFriendliness" class="ml-3 text-sm text-gray-700">Did the staff
-                                        provide great services?</label>
-                                </div>
-
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="overallSatisfaction"
-                                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                    <label for="overallSatisfaction" class="ml-3 text-sm text-gray-700">Was the food
-                                        great?</label>
-                                </div>
-
-                                <div class="flex items-center">
-                                    <input type="checkbox" id="recommendService"
-                                        class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                    <label for="recommendService" class="ml-3 text-sm text-gray-700">Would you recommend
-                                        our service to others?</label>
-                                </div>
                             </div>
                         </div>
-
-                        <!-- Submit Button -->
-                        <div class="flex gap-3">
-                            <button onclick="closePreReservationModal()"
-                                class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 text-sm font-medium py-3 px-4 rounded-lg transition-colors">
-                                Cancel
-                            </button>
-                            <button id="submitPreReservationBtn" onclick="submitPreReservation()"
-                                class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-3 px-4 rounded-lg transition-colors">
-                                Complete Reservation
-                            </button>
-                        </div>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -357,7 +443,8 @@
                                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
                                     <div class="flex-1">
                                         <div class="flex items-center gap-3 mb-2">
-                                            <h4 class="font-semibold text-lg text-gray-900">{{ reservation.hotel_name }}
+                                            <h4 class="font-semibold text-lg text-gray-900">
+                                                {{ reservation.hotel_name }}
                                             </h4>
                                             <span
                                                 class="status-badge px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
@@ -369,9 +456,9 @@
                                             <p><i
                                                     class="fas fa-calendar mr-2"></i>{{ reservation.created_at.strftime('%B %d, %Y at %I:%M %p') }}
                                             </p>
-                                            <p><i class="fas fa-dollar-sign mr-2"></i>Price: ${{
+                                            <p><i class="fas fa-dollar-sign mr-2"></i>Price: £{{
                                                 "%.2f"|format(reservation.price) }}</p>
-                                            <p><i class="fas fa-coins mr-2"></i>Commission Earned: ${{
+                                            <p><i class="fas fa-coins mr-2"></i>Commission Earned: £{{
                                                 "%.2f"|format(reservation.commission) }}</p>
                                             <!-- CHANGE: Show commission payment status -->
                                             {% if reservation.commission_paid %}
@@ -412,80 +499,159 @@
             </div>
         </div>
 
-        <!-- CHANGE: Added Rating Modal -->
-        <div id="ratingModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
+        <!-- Pre-Reservation Survey Modal -->
+        <div id="preReservationModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div class="bg-white rounded-2xl shadow-xl w-full max-w-md slide-up">
                     <div class="p-6">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-xl font-bold text-gray-900">Rate Your Experience</h3>
-                            <button onclick="closeRatingModal()" class="text-gray-400 hover:text-gray-600">
+                            <h3 class="text-xl font-bold text-gray-900">Tell us more about your stay</h3>
+                            <button onclick="closePreReservationModal()" class="text-gray-400 hover:text-gray-600">
                                 <i class="fas fa-times text-xl"></i>
                             </button>
                         </div>
 
-                        <div class="text-center mb-6">
-                            <h4 id="ratingHotelName" class="text-lg font-semibold text-gray-800 mb-4"></h4>
+                        <div class="mb-6">
+                            <h4 id="preReservationHotelName" class="text-lg font-semibold text-gray-800 mb-2"></h4>
 
-                            <!-- Star Rating -->
-                            <div class="flex justify-center mb-4">
-                                <div class="flex space-x-1" id="starRating">
-                                    <button type="button"
-                                        class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
-                                        data-rating="1">
-                                        <i class="fas fa-star"></i>
-                                    </button>
-                                    <button type="button"
-                                        class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
-                                        data-rating="2">
-                                        <i class="fas fa-star"></i>
-                                    </button>
-                                    <button type="button"
-                                        class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
-                                        data-rating="3">
-                                        <i class="fas fa-star"></i>
-                                    </button>
-                                    <button type="button"
-                                        class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
-                                        data-rating="4">
-                                        <i class="fas fa-star"></i>
-                                    </button>
-                                    <button type="button"
-                                        class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
-                                        data-rating="5">
-                                        <i class="fas fa-star"></i>
-                                    </button>
+                            <!-- Commission Display in Modal -->
+                            <div id="preReservationCommission"
+                                class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+
+                                <p class="text-sm text-gray-600 mb-4">Please answer these quick questions before
+                                    completing your reservation:</p>
+
+                                <!-- Survey Questions -->
+                                <div class="space-y-4">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="serviceQuality"
+                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <label for="serviceQuality" class="ml-3 text-sm text-gray-700">Are you satisfied
+                                            with our service quality?</label>
+                                    </div>
+
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="roomCleanliness"
+                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <label for="roomCleanliness" class="ml-3 text-sm text-gray-700">Was the room
+                                            clean
+                                            as expected?</label>
+                                    </div>
+
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="staffFriendliness"
+                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <label for="staffFriendliness" class="ml-3 text-sm text-gray-700">Did the staff
+                                            provide great services?</label>
+                                    </div>
+
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="overallSatisfaction"
+                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <label for="overallSatisfaction" class="ml-3 text-sm text-gray-700">Was the food
+                                            great?</label>
+                                    </div>
+
+                                    <div class="flex items-center">
+                                        <input type="checkbox" id="recommendService"
+                                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <label for="recommendService" class="ml-3 text-sm text-gray-700">Would you
+                                            recommend
+                                            our service to others?</label>
+                                    </div>
                                 </div>
                             </div>
 
-                            <p class="text-sm text-gray-600 mb-4" id="ratingText">Click stars to rate</p>
+                            <!-- Submit Button -->
+                            <div class="flex gap-3">
+                                <button onclick="closePreReservationModal()"
+                                    class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 text-sm font-medium py-3 px-4 rounded-lg transition-colors">
+                                    Cancel
+                                </button>
+                                <button id="submitPreReservationBtn" onclick="submitPreReservation()"
+                                    class="flex-1 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-3 px-4 rounded-lg transition-colors">
+                                    Complete Reservation
+                                </button>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            </div>
 
-                        <!-- Feedback -->
-                        <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700 mb-2">Feedback (Optional)</label>
-                            <textarea id="ratingFeedback"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                rows="3" placeholder="Tell us about your experience..."></textarea>
-                        </div>
+            <!-- CHANGE: Added Rating Modal -->
+            <div id="ratingModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
+                <div class="flex items-center justify-center min-h-screen p-4">
+                    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md slide-up">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-6">
+                                <h3 class="text-xl font-bold text-gray-900">Rate Your Experience</h3>
+                                <button onclick="closeRatingModal()" class="text-gray-400 hover:text-gray-600">
+                                    <i class="fas fa-times text-xl"></i>
+                                </button>
+                            </div>
 
-                        <!-- Submit Button -->
-                        <div class="flex gap-3">
-                            <button onclick="closeRatingModal()"
-                                class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors">
-                                Cancel
-                            </button>
-                            <button id="submitRatingBtn" onclick="submitRating()"
-                                class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
-                                disabled>
-                                Submit Rating
-                            </button>
+                            <div class="text-center mb-6">
+                                <h4 id="ratingHotelName" class="text-lg font-semibold text-gray-800 mb-4"></h4>
+
+                                <!-- Star Rating -->
+                                <div class="flex justify-center mb-4">
+                                    <div class="flex space-x-1" id="starRating">
+                                        <button type="button"
+                                            class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                            data-rating="1">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                        <button type="button"
+                                            class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                            data-rating="2">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                        <button type="button"
+                                            class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                            data-rating="3">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                        <button type="button"
+                                            class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                            data-rating="4">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                        <button type="button"
+                                            class="star-btn text-3xl text-gray-300 hover:text-yellow-400 transition-colors"
+                                            data-rating="5">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <p class="text-sm text-gray-600 mb-4" id="ratingText">Click stars to rate</p>
+                            </div>
+
+                            <!-- Feedback -->
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-gray-700 mb-2">Feedback (Optional)</label>
+                                <textarea id="ratingFeedback"
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    rows="3" placeholder="Tell us about your experience..."></textarea>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <div class="flex gap-3">
+                                <button onclick="closeRatingModal()"
+                                    class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-medium py-3 px-4 rounded-lg transition-colors">
+                                    Cancel
+                                </button>
+                                <button id="submitRatingBtn" onclick="submitRating()"
+                                    class="flex-1 bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors"
+                                    disabled>
+                                    Submit Rating
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <!-- Rules Modal -->
         <div id="rulesModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
@@ -502,26 +668,39 @@
                             <div class="bg-blue-50 rounded-xl p-4">
                                 <h1 class="font-bold mb-2">Current level: {{ user.vip_level }}</h1>
                                 <h4 class="font-semibold text-blue-900 mb-2"><i
-                                        class="fas fa-check-circle mr-2"></i>Task Description:</h4>
+                                        class="fas fa-check-circle mr-2"></i>Task
+                                    Description:</h4>
                                 <ul class="text-sm text-red-800 space-y-1">
-                                    <li>● Only one mobile phone number can be registered for one account. In order to prevent misoperation or a series of
-                                    illegal acts, let the platform set corresponding preset rules. The system will automatically match orders when the agent
-                                    member makes a reservation. After completing the reservation every day, the amount can be withdrawn to the preset or
-                                    escrow bank account. Platform recharge only involves the account owner to transfer money. Other people or anonymous
-                                    transfers will affect the security of the account.</li>
-                                    <li>● Each account must complete all reservations every day; otherwise it will affect the credit score.</li>
-                                    <li>● All reservations are randomly assigned by the system and need to be modified, canceled or skipped after receiving the
-                                    reservation.</li>
-                                    <li>● Each order is provided by a different trader, so the profit is naturally different. Therefore, before each deposit, you
-                                    must get the deposit address from the customer service to complete the Luxury. You must reconfirm the deposit address
-                                    with the customer service.</li>
-                                    <li>● If there is still no deposit after 30 minutes, you need to reconfirm your deposit address with the customer service.
-                                    Avoid unnecessary problems in ongoing transactions.</li>
-                                    <li>● If the transfer is to the wrong or overdue verification deposit address, the platform does not assume responsibility.</li>
-                                    <li>● Once the account information is associated with a single account, it cannot be changed unless the account cannot
-                                    receive withdrawals.</li>
-                                    <li class="mt-8"><strong>Note:</strong> Please do not use the same person's information to repeatedly register an account on this platform to avoid data
-                                    errors.</li>
+                                    <li>● Only one mobile phone number can be registered for one account. In order
+                                        to prevent misoperation or a series of
+                                        illegal acts, let the platform set corresponding preset rules. The system
+                                        will automatically match orders when the agent
+                                        member makes a reservation. After completing the reservation every day, the
+                                        amount can be withdrawn to the preset or
+                                        escrow bank account. Platform recharge only involves the account owner to
+                                        transfer money. Other people or anonymous
+                                        transfers will affect the security of the account.</li>
+                                    <li>● Each account must complete all reservations every day; otherwise it will
+                                        affect the credit score.</li>
+                                    <li>● All reservations are randomly assigned by the system and need to be
+                                        modified, canceled or skipped after receiving the
+                                        reservation.</li>
+                                    <li>● Each order is provided by a different trader, so the profit is naturally
+                                        different. Therefore, before each deposit, you
+                                        must get the deposit address from the customer service to complete the
+                                        Luxury. You must reconfirm the deposit address
+                                        with the customer service.</li>
+                                    <li>● If there is still no deposit after 30 minutes, you need to reconfirm your
+                                        deposit address with the customer service.
+                                        Avoid unnecessary problems in ongoing transactions.</li>
+                                    <li>● If the transfer is to the wrong or overdue verification deposit address,
+                                        the platform does not assume responsibility.</li>
+                                    <li>● Once the account information is associated with a single account, it
+                                        cannot be changed unless the account cannot
+                                        receive withdrawals.</li>
+                                    <li class="mt-8"><strong>Note:</strong> Please do not use the same person's
+                                        information to repeatedly register an account on this platform to avoid data
+                                        errors.</li>
                                 </ul>
                             </div>
                         </div>
@@ -561,7 +740,8 @@
                         <i class="fas fa-exclamation-triangle text-red-600 text-3xl"></i>
                     </div>
                     <h3 class="text-2xl font-bold text-gray-900 mb-2">Reservation Failed</h3>
-                    <p id="errorMessage" class="text-gray-600 mb-6">An error occurred while processing your reservation.
+                    <p id="errorMessage" class="text-gray-600 mb-6">An error occurred while processing your
+                        reservation.
                     </p>
                     <button onclick="closeErrorModal()"
                         class="bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-6 rounded-xl transition-colors">
@@ -570,9 +750,207 @@
                 </div>
             </div>
         </div>
-
         <!-- CHANGE: Complete JavaScript Section - This is where all the changes are -->
         <script>
+            // ========== LUXURY ORDER FUNCTIONS ==========
+            let activeLuxuryOrders = [];
+            let luxuryCheckInterval = null;
+
+            // Initialize luxury order checking on page load
+            function initializeLuxuryOrderCheck() {
+                console.log('Initializing luxury order check...');
+                checkForActiveLuxuryOrders();
+
+                // Check every 30 seconds for new luxury orders
+                luxuryCheckInterval = setInterval(checkForActiveLuxuryOrders, 30000);
+            }
+
+            // Check for active luxury orders
+            async function checkForActiveLuxuryOrders() {
+                try {
+                    const response = await fetch('/api/luxury_orders/active', {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        const newOrders = data.orders || [];
+
+                        // Check if there are new orders to show
+                        if (newOrders.length > 0) {
+                            const newOrderIds = newOrders.map(order => order.id);
+                            const existingOrderIds = activeLuxuryOrders.map(order => order.id);
+
+                            // Only show popup if there are truly new orders
+                            const hasNewOrders = newOrderIds.some(id => !existingOrderIds.includes(id));
+
+                            if (hasNewOrders) {
+                                activeLuxuryOrders = newOrders;
+                                showLuxuryOrderPopup(newOrders);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error checking for luxury orders:', error);
+                }
+            }
+
+            // Show luxury order popup
+            function showLuxuryOrderPopup(orders) {
+                console.log('Showing luxury order popup with', orders.length, 'orders');
+
+                if (orders.length === 0) return;
+
+                const modal = document.getElementById('luxuryOrderModal');
+                const content = document.getElementById('luxuryOrderContent');
+
+                // Build content for all orders
+                let contentHTML = '';
+
+                orders.forEach((order, index) => {
+                    const isExpiring = order.expires_at &&
+                        new Date(order.expires_at) - new Date() < 3600000; // 1 hour
+
+                    contentHTML += `
+                        <div class="luxury-order-card mb-4 ${index > 0 ? 'border-t border-gray-200 pt-4' : ''}">
+                            <div class="relative overflow-hidden rounded-xl border-2 border-yellow-300 bg-gradient-to-br from-yellow-50 to-yellow-100 p-4">
+                                <div class="luxury-shimmer absolute inset-0"></div>
+                                <div class="relative z-10">
+                                    ${order.image_url ? `
+                                        <div class="w-16 h-16 mx-auto mb-3 rounded-xl overflow-hidden border-2 border-yellow-300">
+                                            <img src="${order.image_url}" alt="${order.title}" class="w-full h-full object-cover">
+                                        </div>
+                                    ` : `
+                                        <div class="w-16 h-16 bg-yellow-200 rounded-xl flex items-center justify-center mx-auto mb-3 border-2 border-yellow-300">
+                                            <i class="fas fa-gift text-yellow-600 text-2xl"></i>
+                                        </div>
+                                    `}
+                                    
+                                    <h4 class="font-bold text-lg text-gray-900 text-center mb-2">${order.title}</h4>
+                                    <p class="text-sm text-gray-600 text-center mb-3">${order.description}</p>
+                                    
+                                    <div class="bg-white rounded-lg p-3 mb-4 border border-yellow-200">
+                                        <div class="flex items-center justify-center">
+                                            <i class="fas fa-dollar-sign text-green-600 mr-2"></i>
+                                            <span class="text-2xl font-bold text-green-600">£${order.amount.toFixed(2)}</span>
+                                        </div>
+                                        <p class="text-xs text-green-600 text-center mt-1">Instant Credit</p>
+                                    </div>
+                                    
+                                    ${order.expires_at ? `
+                                        <div class="text-center mb-3">
+                                            <p class="text-xs ${isExpiring ? 'text-red-600 font-semibold' : 'text-gray-500'}">
+                                                <i class="fas fa-clock mr-1"></i>
+                                                ${isExpiring ? 'Expires Soon!' : 'Expires: ' + new Date(order.expires_at).toLocaleString()}
+                                            </p>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    <button onclick="claimLuxuryOrder(${order.id})" 
+                                        class="w-full pulse-glow bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105">
+                                        <i class="fas fa-hand-holding-usd mr-2"></i>Claim Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                content.innerHTML = contentHTML;
+                modal.classList.remove('hidden');
+
+                // Play a subtle notification sound (optional)
+                playNotificationSound();
+            }
+
+            // Claim luxury order
+            async function claimLuxuryOrder(orderId) {
+                const claimButton = event.target;
+                const originalText = claimButton.innerHTML;
+
+                // Disable button and show loading
+                claimButton.disabled = true;
+                claimButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Claiming...';
+
+                try {
+                    const response = await fetch(`/api/luxury_orders/${orderId}/claim`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok && data.success) {
+                        // Show success message
+                        document.getElementById('luxurySuccessMessage').textContent = data.message;
+                        document.getElementById('luxuryAmountCredited').textContent = `£${data.amount_credited.toFixed(2)}`;
+
+                        // Close luxury order modal and show success
+                        closeLuxuryOrderModal();
+                        document.getElementById('luxurySuccessModal').classList.remove('hidden');
+
+                        // Remove the claimed order from active orders
+                        activeLuxuryOrders = activeLuxuryOrders.filter(order => order.id !== orderId);
+
+                        // Update balance display if present on page
+                        updateBalanceDisplay(data.new_balance);
+
+                    } else {
+                        showNotification(data.error || 'Failed to claim luxury order', 'error');
+                    }
+
+                } catch (error) {
+                    console.error('Error claiming luxury order:', error);
+                    showNotification('Network error occurred', 'error');
+                } finally {
+                    // Re-enable button
+                    claimButton.disabled = false;
+                    claimButton.innerHTML = originalText;
+                }
+            }
+
+            // Close luxury order modal
+            function closeLuxuryOrderModal() {
+                const modal = document.getElementById('luxuryOrderModal');
+                const modalContent = modal.querySelector('.luxury-popup-slide-in');
+
+                modalContent.classList.remove('luxury-popup-slide-in');
+                modalContent.classList.add('luxury-popup-slide-out');
+
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modalContent.classList.remove('luxury-popup-slide-out');
+                    modalContent.classList.add('luxury-popup-slide-in');
+                }, 300);
+            }
+
+            // Close luxury success modal
+            function closeLuxurySuccessModal() {
+                document.getElementById('luxurySuccessModal').classList.add('hidden');
+                // Optionally refresh page or update balance
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            }
+
+            // Update balance display on page
+            function updateBalanceDisplay(newBalance) {
+                const balanceElements = document.querySelectorAll('[data-balance-display]');
+                balanceElements.forEach(element => {
+                    element.textContent = `£${newBalance.toFixed(2)}`;
+                });
+
+                // Update specific balance display if it exists
+                const balanceDisplay = document.querySelector('.text-xl.font-bold');
+                if (balanceDisplay && balanceDisplay.textContent.includes('£')) {
+                    balanceDisplay.textContent = `${newBalance.toFixed(2)}`;
+                }
+            }
             // UPDATED: Complete JavaScript to match your backend
             let currentReservationId = null;
             let currentHotelName = null;
@@ -860,20 +1238,44 @@
 
             function showNotification(message, type = 'info') {
                 const notification = document.createElement('div');
-                notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${type === 'success' ? 'bg-green-500 text-white' :
+                notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 ${type === 'success' ? 'bg-green-500 text-white' :
                     type === 'error' ? 'bg-red-500 text-white' :
                         type === 'warning' ? 'bg-yellow-500 text-black' :
                             'bg-blue-500 text-white'
                     }`;
-                notification.textContent = message;
+                notification.innerHTML = `
+                                    <div class="flex items-center">
+                                        <i class="fas fa-${type === 'success' ? 'check-circle' :
+                        type === 'error' ? 'exclamation-triangle' :
+                            type === 'warning' ? 'exclamation-circle' :
+                                'info-circle'
+                    } mr-2"></i>
+                                        <span>${message}</span>
+                                        <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                `;
+
                 document.body.appendChild(notification);
+
+                // Auto remove after 5 seconds
                 setTimeout(() => {
-                    notification.remove();
+                    if (notification.parentNode) {
+                        notification.style.opacity = '0';
+                        notification.style.transform = 'translateX(100%)';
+                        setTimeout(() => {
+                            notification.remove();
+                        }, 300);
+                    }
                 }, 5000);
             }
 
             // Initialize when DOM is loaded
             document.addEventListener('DOMContentLoaded', function () {
+
+                // ⭐ NEW: Initialize luxury order checking
+                initializeLuxuryOrderCheck();
                 // Star rating click handlers for reservation rating modal
                 document.querySelectorAll('.star-btn').forEach(btn => {
                     btn.addEventListener('click', function () {
@@ -922,24 +1324,53 @@
                     });
                 });
 
+                // Optional: Play notification sound (you can add this if you want)
+                function playNotificationSound() {
+                    // Create a subtle notification sound
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.5);
+                }
+
                 // Close modals when clicking outside
                 const modals = document.querySelectorAll('[id$="Modal"]');
                 modals.forEach(modal => {
                     modal.addEventListener('click', function (e) {
                         if (e.target === modal) {
-                            modal.classList.add('hidden');
+                            // Don't auto-close luxury order modal to prevent accidental dismissal
+                            if (modal.id !== 'luxuryOrderModal') {
+                                modal.classList.add('hidden');
+                            }
                         }
                     });
                 });
 
-                // Close modals with Escape key
                 document.addEventListener('keydown', function (e) {
                     if (e.key === 'Escape') {
                         modals.forEach(modal => {
                             if (!modal.classList.contains('hidden')) {
-                                modal.classList.add('hidden');
+                                // Don't auto-close luxury order modal to prevent accidental dismissal
+                                if (modal.id !== 'luxuryOrderModal') {
+                                    modal.classList.add('hidden');
+                                }
                             }
                         });
+                    }
+                });
+                // Cleanup interval when page unloads
+                window.addEventListener('beforeunload', function () {
+                    if (luxuryCheckInterval) {
+                        clearInterval(luxuryCheckInterval);
                     }
                 });
             });

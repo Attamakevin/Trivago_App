@@ -29,14 +29,14 @@
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-white text-sm md:text-md font-bold">Withdraw Funds</h1>
+                <h1 data-translate class="text-white text-sm md:text-md font-bold">Withdraw Funds</h1>
             </div>
         </header>
 
         <!-- Flash Messages -->
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
-        <div class="mb-4 max-w-4xl mx-auto px-4 pt-4">
+        <div data-translate class="mb-4 max-w-4xl mx-auto px-4 pt-4">
             {% for category, message in messages %}
             <div
                 class="p-3 rounded-lg {% if category == 'success' %}bg-green-100 text-green-800{% elif category == 'warning' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
@@ -51,7 +51,7 @@
             <!-- Available Balance -->
             <div class="withdraw-gradient rounded-2xl shadow-lg p-6 text-white">
                 <div class="text-center">
-                    <h3 class="text-lg font-semibold opacity-90">Available Balance</h3>
+                    <h3 data-translate class="text-lg font-semibold opacity-90">Available Balance</h3>
                     <div class="mt-2">
                         <span class="text-3xl md:text-4xl font-bold">£{{ "%.2f"|format(user.balance) }}</span>
                     </div>
@@ -62,7 +62,7 @@
             <form method="POST" onsubmit="return handleWithdrawFormSubmit(event)">
                 <!-- Quick Amount Selection -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Withdrawal Amount</h3>
+                    <h3 data-translate class="text-lg font-semibold text-gray-900 mb-4">Withdrawal Amount</h3>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                         <button type="button" onclick="selectWithdrawAmount(100)"
@@ -85,7 +85,7 @@
 
                     <!-- Custom Amount -->
                     <div class="space-y-4">
-                        <label class="block text-sm font-medium text-gray-700">Custom Amount</label>
+                        <label data-translate class="block text-sm font-medium text-gray-700">Custom Amount</label>
                         <div class="relative">
                             <span
                                 class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">£</span>
@@ -93,14 +93,14 @@
                                 class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
                                 min="25" max="{{ user.balance }}" step="0.01">
                         </div>
-                        <p class="text-sm text-gray-500">Minimum withdrawal: £25.00 | Maximum: £{{
+                        <p data-translate class="text-sm text-gray-500">Minimum withdrawal: £25.00 | Maximum: £{{
                             "%.2f"|format(user.balance) }} (your available balance)</p>
                     </div>
                 </div>
 
                 <!-- Withdrawal Methods -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
+                    <h3 data-translate class="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
 
                     <div class="space-y-3">
                         <!-- USDT -->
@@ -145,7 +145,7 @@
 
                 <!-- Wallet Address -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Wallet Address</h3>
+                    <h3 data-translate class="text-lg font-semibold text-gray-900 mb-4">Wallet Address</h3>
                     <div class="relative">
                         <label class="block text-sm font-medium text-gray-700 mb-4">Enter your wallet address</label>
                         <input type="text" name="wallet_address" id="walletAddress" required
@@ -156,7 +156,7 @@
                             class="absolute items-center right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
                             <i class="fas fa-copy"></i>
                         </button>
-                        <p class="text-xs text-gray-500 mt-3">Make sure to enter the correct wallet address. Funds sent
+                        <p data-translate class="text-xs text-gray-500 mt-3">Make sure to enter the correct wallet address. Funds sent
                             to wrong addresses cannot be recovered.</p>
                     </div>
                 </div>
@@ -168,8 +168,8 @@
                             <i class="fas fa-shield-alt text-blue-600 text-sm"></i>
                         </div>
                         <div>
-                            <h4 class="text-sm font-semibold text-blue-900">Security Protection</h4>
-                            <p class="text-xs text-blue-700">Your withdrawal will be secured with password verification
+                            <h4 data-translate class="text-sm font-semibold text-blue-900">Security Protection</h4>
+                            <p data-translate class="text-xs text-blue-700">Your withdrawal will be secured with password verification
                             </p>
                         </div>
                     </div>
@@ -177,14 +177,14 @@
 
                 <!-- Summary -->
                 <div id="summary" class="bg-white rounded-2xl shadow-lg p-6 mb-6" style="display: none;">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Withdrawal Summary</h3>
+                    <h3 data-translate class="text-lg font-semibold text-gray-900 mb-4">Withdrawal Summary</h3>
                     <div class="space-y-3">
                         <div class="flex justify-between py-2 border-b border-gray-100">
-                            <span class="text-gray-600">Withdrawal Amount</span>
+                            <span data-translate class="text-gray-600">Withdrawal Amount</span>
                             <span class="font-medium" id="summaryAmount">£0.00</span>
                         </div>
                         <div class="flex justify-between py-2 border-b border-gray-100">
-                            <span class="text-gray-600">Processing Fee</span>
+                            <span data-translate class="text-gray-600">Processing Fee</span>
                             <span class="font-medium" id="summaryFee">£0.00</span>
                         </div>
                         <div class="flex justify-between py-2 font-semibold text-lg">
@@ -200,7 +200,7 @@
                         class="w-full bg-gray-400 text-white font-medium py-4 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2"
                         disabled>
                         <i class="fas fa-minus"></i>
-                        <span>Withdraw Funds</span>
+                        <span data-translate>Withdraw Funds</span>
                     </button>
                 </div>
             </form>
@@ -216,14 +216,14 @@
                                 class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                                 <i class="fas fa-shield-alt text-green-600 text-xl"></i>
                             </div>
-                            <h3 class="text-xl font-bold text-gray-900">Security Verification</h3>
-                            <p class="text-gray-600 mt-2">Please enter your withdrawal password to continue</p>
+                            <h3 data-translate class="text-xl font-bold text-gray-900">Security Verification</h3>
+                            <p data-translate class="text-gray-600 mt-2">Please enter your withdrawal password to continue</p>
                         </div>
 
                         <form onsubmit="return handlePasswordVerification(event)">
                             <div class="space-y-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Withdrawal
+                                    <label data-translate class="block text-sm font-medium text-gray-700 mb-2">Withdrawal
                                         Password</label>
                                     <div class="relative">
                                         <input type="password" id="verificationPassword" required
@@ -240,7 +240,7 @@
                                     <div class="flex items-center">
                                         <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
                                         <p class="text-xs text-yellow-800">
-                                            <strong>Withdrawal Summary:</strong><br>
+                                            <strong data-translate>Withdrawal Summary:</strong><br>
                                             Amount: <span id="modalSummaryAmount">£0.00</span><br>
                                             Fee: <span id="modalSummaryFee">£0.00</span><br>
                                             You'll receive: <span id="modalSummaryTotal">£0.00</span>
@@ -250,11 +250,11 @@
                             </div>
 
                             <div class="flex gap-3 mt-6">
-                                <button type="button" onclick="closePasswordVerificationModal()"
+                                <button data-translate type="button" onclick="closePasswordVerificationModal()"
                                     class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 text-sm whitespace-nowrap font-medium py-3 px-4 rounded-xl transition-colors">
                                     Cancel
                                 </button>
-                                <button type="submit" id="verifyPasswordBtn"
+                                <button data-translate type="submit" id="verifyPasswordBtn"
                                     class="flex-1 bg-green-600 hover:bg-green-700 text-white whitespace-nowrap text-sm font-medium py-3 px-4 rounded-xl transition-colors">
                                     <i class="fas fa-check mr-2"></i>Confirm Withdrawal
                                 </button>
@@ -272,8 +272,8 @@
                     <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-check text-green-600 text-3xl"></i>
                     </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-2" id="successTitle">Success!</h3>
-                    <p class="text-gray-600 mb-6" id="successMessage">Operation completed successfully.</p>
+                    <h3 data-translate class="text-2xl font-bold text-gray-900 mb-2" id="successTitle">Success!</h3>
+                    <p data-translate class="text-gray-600 mb-6" id="successMessage">Operation completed successfully.</p>
                     <button onclick="closeSuccessModal()"
                         class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-xl transition-colors">
                         <i class="fas fa-thumbs-up mr-2"></i>Great!

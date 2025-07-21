@@ -43,12 +43,12 @@
                                 </select>
                             </div>
                             <div class="col-md-2">
-                                <label for="min_price" class="form-label">Min Price ($)</label>
+                                <label for="min_price" class="form-label">Min Price (£)</label>
                                 <input type="number" name="min_price" id="min_price" class="form-control"
                                     value="{{ min_price or '' }}" step="0.01" min="0">
                             </div>
                             <div class="col-md-2">
-                                <label for="max_price" class="form-label">Max Price ($)</label>
+                                <label for="max_price" class="form-label">Max Price (£)</label>
                                 <input type="number" name="max_price" id="max_price" class="form-control"
                                     value="{{ max_price or '' }}" step="0.01" min="0">
                             </div>
@@ -67,16 +67,16 @@
                                 <label class="form-label">Quick Price Filters:</label>
                                 <div class="btn-group flex-wrap" role="group">
                                     <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(0, 500)">
-                                        Budget ($0-$500)
+                                        Budget (£0-£500)
                                     </button>
                                     <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(500, 1500)">
-                                        Mid-Range ($500-$1500)
+                                        Mid-Range (£500-£1500)
                                     </button>
                                     <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(1500, null)">
-                                        Luxury ($1500+)
+                                        Luxury (£1500+)
                                     </button>
                                     <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(200, 2000)">
-                                        Custom ($200-$2000)
+                                        Custom (£200-£2000)
                                     </button>
                                 </div>
                             </div>                  </div>
@@ -91,10 +91,10 @@
                     <span class="badge bg-info">Category: {{ category_filter|title }}</span>
                     {% endif %}
                     {% if min_price %}
-                    <span class="badge bg-success">Min Price: ${{ min_price }}</span>
+                    <span class="badge bg-success">Min Price: £{{ min_price }}</span>
                     {% endif %}
                     {% if max_price %}
-                    <span class="badge bg-warning">Max Price: ${{ max_price }}</span>
+                    <span class="badge bg-warning">Max Price: £{{ max_price }}</span>
                     {% endif %}
                     <span class="badge bg-secondary">{{ hotels|length }} hotels found</span>
                 </div>
@@ -103,7 +103,7 @@
                 <!-- Price Statistics -->
                 {% if price_stats %}
                 <div class="alert alert-info">
-                    <strong>Price Range:</strong> ${{ price_stats.min_price }} - ${{ price_stats.max_price }}
+                    <strong>Price Range:</strong> £{{ price_stats.min_price }} - £{{ price_stats.max_price }}
                 </div>
                 {% endif %}
 
@@ -160,7 +160,7 @@
                                         </div>
 
                                         <div class="mt-2">
-                                            <span class="badge bg-primary price-badge">${{ hotel.price }}</span>
+                                            <span class="badge bg-primary price-badge">£{{ hotel.price }}</span>
                                             <span class="badge bg-secondary category-badge">{{ hotel.category }}</span>
                                         </div>
 
@@ -172,7 +172,7 @@
 
                                         <div class="mt-2">
                                             <label for="commission_{{ hotel.id }}" class="form-label small">Commission
-                                                ($)</label>
+                                                (£)</label>
                                             <input type="number" class="form-control form-control-sm"
                                                 name="commission_{{ hotel.id }}" id="commission_{{ hotel.id }}"
                                                 value="{{ hotel.commission_multiplier * 10 }}" step="0.01" min="0">

@@ -29,13 +29,13 @@
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-white text-sm md:text-md font-bold">Settings</h1>
+                <h1 data-translate class="text-white text-sm md:text-md font-bold">Settings</h1>
             </div>
         </header>
 
         <div class="max-w-4xl mx-auto px-4 py-6 space-y-6">
             <!-- Flash Messages -->
-            <div id="flashMessages" class="hidden">
+            <div data-translate id="flashMessages" class="hidden">
                 <div id="successMessage"
                     class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 hidden">
                     <div class="flex items-center">
@@ -61,8 +61,8 @@
                                 <i class="fas fa-language text-blue-600 text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm sm:text-xl font-bold text-gray-900">Language Preferences</h3>
-                                <p class="text-xs sm:text-sm text-gray-600">Choose your preferred language</p>
+                                <h3 data-translate class="text-sm sm:text-xl font-bold text-gray-900">Language Preferences</h3>
+                                <p data-translate class="text-xs sm:text-sm text-gray-600">Choose your preferred language</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
@@ -143,8 +143,8 @@
                                 <i class="fas fa-key text-green-600 text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm sm:text-xl font-bold text-gray-900">Change Login Password</h3>
-                                <p class="text-xs sm:text-sm text-gray-600">Manage your Login passwords</p>
+                                <h3 data-translate class="text-sm sm:text-xl font-bold text-gray-900">Change Login Password</h3>
+                                <p data-translate class="text-xs sm:text-sm text-gray-600">Manage your Login passwords</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-down text-gray-400 transform transition-transform" id="login-icon"></i>
@@ -156,25 +156,25 @@
                         <div class="pt-6 space-y-6">
                             <!-- Change Login Password -->
                             <div class="bg-gray-50 rounded-lg p-4">
-                                <h4 class="font-semibold text-gray-900 mb-4 flex items-center">
+                                <h4 data-translate class="font-semibold text-gray-900 mb-4 flex items-center">
                                     <i class="fas fa-key text-blue-600 mr-2"></i>
                                     Change Login Password
                                 </h4>
                                 <form id="passwordChangeForm" onsubmit="changeLoginPassword(event)">
                                     <div class="space-y-4">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">User
+                                            <label data-translate class="block text-sm font-medium text-gray-700 mb-2">User
                                                 Identifier</label>
                                             <input type="text" id="userIdentifier" name="user_identifier"
                                                 placeholder="Enter your User ID, Contact, or Nickname"
                                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                                 required>
-                                            <p class="text-xs text-gray-500 mt-1">Use your User ID, phone number, or
+                                            <p data-translate class="text-xs text-gray-500 mt-1">Use your User ID, phone number, or
                                                 nickname</p>
                                         </div>
                                         <div class="grid md:grid-cols-2 gap-4">
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700 mb-2">New
+                                                <label data-translate class="block text-sm font-medium text-gray-700 mb-2">New
                                                     Password</label>
                                                 <input type="password" id="newPassword" name="new_password"
                                                     placeholder="Enter new password"
@@ -182,7 +182,7 @@
                                                     required minlength="6">
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700 mb-2">Confirm
+                                                <label data-translate class="block text-sm font-medium text-gray-700 mb-2">Confirm
                                                     Password</label>
                                                 <input type="password" id="confirmPassword" name="confirm_password"
                                                     placeholder="Confirm new password"
@@ -194,16 +194,16 @@
                                             <div class="flex items-start gap-2">
                                                 <i class="fas fa-info-circle text-blue-600 mt-1"></i>
                                                 <div class="text-sm text-blue-800">
-                                                    <p class="font-medium mb-1">Password Requirements:</p>
-                                                    <ul class="space-y-1 text-xs">
-                                                        <li>• Minimum 6 characters long</li>
-                                                        <li>• Use a strong, unique password</li>
-                                                        <li>• Don't use the same password as other accounts</li>
+                                                    <p data-translate class="font-medium mb-1">Password Requirements:</p>
+                                                    <ul data-translate class="space-y-1 text-xs">
+                                                        <li data-translate>• Minimum 6 characters long</li>
+                                                        <li data-translate>• Use a strong, unique password</li>
+                                                        <li data-translate>• Don't use the same password as other accounts</li>
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
-                                        <button type="submit" id="passwordChangeBtn"
+                                        <button data-translate type="submit" id="passwordChangeBtn"
                                             class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
                                             <i class="fas fa-save mr-2"></i>Update Password
                                         </button>
@@ -225,8 +225,8 @@
                                 <i class="fas fa-shield-alt text-green-600 text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm sm:text-xl font-bold text-gray-900">Set Withdrawal Password</h3>
-                                <p class="text-xs sm:text-sm text-gray-600">Manage your withdrawal passwords</p>
+                                <h3 data-translate class="text-sm sm:text-xl font-bold text-gray-900">Set Withdrawal Password</h3>
+                                <p data-translate class="text-xs sm:text-sm text-gray-600">Manage your withdrawal passwords</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400 transform transition-transform"></i>

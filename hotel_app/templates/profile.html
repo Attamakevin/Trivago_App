@@ -38,7 +38,7 @@
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-white text-sm md:text-md font-bold">Profile</h1>
+                <h1 data-translate class="text-white text-sm md:text-md font-bold">Profile</h1>
             </div>
         </header>
 
@@ -91,12 +91,12 @@
             <div class="balance-card rounded-2xl p-6 text-white">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 class="text-lg font-semibold opacity-90">Account Balance</h3>
+                        <h3 data-translate class="text-lg font-semibold opacity-90">Account Balance</h3>
                         <div class="mt-2">
-                            <span class="text-3xl md:text-4xl font-bold">${{ "%.2f"|format(user.balance) }}</span>
+                            <span class="text-3xl md:text-4xl font-bold">£{{ "%.2f"|format(user.balance) }}</span>
                             <div class="flex items-center mt-2 space-x-4">
-                                <!-- <span class="text-sm opacity-80">Available: $11,200.50</span>
-                                <span class="text-sm opacity-80">Pending: $1,256.28</span> -->
+                                <!-- <span class="text-sm opacity-80">Available: £11,200.50</span>
+                                <span class="text-sm opacity-80">Pending: £1,256.28</span> -->
                             </div>
                         </div>
                     </div>
@@ -119,8 +119,8 @@
                             class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                             <i class="fas fa-plus text-2xl"></i>
                         </div>
-                        <h4 class="text-xl font-bold mb-2">Deposit</h4>
-                        <p class="text-sm opacity-90">Add funds to your account</p>
+                        <h4 data-translate class="text-xl font-bold mb-2">Deposit</h4>
+                        <p data-translate class="text-sm opacity-90">Add funds to your account</p>
                     </div>
                 </a>
 
@@ -132,8 +132,8 @@
                             class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                             <i class="fas fa-minus text-2xl"></i>
                         </div>
-                        <h4 class="text-xl font-bold mb-2">Withdraw</h4>
-                        <p class="text-sm opacity-90">Transfer funds out</p>
+                        <h4 data-translate class="text-xl font-bold mb-2">Withdraw</h4>
+                        <p data-translate class="text-sm opacity-90">Transfer funds out</p>
                     </div>
                 </a>
 
@@ -145,8 +145,8 @@
                             class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
                             <i class="fas fa-chart-line text-2xl"></i>
                         </div>
-                        <h4 class="text-xl font-bold mb-2">Details</h4>
-                        <p class="text-sm opacity-90">View transaction history</p>
+                        <h4 data-translate class="text-xl font-bold mb-2">Details</h4>
+                        <p data-translate class="text-sm opacity-90">View transaction history</p>
                     </div>
                 </a>
             </div>
@@ -154,7 +154,7 @@
             <!-- Menu Items -->
             <div class="bg-white rounded-2xl overflow-hidden">
                 <div class="p-4 border-b border-gray-100">
-                    <h3 class="text-lg font-semibold text-gray-900">Account Management</h3>
+                    <h3 data-translate class="text-lg font-semibold text-gray-900">Account Management</h3>
                 </div>
 
                 <div class="divide-y divide-gray-100">
@@ -166,8 +166,8 @@
                                 <i class="fas fa-crown text-purple-600"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Membership</h4>
-                                <p class="text-sm text-gray-500">Manage your subscription</p>
+                                <h4 data-translate class="font-medium text-gray-900">Membership</h4>
+                                <p data-translate class="text-sm text-gray-500">Manage your subscription</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -181,8 +181,8 @@
                                 <i class="fas fa-info-circle text-blue-600"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">About Us</h4>
-                                <p class="text-sm text-gray-500">Learn more about Trivago</p>
+                                <h4 data-translate class="font-medium text-gray-900">About Us</h4>
+                                <p data-translate class="text-sm text-gray-500">Learn more about Trivago</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -196,8 +196,8 @@
                                 <i class="fas fa-cog text-gray-600"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Settings</h4>
-                                <p class="text-sm text-gray-500">Privacy and preferences</p>
+                                <h4 data-translate class="font-medium text-gray-900">Settings</h4>
+                                <p data-translate class="text-sm text-gray-500">Privacy and preferences</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -211,8 +211,8 @@
                                 <i class="fas fa-headset text-green-600"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Customer Service</h4>
-                                <p class="text-sm text-gray-500">Get help and support</p>
+                                <h4 data-translate class="font-medium text-gray-900">Customer Service</h4>
+                                <p data-translate class="text-sm text-gray-500">Get help and support</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -226,8 +226,8 @@
                                 <i class="fas fa-comment-dots text-yellow-600"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Feedback</h4>
-                                <p class="text-sm text-gray-500">Share your thoughts</p>
+                                <h4 data-translate class="font-medium text-gray-900">Feedback</h4>
+                                <p data-translate class="text-sm text-gray-500">Share your thoughts</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -241,8 +241,8 @@
                                 <i class="fas fa-question-circle text-red-600"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Help Center</h4>
-                                <p class="text-sm text-gray-500">FAQs</p>
+                                <h4 data-translate class="font-medium text-gray-900">Help Center</h4>
+                                <p data-translate class="text-sm text-gray-500">FAQs</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -255,8 +255,8 @@
                                 <i class="fas fa-wallet text-gray-600"></i>
                             </div>
                             <div>
-                                <h4 class="font-medium text-gray-900">Bind Wallet Address</h4>
-                                <p class="text-sm text-gray-500">Your Wallet Address</p>
+                                <h4 data-translate class="font-medium text-gray-900">Bind Wallet Address</h4>
+                                <p data-translate class="text-sm text-gray-500">Your Wallet Address</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -270,7 +270,7 @@
         <button type="submit"
             class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2">
             <i class="fas fa-sign-out-alt"></i>
-            <span>Sign Out</span>
+            <span data-translate>Sign Out</span>
         </button>
     </form>
 </div>

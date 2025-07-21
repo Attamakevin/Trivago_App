@@ -2616,20 +2616,20 @@ def assignment_presets():
     presets = {
         'budget_hotels': {
             'name': 'Budget Hotels',
-            'description': 'Hotels under $500',
+            'description': 'Hotels under £500',
             'max_price': 500,
             'suggested_commission': 10.0
         },
         'mid_range_hotels': {
             'name': 'Mid-Range Hotels', 
-            'description': 'Hotels between $500-$1500',
+            'description': 'Hotels between £500-£1500',
             'min_price': 500,
             'max_price': 1500,
             'suggested_commission': 15.0
         },
         'luxury_hotels': {
             'name': 'Luxury Hotels',
-            'description': 'Hotels above $1500',
+            'description': 'Hotels above £1500',
             'min_price': 1500,
             'suggested_commission': 20.0
         },

@@ -36,7 +36,7 @@
                             <td>{{ hotel.id }}</td>
                             <td>{{ hotel.name }}</td>
                             <td>{{ hotel.location or 'N/A' }}</td>
-                            <td>${{ "%.2f"|format(hotel.price) }}</td>
+                            <td>£{{ "%.2f"|format(hotel.price) }}</td>
                             <td>{{ hotel.commission_multiplier }}x</td>
                             <td>{{ hotel.days_available }}</td>
                             <td>

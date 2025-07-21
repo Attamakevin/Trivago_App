@@ -44,7 +44,7 @@
                     <tr>
                         <td>{{ deposit.id }}</td>
                         <td>{{ deposit.user.contact if deposit.user else 'Unknown' }}</td>
-                        <td>${{ "%.2f"|format(deposit.amount) }}</td>
+                        <td>£{{ "%.2f"|format(deposit.amount) }}</td>
                         <td>{{ deposit.payment_method or 'N/A' }}</td>
                         <td>
                             <span class="badge bg-{{ 'warning' if deposit.status == 'Pending' else ('success' if deposit.status == 'Approved' else 'danger') }}">

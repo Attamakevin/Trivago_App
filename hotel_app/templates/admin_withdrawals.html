@@ -58,7 +58,7 @@
                                 Unknown User
                             {% endif %}
                         </td>
-                        <td>${{ "%.2f"|format(withdrawal.amount) }}</td>
+                        <td>£{{ "%.2f"|format(withdrawal.amount) }}</td>
                         <td>{{ withdrawal.network or 'N/A' }}</td>
                         <td>
                             <span class="text-monospace">{{ withdrawal.wallet_address[:20] + '...' if withdrawal.wallet_address and withdrawal.wallet_address|length > 20 else withdrawal.wallet_address or 'N/A' }}</span>

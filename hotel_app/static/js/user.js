@@ -281,9 +281,9 @@ function updateSummary() {
         const fee = calculateFee(amount, hasPaymentMethod.value);
         const total = amount + fee;
 
-        document.getElementById('summaryAmount').textContent = '$' + amount.toFixed(2);
-        document.getElementById('summaryFee').textContent = '$' + fee.toFixed(2);
-        document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
+        document.getElementById('summaryAmount').textContent = '£' + amount.toFixed(2);
+        document.getElementById('summaryFee').textContent = '£' + fee.toFixed(2);
+        document.getElementById('summaryTotal').textContent = '£' + total.toFixed(2);
         document.getElementById('summary').style.display = 'block';
 
         // Enable submit button
@@ -316,12 +316,12 @@ function handleFormSubmit(event) {
 
     // Basic validation
     if (amount < 10) {
-        alert('Minimum deposit amount is $10.00');
+        alert('Minimum deposit amount is £10.00');
         return false;
     }
 
     if (amount > 10000) {
-        alert('Maximum deposit amount is $10,000.00');
+        alert('Maximum deposit amount is £10,000.00');
         return false;
     }
 
@@ -536,9 +536,9 @@ function updateWithdrawSummary() {
         const fee = calculateWithdrawFee(amount, hasPaymentMethod.value);
         const total = amount - fee;
 
-        document.getElementById('summaryAmount').textContent = '$' + amount.toFixed(2);
-        document.getElementById('summaryFee').textContent = '$' + fee.toFixed(2);
-        document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
+        document.getElementById('summaryAmount').textContent = '£' + amount.toFixed(2);
+        document.getElementById('summaryFee').textContent = '£' + fee.toFixed(2);
+        document.getElementById('summaryTotal').textContent = '£' + total.toFixed(2);
         document.getElementById('summary').style.display = 'block';
 
         document.getElementById('withdrawBtn').disabled = false;
@@ -627,12 +627,12 @@ function handleWithdrawFormSubmit(event) {
     const walletAddress = document.getElementById('walletAddress').value.trim();
 
     if (amount < 25) {
-        alert('Minimum withdrawal amount is $25.00', 'error');
+        alert('Minimum withdrawal amount is £25.00', 'error');
         return false;
     }
 
     if (amount > availableBalance) {
-        alert(`Insufficient funds. Your available balance is $${availableBalance.toFixed(2)}`, 'error');
+        alert(`Insufficient funds. Your available balance is £${availableBalance.toFixed(2)}`, 'error');
         return false;
     }
 

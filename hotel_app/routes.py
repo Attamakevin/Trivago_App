@@ -1058,7 +1058,6 @@ def feedback():
 @app.route('/help_center')
 def help_center():
     return render_template('help_center.html')
-
 @app.route('/bind_wallet', methods=['GET', 'POST'])
 def bind_wallet():
     if 'user_id' not in session:
@@ -1084,30 +1083,53 @@ def bind_wallet():
         data = request.get_json() if request.is_json else request.form
         
         wallet_type = data.get('wallet_type', '').strip().upper()
-        wallet_address = data.get('wallet_address', '').strip()
         
         # Validation
         if not wallet_type:
             return jsonify({'success': False, 'message': 'Wallet type is required'}), 400
-        
-        if not wallet_address:
-            return jsonify({'success': False, 'message': 'Wallet address is required'}), 400
         
         # Validate wallet type
         valid_wallet_types = ['USDT', 'ETH', 'PAYPAL', 'REVOLUT']
         if wallet_type not in valid_wallet_types:
             return jsonify({'success': False, 'message': 'Invalid wallet type'}), 400
         
-        # Validate wallet address format based on type
-        validation_result = validate_wallet_format(wallet_address, wallet_type)
-        if not validation_result['valid']:
-            return jsonify({'success': False, 'message': validation_result['message']}), 400
+        # Handle Revolut differently (requires multiple fields)
+        if wallet_type == 'REVOLUT':
+            revolut_name = data.get('revolut_name', '').strip()
+            revolut_iban = data.get('revolut_iban', '').strip()
+            revolut_revtag = data.get('revolut_revtag', '').strip()
+            
+            # Validate Revolut fields
+            validation_result = validate_revolut_format(revolut_name, revolut_iban, revolut_revtag)
+            if not validation_result['valid']:
+                return jsonify({'success': False, 'message': validation_result['message']}), 400
+            
+            # For Revolut, store combined info as wallet_address
+            wallet_address = f"Name: {revolut_name} | IBAN: {revolut_iban} | RevTag: {revolut_revtag}"
+            
+        else:
+            # For other wallet types, use single address field
+            wallet_address = data.get('wallet_address', '').strip()
+            
+            if not wallet_address:
+                return jsonify({'success': False, 'message': 'Wallet address is required'}), 400
+            
+            # Validate wallet address format based on type
+            validation_result = validate_wallet_format(wallet_address, wallet_type)
+            if not validation_result['valid']:
+                return jsonify({'success': False, 'message': validation_result['message']}), 400
         
         try:
             # Bind wallet to user (you may need to add these columns to User model)
             user.bound_wallet_type = wallet_type
             user.bound_wallet_address = wallet_address
             user.wallet_bound_at = datetime.utcnow()
+            
+            # Store additional Revolut fields if applicable
+            if wallet_type == 'REVOLUT':
+                user.revolut_name = revolut_name
+                user.revolut_iban = revolut_iban
+                user.revolut_revtag = revolut_revtag
             
             db.session.commit()
             
@@ -1125,6 +1147,40 @@ def bind_wallet():
     
     # GET request - render bind wallet form
     return render_template('bind_wallet.html', user=user, wallet_already_bound=False)
+
+def validate_revolut_format(name, iban, revtag):
+    """
+    Validate Revolut account details
+    """
+    import re
+    
+    # Validate name (basic validation)
+    if not name or len(name.strip()) < 2:
+        return {'valid': False, 'message': 'Valid name is required (minimum 2 characters)'}
+    
+    if not re.match(r'^[a-zA-Z\s\'-]{2,50}$', name):
+        return {'valid': False, 'message': 'Name should only contain letters, spaces, apostrophes and hyphens'}
+    
+    # Validate IBAN (basic format validation)
+    if not iban:
+        return {'valid': False, 'message': 'IBAN is required'}
+    
+    # Remove spaces and convert to uppercase
+    iban_clean = iban.replace(' ', '').upper()
+    
+    # Basic IBAN validation (should start with 2 letters followed by 2 digits, then alphanumeric)
+    if not re.match(r'^[A-Z]{2}[0-9]{2}[A-Z0-9]{4,30}$', iban_clean):
+        return {'valid': False, 'message': 'Invalid IBAN format'}
+    
+    # Validate RevTag
+    if not revtag:
+        return {'valid': False, 'message': 'RevTag is required'}
+    
+    # RevTag validation (alphanumeric, typically 3-20 characters)
+    if not re.match(r'^[a-zA-Z0-9]{3,20}$', revtag):
+        return {'valid': False, 'message': 'Invalid RevTag format (3-20 alphanumeric characters)'}
+    
+    return {'valid': True, 'message': 'Valid Revolut account details'}
 
 def validate_wallet_format(address, wallet_type):
     """
@@ -1167,20 +1223,6 @@ def validate_wallet_format(address, wallet_type):
         else:
             return {'valid': False, 'message': 'Invalid PayPal email format'}
     
-    # Revolut validation (phone number or email)
-    elif wallet_type == 'REVOLUT':
-        # Check if it's an email
-        email_pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-        # Check if it's a phone number (basic validation)
-        phone_pattern = r'^\+?[1-9]\d{1,14}$'
-        
-        if re.match(email_pattern, address):
-            return {'valid': True, 'message': 'Valid Revolut email address'}
-        elif re.match(phone_pattern, address):
-            return {'valid': True, 'message': 'Valid Revolut phone number'}
-        else:
-            return {'valid': False, 'message': 'Invalid Revolut account (use email or phone number)'}
-    
     else:
         return {'valid': False, 'message': 'Unsupported wallet type'}
 
@@ -1196,13 +1238,24 @@ def get_wallet_info():
     
     # Check if user has bound wallet
     if hasattr(user, 'bound_wallet_address') and user.bound_wallet_address:
-        return jsonify({
+        wallet_info = {
             'success': True,
             'wallet_bound': True,
             'wallet_type': user.bound_wallet_type,
             'wallet_address': user.bound_wallet_address,
             'wallet_bound_at': user.wallet_bound_at.strftime('%Y-%m-%d %H:%M:%S') if user.wallet_bound_at else None
-        })
+        }
+        
+        # Add separate Revolut fields if available
+        if user.bound_wallet_type == 'REVOLUT':
+            if hasattr(user, 'revolut_name'):
+                wallet_info['revolut_name'] = user.revolut_name
+            if hasattr(user, 'revolut_iban'):
+                wallet_info['revolut_iban'] = user.revolut_iban
+            if hasattr(user, 'revolut_revtag'):
+                wallet_info['revolut_revtag'] = user.revolut_revtag
+        
+        return jsonify(wallet_info)
     else:
         return jsonify({
             'success': True,

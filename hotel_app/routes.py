@@ -2774,25 +2774,56 @@ def hotel_price_analysis():
     return render_template('admin_hotel_price_analysis.html',
                          price_analysis=analysis,
                          category_analysis=category_analysis)
-# Admin Route to Create Luxury Order
 @app.route('/admin/luxury_orders/create', methods=['GET', 'POST'])
 @admin_required
 def admin_create_luxury_order():
     if request.method == 'GET':
-        users = User.query.filter_by(is_admin=False).order_by(User.username).all()
+        # Remove is_admin filter since the field doesn't exist in your User model
+        # You can add other filtering criteria if needed
+        users = User.query.order_by(User.username).all()
         return render_template('admin/create_luxury_order.html', users=users)
     
+    # Handle POST request (keep existing functionality)
     try:
         data = request.get_json() if request.is_json else request.form
+        
+        # Debug: Print received data
+        print(f"Received data: {dict(data)}")
+        print(f"Request content type: {request.content_type}")
+        print(f"Is JSON: {request.is_json}")
         
         # Validate required fields
         required_fields = ['user_id', 'title', 'amount']
         for field in required_fields:
             if not data.get(field):
-                return jsonify({'error': f'{field} is required'}), 400
+                print(f"Missing field: {field}")
+                if request.is_json:
+                    return jsonify({'error': f'{field} is required'}), 400
+                else:
+                    flash(f'{field} is required', 'error')
+                    return redirect(url_for('admin_create_luxury_order'))
         
         # Get user
         user = User.query.get_or_404(data['user_id'])
+        print(f"Found user: {user.id} - {getattr(user, 'contact', 'N/A')}")
+        
+        # Check if session user_id exists (try different possible session keys)
+        admin_user_id = None
+        possible_keys = ['user_id', 'admin_id', 'admin_user_id']
+        
+        for key in possible_keys:
+            if key in session:
+                admin_user_id = session[key]
+                print(f"Found admin user ID in session['{key}']: {admin_user_id}")
+                break
+        
+        if admin_user_id is None:
+            print(f"Error: No admin user ID found in session. Available keys: {list(session.keys())}")
+            if request.is_json:
+                return jsonify({'error': 'Session expired. Please login again.'}), 401
+            else:
+                flash('Session expired. Please login again.', 'error')
+                return redirect(url_for('admin_login'))
         
         # Create luxury order
         luxury_order = LuxuryOrder(
@@ -2801,36 +2832,48 @@ def admin_create_luxury_order():
             description=data.get('description', ''),
             amount=float(data['amount']),
             image_url=data.get('image_url', ''),
-            created_by=session['user_id']
+            created_by=admin_user_id
         )
+        print(f"Created luxury order object")
         
-        # Set expiration if provided
-        if data.get('expires_in_hours'):
-            expires_in_hours = int(data['expires_in_hours'])
-            luxury_order.expires_at = datetime.utcnow() + timedelta(hours=expires_in_hours)
+        # Set expiration if provided (handle None values properly)
+        expires_in_hours = data.get('expires_in_hours')
+        if expires_in_hours is not None and expires_in_hours != '' and expires_in_hours != 'None':
+            try:
+                expires_in_hours = int(expires_in_hours)
+                luxury_order.expires_at = datetime.utcnow() + timedelta(hours=expires_in_hours)
+                print(f"Set expiration to {expires_in_hours} hours")
+            except (ValueError, TypeError) as e:
+                print(f"Invalid expires_in_hours value: {expires_in_hours}, error: {e}")
         
+        print(f"About to add to database")
         db.session.add(luxury_order)
+        print(f"Added to session, about to commit")
         db.session.commit()
+        print(f"Successfully committed to database")
         
         if request.is_json:
             return jsonify({
                 'success': True,
-                'message': f'Luxury order created successfully for {user.contact}',
+                'message': f'Luxury order created successfully for {getattr(user, "contact", user.id)}',
                 'order_id': luxury_order.id
             })
         else:
-            flash(f'Luxury order created successfully for {user.contact}!', 'success')
+            flash(f'Luxury order created successfully for {getattr(user, "contact", user.id)}!', 'success')
             return redirect(url_for('admin_luxury_orders'))
-            
+    
     except Exception as e:
         db.session.rollback()
         print(f"Error creating luxury order: {str(e)}")
+        print(f"Error type: {type(e)}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
+        
         if request.is_json:
             return jsonify({'error': str(e)}), 500
         else:
             flash(f'Error creating luxury order: {str(e)}', 'error')
             return redirect(url_for('admin_create_luxury_order'))
-
 
 # Admin Route to View All Luxury Orders
 @app.route('/admin/luxury_orders')

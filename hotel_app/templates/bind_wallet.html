@@ -19,7 +19,7 @@
             rel="stylesheet">
         <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
         <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
-        <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
+        <!-- <script defer src="{{ url_for('static', filename='js/user.js') }}"></script> -->
     </head>
 
     <body class="bg-gray-50 min-h-screen">
@@ -32,44 +32,44 @@
                 <h1 class="text-white text-sm md:text-md font-bold">Manage Wallets</h1>
             </div>
         </header>
-
         <div class="max-w-4xl mx-auto px-4 py-8">
             <!-- Page Header -->
             <div class="text-center mb-8">
                 <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-wallet text-blue-600 text-3xl"></i>
                 </div>
-                <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Manage Your Wallets</h2>
-                <p class="text-gray-600">Connect multiple payment methods for seamless transactions</p>
+                <h2 class="text-lg md:text-3xl font-bold text-gray-900 mb-2">Manage Your Wallets</h2>
+                <p class="text-sm md:text-base text-gray-600">Connect multiple payment methods for seamless transactions</p>
             </div>
-
             <!-- Flash Messages -->
             <div id="flashMessages" class="hidden mb-6">
-                <div id="successMessage" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 hidden">
+                <div id="successMessage"
+                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 hidden">
                     <div class="flex items-center">
                         <i class="fas fa-check-circle mr-2"></i>
                         <span id="successText"></span>
                     </div>
                 </div>
-                <div id="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 hidden">
+                <div id="errorMessage"
+                    class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 hidden">
                     <div class="flex items-center">
                         <i class="fas fa-exclamation-circle mr-2"></i>
                         <span id="errorText"></span>
                     </div>
                 </div>
             </div>
-
             <!-- Wallet Summary (if any wallets are bound) -->
-            <div id="walletSummary" class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6 hidden">
+            <div id="walletSummary"
+                class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6 hidden">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-lg font-semibold text-blue-900">Your Connected Wallets</h3>
-                    <span id="connectedCount" class="px-3 py-1 bg-blue-100 text-blue-800 text-sm rounded-full font-medium">0 Connected</span>
+                    <h3 class="text-xs sm:text-lg font-semibold text-blue-900">Your Connected Wallets</h3>
+                    <span id="connectedCount"
+                        class="px-3 py-1 bg-blue-100 text-blue-800 text-[9px] sm:text-sm whitespace-nowrap rounded-full font-medium">0 Connected</span>
                 </div>
                 <div id="connectedWalletsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <!-- Connected wallets will be shown here -->
                 </div>
             </div>
-
             <!-- Wallet Forms -->
             <div class="space-y-6" id="walletForms">
                 <!-- USDT Wallet -->
@@ -81,26 +81,30 @@
                                     <i class="fab fa-bitcoin text-green-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-bold text-gray-900">USDT Wallet</h3>
-                                    <p class="text-sm text-gray-600">Tether USD (TRC-20/ERC-20/Omni)</p>
+                                    <p class="text-sm sm:text-xl font-bold text-gray-900">USDT Wallet</p>
+                                    <p class="text-xs sm:text-sm text-gray-600">Tether USD (TRC-20/ERC-20/Omni)</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span id="usdt-status" class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Not Connected</span>
-                                <button onclick="toggleWalletForm('usdt')" id="usdt-toggle-btn" class="text-blue-600 hover:text-blue-700">
+                                <span id="usdt-status"
+                                    class="text-[8px] whitespace-nowrap sm:text-xs px-1 py-1 sm:px-3 sm:py-1 bg-gray-100 text-gray-700 rounded-full">Not
+                                    Connected</span>
+                                <button onclick="toggleWalletForm('usdt')" id="usdt-toggle-btn"
+                                    class="text-blue-600 hover:text-blue-700">
                                     <i class="fas fa-plus text-lg" id="usdt-icon"></i>
                                 </button>
                             </div>
                         </div>
-
                         <!-- USDT Connected Display -->
                         <div id="usdt-connected" class="border-t border-gray-200 pt-4 hidden">
                             <div class="bg-green-50 rounded-lg p-4">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-sm text-green-600 font-medium">Connected Wallet:</p>
-                                        <p class="text-green-800 font-mono text-sm" id="usdt-display-address">Loading...</p>
-                                        <p class="text-xs text-green-600 mt-1" id="usdt-bound-date">Bound on: Loading...</p>
+                                        <p class="text-green-800 font-mono text-sm" id="usdt-display-address">Loading...
+                                        </p>
+                                        <p class="text-xs text-green-600 mt-1" id="usdt-bound-date">Bound on: Loading...
+                                        </p>
                                     </div>
                                     <button onclick="editWallet('usdt')" class="text-green-600 hover:text-green-700">
                                         <i class="fas fa-edit text-lg"></i>
@@ -108,7 +112,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <!-- USDT Form -->
                         <div class="wallet-form hidden" id="usdt-form">
                             <div class="border-t border-gray-200 pt-6">
@@ -116,36 +119,51 @@
                                     <div class="space-y-4">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                                <i class="fas fa-wallet text-gray-400 mr-2"></i>USDT Wallet Address
+                                                <i class="fas fa-wallet text-gray-400 mr-2"></i>
+                                                USDT Wallet Address
                                             </label>
                                             <input type="text" id="usdt-address" name="wallet_address"
                                                 placeholder="Enter your USDT wallet address"
                                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
                                                 required>
-                                            <p class="text-xs text-gray-500 mt-1">Supports TRC-20, ERC-20, and Omni networks</p>
+                                            <p class="text-xs text-gray-500 mt-1">Supports TRC-20, ERC-20, and Omni
+                                                networks</p>
                                         </div>
-
                                         <div class="bg-green-50 border border-green-200 rounded-lg p-4">
                                             <div class="flex items-start gap-3">
                                                 <i class="fas fa-info-circle text-green-600 mt-1"></i>
                                                 <div>
                                                     <h5 class="font-medium text-green-800 mb-1">Supported Formats:</h5>
-                                                    <ul class="text-sm text-green-700 space-y-1">
-                                                        <li>• <strong>TRC-20:</strong> Starts with 'T' (e.g., TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE)</li>
-                                                        <li>• <strong>ERC-20:</strong> Starts with '0x' (e.g., 0x742d35Cc6634C0532925a3b8D40Ec6a)</li>
-                                                        <li>• <strong>Omni:</strong> Bitcoin format (e.g., 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa)</li>
+                                                    <ul class="text-[8px] sm:text-sm text-green-700 space-y-1">
+                                                        <li>
+                                                            •
+                                                            <strong>TRC-20:</strong>
+                                                            Starts with 'T' (e.g., TQn9Y2khEsLJW1ChVWFMSMeRDow5KcbLSE)
+                                                        </li>
+                                                        <li>
+                                                            •
+                                                            <strong>ERC-20:</strong>
+                                                            Starts with '0x' (e.g., 0x742d35Cc6634C0532925a3b8D40Ec6a)
+                                                        </li>
+                                                        <li>
+                                                            •
+                                                            <strong>Omni:</strong>
+                                                            Bitcoin format (e.g., 1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa)
+                                                        </li>
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="flex gap-3 pt-4">
-                                            <button type="submit" class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-lg transition-all">
+                                        <div class="flex gap-3 pt-4 text-xs sm:text-sm whitespace-nowrap">
+                                            <button type="submit"
+                                                class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-2 sm:py-3 sm:px-6 rounded-lg transition-all">
                                                 <i class="fas fa-link mr-2"></i>
-                                                <span id="usdt-btn-text">Bind USDT Wallet</span>
+                                                <span id="usdt-btn-text text-xs sm:text-sm">Bind USDT Wallet</span>
                                             </button>
-                                            <button type="button" onclick="cancelWalletForm('usdt')" class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                                                <i class="fas fa-times mr-2"></i>Cancel
+                                            <button type="button" onclick="cancelWalletForm('usdt')"
+                                                class="py-1 px-2 sm:py-3 sm:px-6 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                                <i class="fas fa-times mr-2 text-xs sm:text-sm"></i>
+                                                Cancel
                                             </button>
                                         </div>
                                     </div>
@@ -154,7 +172,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- ETH Wallet -->
                 <div class="bg-white rounded-lg shadow-md border-l-4 border-purple-400">
                     <div class="p-6">
@@ -164,26 +181,30 @@
                                     <i class="fab fa-ethereum text-purple-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-bold text-gray-900">Ethereum Wallet</h3>
-                                    <p class="text-sm text-gray-600">Ethereum (ETH) wallet address</p>
+                                    <p class="text-sm sm:text-xl font-bold text-gray-900">Ethereum Wallet</p>
+                                    <p class="text-xs sm:text-sm text-gray-600">Ethereum (ETH) wallet address</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span id="eth-status" class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Not Connected</span>
-                                <button onclick="toggleWalletForm('eth')" id="eth-toggle-btn" class="text-blue-600 hover:text-blue-700">
+                                <span id="eth-status"
+                                    class="text-[8px] whitespace-nowrap sm:text-xs px-1 py-1 sm:px-3 sm:py-1 bg-gray-100 text-gray-700 rounded-full">Not
+                                    Connected</span>
+                                <button onclick="toggleWalletForm('eth')" id="eth-toggle-btn"
+                                    class="text-blue-600 hover:text-blue-700">
                                     <i class="fas fa-plus text-lg" id="eth-icon"></i>
                                 </button>
                             </div>
                         </div>
-
                         <!-- ETH Connected Display -->
                         <div id="eth-connected" class="border-t border-gray-200 pt-4 hidden">
                             <div class="bg-purple-50 rounded-lg p-4">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-sm text-purple-600 font-medium">Connected Wallet:</p>
-                                        <p class="text-purple-800 font-mono text-sm" id="eth-display-address">Loading...</p>
-                                        <p class="text-xs text-purple-600 mt-1" id="eth-bound-date">Bound on: Loading...</p>
+                                        <p class="text-purple-800 font-mono text-sm" id="eth-display-address">Loading...
+                                        </p>
+                                        <p class="text-xs text-purple-600 mt-1" id="eth-bound-date">Bound on: Loading...
+                                        </p>
                                     </div>
                                     <button onclick="editWallet('eth')" class="text-purple-600 hover:text-purple-700">
                                         <i class="fas fa-edit text-lg"></i>
@@ -191,7 +212,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <!-- ETH Form -->
                         <div class="wallet-form hidden" id="eth-form">
                             <div class="border-t border-gray-200 pt-6">
@@ -199,21 +219,23 @@
                                     <div class="space-y-4">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                                <i class="fas fa-wallet text-gray-400 mr-2"></i>Ethereum Wallet Address
+                                                <i class="fas fa-wallet text-gray-400 mr-2"></i>
+                                                Ethereum Wallet Address
                                             </label>
                                             <input type="text" id="eth-address" name="wallet_address"
                                                 placeholder="Enter your Ethereum wallet address"
                                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                                                 required>
-                                            <p class="text-xs text-gray-500 mt-1">Must start with '0x' followed by 40 hexadecimal characters</p>
+                                            <p class="text-xs text-gray-500 mt-1">Must start with '0x' followed by 40
+                                                hexadecimal characters</p>
                                         </div>
-
                                         <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
                                             <div class="flex items-start gap-3">
                                                 <i class="fas fa-info-circle text-purple-600 mt-1"></i>
                                                 <div>
-                                                    <h5 class="font-medium text-purple-800 mb-1">Ethereum Address Format:</h5>
-                                                    <ul class="text-sm text-purple-700 space-y-1">
+                                                    <h5 class="font-medium text-purple-800 mb-1">Ethereum Address
+                                                        Format:</h5>
+                                                    <ul class="text-[8px] sm:text-sm text-purple-700 space-y-1">
                                                         <li>• Must start with '0x'</li>
                                                         <li>• Followed by exactly 40 hexadecimal characters</li>
                                                         <li>• Example: 0x742d35Cc6634C0532925a3b8D40Ec6a</li>
@@ -221,14 +243,16 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="flex gap-3 pt-4">
-                                            <button type="submit" class="flex-1 bg-purple-500 hover:bg-purple-600 text-white font-semibold py-3 px-6 rounded-lg transition-all">
+                                        <div class="flex gap-3 pt-4 text-xs sm:text-sm whitespace-nowrap">
+                                            <button type="submit"
+                                                class="flex-1 bg-purple-500 hover:bg-purple-600 text-white font-semibold py-1 px-2 sm:py-3 sm:px-6 rounded-lg transition-all">
                                                 <i class="fas fa-link mr-2"></i>
-                                                <span id="eth-btn-text">Bind ETH Wallet</span>
+                                                <span id="eth-btn-text text-xs sm:text-sm">Bind ETH Wallet</span>
                                             </button>
-                                            <button type="button" onclick="cancelWalletForm('eth')" class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                                                <i class="fas fa-times mr-2"></i>Cancel
+                                            <button type="button" onclick="cancelWalletForm('eth')"
+                                                class="py-1 px-2 sm:py-3 sm:px-6 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                                <i class="fas fa-times mr-2 text-xs sm:text-sm"></i>
+                                                Cancel
                                             </button>
                                         </div>
                                     </div>
@@ -237,7 +261,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- PayPal Wallet -->
                 <div class="bg-white rounded-lg shadow-md border-l-4 border-yellow-400">
                     <div class="p-6">
@@ -247,34 +270,38 @@
                                     <i class="fab fa-paypal text-yellow-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-bold text-gray-900">PayPal Account</h3>
-                                    <p class="text-sm text-gray-600">PayPal email address</p>
+                                    <p class="text-sm sm:text-xl font-bold text-gray-900">PayPal Account</p>
+                                    <p class="text-xs sm:text-sm text-gray-600">PayPal email address</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span id="paypal-status" class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Not Connected</span>
-                                <button onclick="toggleWalletForm('paypal')" id="paypal-toggle-btn" class="text-blue-600 hover:text-blue-700">
+                                <span id="paypal-status"
+                                    class="text-[8px] whitespace-nowrap sm:text-xs px-1 py-1 sm:px-3 sm:py-1 bg-gray-100 text-gray-700 rounded-full">Not
+                                    Connected</span>
+                                <button onclick="toggleWalletForm('paypal')" id="paypal-toggle-btn"
+                                    class="text-blue-600 hover:text-blue-700">
                                     <i class="fas fa-plus text-lg" id="paypal-icon"></i>
                                 </button>
                             </div>
                         </div>
-
                         <!-- PayPal Connected Display -->
                         <div id="paypal-connected" class="border-t border-gray-200 pt-4 hidden">
                             <div class="bg-yellow-50 rounded-lg p-4">
                                 <div class="flex items-center justify-between">
                                     <div>
                                         <p class="text-sm text-yellow-600 font-medium">Connected Account:</p>
-                                        <p class="text-yellow-800 font-mono text-sm" id="paypal-display-address">Loading...</p>
-                                        <p class="text-xs text-yellow-600 mt-1" id="paypal-bound-date">Bound on: Loading...</p>
+                                        <p class="text-yellow-800 font-mono text-sm" id="paypal-display-address">
+                                            Loading...</p>
+                                        <p class="text-xs text-yellow-600 mt-1" id="paypal-bound-date">Bound on:
+                                            Loading...</p>
                                     </div>
-                                    <button onclick="editWallet('paypal')" class="text-yellow-600 hover:text-yellow-700">
+                                    <button onclick="editWallet('paypal')"
+                                        class="text-yellow-600 hover:text-yellow-700">
                                         <i class="fas fa-edit text-lg"></i>
                                     </button>
                                 </div>
                             </div>
                         </div>
-
                         <!-- PayPal Form -->
                         <div class="wallet-form hidden" id="paypal-form">
                             <div class="border-t border-gray-200 pt-6">
@@ -282,21 +309,23 @@
                                     <div class="space-y-4">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                                <i class="fas fa-envelope text-gray-400 mr-2"></i>PayPal Email Address
+                                                <i class="fas fa-envelope text-gray-400 mr-2"></i>
+                                                PayPal Email Address
                                             </label>
                                             <input type="email" id="paypal-address" name="wallet_address"
                                                 placeholder="Enter your PayPal email address"
                                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-transparent transition-all"
                                                 required>
-                                            <p class="text-xs text-gray-500 mt-1">Must be the primary email address associated with your PayPal account</p>
+                                            <p class="text-xs text-gray-500 mt-1">Must be the primary email address
+                                                associated with your PayPal account</p>
                                         </div>
-
                                         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
                                             <div class="flex items-start gap-3">
                                                 <i class="fas fa-info-circle text-yellow-600 mt-1"></i>
                                                 <div>
-                                                    <h5 class="font-medium text-yellow-800 mb-1">PayPal Requirements:</h5>
-                                                    <ul class="text-sm text-yellow-700 space-y-1">
+                                                    <h5 class="font-medium text-yellow-800 mb-1">PayPal Requirements:
+                                                    </h5>
+                                                    <ul class="text-[8px] sm:text-sm text-yellow-700 space-y-1">
                                                         <li>• Use your verified PayPal email address</li>
                                                         <li>• Account must be active and in good standing</li>
                                                         <li>• Ensure your account can receive payments</li>
@@ -304,14 +333,16 @@
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="flex gap-3 pt-4">
-                                            <button type="submit" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-3 px-6 rounded-lg transition-all">
+                                        <div class="flex gap-3 pt-4 pt-4 text-xs sm:text-sm whitespace-nowrap">
+                                            <button type="submit"
+                                                class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1 px-2 sm:py-3 sm:px-6 rounded-lg transition-all">
                                                 <i class="fas fa-link mr-2"></i>
                                                 <span id="paypal-btn-text">Bind PayPal Account</span>
                                             </button>
-                                            <button type="button" onclick="cancelWalletForm('paypal')" class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                                                <i class="fas fa-times mr-2"></i>Cancel
+                                            <button type="button" onclick="cancelWalletForm('paypal')"
+                                                class="py-1 px-2 sm:py-3 sm:px-6 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                                <i class="fas fa-times mr-2"></i>
+                                                Cancel
                                             </button>
                                         </div>
                                     </div>
@@ -320,7 +351,6 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Revolut Wallet -->
                 <div class="bg-white rounded-lg shadow-md border-l-4 border-blue-400">
                     <div class="p-6">
@@ -330,34 +360,61 @@
                                     <i class="fas fa-university text-blue-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-xl font-bold text-gray-900">Revolut Account</h3>
-                                    <p class="text-sm text-gray-600">Revolut email or phone number</p>
+                                    <p class="text-sm sm:text-xl font-bold text-gray-900">Revolut Account</p>
+                                    <p class="text-xs sm:text-sm text-gray-600">Revolut email or phone number with additional
+                                        details</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span id="revolut-status" class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Not Connected</span>
-                                <button onclick="toggleWalletForm('revolut')" id="revolut-toggle-btn" class="text-blue-600 hover:text-blue-700">
+                                <span id="revolut-status"
+                                    class="text-[8px] whitespace-nowrap sm:text-xs px-1 py-1 sm:px-3 sm:py-1 bg-gray-100 text-gray-700 rounded-full">
+                                    Not
+                                    Connected
+                                </span>
+                                <button onclick="toggleWalletForm('revolut')" id="revolut-toggle-btn"
+                                    class="text-blue-600 hover:text-blue-700">
                                     <i class="fas fa-plus text-lg" id="revolut-icon"></i>
                                 </button>
                             </div>
                         </div>
-
                         <!-- Revolut Connected Display -->
                         <div id="revolut-connected" class="border-t border-gray-200 pt-4 hidden">
                             <div class="bg-blue-50 rounded-lg p-4">
                                 <div class="flex items-center justify-between">
-                                    <div>
+                                    <div class="w-full">
                                         <p class="text-sm text-blue-600 font-medium">Connected Account:</p>
-                                        <p class="text-blue-800 font-mono text-sm" id="revolut-display-address">Loading...</p>
-                                        <p class="text-xs text-blue-600 mt-1" id="revolut-bound-date">Bound on: Loading...</p>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                                            <div>
+                                                <p class="text-xs text-blue-500">Contact:</p>
+                                                <p class="text-blue-800 font-mono text-sm" id="revolut-display-address">
+                                                    Loading...</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-blue-500">Account Holder:</p>
+                                                <p class="text-blue-800 text-sm" id="revolut-display-name">Loading...
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-blue-500">IBAN:</p>
+                                                <p class="text-blue-800 font-mono text-sm" id="revolut-display-iban">
+                                                    Loading...</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-xs text-blue-500">RevTag:</p>
+                                                <p class="text-blue-800 font-mono text-sm" id="revolut-display-revtag">
+                                                    Loading...</p>
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-blue-600 mt-2" id="revolut-bound-date">Bound on:
+                                            Loading...</p>
                                     </div>
-                                    <button onclick="editWallet('revolut')" class="text-blue-600 hover:text-blue-700">
+                                    <button onclick="editWallet('revolut')"
+                                        class="text-blue-600 hover:text-blue-700 ml-4">
                                         <i class="fas fa-edit text-lg"></i>
                                     </button>
                                 </div>
                             </div>
                         </div>
-
                         <!-- Revolut Form -->
                         <div class="wallet-form hidden" id="revolut-form">
                             <div class="border-t border-gray-200 pt-6">
@@ -365,36 +422,88 @@
                                     <div class="space-y-4">
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 mb-2">
-                                                <i class="fas fa-envelope text-gray-400 mr-2"></i>Revolut Email or Phone
+                                                <i class="fas fa-envelope text-gray-400 mr-2"></i>
+                                                Revolut Email or Phone
                                             </label>
                                             <input type="text" id="revolut-address" name="wallet_address"
                                                 placeholder="Enter your Revolut email or phone number"
                                                 class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                                                 required>
-                                            <p class="text-xs text-gray-500 mt-1">Use your primary email address or phone number associated with your Revolut account</p>
+                                            <p class="text-xs text-gray-500 mt-1">
+                                                Use your primary email address or phone number
+                                                associated with your Revolut account
+                                            </p>
                                         </div>
-
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-user text-gray-400 mr-2"></i>
+                                                Account Holder Name
+                                            </label>
+                                            <input type="text" id="revolut-name" name="revolut_name"
+                                                placeholder="Enter the full name on your Revolut account"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                                required>
+                                            <p class="text-xs text-gray-500 mt-1">
+                                                Must match the name exactly as shown on your Revolut
+                                                account
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-university text-gray-400 mr-2"></i>
+                                                IBAN Number
+                                            </label>
+                                            <input type="text" id="revolut-iban" name="revolut_iban"
+                                                placeholder="Enter your Revolut IBAN (e.g., GB29 REVO 0099 7000 0123 45)"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                                required>
+                                            <p class="text-xs text-gray-500 mt-1">
+                                                International Bank Account Number from your Revolut
+                                                account details
+                                            </p>
+                                        </div>
+                                        <div>
+                                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                                <i class="fas fa-at text-gray-400 mr-2"></i>
+                                                RevTag
+                                            </label>
+                                            <input type="text" id="revolut-revtag" name="revolut_revtag"
+                                                placeholder="Enter your RevTag (e.g., @username123)"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                                required>
+                                            <p class="text-xs text-gray-500 mt-1">
+                                                Your unique RevTag starting with @ (4-20 characters,
+                                                letters, numbers, and underscores only)
+                                            </p>
+                                        </div>
                                         <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
                                             <div class="flex items-start gap-3">
                                                 <i class="fas fa-info-circle text-blue-600 mt-1"></i>
                                                 <div>
-                                                    <h5 class="font-medium text-blue-800 mb-1">Revolut Requirements:</h5>
-                                                    <ul class="text-sm text-blue-700 space-y-1">
-                                                        <li>• Use verified email or phone number</li>
+                                                    <h5 class="font-medium text-blue-800 mb-1">Revolut Requirements:
+                                                    </h5>
+                                                    <ul class="text-[8px] sm:text-sm text-blue-700 space-y-1">
+                                                        <li>• All fields are required for Revolut transfers</li>
                                                         <li>• Account must be active and verified</li>
+                                                        <li>• IBAN format: 2 letters + 2 digits + alphanumeric
+                                                            characters</li>
+                                                        <li>• RevTag must start with @ and be unique to your account
+                                                        </li>
                                                         <li>• Ensure your account can receive transfers</li>
                                                     </ul>
                                                 </div>
                                             </div>
                                         </div>
-
-                                        <div class="flex gap-3 pt-4">
-                                            <button type="submit" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition-all">
+                                        <div class="flex gap-1 sm:gap-3 pt-4 text-xs sm:text-sm whitespace-nowrap">
+                                            <button type="submit"
+                                                class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-2 sm:py-3 sm:px-6 rounded-lg transition-all">
                                                 <i class="fas fa-link mr-2"></i>
-                                                <span id="revolut-btn-text">Bind Revolut Account</span>
+                                                <span id="revolut-btn-text text-xs sm:text-sm">Bind Revolut Account</span>
                                             </button>
-                                            <button type="button" onclick="cancelWalletForm('revolut')" class="px-6 py-3 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                                                <i class="fas fa-times mr-2"></i>Cancel
+                                            <button type="button" onclick="cancelWalletForm('revolut')"
+                                                class="py-1 px-2 sm:py-3 sm:px-6 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                                <i class="fas fa-times mr-2 text-xs sm:text-sm"></i>
+                                                Cancel
                                             </button>
                                         </div>
                                     </div>
@@ -405,20 +514,28 @@
                 </div>
             </div>
         </div>
-
         <script>
             // Store wallet data
             let walletData = {};
+
+            // Initialize wallet data from backend (if passed via template)
+                {% if wallet_data %}
+                walletData = {{ wallet_data | tojson }};
+                {% endif %}
 
             // Show flash messages
             function showMessage(type, message) {
                 const flashContainer = document.getElementById('flashMessages');
                 const successMsg = document.getElementById('successMessage');
                 const errorMsg = document.getElementById('errorMessage');
-                
+
+                if (!flashContainer || !successMsg || !errorMsg) {
+                    return;
+                }
+
                 successMsg.classList.add('hidden');
                 errorMsg.classList.add('hidden');
-                
+
                 if (type === 'success') {
                     document.getElementById('successText').textContent = message;
                     successMsg.classList.remove('hidden');
@@ -426,70 +543,207 @@
                     document.getElementById('errorText').textContent = message;
                     errorMsg.classList.remove('hidden');
                 }
-                
+
                 flashContainer.classList.remove('hidden');
-                
+
                 setTimeout(() => {
                     flashContainer.classList.add('hidden');
                 }, 5000);
-                
+
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            // Load wallet data on page load
-            function loadWalletData() {
-                fetch('/get_wallet_info')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            walletData = data.wallets || {};
-                            updateWalletDisplay();
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error loading wallet data:', error);
-                    });
+            // Update wallet display based on loaded data
+           // Load wallet data from backend API
+function loadWalletData() {
+    
+    fetch('/get_wallet_info', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            if (data.wallet_bound && data.wallets) {
+                walletData = data.wallets;
+            } else if (data.wallet_bound && data.wallet_type && data.wallet_address) {
+                const walletType = data.wallet_type.toLowerCase();
+                
+                // ✅ FIXED: Create proper wallet object instead of just storing address
+                walletData[walletType] = {
+                    address: data.wallet_address,
+                    type: data.wallet_type,
+                    bound_at: data.wallet_bound_at,
+                    // Add Revolut fields if available in legacy response
+                    name: data.revolut_name || '',
+                    iban: data.revolut_iban || '',
+                    revtag: data.revolut_revtag || ''
+                };
             }
+            
+            updateWalletDisplay();
+        } else {
+            updateWalletDisplay();
+        }
+    })
+    .catch(error => {
+        if (!error.message.includes('null')) {
+            showMessage('error', 'Failed to load wallet information. Please refresh the page.');
+        }
+    });
+}
+
 
             // Update wallet display based on loaded data
             function updateWalletDisplay() {
-                const walletTypes = ['usdt', 'eth', 'paypal', 'revolut'];
-                let connectedCount = 0;
-                
-                walletTypes.forEach(type => {
-                    if (walletData[type]) {
-                        setWalletConnected(type, walletData[type].address, walletData[type].bound_at);
-                        connectedCount++;
-                    }
-                });
-                
-                updateSummary(connectedCount);
-            }
-
+    const walletTypes = ['usdt', 'eth', 'paypal', 'revolut'];
+    let connectedCount = 0;
+    
+    walletTypes.forEach(type => {
+        
+        if (walletData[type]) {            
+            // ✅ FIXED: Pass the full wallet object, not just the address
+            setWalletConnected(type, walletData[type]);
+            connectedCount++;
+        } else {
+            setWalletDisconnected(type);
+        }
+    });
+    updateSummary(connectedCount);
+}
             // Set wallet as connected
-            function setWalletConnected(walletType, address, boundAt) {
+            function setWalletConnected(walletType, walletInfo) {    
+    // Get elements with null checks
+    const statusElement = document.getElementById(walletType + '-status');
+    const connectedDiv = document.getElementById(walletType + '-connected');
+    const addressElement = document.getElementById(walletType + '-display-address');
+    const dateElement = document.getElementById(walletType + '-bound-date');
+    const btnText = document.getElementById(walletType + '-btn-text');
+    const icon = document.getElementById(walletType + '-icon');
+    
+    // Update status if element exists
+    if (statusElement) {
+        statusElement.textContent = 'Connected';
+        statusElement.className = 'px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full';
+    }
+    
+    // Show connected info if element exists
+    if (connectedDiv) {
+        connectedDiv.classList.remove('hidden');
+    }
+    
+    // Display address if element exists
+    if (addressElement && walletInfo.address) {
+        const address = walletInfo.address;
+        if (address.length > 20) {
+            addressElement.textContent = address.substring(0, 10) + '...' + address.substring(address.length - 10);
+        } else {
+            addressElement.textContent = address;
+        }
+    }
+    
+    // Display bound date if element exists
+    if (dateElement) {
+        if (walletInfo.bound_at) {
+            const date = new Date(walletInfo.bound_at);
+            dateElement.textContent = 'Bound on: ' + date.toLocaleDateString();
+        } else {
+            dateElement.textContent = 'Bound on: Unknown';
+        }
+    }
+    
+    // Handle Revolut-specific fields with detailed debugging
+    if (walletType === 'revolut') {
+        
+        const nameElement = document.getElementById('revolut-display-name');
+        const ibanElement = document.getElementById('revolut-display-iban');
+        const revtagElement = document.getElementById('revolut-display-revtag');
+        
+        // Update name display
+        if (nameElement) {
+            if (walletInfo.name && walletInfo.name.trim() !== '') {
+                nameElement.textContent = walletInfo.name;
+            } else {
+                nameElement.textContent = 'Not provided';
+            }
+        }
+        
+        // Update IBAN display
+        if (ibanElement) {
+            if (walletInfo.iban && walletInfo.iban.trim() !== '') {
+                const iban = walletInfo.iban;
+                ibanElement.textContent = iban.length > 15 ? iban.substring(0, 10) + '...' : iban;
+            } else {
+                ibanElement.textContent = 'Not provided';
+            }
+        }
+        
+        // Update RevTag display
+        if (revtagElement) {
+            if (walletInfo.revtag && walletInfo.revtag.trim() !== '') {
+                revtagElement.textContent = walletInfo.revtag;
+            } else {
+                revtagElement.textContent = 'Not provided';
+            }
+        }
+        
+        // Pre-fill Revolut form fields if they exist
+        const nameInput = document.getElementById('revolut-name');
+        const ibanInput = document.getElementById('revolut-iban');
+        const revtagInput = document.getElementById('revolut-revtag');
+        
+        if (nameInput && walletInfo.name) nameInput.value = walletInfo.name;
+        if (ibanInput && walletInfo.iban) ibanInput.value = walletInfo.iban;
+        if (revtagInput && walletInfo.revtag) revtagInput.value = walletInfo.revtag;
+        
+    }
+    
+    // Update button text if element exists
+    if (btnText) {
+        btnText.textContent = 'Update ' + walletType.toUpperCase() + ' Wallet';
+    }
+    
+    // Pre-fill main address field if element exists
+    const inputElement = document.getElementById(walletType + '-address');
+    if (inputElement && walletInfo.address) {
+        inputElement.value = walletInfo.address;
+    }
+    
+    // Update toggle button icon if element exists
+    if (icon) {
+        icon.className = 'fas fa-edit text-lg';
+    }
+}
+
+
+            function setWalletDisconnected(walletType) {
                 const statusElement = document.getElementById(walletType + '-status');
                 const connectedDiv = document.getElementById(walletType + '-connected');
-                const addressElement = document.getElementById(walletType + '-display-address');
-                const dateElement = document.getElementById(walletType + '-bound-date');
+                const icon = document.getElementById(walletType + '-icon');
                 const btnText = document.getElementById(walletType + '-btn-text');
-                
-                // Update status
-                statusElement.textContent = 'Connected';
-                statusElement.className = 'px-3 py-1 bg-green-100 text-green-800 text-xs rounded-full';
-                
-                // Show connected info
-                connectedDiv.classList.remove('hidden');
-                addressElement.textContent = address.length > 20 ? address.substring(0, 10) + '...' + address.substring(address.length - 10) : address;
-                dateElement.textContent = 'Bound on: ' + (boundAt ? new Date(boundAt).toLocaleDateString() : 'Unknown');
-                
-                // Update button text
-                btnText.textContent = 'Update ' + walletType.toUpperCase() + ' Wallet';
-                
-                // Pre-fill form
-                const inputElement = document.getElementById(walletType + '-address');
-                if (inputElement) {
-                    inputElement.value = address;
+
+                if (statusElement) {
+                    statusElement.textContent = 'Not Connected';
+                    statusElement.className = 'px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full';
+                }
+
+                if (connectedDiv) {
+                    connectedDiv.classList.add('hidden');
+                }
+
+                if (icon) {
+                    icon.className = 'fas fa-plus text-lg';
+                }
+
+                if (btnText) {
+                    btnText.textContent = 'Bind ' + walletType.toUpperCase() + ' Wallet';
                 }
             }
 
@@ -498,11 +752,11 @@
                 const summaryDiv = document.getElementById('walletSummary');
                 const countElement = document.getElementById('connectedCount');
                 const listElement = document.getElementById('connectedWalletsList');
-                
+
                 if (count > 0) {
                     summaryDiv.classList.remove('hidden');
                     countElement.textContent = count + ' Connected';
-                    
+
                     // Build connected wallets list
                     let html = '';
                     Object.keys(walletData).forEach(type => {
@@ -514,20 +768,26 @@
                             revolut: 'blue'
                         };
                         const color = colors[type] || 'gray';
-                        
+                        const address = data.address || '';
+
+                        // Truncate address for summary display
+                        const displayAddress = address.length > 16
+                            ? address.substring(0, 8) + '...' + address.substring(address.length - 4)
+                            : address;
+
                         html += `
-                            <div class="bg-${color}-50 border border-${color}-200 rounded-lg p-3">
-                                <div class="flex items-center justify-between">
-                                    <div>
-                                        <p class="font-medium text-${color}-800">${type.toUpperCase()}</p>
-                                        <p class="text-xs text-${color}-600 font-mono">${data.address.substring(0, 10)}...${data.address.substring(data.address.length - 6)}</p>
-                                    </div>
-                                    <button onclick="editWallet('${type}')" class="text-${color}-600 hover:text-${color}-700">
-                                        <i class="fas fa-edit"></i>
-                                    </button>
-                                </div>
-                            </div>
-                        `;
+                <div class="bg-${color}-50 border border-${color}-200 rounded-lg p-3">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-medium text-${color}-800">${type.toUpperCase()}</p>
+                            <p class="text-xs text-${color}-600 font-mono">${displayAddress}</p>
+                        </div>
+                        <button onclick="editWallet('${type}')" class="text-${color}-600 hover:text-${color}-700">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
                     });
                     listElement.innerHTML = html;
                 } else {
@@ -540,22 +800,22 @@
                 const form = document.getElementById(walletType + '-form');
                 const icon = document.getElementById(walletType + '-icon');
                 const connectedDiv = document.getElementById(walletType + '-connected');
-                
+
                 if (form.classList.contains('hidden')) {
                     // Close all other forms first
                     const allForms = document.querySelectorAll('.wallet-form');
                     const allIcons = document.querySelectorAll('[id$="-icon"]');
-                    
+
                     allForms.forEach(f => f.classList.add('hidden'));
                     allIcons.forEach(i => {
                         i.className = 'fas fa-plus text-lg';
                     });
-                    
+
                     // Hide connected display
                     if (connectedDiv) {
                         connectedDiv.classList.add('hidden');
                     }
-                    
+
                     // Open this form
                     form.classList.remove('hidden');
                     icon.className = 'fas fa-minus text-lg';
@@ -563,7 +823,7 @@
                     // Close this form
                     form.classList.add('hidden');
                     icon.className = 'fas fa-plus text-lg';
-                    
+
                     // Show connected display if wallet is connected
                     if (walletData[walletType] && connectedDiv) {
                         connectedDiv.classList.remove('hidden');
@@ -581,11 +841,11 @@
                 const form = document.getElementById(walletType + '-form');
                 const icon = document.getElementById(walletType + '-icon');
                 const connectedDiv = document.getElementById(walletType + '-connected');
-                
+
                 // Hide form
                 form.classList.add('hidden');
                 icon.className = 'fas fa-plus text-lg';
-                
+
                 // Show connected display if wallet is connected
                 if (walletData[walletType] && connectedDiv) {
                     connectedDiv.classList.remove('hidden');
@@ -595,90 +855,105 @@
             // Bind/Update wallet function
             function bindWallet(event, walletType) {
                 event.preventDefault();
-                
+
                 const form = event.target;
                 const submitBtn = form.querySelector('button[type="submit"]');
-                const walletAddress = form.querySelector('input[name="wallet_address"]').value.trim();
-                
-                if (!walletAddress) {
+
+                // Get form data using FormData to ensure we get all fields
+                const formData = new FormData(form);
+
+                // Convert to JSON object
+                const data = {
+                    wallet_type: walletType,
+                    wallet_address: formData.get('wallet_address')?.trim() || ''
+                };
+
+                // Add Revolut-specific fields if it's a Revolut wallet
+                if (walletType === 'REVOLUT') {
+                    data.revolut_name = formData.get('revolut_name')?.trim() || '';
+                    data.revolut_iban = formData.get('revolut_iban')?.trim() || '';
+                    data.revolut_revtag = formData.get('revolut_revtag')?.trim() || '';
+                }
+
+                if (!data.wallet_address) {
                     showMessage('error', 'Please enter a wallet address');
                     return;
                 }
-                
+
                 const isUpdate = walletData[walletType.toLowerCase()] ? true : false;
-                
+
                 // Show loading state
                 const originalText = submitBtn.innerHTML;
                 submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>' + (isUpdate ? 'Updating...' : 'Binding...');
                 submitBtn.disabled = true;
-                
+
                 // Send request to backend
                 fetch('/bind_wallet', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        wallet_type: walletType,
-                        wallet_address: walletAddress
+                    body: JSON.stringify(data)
+                })
+                    .then(async response => {
+                        const responseData = await response.json();
+                        if (!response.ok) {
+                            throw new Error(responseData.message || `HTTP ${response.status}`);
+                        }
+
+                        return responseData;
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        showMessage('success', data.message);
-                        
-                        // Update local wallet data
-                        walletData[walletType.toLowerCase()] = {
-                            address: walletAddress,
-                            bound_at: new Date().toISOString()
-                        };
-                        
-                        // Update display
-                        setWalletConnected(walletType.toLowerCase(), walletAddress, new Date().toISOString());
-                        updateSummary(Object.keys(walletData).length);
-                        
-                        // Hide form
-                        cancelWalletForm(walletType.toLowerCase());
-                    } else {
-                        showMessage('error', data.message || 'Failed to ' + (isUpdate ? 'update' : 'bind') + ' wallet');
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    showMessage('error', 'An error occurred while ' + (isUpdate ? 'updating' : 'binding') + ' wallet');
-                })
-                .finally(() => {
-                    // Reset button state
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                });
+                    .then(data => {
+                        if (data.success) {
+                            showMessage('success', data.message);
+
+                            // Update local wallet data
+                            const walletInfo = {
+                                address: data.wallet_address || formData.get('wallet_address'),
+                                bound_at: new Date().toISOString()
+                            };
+
+                            // Add Revolut-specific data
+                            if (walletType === 'REVOLUT') {
+                                walletInfo.name = formData.get('revolut_name');
+                                walletInfo.iban = formData.get('revolut_iban');
+                                walletInfo.revtag = formData.get('revolut_revtag');
+                            }
+
+                            walletData[walletType.toLowerCase()] = walletInfo;
+
+                            // Update display
+                            setWalletConnected(walletType.toLowerCase(), walletInfo);
+                            updateSummary(Object.keys(walletData).length);
+
+                            // Hide form
+                            cancelWalletForm(walletType.toLowerCase());
+                        } else {
+                            showMessage('error', data.message || 'Failed to ' + (isUpdate ? 'update' : 'bind') + ' wallet');
+                        }
+                    })
+                    .catch(error => {
+                        showMessage('error', error.message || 'An error occurred while ' + (isUpdate ? 'updating' : 'binding') + ' wallet');
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        submitBtn.innerHTML = originalText;
+                        submitBtn.disabled = false;
+                    });
             }
 
-            // Initialize page
-            document.addEventListener('DOMContentLoaded', function() {
-                // Add smooth animations
-                const forms = document.querySelectorAll('.wallet-form');
-                forms.forEach(form => {
-                    form.style.transition = 'all 0.3s ease';
-                });
-                
-                // Load wallet data
-                loadWalletData();
-            });
-
             // Add form validation
-            document.addEventListener('DOMContentLoaded', function() {
+            document.addEventListener('DOMContentLoaded', function () {
                 // USDT address validation
                 const usdtInput = document.getElementById('usdt-address');
                 if (usdtInput) {
-                    usdtInput.addEventListener('input', function() {
+                    usdtInput.addEventListener('input', function () {
                         const value = this.value.trim();
                         if (value) {
                             const isTRC20 = /^T[A-Za-z1-9]{33}$/.test(value);
                             const isERC20 = /^0x[a-fA-F0-9]{40}$/.test(value);
                             const isOmni = /^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$/.test(value);
-                            
+
                             if (isTRC20 || isERC20 || isOmni) {
                                 this.classList.remove('border-red-300');
                                 this.classList.add('border-green-300');
@@ -695,11 +970,11 @@
                 // ETH address validation
                 const ethInput = document.getElementById('eth-address');
                 if (ethInput) {
-                    ethInput.addEventListener('input', function() {
+                    ethInput.addEventListener('input', function () {
                         const value = this.value.trim();
                         if (value) {
                             const isValidETH = /^0x[a-fA-F0-9]{40}$/.test(value);
-                            
+
                             if (isValidETH) {
                                 this.classList.remove('border-red-300');
                                 this.classList.add('border-green-300');
@@ -716,11 +991,11 @@
                 // PayPal email validation
                 const paypalInput = document.getElementById('paypal-address');
                 if (paypalInput) {
-                    paypalInput.addEventListener('input', function() {
+                    paypalInput.addEventListener('input', function () {
                         const value = this.value.trim();
                         if (value) {
                             const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
-                            
+
                             if (isValidEmail) {
                                 this.classList.remove('border-red-300');
                                 this.classList.add('border-green-300');
@@ -733,6 +1008,83 @@
                         }
                     });
                 }
+
+                // Revolut name validation
+                const revolutNameInput = document.getElementById('revolut-name');
+                if (revolutNameInput) {
+                    revolutNameInput.addEventListener('input', function () {
+                        const value = this.value.trim();
+                        if (value.length >= 2) {
+                            this.classList.remove('border-red-300');
+                            this.classList.add('border-green-300');
+                        } else if (value.length > 0) {
+                            this.classList.remove('border-green-300');
+                            this.classList.add('border-red-300');
+                        } else {
+                            this.classList.remove('border-red-300', 'border-green-300');
+                        }
+                    });
+                }
+
+                // Revolut IBAN validation
+                const revolutIbanInput = document.getElementById('revolut-iban');
+                if (revolutIbanInput) {
+                    revolutIbanInput.addEventListener('input', function () {
+                        let value = this.value.trim().toUpperCase().replace(/\s/g, '');
+                        const isValidIban = /^[A-Z]{2}\d{2}[A-Z0-9]{4,30}$/.test(value);
+
+                        if (isValidIban) {
+                            this.classList.remove('border-red-300');
+                            this.classList.add('border-green-300');
+                        } else if (value.length > 0) {
+                            this.classList.remove('border-green-300');
+                            this.classList.add('border-red-300');
+                        } else {
+                            this.classList.remove('border-red-300', 'border-green-300');
+                        }
+                    });
+                }
+
+                // Revolut RevTag validation
+                const revolutRevtagInput = document.getElementById('revolut-revtag');
+                if (revolutRevtagInput) {
+                    revolutRevtagInput.addEventListener('input', function () {
+                        let value = this.value.trim();
+
+                        // Auto-add @ if not present
+                        if (value && !value.startsWith('@')) {
+                            value = '@' + value;
+                            this.value = value;
+                        }
+
+                        const isValidRevtag = /^@[a-zA-Z0-9_]{3,19}$/.test(value);
+
+                        if (isValidRevtag) {
+                            this.classList.remove('border-red-300');
+                            this.classList.add('border-green-300');
+                        } else if (value.length > 0) {
+                            this.classList.remove('border-green-300');
+                            this.classList.add('border-red-300');
+                        } else {
+                            this.classList.remove('border-red-300', 'border-green-300');
+                        }
+                    });
+                }
+            });
+
+            // Initialize page
+            document.addEventListener('DOMContentLoaded', function () {
+                // Add smooth animations
+                const forms = document.querySelectorAll('.wallet-form');
+                forms.forEach(form => {
+                    form.style.transition = 'all 0.3s ease';
+                });
+
+                // Load wallet data immediately
+                loadWalletData();
+
+                // Also refresh wallet data every 30 seconds (optional)
+                setInterval(loadWalletData, 30000);
             });
         </script>
     </body>

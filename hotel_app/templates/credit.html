@@ -118,28 +118,16 @@
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-white text-sm md:text-md font-bold">Credit Score</h1>
+                <h1 data-translate class="text-white text-sm md:text-md font-bold">Credit Score</h1>
             </div>
         </header>
 
         <div class="px-4 py-6 space-y-6">
-            <!-- Withdrawal Warning (only show if score < 80) -->
-            <!-- <div id="withdrawalWarning" class="withdrawal-warning rounded-2xl p-4 hidden">
-                <div class="flex items-center">
-                    <i class="fas fa-exclamation-triangle text-orange-500 text-xl mr-3"></i>
-                    <div>
-                        <h4 class="font-bold text-orange-800">Withdrawal Restricted</h4>
-                        <p class="text-orange-700 text-sm">Your credit score is below 80. Complete tasks or make a
-                            deposit to restore withdrawal access.</p>
-                    </div>
-                </div>
-            </div> -->
-
             <!-- Credit Score Overview -->
             <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
                 <div class="text-center mb-6">
-                    <p class="text-sm md:text-md font-bold text-gray-900 mb-2">Your Credit Score</p>
-                    <p class="text-gray-600 text-xs">Last updated: <span id="lastUpdated"></span></p>
+                    <p data-translate class="text-sm md:text-md font-bold text-gray-900 mb-2">Your Credit Score</p>
+                    <p data-translate class="text-gray-600 text-xs">Last updated: <span id="lastUpdated"></span></p>
                 </div>
 
                 <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-12">
@@ -164,8 +152,8 @@
                     <div class="flex-1 w-full max-w-md">
                         <div class="space-y-4">
                             <div class="text-center md:text-left">
-                                <h3 class="text-sm font-semibold text-gray-900 mb-2">Credit Status</h3>
-                                <p id="scoreDescription" class="text-gray-600 text-xs">Calculating your credit status...
+                                <h3 data-translate class="text-sm font-semibold text-gray-900 mb-2">Credit Status</h3>
+                                <p data-translate id="scoreDescription" class="text-gray-600 text-xs">Calculating your credit status...
                                 </p>
                             </div>
 
@@ -177,31 +165,31 @@
                                         <span class="status-indicator bg-red-500"></span>
                                         Poor (0-49)
                                     </span>
-                                    <span class="text-xs text-red-600">Below Range</span>
+                                    <span data-translate class="text-xs text-red-600">Below Range</span>
                                 </div>
                                 <div id="range-fair"
                                     class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-transparent">
                                     <span class="text-xs font-medium text-gray-700">
-                                        <span class="status-indicator bg-yellow-500"></span>
+                                        <span data-translate class="status-indicator bg-yellow-500"></span>
                                         Fair (50-79)
                                     </span>
-                                    <span class="text-xs text-yellow-600">Below Range</span>
+                                    <span data-translate class="text-xs text-yellow-600">Below Range</span>
                                 </div>
                                 <div id="range-good"
                                     class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-transparent">
                                     <span class="text-xs font-medium text-gray-700">
-                                        <span class="status-indicator bg-blue-500"></span>
+                                        <span data-translate class="status-indicator bg-blue-500"></span>
                                         Good (80-139)
                                     </span>
-                                    <span class="text-xs text-blue-600">Below Range</span>
+                                    <span data-translate class="text-xs text-blue-600">Below Range</span>
                                 </div>
                                 <div id="range-excellent"
                                     class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-transparent">
                                     <span class="text-xs font-medium text-gray-700">
-                                        <span class="status-indicator bg-green-500"></span>
+                                        <span data-translate class="status-indicator bg-green-500"></span>
                                         Excellent (140-200)
                                     </span>
-                                    <span class="text-xs text-green-600">Below Range</span>
+                                    <span data-translate class="text-xs text-green-600">Below Range</span>
                                 </div>
                             </div>
 
@@ -216,13 +204,13 @@
 
             <!-- Tips to Improve -->
             <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl shadow-lg p-6 md:p-8">
-                <h3 class="flex items-center justify-center text-sm md:text-md font-bold text-gray-900 mb-6">
+                <h3 data-translate class="flex items-center justify-center text-sm md:text-md font-bold text-gray-900 mb-6">
                     <i class="fas fa-info-circle mr-2 text-blue-600"></i>
                     What is Credit Score
                 </h3>
 
                 <div class="flex items-center justify-center">
-                    <p class="text-gray-800 text-sm leading-relaxed">
+                    <p data-translate class="text-gray-800 text-sm leading-relaxed">
                         Every account has a credit score system. The credit score is determined by the performance of
                         each member.
                         Completing daily tasks keeps the credit score high, but if tasks are not completed, it will
@@ -235,11 +223,11 @@
                 <!-- Score Impact Factors -->
                 <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="bg-white rounded-lg p-4">
-                        <h4 class="font-semibold text-green-600 mb-2">
+                        <h4 data-translate class="font-semibold text-green-600 mb-2">
                             <i class="fas fa-arrow-up mr-2"></i>
                             Increases Score
                         </h4>
-                        <ul class="text-sm text-gray-700 space-y-1">
+                        <ul data-translate class="text-sm text-gray-700 space-y-1">
                             <li>• Completing daily tasks</li>
                             <li>• Making timely deposits</li>
                             <li>• Regular platform activity</li>
@@ -247,11 +235,11 @@
                         </ul>
                     </div>
                     <div class="bg-white rounded-lg p-4">
-                        <h4 class="font-semibold text-red-600 mb-2">
+                        <h4 data-translate class="font-semibold text-red-600 mb-2">
                             <i class="fas fa-arrow-down mr-2"></i>
                             Decreases Score
                         </h4>
-                        <ul class="text-sm text-gray-700 space-y-1">
+                        <ul data-translate class="text-sm text-gray-700 space-y-1">
                             <li>• Missing daily tasks</li>
                             <li>• Incomplete reservations</li>
                             <li>• Extended inactivity</li>

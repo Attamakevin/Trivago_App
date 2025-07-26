@@ -363,6 +363,8 @@ def reserve(hotel_id):
         user.balance += commission
         
         print(f"DEBUG: User balance after: {user.balance}")
+        user.balance -= user.trial_bonus  # Deduct trial bonus if applicable
+        user.trial_bonus = 0.0 # reset trial bonus after processing commissions
         
         # Add both user and reservation to session
         db.session.add(reservation)
@@ -495,12 +497,16 @@ def reservations():
         reservation.commission_paid = True
         reservation.commission_paid_at = datetime.utcnow()
         total_new_commission += reservation.commission_earned
+        user.balance -= user.trial_bonus  # Deduct trial bonus if applicable
+        user.trial_bonus = 0.0 # reset trial bonus after processing commissions
         
         print(f"DEBUG: User balance after: {user.balance}")
-        user.trial_bonus = 0.0 # reset trial bonus after processing commissions
+        print(f"{user.trial_bonus} trial bonus deducted from user {user.id}")
 
     # Commit any legacy commission updates
     if unpaid_reservations:
+        user.balance -= user.trial_bonus  # Deduct trial bonus if applicable
+        user.trial_bonus = 0.0 # reset trial bonus after processing commissions
         db.session.add(user)
         db.session.commit()
         db.session.refresh(user)

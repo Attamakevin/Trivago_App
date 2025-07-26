@@ -1086,6 +1086,11 @@ def bind_wallet():
         wallet_type = data.get('wallet_type', '').strip().upper()
         wallet_address = data.get('wallet_address', '').strip()
         
+        # Get Revolut-specific fields
+        revolut_name = data.get('revolut_name', '').strip() if wallet_type == 'REVOLUT' else None
+        revolut_iban = data.get('revolut_iban', '').strip() if wallet_type == 'REVOLUT' else None
+        revolut_revtag = data.get('revolut_revtag', '').strip() if wallet_type == 'REVOLUT' else None
+        
         # Validation
         if not wallet_type:
             return jsonify({'success': False, 'message': 'Wallet type is required'}), 400
@@ -1103,11 +1108,42 @@ def bind_wallet():
         if not validation_result['valid']:
             return jsonify({'success': False, 'message': validation_result['message']}), 400
         
+        # Additional validation for Revolut-specific fields
+        if wallet_type == 'REVOLUT':
+            if not revolut_name or len(revolut_name.strip()) < 2:
+                return jsonify({'success': False, 'message': 'Revolut account holder name is required (minimum 2 characters)'}), 400
+            
+            if not revolut_iban:
+                return jsonify({'success': False, 'message': 'Revolut IBAN number is required'}), 400
+            
+            # Basic IBAN validation
+            import re
+            iban_pattern = r'^[A-Z]{2}\d{2}[A-Z0-9]{4,30}$'
+            if not re.match(iban_pattern, revolut_iban.upper().replace(' ', '')):
+                return jsonify({'success': False, 'message': 'Invalid IBAN format. IBAN should start with 2 letters, followed by 2 digits, then alphanumeric characters'}), 400
+            
+            if not revolut_revtag:
+                return jsonify({'success': False, 'message': 'Revolut RevTag is required'}), 400
+            
+            # RevTag validation
+            if not revolut_revtag.startswith('@') or len(revolut_revtag) < 4 or len(revolut_revtag) > 20:
+                return jsonify({'success': False, 'message': 'Invalid RevTag format. RevTag should start with @ and be 4-20 characters long'}), 400
+            
+            revtag_content = revolut_revtag[1:]  # Remove @ symbol
+            if not re.match(r'^[a-zA-Z0-9_]+$', revtag_content):
+                return jsonify({'success': False, 'message': 'RevTag can only contain letters, numbers, and underscores after @'}), 400
+        
         try:
-            # Bind wallet to user (you may need to add these columns to User model)
+            # Bind wallet to user
             user.bound_wallet_type = wallet_type
             user.bound_wallet_address = wallet_address
             user.wallet_bound_at = datetime.utcnow()
+            
+            # Handle Revolut-specific fields
+            if wallet_type == 'REVOLUT':
+                user.revolut_name = revolut_name
+                user.revolut_iban = revolut_iban
+                user.revolut_revtag = revolut_revtag
             
             db.session.commit()
             
@@ -1194,21 +1230,73 @@ def get_wallet_info():
     if not user:
         return jsonify({'success': False, 'message': 'User not found'}), 404
     
+    # DEBUG: Print user attributes to see what fields exist
+    print("=== DEBUG: User attributes ===")
+    for attr in dir(user):
+        if not attr.startswith('_') and not callable(getattr(user, attr)):
+            value = getattr(user, attr, 'N/A')
+            print(f"{attr}: {value}")
+    print("=== END DEBUG ===")
+    
+    # Initialize wallets dictionary
+    wallets = {}
+    
     # Check if user has bound wallet
     if hasattr(user, 'bound_wallet_address') and user.bound_wallet_address:
-        return jsonify({
+        wallet_type_lower = user.bound_wallet_type.lower() if user.bound_wallet_type else 'unknown'
+        
+        # Basic wallet data
+        wallet_data = {
+            'address': user.bound_wallet_address,
+            'type': user.bound_wallet_type,
+            'bound_at': user.wallet_bound_at.isoformat() if user.wallet_bound_at else None
+        }
+        
+        # Add Revolut-specific fields if it's a Revolut wallet
+        if wallet_type_lower == 'revolut':
+            print("=== DEBUG: Processing Revolut wallet ===")
+            
+            # Check if Revolut fields exist in database
+            revolut_name = getattr(user, 'revolut_name', None)
+            revolut_iban = getattr(user, 'revolut_iban', None) 
+            revolut_revtag = getattr(user, 'revolut_revtag', None)
+            
+            print(f"revolut_name from DB: '{revolut_name}'")
+            print(f"revolut_iban from DB: '{revolut_iban}'")
+            print(f"revolut_revtag from DB: '{revolut_revtag}'")
+            
+            wallet_data.update({
+                'name': revolut_name or '',
+                'iban': revolut_iban or '', 
+                'revtag': revolut_revtag or ''
+            })
+            
+            print(f"Final wallet_data: {wallet_data}")
+            print("=== END Revolut DEBUG ===")
+        
+        # Add to wallets dictionary with lowercase key
+        wallets[wallet_type_lower] = wallet_data
+        
+        response_data = {
             'success': True,
             'wallet_bound': True,
+            'wallets': wallets,
+            # Keep backward compatibility
             'wallet_type': user.bound_wallet_type,
             'wallet_address': user.bound_wallet_address,
             'wallet_bound_at': user.wallet_bound_at.strftime('%Y-%m-%d %H:%M:%S') if user.wallet_bound_at else None
-        })
+        }
+        
+        print(f"=== FINAL RESPONSE: {response_data} ===")
+        return jsonify(response_data)
     else:
         return jsonify({
             'success': True,
             'wallet_bound': False,
+            'wallets': {},
             'message': 'No wallet bound yet'
         })
+
 
 @app.route('/transaction_details')
 def transaction_details():

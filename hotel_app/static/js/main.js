@@ -1,3 +1,11 @@
+function safeGetElement(id) {
+    const element = document.getElementById(id);
+    if (!element) {
+        console.warn(`Element with id '${id}' not found`);
+    }
+    return element;
+}
+
 function toggleMobileMenu() {
     const mobileMenu = document.getElementById('mobileMenu');
     const backdrop = document.getElementById('mobileMenuBackdrop');
@@ -681,6 +689,11 @@ function initializeCountrySelector() {
     const popularCodes = popularCountries.map(c => c.code);
     const otherCountries = allCountries.filter(c => !popularCodes.includes(c.code));
 
+    if (!carousel || carousel.length === 0) {
+        console.log('No carousel elements found');
+        return;
+    }
+
     currentCountries = [
         ...popularCountries,
         { separator: true }, // Add separator
@@ -693,6 +706,8 @@ function initializeCountrySelector() {
 function renderCountryList() {
     const countryList = document.getElementById('countryList');
     countryList.innerHTML = '';
+
+    if (!countryList) return;
 
     currentCountries.forEach(country => {
         if (country.separator) {
@@ -802,6 +817,10 @@ function initializeCarousel() {
     const cards = carousel.querySelectorAll('.flex-none');
     totalCards = cards.length;
 
+    if (!carousel || carousel.length === 0) {
+        console.log('No carousel elements found');
+        return;
+    }
     // Determine cards per view based on screen size
     if (window.innerWidth < 768) {
         cardsPerView = 1;

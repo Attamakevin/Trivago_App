@@ -34,7 +34,7 @@
         </header>
 
         <div class="px-4 py-6 space-y-8 bg-cover bg-center"
-            style="background-image: url('{{ url_for('static', filename='images/hotel1.jpg') }}')">
+            style="background-image: url('{{ url_for('static', filename='images/hotel-5.jpg') }}')">
             <!-- Reservation Stats Section -->
             <div class="flex flex-col sm:flex-row items-center sm:justify-between p-6">
                 <div class="mb-6 bg-white rounded-lg shadow-sm p-4 text ">
@@ -66,31 +66,33 @@
                 <div class="flex flex-wrap justify-center items-center gap-8 md:gap-12">
                     <div
                         class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-gray-100 px-1 rounded-xl flex items-center justify-center shadow-lg">
-                        <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/626.png" alt="Booking.com"
-                            loading="lazy" class="partner-logo">
-                    </div>
-                    <div class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-gray-100 px-1 rounded-xl flex items-center justify-center shadow-lg">
-                        <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/3340.png" alt="Booking.com"
-                            loading="lazy" class="partner-logo">
+                        <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/626.png"
+                            alt="Booking.com" loading="lazy" class="partner-logo">
                     </div>
                     <div
                         class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-gray-100 px-1 rounded-xl flex items-center justify-center shadow-lg">
-                        <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/395.png" alt="Booking.com"
-                            loading="lazy" class="partner-logo">
-                    </div>
-                    <div class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-gray-100 px-1 rounded-xl flex items-center justify-center shadow-lg">
-                        <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/2564.png" alt="Booking.com"
-                            loading="lazy" class="partner-logo">
+                        <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/3340.png"
+                            alt="Booking.com" loading="lazy" class="partner-logo">
                     </div>
                     <div
                         class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-gray-100 px-1 rounded-xl flex items-center justify-center shadow-lg">
-                        <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/634.png" alt="Booking.com"
-                            loading="lazy" class="partner-logo">
+                        <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/395.png"
+                            alt="Booking.com" loading="lazy" class="partner-logo">
                     </div>
                     <div
                         class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-gray-100 px-1 rounded-xl flex items-center justify-center shadow-lg">
-                        <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/14.png" alt="Booking.com"
-                            loading="lazy" class="partner-logo">
+                        <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/2564.png"
+                            alt="Booking.com" loading="lazy" class="partner-logo">
+                    </div>
+                    <div
+                        class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-gray-100 px-1 rounded-xl flex items-center justify-center shadow-lg">
+                        <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/634.png"
+                            alt="Booking.com" loading="lazy" class="partner-logo">
+                    </div>
+                    <div
+                        class="hotel-logo w-16 h-16 md:w-20 md:h-20 bg-gray-100 px-1 rounded-xl flex items-center justify-center shadow-lg">
+                        <img src="https://imgcy.trivago.com/image/upload/hardcodedimages/mpm-localised-logos-dark/14.png"
+                            alt="Booking.com" loading="lazy" class="partner-logo">
                     </div>
                 </div>
                 <div class="text-center mt-4">
@@ -163,7 +165,8 @@
                             <div class="text-xl md:text-xl font-bold mb-1">£{{ "%.2f"|format(user_stats.deposit_balance)
                                 }}</div>
                             <p data-translate class="text-[#101f56] text-sm">Booking Deposits</p>
-                            <p data-translate class="text-xs text-[#101f56] mt-1">{{ user_stats.active_bookings }} active bookings</p>
+                            <p data-translate class="text-xs text-[#101f56] mt-1">{{ user_stats.active_bookings }}
+                                active bookings</p>
                         </div>
                     </div>
                 </div>
@@ -203,7 +206,8 @@
                         <i class="fas fa-crown text-yellow-600 text-3xl"></i>
                     </div>
                     <h3 data-translate class="text-2xl font-bold text-gray-900 mb-2">Luxury Order Claimed!</h3>
-                    <p data-translate id="luxurySuccessMessage" class="text-gray-600 mb-6">Your luxury order has been successfully claimed!</p>
+                    <p data-translate id="luxurySuccessMessage" class="text-gray-600 mb-6">Your luxury order has been
+                        successfully claimed!</p>
                     <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                         <div class="flex items-center justify-center">
                             <i class="fas fa-dollar-sign text-green-600 mr-2"></i>
@@ -392,8 +396,10 @@
                         {% if not current_hotel_data and not hotels %}
                         <div class="text-center py-12">
                             <i class="fas fa-check-circle text-green-400 text-6xl mb-4"></i>
-                            <h4 data-translate class="text-xl font-semibold text-gray-600 mb-2">All Hotels Completed!</h4>
-                            <p data-translate class="text-gray-500 mb-4">Congratulations! You've completed all your assigned hotels,
+                            <h4 data-translate class="text-xl font-semibold text-gray-600 mb-2">All Hotels Completed!
+                            </h4>
+                            <p data-translate class="text-gray-500 mb-4">Congratulations! You've completed all your
+                                assigned hotels,
                                 Contact Customer service for more hotel tasks.</p>
                             <div class="bg-green-50 border border-green-200 rounded-lg p-4 mx-4">
                                 <div class="flex items-center justify-center">
@@ -501,8 +507,10 @@
                             {% else %}
                             <div class="text-center py-12">
                                 <i class="fas fa-history text-gray-300 text-6xl mb-4"></i>
-                                <h4 data-translate class="text-xl font-semibold text-gray-600 mb-2">No Order History</h4>
-                                <p data-translate class="text-gray-500">You haven't made any reservations yet. Start by making your
+                                <h4 data-translate class="text-xl font-semibold text-gray-600 mb-2">No Order History
+                                </h4>
+                                <p data-translate class="text-gray-500">You haven't made any reservations yet. Start by
+                                    making your
                                     first reservation!</p>
                             </div>
                             {% endif %}
@@ -531,7 +539,8 @@
                             <div id="preReservationCommission"
                                 class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
 
-                                <p data-translate class="text-sm text-gray-600 mb-4">Please answer these quick questions before
+                                <p data-translate class="text-sm text-gray-600 mb-4">Please answer these quick questions
+                                    before
                                     completing your reservation:</p>
 
                                 <!-- Survey Questions -->
@@ -539,14 +548,16 @@
                                     <div class="flex items-center">
                                         <input type="checkbox" id="serviceQuality"
                                             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                        <label data-translate for="serviceQuality" class="ml-3 text-sm text-gray-700">Are you satisfied
+                                        <label data-translate for="serviceQuality"
+                                            class="ml-3 text-sm text-gray-700">Are you satisfied
                                             with our service quality?</label>
                                     </div>
 
                                     <div class="flex items-center">
                                         <input type="checkbox" id="roomCleanliness"
                                             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                        <label data-translate for="roomCleanliness" class="ml-3 text-sm text-gray-700">Was the room
+                                        <label data-translate for="roomCleanliness"
+                                            class="ml-3 text-sm text-gray-700">Was the room
                                             clean
                                             as expected?</label>
                                     </div>
@@ -554,7 +565,8 @@
                                     <div class="flex items-center">
                                         <input type="checkbox" id="staffFriendliness"
                                             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                        <label data-translate for="staffFriendliness" class="ml-3 text-sm text-gray-700">Did the staff
+                                        <label data-translate for="staffFriendliness"
+                                            class="ml-3 text-sm text-gray-700">Did the staff
                                             provide great services?</label>
                                     </div>
 
@@ -568,7 +580,8 @@
                                     <div class="flex items-center">
                                         <input type="checkbox" id="recommendService"
                                             class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                                        <label data-translate for="recommendService" class="ml-3 text-sm text-gray-700">Would you
+                                        <label data-translate for="recommendService"
+                                            class="ml-3 text-sm text-gray-700">Would you
                                             recommend
                                             our service to others?</label>
                                     </div>
@@ -637,12 +650,14 @@
                                     </div>
                                 </div>
 
-                                <p data-translate class="text-sm text-gray-600 mb-4" id="ratingText">Click stars to rate</p>
+                                <p data-translate class="text-sm text-gray-600 mb-4" id="ratingText">Click stars to rate
+                                </p>
                             </div>
 
                             <!-- Feedback -->
                             <div class="mb-6">
-                                <label data-translate class="block text-sm font-medium text-gray-700 mb-2">Feedback (Optional)</label>
+                                <label data-translate class="block text-sm font-medium text-gray-700 mb-2">Feedback
+                                    (Optional)</label>
                                 <textarea id="ratingFeedback"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                                     rows="3" placeholder="Tell us about your experience..."></textarea>
@@ -735,7 +750,8 @@
                     </div>
                     <h3 data-translate class="text-2xl font-bold text-gray-900 mb-2">Reservation Successful!</h3>
                     <!-- CHANGE: Updated success message -->
-                    <p data-translate class="text-gray-600 mb-6">Your hotel reservation has been completed and commission has been
+                    <p data-translate class="text-gray-600 mb-6">Your hotel reservation has been completed and
+                        commission has been
                         added to your balance!</p>
                     <button data-translate onclick="closeSuccessModal()"
                         class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-xl transition-colors">
@@ -753,7 +769,8 @@
                         <i class="fas fa-exclamation-triangle text-red-600 text-3xl"></i>
                     </div>
                     <h3 data-translate class="text-2xl font-bold text-gray-900 mb-2">Reservation Failed</h3>
-                    <p data-translate id="errorMessage" class="text-gray-600 mb-6">An error occurred while processing your
+                    <p data-translate id="errorMessage" class="text-gray-600 mb-6">An error occurred while processing
+                        your
                         reservation.
                     </p>
                     <button data-translate onclick="closeErrorModal()"

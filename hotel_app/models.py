@@ -16,7 +16,7 @@ class User(db.Model, UserMixin):
     invitation_code = db.Column(db.String(20))
     member_points = db.Column(db.Integer, default=0)
     trial_bonus = db.Column(db.Float, default=564.00)
-    balance = db.Column(db.Float, default=0.0)
+    balance = db.Column(db.Float, default=564.00)
     total_deposits = db.Column(db.Float, default=0.0)
     vip_level = db.Column(db.String(10), default='VIP0')
     withdrawal_password = db.Column(db.String(100))

@@ -3047,7 +3047,7 @@ def claim_luxury_order(order_id):
         
         return jsonify({
             'success': True,
-            'message': f'${luxury_order.amount:.2f} has been credited to your account!',
+            'message': 'Order amount has been credited to your account!',
             'amount_credited': luxury_order.amount,
             'old_balance': old_balance,
             'new_balance': user.balance,

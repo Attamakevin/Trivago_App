@@ -2241,22 +2241,22 @@ const TranslationSystem = {
     // Get stored language preference
     getStoredLanguage() {
         if (!this.config.persistLanguage) {
-            console.log('Persistence disabled, using default language');
+            // console.log('Persistence disabled, using default language');
             return this.config.defaultLanguage;
         }
 
         try {
             const stored = localStorage.getItem(this.config.storageKey);
-            console.log('Checking localStorage for language:', stored);
+            // console.log('Checking localStorage for language:', stored);
 
             if (stored && this.languages[stored]) {
-                console.log(`✓ Found valid stored language: ${stored}`);
+                // console.log(`✓ Found valid stored language: ${stored}`);
                 return stored;
             } else {
-                console.log('No valid stored language found, using default');
+                // console.log('No valid stored language found, using default');
             }
         } catch (error) {
-            console.error(`Error reading stored language: ${error.message}`);
+            // console.error(`Error reading stored language: ${error.message}`);
         }
 
         return this.config.defaultLanguage;
@@ -2265,61 +2265,61 @@ const TranslationSystem = {
     // Store language preference
     storeLanguage(languageCode) {
         if (!this.config.persistLanguage) {
-            console.log('Persistence disabled, not storing language');
+            // console.log('Persistence disabled, not storing language');
             return;
         }
 
         try {
             localStorage.setItem(this.config.storageKey, languageCode);
-            console.log(`✓ Successfully stored language preference: ${languageCode}`);
+            // console.log(`✓ Successfully stored language preference: ${languageCode}`);
 
             const verify = localStorage.getItem(this.config.storageKey);
             if (verify === languageCode) {
-                console.log('✓ Storage verification successful');
+                // console.log('✓ Storage verification successful');
             } else {
-                console.error('✗ Storage verification failed!');
+                // console.error('✗ Storage verification failed!');
             }
         } catch (error) {
-            console.error(`Error storing language: ${error.message}`);
+            // console.error(`Error storing language: ${error.message}`);
         }
     },
 
     // Auto-translate on page load
     // Modified autoTranslateOnLoad function - force translation on page load
     async autoTranslateOnLoad() {
-        console.log('=== AUTO-TRANSLATE ON LOAD ===');
+        // console.log('=== AUTO-TRANSLATE ON LOAD ===');
 
         const storedLanguage = this.getStoredLanguage();
-        console.log('Stored language detected:', storedLanguage);
+        // console.log('Stored language detected:', storedLanguage);
 
         if (storedLanguage && storedLanguage !== 'en') {
             const language = this.languages[storedLanguage];
-            console.log(`🌐 Auto-translating to: ${language.name} (${storedLanguage})`);
+            // console.log(`🌐 Auto-translating to: ${language.name} (${storedLanguage})`);
 
             this.updateLanguageUI(storedLanguage, language.name);
 
             setTimeout(() => {
-                console.log('Executing auto-translation with FORCE=true...');
+                // console.log('Executing auto-translation with FORCE=true...');
                 // FORCE translation even if languages match
-                this.translatePage(storedLanguage, language.name, false, true);
+                // this.translatePage(storedLanguage, language.name, false, true);
             }, 100);
         } else {
-            console.log('No auto-translation needed, staying in English');
+            // console.log('No auto-translation needed, staying in English');
             this.updateLanguageUI('en', 'English');
         }
     },
 
     // Modified init function - reset current language to ensure fresh start
     async init() {
-        console.log('🚀 Initializing static translation system...');
+        // console.log('🚀 Initializing static translation system...');
 
         // Get stored language but don't set it as current yet
         const storedLanguage = this.getStoredLanguage();
-        console.log('Stored language found:', storedLanguage);
+        // console.log('Stored language found:', storedLanguage);
 
         // Always start with English, then translate if needed
         this.state.currentLanguage = 'en';
-        console.log('Initial current language set to: en (will translate to stored language)');
+        // console.log('Initial current language set to: en (will translate to stored language)');
 
         this.storeOriginalContent();
         this.setupEventListeners();
@@ -2328,14 +2328,14 @@ const TranslationSystem = {
         await this.autoTranslateOnLoad();
 
         this.state.isInitialized = true;
-        console.log('✅ Static translation system ready!');
+        // console.log('✅ Static translation system ready!');
     },
 
     // Handle pending selection
     handlePendingSelection() {
         if (window.pendingLanguageSelection) {
             const { code, name } = window.pendingLanguageSelection;
-            console.log(`Processing pending language selection: ${code}`);
+            // console.log(`Processing pending language selection: ${code}`);
             setTimeout(() => {
                 this.translatePage(code, name);
                 window.pendingLanguageSelection = null;
@@ -2359,7 +2359,7 @@ const TranslationSystem = {
             }
         });
 
-        console.log(`📋 Stored ${this.state.originalContent.size} translatable elements`);
+        // console.log(`📋 Stored ${this.state.originalContent.size} translatable elements`);
     },
 
     // Extract text content
@@ -2384,7 +2384,7 @@ const TranslationSystem = {
 
         window.addEventListener('storage', (e) => {
             if (e.key === this.config.storageKey && e.newValue !== this.state.currentLanguage) {
-                console.log(`Language changed in another tab: ${e.newValue}`);
+                // console.log(`Language changed in another tab: ${e.newValue}`);
                 if (e.newValue && this.languages[e.newValue]) {
                     const language = this.languages[e.newValue];
                     this.translatePage(e.newValue, language.name, false);
@@ -2399,7 +2399,7 @@ const TranslationSystem = {
         const chevron = document.getElementById('languageChevron');
 
         if (!dropdown) {
-            console.error('❌ Dropdown element not found');
+            // console.error('❌ Dropdown element not found');
             return;
         }
 
@@ -2408,11 +2408,11 @@ const TranslationSystem = {
         if (this.state.isDropdownOpen) {
             dropdown.classList.remove('hidden');
             if (chevron) chevron.style.transform = 'rotate(180deg)';
-            console.log('📂 Dropdown opened');
+            // console.log('📂 Dropdown opened');
         } else {
             dropdown.classList.add('hidden');
             if (chevron) chevron.style.transform = 'rotate(0deg)';
-            console.log('📁 Dropdown closed');
+            // console.log('📁 Dropdown closed');
         }
     },
 
@@ -2425,17 +2425,17 @@ const TranslationSystem = {
             dropdown.classList.add('hidden');
             if (chevron) chevron.style.transform = 'rotate(0deg)';
             this.state.isDropdownOpen = false;
-            console.log('📁 Dropdown closed');
+            // console.log('📁 Dropdown closed');
         }
     },
 
     // Update UI
     updateLanguageUI(languageCode, languageName) {
-        console.log(`🎨 Updating UI for: ${languageName} (${languageCode})`);
+        // console.log(`🎨 Updating UI for: ${languageName} (${languageCode})`);
 
         const language = this.languages[languageCode];
         if (!language) {
-            console.error('❌ Language not found:', languageCode);
+            // console.error('❌ Language not found:', languageCode);
             return;
         }
 
@@ -2444,12 +2444,12 @@ const TranslationSystem = {
 
         if (flagElement) {
             flagElement.className = `fi fi-${language.flag} flag-icon`;
-            console.log(`✓ Updated flag to: ${language.flag}`);
+            // console.log(`✓ Updated flag to: ${language.flag}`);
         }
 
         if (textElement) {
             textElement.textContent = language.code;
-            console.log(`✓ Updated text to: ${language.code}`);
+            // console.log(`✓ Updated text to: ${language.code}`);
         }
 
         const dropdown = document.getElementById('languageDropdown');
@@ -2461,7 +2461,7 @@ const TranslationSystem = {
             const currentOption = dropdown.querySelector(`[data-lang="${languageCode}"]`);
             if (currentOption) {
                 currentOption.classList.add('bg-blue-50', 'text-blue-600', 'font-medium');
-                console.log(`✓ Updated dropdown active state for: ${languageCode}`);
+                // console.log(`✓ Updated dropdown active state for: ${languageCode}`);
             }
         }
 
@@ -2469,21 +2469,21 @@ const TranslationSystem = {
         document.documentElement.lang = languageCode;
         this.state.currentLanguage = languageCode;
 
-        console.log(`✅ UI update complete for: ${languageName}`);
+        // console.log(`✅ UI update complete for: ${languageName}`);
     },
 
     // Modified translatePage function - add forceTranslation parameter
     async translatePage(languageCode, languageName, shouldStore = true, forceTranslation = false) {
         // Modified condition: skip only if same language AND not forced
         if (this.state.isTranslating || (languageCode === this.state.currentLanguage && !forceTranslation)) {
-            console.log('Translation skipped (already translating or same language)');
+            // console.log('Translation skipped (already translating or same language)');
             return;
         }
 
-        console.log(`🌍 Starting INSTANT static translation: ${languageCode} (${languageName}), shouldStore: ${shouldStore}, forced: ${forceTranslation}`);
+        // console.log(`🌍 Starting INSTANT static translation: ${languageCode} (${languageName}), shouldStore: ${shouldStore}, forced: ${forceTranslation}`);
 
         if (shouldStore) {
-            console.log('💾 Storing language preference...');
+            // console.log('💾 Storing language preference...');
             this.storeLanguage(languageCode);
         }
 
@@ -2493,17 +2493,17 @@ const TranslationSystem = {
             this.setTranslatingState(true);
 
             if (languageCode === 'en') {
-                console.log('🔄 Resetting to original English...');
+                // console.log('🔄 Resetting to original English...');
                 await this.resetToOriginal();
             } else {
-                console.log('🔄 Applying static translations instantly...');
+                // console.log('🔄 Applying static translations instantly...');
                 this.applyStaticTranslations(languageCode);
             }
 
-            console.log(`✅ INSTANT translation completed: ${languageName}`);
+            // console.log(`✅ INSTANT translation completed: ${languageName}`);
 
         } catch (error) {
-            console.error(`❌ Translation failed: ${error.message}`);
+            // console.error(`❌ Translation failed: ${error.message}`);
         } finally {
             this.setTranslatingState(false);
         }
@@ -2521,7 +2521,7 @@ const TranslationSystem = {
     applyStaticTranslations(targetLanguage) {
         const translations = StaticTranslations[targetLanguage];
         if (!translations) {
-            console.error(`No static translations available for: ${targetLanguage}`);
+            // console.error(`No static translations available for: ${targetLanguage}`);
             return;
         }
 
@@ -2560,8 +2560,8 @@ const TranslationSystem = {
             }
         });
 
-        console.log(`✅ INSTANT static translation complete: ${translated} translated, ${notFound} not found`);
-        console.log(`🎯 Translation success rate: ${Math.round((translated / (translated + notFound)) * 100)}%`);
+        // console.log(`✅ INSTANT static translation complete: ${translated} translated, ${notFound} not found`);
+        // console.log(`🎯 Translation success rate: ${Math.round((translated / (translated + notFound)) * 100)}%`);
     },
 
     // Helper methods
@@ -2575,7 +2575,7 @@ const TranslationSystem = {
 };
 
 window.toggleLanguageDropdown = function () {
-    console.log('toggleLanguageDropdown called');
+    // console.log('toggleLanguageDropdown called');
 
     // Check if TranslationSystem is ready
     if (typeof TranslationSystem !== 'undefined' && TranslationSystem.toggleDropdown) {
@@ -2599,7 +2599,7 @@ window.toggleLanguageDropdown = function () {
 };
 
 window.selectLanguage = function (languageCode, flagCode, languageName, displayCode) {
-    console.log('selectLanguage called:', languageCode, languageName);
+    // console.log('selectLanguage called:', languageCode, languageName);
 
     if (typeof TranslationSystem !== 'undefined' && TranslationSystem.translatePage) {
         if (languageCode === 'en') {
@@ -2608,18 +2608,18 @@ window.selectLanguage = function (languageCode, flagCode, languageName, displayC
             TranslationSystem.translatePage(languageCode, languageName);
         }
     } else {
-        console.warn('TranslationSystem not ready, storing selection for later');
+        // console.warn('TranslationSystem not ready, storing selection for later');
         window.pendingLanguageSelection = { code: languageCode, name: languageName };
     }
 };
 
 window.translateToLanguage = function (languageCode, languageName) {
-    console.log('translateToLanguage called:', languageCode, languageName);
+    // console.log('translateToLanguage called:', languageCode, languageName);
 
     if (typeof TranslationSystem !== 'undefined' && TranslationSystem.translatePage) {
         TranslationSystem.translatePage(languageCode, languageName);
     } else {
-        console.warn('TranslationSystem not ready, storing selection for later');
+        // console.warn('TranslationSystem not ready, storing selection for later');
         window.pendingLanguageSelection = { code: languageCode, name: languageName };
     }
 };
@@ -2627,7 +2627,7 @@ window.translateToLanguage = function (languageCode, languageName) {
 
 // INITIALIZATION
 function initializeTranslationSystem() {
-    console.log('🔄 Attempting to initialize static translation system...');
+    // console.log('🔄 Attempting to initialize static translation system...');
 
     setTimeout(() => {
         if (!TranslationSystem.state.isInitialized) {
@@ -2645,27 +2645,27 @@ if (document.readyState === 'loading') {
 window.addEventListener('load', () => {
     setTimeout(() => {
         if (!TranslationSystem.state.isInitialized) {
-            console.log('🔄 Fallback initialization...');
+            // console.log('🔄 Fallback initialization...');
             TranslationSystem.init();
         }
     }, 200);
 });
 
-console.log('⚡ INSTANT Static Translation System loaded - No API required!');
+// console.log('⚡ INSTANT Static Translation System loaded - No API required!');
 
 // Test function - add this temporarily
 function testTranslations() {
-    console.log('Testing translations...');
+    // console.log('Testing translations...');
 
     // Test if Portuguese translations exist
-    console.log('PT - Hotel Reservation Center:', StaticTranslations['pt']['Hotel Reservation Center']);
-    console.log('PT - Total keys:', Object.keys(StaticTranslations['pt']).length);
+    // console.log('PT - Hotel Reservation Center:', StaticTranslations['pt']['Hotel Reservation Center']);
+    // console.log('PT - Total keys:', Object.keys(StaticTranslations['pt']).length);
 
     // Test if AdditionalTranslations exist
     if (typeof AdditionalTranslations !== 'undefined') {
-        console.log('AdditionalTranslations PT keys:', Object.keys(AdditionalTranslations['pt']).length);
+        // console.log('AdditionalTranslations PT keys:', Object.keys(AdditionalTranslations['pt']).length);
     } else {
-        console.error('AdditionalTranslations is not defined!');
+        // console.error('AdditionalTranslations is not defined!');
     }
 }
 
@@ -2678,51 +2678,51 @@ testTranslations();
 const TranslationDebugger = {
     // Check what's in localStorage
     checkStorage() {
-        console.log('=== STORAGE DEBUG ===');
+        // console.log('=== STORAGE DEBUG ===');
         try {
             const stored = localStorage.getItem('selectedLanguage');
-            console.log('localStorage selectedLanguage:', stored);
+            // console.log('localStorage selectedLanguage:', stored);
 
             // Check all localStorage items
-            console.log('All localStorage items:');
+            // console.log('All localStorage items:');
             for (let i = 0; i < localStorage.length; i++) {
                 const key = localStorage.key(i);
                 const value = localStorage.getItem(key);
-                console.log(`  ${key}: ${value}`);
+                // console.log(`  ${key}: ${value}`);
             }
         } catch (error) {
-            console.error('Error accessing localStorage:', error);
+            // console.error('Error accessing localStorage:', error);
         }
     },
 
     // Check page readiness
     checkPageState() {
-        console.log('=== PAGE STATE DEBUG ===');
-        console.log('Document ready state:', document.readyState);
-        console.log('Translation system initialized:', TranslationSystem?.state?.isInitialized);
-        console.log('Current language:', TranslationSystem?.state?.currentLanguage);
-        console.log('Elements with data-translate:', document.querySelectorAll('[data-translate]').length);
-        console.log('Page URL:', window.location.href);
+        // console.log('=== PAGE STATE DEBUG ===');
+        // console.log('Document ready state:', document.readyState);
+        // console.log('Translation system initialized:', TranslationSystem?.state?.isInitialized);
+        // console.log('Current language:', TranslationSystem?.state?.currentLanguage);
+        // console.log('Elements with data-translate:', document.querySelectorAll('[data-translate]').length);
+        // console.log('Page URL:', window.location.href);
     },
 
     // Check if translation system is working
     checkTranslationSystem() {
-        console.log('=== TRANSLATION SYSTEM DEBUG ===');
-        console.log('TranslationSystem exists:', typeof TranslationSystem !== 'undefined');
-        console.log('StaticTranslations exists:', typeof StaticTranslations !== 'undefined');
-        console.log('Global functions exist:');
-        console.log('  toggleLanguageDropdown:', typeof window.toggleLanguageDropdown);
-        console.log('  selectLanguage:', typeof window.selectLanguage);
-        console.log('  translateToLanguage:', typeof window.translateToLanguage);
+        // console.log('=== TRANSLATION SYSTEM DEBUG ===');
+        // console.log('TranslationSystem exists:', typeof TranslationSystem !== 'undefined');
+        // console.log('StaticTranslations exists:', typeof StaticTranslations !== 'undefined');
+        // console.log('Global functions exist:');
+        // console.log('  toggleLanguageDropdown:', typeof window.toggleLanguageDropdown);
+        // console.log('  selectLanguage:', typeof window.selectLanguage);
+        // console.log('  translateToLanguage:', typeof window.translateToLanguage);
     },
 
     // Run all debug checks
     runAll() {
-        console.log('🔍 Running Translation Debug Checks...');
+        // console.log('🔍 Running Translation Debug Checks...');
         this.checkStorage();
         this.checkPageState();
         this.checkTranslationSystem();
-        console.log('🔍 Debug checks complete.');
+        // console.log('🔍 Debug checks complete.');
     }
 };
 
@@ -2736,13 +2736,13 @@ window.TranslationDebugger = TranslationDebugger;
 
 // Test function you can run in browser console
 window.testTranslation = function () {
-    console.log('🧪 Testing translation persistence...');
+    // console.log('🧪 Testing translation persistence...');
     TranslationDebugger.runAll();
 
     // Try to translate to Portuguese
     if (typeof TranslationSystem !== 'undefined') {
         TranslationSystem.translatePage('pt', 'Português');
     } else {
-        console.error('TranslationSystem not available!');
+        // console.error('TranslationSystem not available!');
     }
 };

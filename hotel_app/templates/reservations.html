@@ -210,7 +210,6 @@
                         successfully claimed!</p>
                     <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                         <div class="flex items-center justify-center">
-                            <i class="fas fa-dollar-sign text-green-600 mr-2"></i>
                             <span id="luxuryAmountCredited" class="text-lg font-bold text-green-600">£0.00</span>
                         </div>
                         <p data-translate class="text-xs text-green-600 mt-1">Added to your account balance</p>
@@ -289,7 +288,6 @@
                                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
                                         <div class="flex items-center justify-between">
                                             <span class="text-sm font-medium text-blue-800">
-                                                <i class="fas fa-dollar-sign mr-1"></i>
                                                 Your Commission
                                             </span>
                                             <span class="text-lg font-bold text-blue-600">
@@ -365,7 +363,6 @@
                                     <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-3">
                                         <div class="flex items-center justify-between">
                                             <span class="text-sm font-medium text-blue-800">
-                                                <i class="fas fa-dollar-sign mr-1"></i>
                                                 Your Commission
                                             </span>
                                             <span class="text-lg font-bold text-blue-600">
@@ -475,7 +472,7 @@
                                             <p><i
                                                     class="fas fa-calendar mr-2"></i>{{ reservation.created_at.strftime('%B %d, %Y at %I:%M %p') }}
                                             </p>
-                                            <p><i class="fas fa-dollar-sign mr-2"></i>Price: £{{
+                                            <p>Price: £{{
                                                 "%.2f"|format(reservation.price) }}</p>
                                             <p><i class="fas fa-coins mr-2"></i>Commission Earned: £{{
                                                 "%.2f"|format(reservation.commission) }}</p>
@@ -864,7 +861,6 @@
                                     
                                     <div class="bg-white rounded-lg p-3 mb-4 border border-yellow-200">
                                         <div class="flex items-center justify-center">
-                                            <i class="fas fa-dollar-sign text-green-600 mr-2"></i>
                                             <span class="text-2xl font-bold text-green-600">£${Math.abs(order.amount).toFixed(2)}</span>
                                         </div>
                                         <p class="text-xs text-green-600 text-center mt-1">Instant Credit</p>

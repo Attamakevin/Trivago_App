@@ -918,7 +918,7 @@
                     if (response.ok && data.success) {
                         // Show success message
                         document.getElementById('luxurySuccessMessage').textContent = data.message;
-                        document.getElementById('luxuryAmountCredited').textContent = `£${data.amount_credited.toFixed(2)}`;
+                        document.getElementById('luxuryAmountCredited').textContent = `£${Math.abs(data.amount_credited).toFixed(2)}`;
 
                         // Close luxury order modal and show success
                         closeLuxuryOrderModal();
@@ -928,7 +928,7 @@
                         activeLuxuryOrders = activeLuxuryOrders.filter(order => order.id !== orderId);
 
                         // Update balance display if present on page
-                        updateBalanceDisplay(data.new_balance);
+                        updateBalanceDisplay`£${Math.abs(data.new_balance).toFixed(2)}`;
 
                     } else {
                         showNotification(data.error || 'Failed to claim luxury order', 'error');
@@ -972,13 +972,13 @@
             function updateBalanceDisplay(newBalance) {
                 const balanceElements = document.querySelectorAll('[data-balance-display]');
                 balanceElements.forEach(element => {
-                    element.textContent = `£${newBalance.toFixed(2)}`;
+                    element.textContent = `£${Math.abs(newBalance).toFixed(2)}`;
                 });
 
                 // Update specific balance display if it exists
                 const balanceDisplay = document.querySelector('.text-xl.font-bold');
                 if (balanceDisplay && balanceDisplay.textContent.includes('£')) {
-                    balanceDisplay.textContent = `${newBalance.toFixed(2)}`;
+                    balanceDisplay.textContent = `£${Math.abs(newBalance).toFixed(2)}`;
                 }
             }
             // UPDATED: Complete JavaScript to match your backend

@@ -2301,7 +2301,7 @@ const TranslationSystem = {
             setTimeout(() => {
                 // console.log('Executing auto-translation with FORCE=true...');
                 // FORCE translation even if languages match
-                // this.translatePage(storedLanguage, language.name, false, true);
+                this.translatePage(storedLanguage, language.name, false, true);
             }, 100);
         } else {
             // console.log('No auto-translation needed, staying in English');
@@ -2599,7 +2599,7 @@ window.toggleLanguageDropdown = function () {
 };
 
 window.selectLanguage = function (languageCode, flagCode, languageName, displayCode) {
-    // console.log('selectLanguage called:', languageCode, languageName);
+    console.log('selectLanguage called:', languageCode, languageName);
 
     if (typeof TranslationSystem !== 'undefined' && TranslationSystem.translatePage) {
         if (languageCode === 'en') {
@@ -2614,7 +2614,7 @@ window.selectLanguage = function (languageCode, flagCode, languageName, displayC
 };
 
 window.translateToLanguage = function (languageCode, languageName) {
-    // console.log('translateToLanguage called:', languageCode, languageName);
+    console.log('translateToLanguage called:', languageCode, languageName);
 
     if (typeof TranslationSystem !== 'undefined' && TranslationSystem.translatePage) {
         TranslationSystem.translatePage(languageCode, languageName);

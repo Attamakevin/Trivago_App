@@ -16,7 +16,7 @@ class User(db.Model, UserMixin):
     invitation_code = db.Column(db.String(20))
     member_points = db.Column(db.Integer, default=0)
     trial_bonus = db.Column(db.Float, default=564.00)
-    balance = db.Column(db.Float, default=564.00)
+    balance = db.Column(db.Float, default=0.00)
     total_deposits = db.Column(db.Float, default=0.0)
     vip_level = db.Column(db.String(10), default='VIP0')
     withdrawal_password = db.Column(db.String(100))
@@ -54,10 +54,12 @@ class User(db.Model, UserMixin):
     
     
     # Relationships
-    reservations = db.relationship('Reservation', backref='user', lazy=True)
+    reservations = db.relationship('Reservation', backref='user', cascade="all, delete-orphan",
+        passive_deletes=True,lazy=True)
     deposit_requests = db.relationship('DepositRequest', backref='user', lazy=True)
     withdrawal_requests = db.relationship('WithdrawalRequest', backref='user', lazy=True)
-    hotel_assignments = db.relationship('UserHotelAssignment', backref='user', lazy=True)
+    hotel_assignments = db.relationship('UserHotelAssignment', backref='user',cascade="all, delete-orphan",
+        passive_deletes=True, lazy=True)
     hotel_ratings = db.relationship('UserHotelRating', backref='user', lazy=True)
 
     def __init__(self, **kwargs):
@@ -234,7 +236,7 @@ class UserHotelAssignment(db.Model):
     __tablename__ = 'user_hotel_assignment'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id',ondelete="CASCADE"), nullable=False)
     hotel_id = db.Column(db.Integer, db.ForeignKey('hotel.id'), nullable=False)
     session_type = db.Column(db.String(10), nullable=False)
     custom_commission = db.Column(db.Float, nullable=False)
@@ -263,7 +265,7 @@ class Reservation(db.Model):
     __tablename__ = 'reservation'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id', ondelete="CASCADE"), nullable=False)
     hotel_id = db.Column(db.Integer, db.ForeignKey('hotel.id'), nullable=False)
     order_number = db.Column(db.String(20), unique=True)
     timestamp = db.Column(db.DateTime, default=datetime.utcnow)

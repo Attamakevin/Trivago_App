@@ -121,7 +121,7 @@
                                     <i class="fas fa-gift text-xl"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">£{{ "%.2f"|format(user_stats.trial_bonus) }}
+                            <div class="text-xl md:text-xl font-bold mb-1">€{{ "%.2f"|format(user_stats.trial_bonus) }}
                             </div>
                             <p data-translate class="text-sm text-[#101f56]">Trial Bonus</p>
                             <!-- <p class="text-xs text-[#101f56] mt-1">Expires in 15 days</p> -->
@@ -135,7 +135,7 @@
                                     <i class="fas fa-wallet text-xl text-teal-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">£{{ "%.2f"|format(user.balance) }}</div>
+                            <div class="text-xl md:text-xl font-bold mb-1">€{{ "%.2f"|format(user.balance) }}</div>
                             <p data-translate class="text-[#101f56] text-sm">Account Balance</p>
                             <p data-translate class="text-xs text-[#101f56] mt-1">Available for withdrawal</p>
                         </div>
@@ -148,7 +148,7 @@
                                     <i class="fas fa-chart-line text-xl text-orange-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">£{{
+                            <div class="text-xl md:text-xl font-bold mb-1">€{{
                                 "%.2f"|format(user_stats.total_commission) }}</div>
                             <p data-translate class="text-[#101f56] text-sm">Earned Commission</p>
                             <p data-translate class="text-xs text-[#101f56] mt-1">Total earnings</p>
@@ -162,7 +162,7 @@
                                     <i class="fas fa-piggy-bank text-xl text-purple-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">£{{ "%.2f"|format(user_stats.deposit_balance)
+                            <div class="text-xl md:text-xl font-bold mb-1">€{{ "%.2f"|format(user_stats.deposit_balance)
                                 }}</div>
                             <p data-translate class="text-[#101f56] text-sm">Booking Deposits</p>
                             <p data-translate class="text-xs text-[#101f56] mt-1">{{ user_stats.active_bookings }}
@@ -248,7 +248,7 @@
                                     <!-- Commission Badge -->
                                     <div
                                         class="absolute top-3 left-3 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                                        £{{ "%.2f"|format(current_hotel_data.commission) }} Commission
+                                        €{{ "%.2f"|format(current_hotel_data.commission) }} Commission
                                     </div>
                                 </div>
                                 <div class="p-4">
@@ -281,7 +281,7 @@
                                                     "%.1f"|format(current_hotel_data.hotel.rating) }})</span>
                                             </div>
                                         </div>
-                                        <span class="text-lg font-bold text-green-600">£{{
+                                        <span class="text-lg font-bold text-green-600">€{{
                                             "%.2f"|format(current_hotel_data.hotel.price) }}</span>
                                     </div>
 
@@ -293,7 +293,7 @@
                                                 Your Commission
                                             </span>
                                             <span class="text-lg font-bold text-blue-600">
-                                                £{{ "%.2f"|format(current_hotel_data.commission) }}
+                                                €{{ "%.2f"|format(current_hotel_data.commission) }}
                                                 x
                                                 {{ "%.2f"|format(current_hotel_data.hotel.commission_multiplier or 1.0) }}
                                             </span>
@@ -333,7 +333,7 @@
                                     {% if hotel_commission_map and hotel.id in hotel_commission_map %}
                                     <div
                                         class="absolute top-3 left-3 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                                        £{{ "%.2f"|format(hotel_commission_map[hotel.id]) }} Commission
+                                        €{{ "%.2f"|format(hotel_commission_map[hotel.id]) }} Commission
                                     </div>
                                     {% endif %}
                                 </div>
@@ -356,7 +356,7 @@
                                                     }})</span>
                                             </div>
                                         </div>
-                                        <span class="text-lg font-bold text-green-600">£{{ "%.2f"|format(hotel.price)
+                                        <span class="text-lg font-bold text-green-600">€{{ "%.2f"|format(hotel.price)
                                             }}</span>
                                     </div>
 
@@ -369,7 +369,7 @@
                                                 Your Commission
                                             </span>
                                             <span class="text-lg font-bold text-blue-600">
-                                                £{{ "%.2f"|format(hotel_commission_map[hotel.id]) }}
+                                                €{{ "%.2f"|format(hotel_commission_map[hotel.id]) }}
                                             </span>
                                         </div>
                                         <p class="text-xs text-blue-600 mt-1">
@@ -405,7 +405,7 @@
                                 <div class="flex items-center justify-center">
                                     <i class="fas fa-trophy text-green-500 mr-2"></i>
                                     <span data-translate class="text-green-700 font-medium">
-                                        Total Earned: £{{ "%.2f"|format(user_stats.total_commission) }}
+                                        Total Earned: €{{ "%.2f"|format(user_stats.total_commission) }}
                                     </span>
                                 </div>
 
@@ -472,9 +472,9 @@
                                             <p><i
                                                     class="fas fa-calendar mr-2"></i>{{ reservation.created_at.strftime('%B %d, %Y at %I:%M %p') }}
                                             </p>
-                                            <p><i class="fas fa-dollar-sign mr-2"></i>Price: £{{
+                                            <p><i class="fas fa-dollar-sign mr-2"></i>Price: €{{
                                                 "%.2f"|format(reservation.price) }}</p>
-                                            <p><i class="fas fa-coins mr-2"></i>Commission Earned: £{{
+                                            <p><i class="fas fa-coins mr-2"></i>Commission Earned: €{{
                                                 "%.2f"|format(reservation.commission) }}</p>
                                             <!-- CHANGE: Show commission payment status -->
                                             {% if reservation.commission_paid %}
@@ -862,7 +862,7 @@
                                     <div class="bg-white rounded-lg p-3 mb-4 border border-yellow-200">
                                         <div class="flex items-center justify-center">
                                             <i class="fas fa-dollar-sign text-green-600 mr-2"></i>
-                                            <span class="text-2xl font-bold text-green-600">£${Math.abs(order.amount).toFixed(2)}</span>
+                                            <span class="text-2xl font-bold text-green-600">€${Math.abs(order.amount).toFixed(2)}</span>
                                         </div>
                                         <p class="text-xs text-green-600 text-center mt-1">Instant Credit</p>
                                     </div>
@@ -915,7 +915,7 @@
                     if (response.ok && data.success) {
                         // Show success message
                         document.getElementById('luxurySuccessMessage').textContent = data.message;
-                        document.getElementById('luxuryAmountCredited').textContent = `£${Math.abs(data.amount_credited).toFixed(2)}`;
+                        document.getElementById('luxuryAmountCredited').textContent = `€${Math.abs(data.amount_credited).toFixed(2)}`;
 
                         // Close luxury order modal and show success
                         closeLuxuryOrderModal();
@@ -969,12 +969,12 @@
             function updateBalanceDisplay(newBalance) {
                 const balanceElements = document.querySelectorAll('[data-balance-display]');
                 balanceElements.forEach(element => {
-                    element.textContent = `£${newBalance.toFixed(2)}`;
+                    element.textContent = `€${newBalance.toFixed(2)}`;
                 });
 
                 // Update specific balance display if it exists
                 const balanceDisplay = document.querySelector('.text-xl.font-bold');
-                if (balanceDisplay && balanceDisplay.textContent.includes('£')) {
+                if (balanceDisplay && balanceDisplay.textContent.includes('€')) {
                     balanceDisplay.textContent = `${newBalance.toFixed(2)}`;
                 }
             }

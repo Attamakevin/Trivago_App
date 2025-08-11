@@ -1,0 +1,279 @@
+<!-- Enhanced admin_assign_hotels.html template -->
+{% extends "admin_base.html" %}
+
+{% block title %}Assign Hotels{% endblock %}
+
+{% block content %}
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div
+                    class="d-flex flex-wrap flex-md-nowrap justify-content-between align-items-center pb-2 mb-3 border-bottom">
+                    <p class="h3">Assign Hotels to User</p>
+                    <a href="{{ url_for('manage_hotels') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Hotels
+                    </a>
+                </div>
+                <!-- Price and Category Filter Section -->
+                <div class="price-filter-section">
+                    <h4>Filter Hotels</h4>
+                    <form method="GET" id="filterForm">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label for="user_id" class="form-label">Select User</label>
+                                <select name="user_id" id="user_id" class="form-select">
+                                    <option value="">Choose a user...</option>
+                                    {% for user in users %}
+                                    <option value="{{ user.id }}" {% if selected_user and selected_user.id == user.id %}selected{% endif %}>
+                                        {{ user.id }} ({{ user.contact }})
+                                    </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="category" class="form-label">Category</label>
+                                <select name="category" id="category" class="form-select">
+                                    <option value="">All Categories</option>
+                                    <option value="regular" {% if category_filter=='regular' %}selected{% endif %}>
+                                        Regular</option>
+                                    <option value="luxury" {% if category_filter=='luxury' %}selected{% endif %}>Luxury
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label for="min_price" class="form-label">Min Price (£)</label>
+                                <input type="number" name="min_price" id="min_price" class="form-control"
+                                    value="{{ min_price or '' }}" step="0.01" min="0">
+                            </div>
+                            <div class="col-md-2">
+                                <label for="max_price" class="form-label">Max Price (£)</label>
+                                <input type="number" name="max_price" id="max_price" class="form-control"
+                                    value="{{ max_price or '' }}" step="0.01" min="0">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">&nbsp;</label>
+                                <div class="d-flex gap-2">
+                                    <button type="submit" class="btn btn-primary">Filter</button>
+                                    <a href="{{ url_for('assign_hotels_to_user') }}" class="btn btn-secondary">Clear</a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Quick Price Presets -->
+                        <div class="row mt-3">
+                            <div class="col-md-12">
+                                <label class="form-label">Quick Price Filters:</label>
+                                <div class="btn-group flex-wrap" role="group">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(0, 500)">
+                                        Budget (£0-£500)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(500, 1500)">
+                                        Mid-Range (£500-£1500)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(1500, null)">
+                                        Luxury (£1500+)
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(200, 2000)">
+                                        Custom (£200-£2000)
+                                    </button>
+                                </div>
+                            </div>                  </div>
+                    </form>
+                </div>
+
+                <!-- Filter Summary -->
+                {% if category_filter or min_price or max_price %}
+                <div class="filter-summary">
+                    <strong>Active Filters:</strong>
+                    {% if category_filter %}
+                    <span class="badge bg-info">Category: {{ category_filter|title }}</span>
+                    {% endif %}
+                    {% if min_price %}
+                    <span class="badge bg-success">Min Price: £{{ min_price }}</span>
+                    {% endif %}
+                    {% if max_price %}
+                    <span class="badge bg-warning">Max Price: £{{ max_price }}</span>
+                    {% endif %}
+                    <span class="badge bg-secondary">{{ hotels|length }} hotels found</span>
+                </div>
+                {% endif %}
+
+                <!-- Price Statistics -->
+                {% if price_stats %}
+                <div class="alert alert-info">
+                    <strong>Price Range:</strong> £{{ price_stats.min_price }} - £{{ price_stats.max_price }}
+                </div>
+                {% endif %}
+
+                <!-- Hotel Assignment Form -->
+                {% if selected_user %}
+                <form method="POST" id="assignmentForm">
+                    <input type="hidden" name="user_id" value="{{ selected_user.id }}">
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="session_type" class="form-label">Session Type</label>
+                            <select name="session_type" id="session_type" class="form-select" required>
+                                <option value="first">First Session</option>
+                                <option value="second">Second Session</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Selection Tools</label>
+                            <div class="btn-group" role="group">
+                                <button type="button" class="btn btn-outline-primary btn-sm" onclick="selectAll()">
+                                    Select All
+                                </button>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="deselectAll()">
+                                    Deselect All
+                                </button>
+                                <button type="button" class="btn btn-outline-success btn-sm"
+                                    onclick="selectByCategory('regular')">
+                                    Select Regular
+                                </button>
+                                <button type="button" class="btn btn-outline-warning btn-sm"
+                                    onclick="selectByCategory('luxury')">
+                                    Select Luxury
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12">
+                            <h4>Available Hotels ({{ hotels|length }})</h4>
+
+                            {% if hotels %}
+                            <div class="row">
+                                {% for hotel in hotels %}
+                                <div class="col-md-6 col-lg-4 mb-3">
+                                    <div class="hotel-card" data-category="{{ hotel.category }}"
+                                        data-price="{{ hotel.price }}">
+                                        <div class="form-check">
+                                            <input class="form-check-input hotel-checkbox" type="checkbox"
+                                                name="hotel_ids" value="{{ hotel.id }}" id="hotel_{{ hotel.id }}">
+                                            <label class="form-check-label" for="hotel_{{ hotel.id }}">
+                                                <strong>{{ hotel.name }}</strong>
+                                            </label>
+                                        </div>
+
+                                        <div class="mt-2">
+                                            <span class="badge bg-primary price-badge">£{{ hotel.price }}</span>
+                                            <span class="badge bg-secondary category-badge">{{ hotel.category }}</span>
+                                        </div>
+
+                                        {% if hotel.location %}
+                                        <div class="text-muted small mt-1">
+                                            📍 {{ hotel.location }}
+                                        </div>
+                                        {% endif %}
+
+                                        <div class="mt-2">
+                                            <label for="commission_{{ hotel.id }}" class="form-label small">Commission
+                                                (£)</label>
+                                            <input type="number" class="form-control form-control-sm"
+                                                name="commission_{{ hotel.id }}" id="commission_{{ hotel.id }}"
+                                                value="{{ hotel.commission_multiplier * 10 }}" step="0.01" min="0">
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+
+                            <div class="mt-4">
+                                <button type="submit" class="btn btn-success btn-lg">
+                                    Assign Selected Hotels
+                                </button>
+                                <a href="{{ url_for('manage_hotels') }}" class="btn btn-secondary">
+                                    Cancel
+                                </a>
+                            </div>
+                            {% else %}
+                            <div class="alert alert-warning">
+                                No hotels found matching your criteria. Try adjusting your filters.
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-info">
+                    Please select a user first to assign hotels.
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <!-- Display flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    {% for category, message in messages %}
+    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show mt-3"
+        role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    {% endblock %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function setPrice(min, max) {
+            document.getElementById('min_price').value = min || '';
+            document.getElementById('max_price').value = max || '';
+        }
+
+        function selectAll() {
+            document.querySelectorAll('.hotel-checkbox').forEach(checkbox => {
+                checkbox.checked = true;
+                checkbox.closest('.hotel-card').classList.add('selected');
+            });
+        }
+
+        function deselectAll() {
+            document.querySelectorAll('.hotel-checkbox').forEach(checkbox => {
+                checkbox.checked = false;
+                checkbox.closest('.hotel-card').classList.remove('selected');
+            });
+        }
+
+        function selectByCategory(category) {
+            document.querySelectorAll('.hotel-card').forEach(card => {
+                const checkbox = card.querySelector('.hotel-checkbox');
+                if (card.dataset.category === category) {
+                    checkbox.checked = true;
+                    card.classList.add('selected');
+                } else {
+                    checkbox.checked = false;
+                    card.classList.remove('selected');
+                }
+            });
+        }
+
+        // Add visual feedback for selected hotels
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.hotel-checkbox').forEach(checkbox => {
+                checkbox.addEventListener('change', function () {
+                    const card = this.closest('.hotel-card');
+                    if (this.checked) {
+                        card.classList.add('selected');
+                    } else {
+                        card.classList.remove('selected');
+                    }
+                });
+            });
+        });
+
+        // Auto-submit filter form when user is selected
+        document.getElementById('user_id').addEventListener('change', function () {
+            if (this.value) {
+                document.getElementById('filterForm').submit();
+            }
+        });
+    </script>
+</body>

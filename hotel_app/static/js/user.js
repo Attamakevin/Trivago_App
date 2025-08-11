@@ -14,10 +14,10 @@ document.addEventListener('DOMContentLoaded', function () {
     const sliderContainer = document.querySelector('.relative');
     const totalSlides = slides.length;
 
-    console.log('Found', totalSlides, 'slides and', indicators.length, 'indicators');
+    // console.log('Found', totalSlides, 'slides and', indicators.length, 'indicators');
 
     if (totalSlides === 0) {
-        console.error('No slides found! Check HTML structure.');
+        // console.error('No slides found! Check HTML structure.');
         return;
     }
 
@@ -146,7 +146,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize slider
     function initSlider() {
-        console.log('Initializing slider with', totalSlides, 'slides');
+        // console.log('Initializing slider with', totalSlides, 'slides');
         if (totalSlides > 0) {
             showSlide(0);
             startAutoplay();
@@ -222,213 +222,9 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 
-// Reservation Functionality
+// Reservation Page Functionality
 
-// Modal Functions
-function openReservationModal() {
-    document.getElementById('reservationModal').classList.remove('hidden');
-}
 
-function closeReservationModal() {
-    document.getElementById('reservationModal').classList.add('hidden');
-}
-
-function openRulesModal() {
-    document.getElementById('rulesModal').classList.remove('hidden');
-}
-
-function closeRulesModal() {
-    document.getElementById('rulesModal').classList.add('hidden');
-}
-
-function openOrderHistoryModal() {
-    document.getElementById('orderHistoryModal').classList.remove('hidden');
-}
-
-function closeOrderHistoryModal() {
-    document.getElementById('orderHistoryModal').classList.add('hidden');
-}
-
-function closeSuccessModal() {
-    document.getElementById('successModal').classList.add('hidden');
-    window.location.href = "{{ url_for('reservations') }}";
-}
-
-function closeErrorModal() {
-    document.getElementById('errorModal').classList.add('hidden');
-}
-
-// Order filtering functions
-function filterOrders(status) {
-    const orderItems = document.querySelectorAll('.order-item');
-    const filterBtns = document.querySelectorAll('.filter-btn');
-
-    // Update active button
-    filterBtns.forEach(btn => {
-        btn.classList.remove('active', 'bg-blue-600', 'text-white');
-        btn.classList.add('bg-gray-200', 'text-gray-700');
-    });
-    event.target.classList.add('active', 'bg-blue-600', 'text-white');
-    event.target.classList.remove('bg-gray-200', 'text-gray-700');
-
-    // Filter orders
-    orderItems.forEach(item => {
-        if (status === 'all' || item.dataset.status === status) {
-            item.style.display = 'block';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-}
-
-// Rate reservation function
-function rateReservation(reservationId) {
-    // This would typically make an AJAX call to rate the reservation
-    alert(`Rating reservation #${reservationId}. This would open a rating dialog.`);
-}
-
-// Cancel reservation function
-function cancelReservation(reservationId) {
-    if (confirm('Are you sure you want to cancel this reservation?')) {
-        // This would typically make an AJAX call to cancel the reservation
-        alert(`Cancelling reservation #${reservationId}. This would make an API call.`);
-    }
-}
-
-// Handle form submissions with AJAX for better UX
-document.addEventListener('DOMContentLoaded', function () {
-    const forms = document.querySelectorAll('form[action*="reserve"]');
-    forms.forEach(form => {
-        form.addEventListener('submit', function (e) {
-            e.preventDefault();
-
-            const formData = new FormData(form);
-            const url = form.action;
-
-            fetch(url, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-                .then(response => {
-                    if (response.ok) {
-                        closeReservationModal();
-                        document.getElementById('successModal').classList.remove('hidden');
-                    } else {
-                        return response.json();
-                    }
-                })
-                .then(data => {
-                    if (data && data.error) {
-                        document.getElementById('errorMessage').textContent = data.error;
-                        document.getElementById('errorModal').classList.remove('hidden');
-                    }
-                })
-                .catch(error => {
-                    // Error case
-                    // console.error('Error:', error);
-                    const errorMessage = error.error || 'An unexpected error occurred';
-                    document.getElementById('errorMessage').textContent = errorMessage;
-                    document.getElementById('errorModal').classList.remove('hidden');
-                })
-                .finally(() => {
-                    // Reset button state
-                    submitBtn.textContent = originalText;
-                    submitBtn.disabled = false;
-                });
-        });
-    });
-
-    // Close modals when clicking outside of them
-    const modals = document.querySelectorAll('[id$="Modal"]');
-    modals.forEach(modal => {
-        modal.addEventListener('click', function (e) {
-            if (e.target === modal) {
-                modal.classList.add('hidden');
-            }
-        });
-    });
-
-    // Close modals with Escape key
-    document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-            modals.forEach(modal => {
-                if (!modal.classList.contains('hidden')) {
-                    modal.classList.add('hidden');
-                }
-            });
-        }
-    });
-});
-
-// Additional utility functions
-
-// Format date for display
-function formatDate(dateString) {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
-}
-
-// Validate form data before submission
-function validateReservationForm(form) {
-    const requiredFields = form.querySelectorAll('[required]');
-    let isValid = true;
-
-    requiredFields.forEach(field => {
-        if (!field.value.trim()) {
-            field.classList.add('border-red-500');
-            isValid = false;
-        } else {
-            field.classList.remove('border-red-500');
-        }
-    });
-
-    return isValid;
-}
-
-// Show notification toast
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 ${type === 'success' ? 'bg-green-500 text-white' :
-            type === 'error' ? 'bg-red-500 text-white' :
-                type === 'warning' ? 'bg-yellow-500 text-black' :
-                    'bg-blue-500 text-white'
-        }`;
-    notification.textContent = message;
-
-    document.body.appendChild(notification);
-
-    // Auto remove after 5 seconds
-    setTimeout(() => {
-        notification.remove();
-    }, 5000);
-}
-
-// Export functions for global access
-window.reservationSystem = {
-    openReservationModal,
-    closeReservationModal,
-    openRulesModal,
-    closeRulesModal,
-    openOrderHistoryModal,
-    closeOrderHistoryModal,
-    closeSuccessModal,
-    closeErrorModal,
-    filterOrders,
-    rateReservation,
-    cancelReservation,
-    formatDate,
-    validateReservationForm,
-    showNotification
-};
 
 // Simplified Deposit Functionality
 let selectedAmount = 0;
@@ -485,9 +281,9 @@ function updateSummary() {
         const fee = calculateFee(amount, hasPaymentMethod.value);
         const total = amount + fee;
 
-        document.getElementById('summaryAmount').textContent = '$' + amount.toFixed(2);
-        document.getElementById('summaryFee').textContent = '$' + fee.toFixed(2);
-        document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
+        document.getElementById('summaryAmount').textContent = '£' + amount.toFixed(2);
+        document.getElementById('summaryFee').textContent = '£' + fee.toFixed(2);
+        document.getElementById('summaryTotal').textContent = '£' + total.toFixed(2);
         document.getElementById('summary').style.display = 'block';
 
         // Enable submit button
@@ -520,12 +316,12 @@ function handleFormSubmit(event) {
 
     // Basic validation
     if (amount < 10) {
-        alert('Minimum deposit amount is $10.00');
+        alert('Minimum deposit amount is £10.00');
         return false;
     }
 
     if (amount > 10000) {
-        alert('Maximum deposit amount is $10,000.00');
+        alert('Maximum deposit amount is £10,000.00');
         return false;
     }
 
@@ -539,10 +335,28 @@ function handleFormSubmit(event) {
     btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Processing...</span>';
     btn.disabled = true;
 
-    // Redirect to customer service page
-    setTimeout(() => {
-        window.location.href = '/customer_service';
-    }, 1000); // Small delay to show loading state
+    // Submit the form data to backend first
+    const form = event.target;
+    const formData = new FormData(form);
+
+    fetch('/deposit', {
+        method: 'POST',
+        body: formData
+    })
+        .then(response => response.text())
+        .then(result => {
+            // After successful submission to backend, redirect to customer service
+            // console.log('Deposit submitted successfully');
+            window.location.href = '/customer_service';
+        })
+        .catch(error => {
+            // console.error('Error:', error);
+            alert('Error submitting deposit. Please try again.');
+
+            // Reset button state
+            btn.innerHTML = '<i class="fas fa-plus"></i><span>Add Funds</span>';
+            btn.disabled = false;
+        });
 
     return false;
 }
@@ -563,7 +377,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-
 
 // Clipboard functionality
 function copyToClipboard(text, buttonElement = null) {
@@ -723,9 +536,9 @@ function updateWithdrawSummary() {
         const fee = calculateWithdrawFee(amount, hasPaymentMethod.value);
         const total = amount - fee;
 
-        document.getElementById('summaryAmount').textContent = '$' + amount.toFixed(2);
-        document.getElementById('summaryFee').textContent = '$' + fee.toFixed(2);
-        document.getElementById('summaryTotal').textContent = '$' + total.toFixed(2);
+        document.getElementById('summaryAmount').textContent = '£' + amount.toFixed(2);
+        document.getElementById('summaryFee').textContent = '£' + fee.toFixed(2);
+        document.getElementById('summaryTotal').textContent = '£' + total.toFixed(2);
         document.getElementById('summary').style.display = 'block';
 
         document.getElementById('withdrawBtn').disabled = false;
@@ -814,12 +627,12 @@ function handleWithdrawFormSubmit(event) {
     const walletAddress = document.getElementById('walletAddress').value.trim();
 
     if (amount < 25) {
-        alert('Minimum withdrawal amount is $25.00', 'error');
+        alert('Minimum withdrawal amount is £25.00', 'error');
         return false;
     }
 
     if (amount > availableBalance) {
-        alert(`Insufficient funds. Your available balance is $${availableBalance.toFixed(2)}`, 'error');
+        alert(`Insufficient funds. Your available balance is £${availableBalance.toFixed(2)}`, 'error');
         return false;
     }
 

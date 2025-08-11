@@ -26,7 +26,10 @@
                     <tr>
                         <th>ID</th>
                         <th>Username</th>
-                        <th>Email</th>
+                        <th>Country</th>
+                        <th>City</th>
+                        <th>IP Address</th>
+                        <th>Points</th>
                         <th>Balance</th>
                         <th>Status</th>
                         <th>Joined</th>
@@ -37,9 +40,12 @@
                     {% for user in users.items %}
                     <tr>
                         <td>{{ user.id }}</td>
-                        <td>{{ user.username }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>${{ "%.2f"|format(user.balance or 0) }}</td>
+                        <td>{{ user.contact }}</td>
+                        <td>{{ user.country }}</td>
+                        <td>{{ user.city }}</td>
+                        <td>{{ user.ip_address }}</td>
+                        <td>{{ user.member_points }}</td>
+                        <td>£{{ "%.2f"|format(user.balance or 0) }}</td>
                         <td>
                             <span class="badge bg-{{ 'success' if user.is_active else 'secondary' }}">
                                 {{ 'Active' if user.is_active else 'Inactive' }}

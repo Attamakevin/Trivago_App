@@ -1,403 +1,397 @@
-import sqlite3
+#!/usr/bin/env python3
+"""
+Universal Database Schema Updater
+Analyzes all Flask-SQLAlchemy models and synchronizes database schema
+"""
+
 import os
 import re
+import sqlite3
+import sys
+from pathlib import Path
+from typing import Dict, List, Set, Tuple, Optional
+import argparse
 from datetime import datetime
 
-# Database file path
-db_path = 'instance/hotel_app.db'
-file_path = 'hotel_app/models.py'
+class ModelAnalyzer:
+    """Analyzes Flask-SQLAlchemy models to extract schema information"""
+    
+    def __init__(self, models_file: str = "hotel_app/models.py"):
+        self.models_file = models_file
+        self.models = {}
+        self.content = ""
+    
+    def load_models(self) -> bool:
+        """Load and parse the models file"""
+        if not Path(self.models_file).exists():
+            print(f"❌ Models file not found: {self.models_file}")
+            return False
+        
+        with open(self.models_file, 'r') as f:
+            self.content = f.read()
+        
+        return True
+    
+    def extract_models(self) -> Dict:
+        """Extract all model classes and their information"""
+        if not self.content:
+            return {}
+        
+        # Find all model classes
+        class_pattern = r'class\s+(\w+)\s*\([^)]*db\.Model[^)]*\):(.*?)(?=class|\Z)'
+        matches = re.findall(class_pattern, self.content, re.DOTALL)
+        
+        for class_name, class_content in matches:
+            table_name = self._extract_table_name(class_name, class_content)
+            columns = self._extract_columns(class_content)
+            foreign_keys = self._extract_foreign_keys(class_content)
+            
+            self.models[class_name] = {
+                'table_name': table_name,
+                'columns': columns,
+                'foreign_keys': foreign_keys
+            }
+        
+        return self.models
+    
+    def _extract_table_name(self, class_name: str, class_content: str) -> str:
+        """Extract table name from model class"""
+        # Look for __tablename__ = 'table_name'
+        tablename_match = re.search(r'__tablename__\s*=\s*["\']([^"\']+)["\']', class_content)
+        if tablename_match:
+            return tablename_match.group(1)
+        
+        # Default to lowercase class name
+        return class_name.lower()
+    
+    def _extract_columns(self, class_content: str) -> Dict:
+        """Extract column definitions from class content"""
+        columns = {}
+        
+        # Pattern to match column definitions
+        column_pattern = r'(\w+)\s*=\s*db\.Column\s*\(([^)]+(?:\([^)]*\))?[^)]*)\)'
+        matches = re.findall(column_pattern, class_content)
+        
+        for col_name, col_definition in matches:
+            col_type, nullable, default = self._parse_column_definition(col_definition)
+            columns[col_name] = {
+                'type': col_type,
+                'nullable': nullable,
+                'default': default,
+                'definition': col_definition.strip()
+            }
+        
+        return columns
+    
+    def _parse_column_definition(self, definition: str) -> Tuple[str, bool, Optional[str]]:
+        """Parse column definition to extract type, nullable, default"""
+        # Extract column type (first argument)
+        type_match = re.search(r'db\.(\w+)(?:\([^)]*\))?', definition)
+        col_type = type_match.group(1) if type_match else 'Unknown'
+        
+        # Check if nullable
+        nullable = 'nullable=False' not in definition
+        
+        # Extract default value
+        default_match = re.search(r'default=([^,)]+)', definition)
+        default = default_match.group(1) if default_match else None
+        
+        return col_type, nullable, default
+    
+    def _extract_foreign_keys(self, class_content: str) -> List:
+        """Extract foreign key relationships"""
+        foreign_keys = []
+        fk_pattern = r'db\.ForeignKey\s*\(\s*["\']([^"\']+)["\']'
+        matches = re.findall(fk_pattern, class_content)
+        
+        for fk in matches:
+            foreign_keys.append(fk)
+        
+        return foreign_keys
 
-def parse_models_file_improved(file_path):
-    """
-    Improved parser that handles more Flask-SQLAlchemy patterns
-    """
-    if not os.path.exists(file_path):
-        return {}
+class DatabaseInspector:
+    """Inspects existing database schema"""
     
-    with open(file_path, 'r', encoding='utf-8') as f:
-        content = f.read()
+    def __init__(self, db_path: str = "instance/hotel_app.db"):
+        self.db_path = db_path
+        self.schema = {}
     
-    models = {}
-    current_class = None
-    current_table = None
-    current_columns = []
-    
-    lines = content.split('\n')
-    
-    for line in lines:
-        line = line.strip()
+    def inspect_schema(self) -> Dict:
+        """Inspect current database schema"""
+        if not Path(self.db_path).exists():
+            print(f"❌ Database not found: {self.db_path}")
+            return {}
         
-        # Skip comments and empty lines
-        if not line or line.startswith('#'):
-            continue
-        
-        # Look for class definitions - more flexible patterns
-        class_patterns = [
-            r'class\s+(\w+)\s*\(.*db\.Model.*\)',      # db.Model
-            r'class\s+(\w+)\s*\(.*Model.*\)',          # Model
-            r'class\s+(\w+)\s*\(.*Base.*\)',           # Base
-            r'class\s+(\w+)\s*\(.*SQLAlchemy.*\)',     # SQLAlchemy
-        ]
-        
-        for pattern in class_patterns:
-            class_match = re.match(pattern, line)
-            if class_match:
-                # Save previous class if exists
-                if current_class and current_columns:
-                    table_name = current_table or current_class.lower() + 's'
-                    models[table_name] = current_columns
-                
-                current_class = class_match.group(1)
-                current_table = None
-                current_columns = []
-                break
-        
-        # Look for __tablename__
-        if current_class and '__tablename__' in line:
-            table_match = re.search(r'__tablename__\s*=\s*[\'"](\w+)[\'"]', line)
-            if table_match:
-                current_table = table_match.group(1)
-                continue
-        
-        # Look for column definitions - more flexible patterns
-        column_patterns = [
-            r'(\w+)\s*=\s*db\.Column',     # db.Column
-            r'(\w+)\s*=\s*Column',         # Column (imported directly)
-        ]
-        
-        if current_class:
-            for pattern in column_patterns:
-                if re.search(pattern, line):
-                    column_info = parse_column_definition_improved(line)
-                    if column_info:
-                        current_columns.append(column_info)
-                    break
-    
-    # Don't forget the last class
-    if current_class and current_columns:
-        table_name = current_table or current_class.lower() + 's'
-        models[table_name] = current_columns
-    
-    return models
-
-def parse_column_definition_improved(line):
-    """
-    Improved column parser that handles more patterns
-    """
-    try:
-        # Extract column name (variable name before =)
-        name_match = re.match(r'\s*(\w+)\s*=', line)
-        if not name_match:
-            return None
-        
-        column_name = name_match.group(1)
-        
-        # Skip special columns
-        if column_name in ['id', '__tablename__', '__table_args__']:
-            return None
-        
-        # Extract column type with more flexible patterns
-        column_type = 'TEXT'  # default
-        
-        type_patterns = [
-            (r'(db\.)?Integer', 'INTEGER'),
-            (r'(db\.)?String\((\d+)\)', lambda m: f'VARCHAR({m.group(2)})'),
-            (r'(db\.)?String', 'VARCHAR(255)'),
-            (r'(db\.)?Text', 'TEXT'),
-            (r'(db\.)?Boolean', 'BOOLEAN'),
-            (r'(db\.)?DateTime', 'DATETIME'),
-            (r'(db\.)?Date', 'DATE'),
-            (r'(db\.)?Time', 'TIME'),
-            (r'(db\.)?Float', 'REAL'),
-            (r'(db\.)?Numeric', 'NUMERIC'),
-        ]
-        
-        for pattern, sql_type in type_patterns:
-            match = re.search(pattern, line)
-            if match:
-                if callable(sql_type):
-                    column_type = sql_type(match)
-                else:
-                    column_type = sql_type
-                break
-        
-        # Check for nullable=False
-        nullable = 'nullable=False' not in line
-        
-        # Check for default values
-        default_value = None
-        if 'default=' in line:
-            default_match = re.search(r'default=([^,)]+)', line)
-            if default_match:
-                default_val = default_match.group(1).strip()
-                if default_val.startswith("'") or default_val.startswith('"'):
-                    default_value = default_val
-                elif default_val in ['True', 'False']:
-                    default_value = '1' if default_val == 'True' else '0'
-                elif default_val.replace('.','').replace('-','').isdigit():
-                    default_value = default_val
-                elif 'datetime' in default_val.lower() or 'now' in default_val.lower():
-                    default_value = 'CURRENT_TIMESTAMP'
-        
-        return {
-            'column': column_name,
-            'type': column_type,
-            'nullable': nullable,
-            'default': default_value
-        }
-    
-    except Exception as e:
-        print(f"⚠️  Could not parse column from line: {line[:50]}...")
-        return None
-def parse_column_definition(line):
-    """
-    Parse a db.Column definition line and extract column information
-    """
-    try:
-        # Extract column name (variable name before =)
-        name_match = re.match(r'\s*(\w+)\s*=', line)
-        if not name_match:
-            return None
-        
-        column_name = name_match.group(1)
-        
-        # Skip special columns
-        if column_name in ['id', '__tablename__', '__table_args__']:
-            return None
-        
-        # Extract column type
-        column_type = 'TEXT'  # default
-        default_value = None
-        nullable = True
-        
-        # Common type mappings
-        if 'db.Integer' in line or 'Integer' in line:
-            column_type = 'INTEGER'
-        elif 'db.String' in line or 'String' in line:
-            # Extract length if specified
-            length_match = re.search(r'String\((\d+)\)', line)
-            if length_match:
-                column_type = f'VARCHAR({length_match.group(1)})'
-            else:
-                column_type = 'VARCHAR(255)'
-        elif 'db.Text' in line or 'Text' in line:
-            column_type = 'TEXT'
-        elif 'db.Boolean' in line or 'Boolean' in line:
-            column_type = 'BOOLEAN'
-        elif 'db.DateTime' in line or 'DateTime' in line:
-            column_type = 'DATETIME'
-        elif 'db.Date' in line or 'Date' in line:
-            column_type = 'DATE'
-        elif 'db.Time' in line or 'Time' in line:
-            column_type = 'TIME'
-        elif 'db.Float' in line or 'Float' in line:
-            column_type = 'REAL'
-        elif 'db.Numeric' in line or 'Numeric' in line:
-            column_type = 'NUMERIC'
-        
-        # Check for nullable=False
-        if 'nullable=False' in line:
-            nullable = False
-        
-        # Check for default values
-        if 'default=' in line:
-            default_match = re.search(r'default=([^,)]+)', line)
-            if default_match:
-                default_val = default_match.group(1).strip()
-                if default_val.startswith("'") or default_val.startswith('"'):
-                    default_value = default_val
-                elif default_val == 'True':
-                    default_value = '1'
-                elif default_val == 'False':
-                    default_value = '0'
-                elif default_val.replace('.','').isdigit():
-                    default_value = default_val
-                elif 'datetime' in default_val.lower() or 'now' in default_val.lower():
-                    default_value = 'CURRENT_TIMESTAMP'
-        
-        return {
-            'column': column_name,
-            'type': column_type,
-            'nullable': nullable,
-            'default': default_value
-        }
-    
-    except Exception as e:
-        print(f"⚠️  Could not parse column from line: {line[:50]}...")
-        return None
-
-def get_existing_tables(cursor):
-    """Get all existing tables in the database"""
-    cursor.execute("""
-        SELECT name FROM sqlite_master 
-        WHERE type='table' AND name NOT LIKE 'sqlite_%'
-        ORDER BY name
-    """)
-    return [table[0] for table in cursor.fetchall()]
-
-def get_table_columns(cursor, table_name):
-    """Get current columns for a table"""
-    try:
-        cursor.execute(f"PRAGMA table_info({table_name})")
-        return [column[1] for column in cursor.fetchall()]
-    except sqlite3.Error:
-        return []
-
-def add_column_if_not_exists(cursor, table_name, column_info):
-    """Add column to table if it doesn't exist"""
-    column_name = column_info['column']
-    column_type = column_info['type']
-    default_value = column_info['default']
-    nullable = column_info.get('nullable', True)
-    
-    columns = get_table_columns(cursor, table_name)
-    
-    if column_name not in columns:
-        alter_query = f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type}"
-        
-        if not nullable and default_value:
-            alter_query += f" NOT NULL DEFAULT {default_value}"
-        elif default_value:
-            alter_query += f" DEFAULT {default_value}"
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
         
         try:
-            cursor.execute(alter_query)
-            return True
-        except sqlite3.Error as e:
-            print(f"⚠️  Could not add column {column_name}: {e}")
-            return False
-    return False
-
-# Main execution
-print("🔧 SAFE DATABASE UPDATE SCRIPT")
-print("=" * 50)
-
-# Look for models file
-models_paths = [
-    'models.py',
-    'app/models.py',
-    'hotel_app/models.py',
-    'src/models.py'
-]
-
-models_file = None
-for path in models_paths:
-    if os.path.exists(path):
-        models_file = path
-        break
-
-if not models_file:
-    print("❌ Could not find models.py file in common locations!")
-    print("Available files in current directory:")
-    for item in os.listdir('.'):
-        if item.endswith('.py'):
-            print(f"  - {item}")
-    
-    models_file = input("\nEnter the path to your models file: ").strip()
-    if not os.path.exists(models_file):
-        print("❌ File not found!")
-        exit(1)
-
-print(f"📁 Using models file: {models_file}")
-
-# Check database
-if not os.path.exists(db_path):
-    print(f"❌ Database not found: {db_path}")
-    exit(1)
-
-try:
-    # Parse models file
-    print("\n🔍 Parsing models file...")
-    discovered_models = parse_models_file_improved('hotel_app/models.py')
-    
-    if not discovered_models:
-        print("❌ No models found! Check your models.py file format.")
-        exit(1)
-    
-    print(f"✓ Found {len(discovered_models)} models:")
-    for table_name, columns in discovered_models.items():
-        print(f"  - {table_name} ({len(columns)} columns)")
-    
-    # Connect to database
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-    
-    # Get existing tables
-    existing_tables = get_existing_tables(cursor)
-    print(f"\n📊 Database has {len(existing_tables)} tables: {', '.join(existing_tables)}")
-    
-    print(f"\n🔄 Starting updates...")
-    print(f"⏰ Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    print("=" * 50)
-    
-    total_changes = 0
-    
-    # Process each model
-    for table_name, columns in discovered_models.items():
-        if table_name not in existing_tables:
-            print(f"⚠️  Table '{table_name}' not found in database - skipping")
-            continue
+            # Get all tables
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'")
+            tables = cursor.fetchall()
+            
+            for (table_name,) in tables:
+                self.schema[table_name] = self._get_table_info(cursor, table_name)
         
-        print(f"\n🏷️  Processing table: {table_name}")
-        columns_added = 0
+        finally:
+            conn.close()
         
-        for column_info in columns:
-            if add_column_if_not_exists(cursor, table_name, column_info):
-                nullable_str = "NULL" if column_info.get('nullable', True) else "NOT NULL"
-                default_str = f" DEFAULT {column_info['default']}" if column_info['default'] else ""
-                print(f"  ✓ Added: {column_info['column']} ({column_info['type']} {nullable_str}{default_str})")
-                columns_added += 1
-                total_changes += 1
+        return self.schema
+    
+    def _get_table_info(self, cursor, table_name: str) -> Dict:
+        """Get detailed table information"""
+        cursor.execute(f"PRAGMA table_info({table_name})")
+        columns = cursor.fetchall()
+        
+        table_info = {
+            'columns': {},
+            'foreign_keys': []
+        }
+        
+        for col_info in columns:
+            col_name = col_info[1]
+            table_info['columns'][col_name] = {
+                'type': col_info[2],
+                'nullable': not col_info[3],  # notnull is inverted
+                'default': col_info[4],
+                'primary_key': bool(col_info[5])
+            }
+        
+        # Get foreign keys
+        cursor.execute(f"PRAGMA foreign_key_list({table_name})")
+        fks = cursor.fetchall()
+        for fk in fks:
+            table_info['foreign_keys'].append({
+                'column': fk[3],
+                'referenced_table': fk[2],
+                'referenced_column': fk[4]
+            })
+        
+        return table_info
+
+class SchemaSynchronizer:
+    """Synchronizes model schema with database schema"""
+    
+    def __init__(self, models: Dict, db_schema: Dict, db_path: str):
+        self.models = models
+        self.db_schema = db_schema
+        self.db_path = db_path
+        self.changes = []
+    
+    def analyze_differences(self) -> List:
+        """Analyze differences between models and database"""
+        self.changes = []
+        
+        for class_name, model_info in self.models.items():
+            table_name = model_info['table_name']
+            model_columns = model_info['columns']
+            
+            if table_name not in self.db_schema:
+                self._add_create_table_change(class_name, model_info)
             else:
-                print(f"  📝 Exists: {column_info['column']}")
+                db_columns = self.db_schema[table_name]['columns']
+                self._analyze_column_differences(table_name, model_columns, db_columns)
         
-        if columns_added == 0:
-            print(f"  ✅ No updates needed for {table_name}")
+        return self.changes
     
-    # Commit changes
-    conn.commit()
+    def _add_create_table_change(self, class_name: str, model_info: Dict):
+        """Add change to create new table"""
+        self.changes.append({
+            'type': 'CREATE_TABLE',
+            'class': class_name,
+            'table': model_info['table_name'],
+            'columns': model_info['columns']
+        })
     
-    # Show final summary
-    print("\n" + "=" * 50)
-    print("📋 UPDATED DATABASE STRUCTURE")
-    print("=" * 50)
+    def _analyze_column_differences(self, table_name: str, model_columns: Dict, db_columns: Dict):
+        """Analyze column differences for a table"""
+        model_col_set = set(model_columns.keys())
+        db_col_set = set(db_columns.keys())
+        
+        # Missing columns (in model but not in database)
+        missing_columns = model_col_set - db_col_set
+        for col_name in missing_columns:
+            self.changes.append({
+                'type': 'ADD_COLUMN',
+                'table': table_name,
+                'column': col_name,
+                'definition': model_columns[col_name]
+            })
+        
+        # Extra columns (in database but not in model)
+        extra_columns = db_col_set - model_col_set
+        for col_name in extra_columns:
+            self.changes.append({
+                'type': 'EXTRA_COLUMN',
+                'table': table_name,
+                'column': col_name,
+                'info': f"Column exists in database but not in model"
+            })
     
-    for table_name in existing_tables:
-        if table_name in discovered_models:
-            print(f"\n🏷️  Table: {table_name}")
-            cursor.execute(f"PRAGMA table_info({table_name})")
-            columns_info = cursor.fetchall()
+    def generate_sql_commands(self) -> List[str]:
+        """Generate SQL commands to apply changes"""
+        sql_commands = []
+        
+        for change in self.changes:
+            if change['type'] == 'ADD_COLUMN':
+                sql = self._generate_add_column_sql(change)
+                if sql:
+                    sql_commands.append(sql)
+            elif change['type'] == 'CREATE_TABLE':
+                # Note: CREATE TABLE is complex, suggest using Flask-Migrate instead
+                sql_commands.append(f"-- CREATE TABLE {change['table']} (complex, use Flask-Migrate)")
+        
+        return sql_commands
+    
+    def _generate_add_column_sql(self, change: Dict) -> str:
+        """Generate ADD COLUMN SQL"""
+        table = change['table']
+        column = change['column']
+        definition = change['definition']
+        
+        # Map SQLAlchemy types to SQLite types
+        type_mapping = {
+            'Integer': 'INTEGER',
+            'String': 'TEXT',
+            'Text': 'TEXT',
+            'Boolean': 'BOOLEAN',
+            'DateTime': 'DATETIME',
+            'Date': 'DATE',
+            'Float': 'REAL',
+            'Numeric': 'NUMERIC'
+        }
+        
+        col_type = definition['type']
+        sqlite_type = type_mapping.get(col_type, 'TEXT')
+        
+        sql = f"ALTER TABLE {table} ADD COLUMN {column} {sqlite_type}"
+        
+        if not definition['nullable']:
+            # SQLite doesn't support adding NOT NULL columns to existing tables easily
+            # We'll add as nullable and note this limitation
+            sql += " -- Note: Should be NOT NULL but SQLite limitation"
+        
+        if definition['default']:
+            sql += f" DEFAULT {definition['default']}"
+        
+        return sql + ";"
+    
+    def apply_changes(self, dry_run: bool = True) -> bool:
+        """Apply the schema changes"""
+        if not self.changes:
+            print("✅ No changes needed - schema is up to date!")
+            return True
+        
+        sql_commands = self.generate_sql_commands()
+        
+        if dry_run:
+            print("\n🔍 DRY RUN - SQL commands that would be executed:")
+            for sql in sql_commands:
+                print(f"  {sql}")
+            return True
+        
+        # Create backup
+        backup_path = f"{self.db_path}.backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        self._create_backup(backup_path)
+        
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            for sql in sql_commands:
+                if not sql.startswith('--'):  # Skip comments
+                    print(f"Executing: {sql}")
+                    cursor.execute(sql)
             
-            for col in columns_info:
-                col_name, col_type, not_null, default_val, pk = col[1], col[2], col[3], col[4], col[5]
-                pk_indicator = "🔑" if pk else "  "
-                null_indicator = "NOT NULL" if not_null else "NULL"
-                default_info = f"DEFAULT {default_val}" if default_val else ""
-                print(f"  {pk_indicator} {col_name:<20} {col_type:<15} {null_indicator:<8} {default_info}")
+            conn.commit()
+            print("✅ Successfully applied all changes!")
+            return True
             
-            cursor.execute(f"SELECT COUNT(*) FROM {table_name}")
-            count = cursor.fetchone()[0]
-            print(f"  📊 Records: {count}")
+        except Exception as e:
+            print(f"❌ Error applying changes: {e}")
+            conn.rollback()
+            print(f"💾 Database backup available at: {backup_path}")
+            return False
+            
+        finally:
+            conn.close()
     
-    print(f"\n✅ UPDATE COMPLETED!")
-    print(f"📊 Total changes made: {total_changes}")
-    print(f"⏰ Completed at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    def _create_backup(self, backup_path: str):
+        """Create database backup"""
+        import shutil
+        shutil.copy2(self.db_path, backup_path)
+        print(f"💾 Created backup: {backup_path}")
+
+def main():
+    """Main function with command line interface"""
+    parser = argparse.ArgumentParser(description="Universal Database Schema Updater")
+    parser.add_argument("--models", default="hotel_app/models.py", help="Path to models file")
+    parser.add_argument("--db", default="instance/hotel_app.db", help="Path to database file")
+    parser.add_argument("--dry-run", action="store_true", help="Show changes without applying them")
+    parser.add_argument("--apply", action="store_true", help="Apply changes to database")
+    parser.add_argument("--verbose", "-v", action="store_true", help="Verbose output")
     
-    if total_changes > 0:
-        print("\n🎉 Database successfully updated!")
+    args = parser.parse_args()
+    
+    print("="*80)
+    print("🔄 Universal Database Schema Updater")
+    print("="*80)
+    
+    # Step 1: Analyze models
+    print("\n📋 Step 1: Analyzing models...")
+    analyzer = ModelAnalyzer(args.models)
+    
+    if not analyzer.load_models():
+        return 1
+    
+    models = analyzer.extract_models()
+    print(f"✅ Found {len(models)} model classes:")
+    for class_name, info in models.items():
+        print(f"  📋 {class_name} -> {info['table_name']} ({len(info['columns'])} columns)")
+        if args.verbose:
+            for col_name, col_info in info['columns'].items():
+                print(f"    - {col_name}: {col_info['type']}")
+    
+    # Step 2: Inspect database
+    print(f"\n🗄️  Step 2: Inspecting database...")
+    inspector = DatabaseInspector(args.db)
+    db_schema = inspector.inspect_schema()
+    
+    if not db_schema:
+        print("⚠️  Database not found or empty")
     else:
-        print("\n💡 Database was already up to date!")
+        print(f"✅ Found {len(db_schema)} tables in database:")
+        for table_name, info in db_schema.items():
+            print(f"  🗄️  {table_name} ({len(info['columns'])} columns)")
+    
+    # Step 3: Analyze differences
+    print(f"\n🔍 Step 3: Analyzing differences...")
+    synchronizer = SchemaSynchronizer(models, db_schema, args.db)
+    changes = synchronizer.analyze_differences()
+    
+    if not changes:
+        print("✅ Schema is up to date - no changes needed!")
+        return 0
+    
+    print(f"📝 Found {len(changes)} changes needed:")
+    for change in changes:
+        if change['type'] == 'ADD_COLUMN':
+            print(f"  + Add column: {change['table']}.{change['column']} ({change['definition']['type']})")
+        elif change['type'] == 'EXTRA_COLUMN':
+            print(f"  ⚠️  Extra column: {change['table']}.{change['column']} (in DB but not model)")
+        elif change['type'] == 'CREATE_TABLE':
+            print(f"  + Create table: {change['table']} (class: {change['class']})")
+    
+    # Step 4: Apply changes
+    if args.apply:
+        print(f"\n⚡ Step 4: Applying changes...")
+        success = synchronizer.apply_changes(dry_run=False)
+        return 0 if success else 1
+    else:
+        print(f"\n🔍 Step 4: Dry run (use --apply to execute)")
+        synchronizer.apply_changes(dry_run=True)
+        print(f"\n💡 To apply these changes, run: python {sys.argv[0]} --apply")
+        return 0
 
-except Exception as e:
-    print(f"❌ Error: {e}")
-    import traceback
-    traceback.print_exc()
-    if 'conn' in locals():
-        conn.rollback()
-finally:
-    if 'conn' in locals():
-        conn.close()
-
-print("\n💡 This script safely parsed your models.py without importing it")
-print("   to avoid SQLAlchemy conflicts. If some columns weren't detected,")
-print("   they might use complex syntax that needs manual addition.")
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+        <title>Transaction History - trivago</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+        <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
+        <!-- TailwindCSS -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- FlatPickr -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <!-- Country-list & FlagIcon -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+        <!-- Custom Script -->
+        <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
+        <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
+    </head>
+
+    <body class="bg-gray-50 min-h-screen">
+        <!-- Header -->
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+            <div class="flex items-center justify-start gap-8 text-white h-full">
+                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 data-translate class="text-white text-sm md:text-md font-bold">Transaction History</h1>
+            </div>
+        </header>
+
+        <div class="max-w-6xl mx-auto px-4 py-8">
+            <!-- Loading Indicator -->
+            <div id="loadingIndicator" class="text-center py-8">
+                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p class="mt-2 text-gray-600">Loading transaction history...</p>
+            </div>
+
+            <!-- Main Content -->
+            <div id="mainContent" class="hidden">
+                <!-- Summary Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Current Balance -->
+                    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p data-translate class="text-sm font-medium text-gray-600">Current Balance</p>
+                                <p class="text-2xl font-bold text-gray-900" id="currentBalance">£0.00</p>
+                            </div>
+                            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-wallet text-blue-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Deposits -->
+                    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-green-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p data-translate class="text-sm font-medium text-gray-600">Total Deposits</p>
+                                <p class="text-2xl font-bold text-green-600" id="totalDeposits">£0.00</p>
+                                <p data-translate class="text-xs text-gray-500 mt-1" id="depositsBreakdown">Approved transactions only
+                                </p>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-arrow-down text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Total Withdrawals -->
+                    <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-red-500">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p data-translate class="text-sm font-medium text-gray-600">Total Withdrawals</p>
+                                <p class="text-2xl font-bold text-red-600" id="totalWithdrawals">£0.00</p>
+                                <p data-translate class="text-xs text-gray-500 mt-1" id="withdrawalsBreakdown">Approved transactions
+                                    only</p>
+                            </div>
+                            <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-arrow-up text-red-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transaction Section -->
+                <div class="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div class="p-6 border-b border-gray-200">
+                        <h3 data-translate class="text-lg font-semibold text-gray-900">Recent Transactions</h3>
+                        <p data-translate class="text-sm text-gray-600 mt-1">Your complete transaction history</p>
+                    </div>
+
+                    <!-- Transactions with filters - only show if there are transactions -->
+                    <div id="transactionsWithFilters" class="hidden">
+                        <!-- Filters -->
+                        <div class="p-6 border-b border-gray-200">
+                            <div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                                <!-- Search -->
+                                <div class="flex-1 max-w-md">
+                                    <div class="relative">
+                                        <input type="text" id="searchInput" placeholder="Search transactions..."
+                                            class="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            onkeyup="filterTransactions()">
+                                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                                    </div>
+                                </div>
+
+                                <!-- Type Filters -->
+                                <div class="flex flex-wrap gap-2">
+                                    <button data-translate onclick="filterByType('all')" class="filter-btn active" data-type="all">
+                                        <i class="fas fa-list mr-2"></i>All
+                                    </button>
+                                    <button data-translate onclick="filterByType('deposit')" class="filter-btn" data-type="deposit">
+                                        <i class="fas fa-arrow-down mr-2"></i>Deposits
+                                    </button>
+                                    <button data-translate onclick="filterByType('withdrawal')" class="filter-btn"
+                                        data-type="withdrawal">
+                                        <i class="fas fa-arrow-up mr-2"></i>Withdrawals
+                                    </button>
+                                </div>
+
+                                <!-- Date Filter -->
+                                <div class="flex gap-2">
+                                    <select id="dateFilter"
+                                        class="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        onchange="filterTransactions()">
+                                        <option data-translate value="all">All Time</option>
+                                        <option data-translate value="today">Today</option>
+                                        <option data-translate value="week">This Week</option>
+                                        <option data-translate value="month">This Month</option>
+                                        <option data-translate value="year">This Year</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Transaction List -->
+                        <div class="divide-y divide-gray-200" id="transactionsList">
+                            <!-- Transactions will be populated here -->
+                        </div>
+
+                        <!-- No search results -->
+                        <div id="noSearchResults" class="hidden p-8 text-center text-gray-500">
+                            <i class="fas fa-search text-4xl text-gray-300 mb-4"></i>
+                            <h3 data-translate class="text-lg font-medium text-gray-900 mb-2">No transactions found</h3>
+                            <p data-translate class="text-gray-600 mb-4">No transactions match your search criteria.</p>
+                            <button data-translate onclick="clearFilters()"
+                                class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                                Clear Filters
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Empty State - show when no transactions -->
+                    <div id="emptyState" class="p-12 text-center">
+                        <div class="max-w-md mx-auto">
+                            <i class="fas fa-receipt text-6xl text-gray-300 mb-6"></i>
+                            <h3 data-translate class="text-xl font-semibold text-gray-900 mb-3">No transactions yet</h3>
+                            <p data-translate class="text-gray-600 mb-6">You haven't made any deposits or withdrawals yet. Your
+                                transaction history will appear here once you start making transactions.</p>
+
+                            <!-- Action buttons -->
+                            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                                <button data-translate onclick="window.location.href='/deposit'"
+                                    class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+                                    <i class="fas fa-plus"></i>
+                                    Make a Deposit
+                                </button>
+                                <button data-translate onclick="window.location.href='/withdraw'"
+                                    class="bg-gray-600 hover:bg-gray-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
+                                    <i class="fas fa-minus"></i>
+                                    Make a Withdrawal
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Transaction Detail Modal -->
+        <div id="transactionModal"
+            class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4 hidden">
+            <div class="bg-white rounded-2xl shadow-xl max-w-md w-full">
+                <!-- Modal Header -->
+                <div class="p-6 border-b border-gray-200">
+                    <div class="flex items-center justify-between">
+                        <h3 data-translate class="text-lg font-semibold text-gray-900">Transaction Details</h3>
+                        <button onclick="closeModal()" class="text-gray-400 hover:text-gray-600">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="p-6" id="transactionDetails">
+                    <!-- Details will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .filter-btn {
+                @apply px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors;
+            }
+
+            .filter-btn.active {
+                @apply bg-blue-600 text-white border-blue-600;
+            }
+        </style>
+
+        <script>
+            let allTransactions = [];
+            let filteredTransactions = [];
+            let userData = {};
+
+            // Load data on page load
+            document.addEventListener('DOMContentLoaded', function () {
+                loadData();
+            });
+
+            function loadData() {
+                fetch('/transaction_details?format=json')
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log('Received data:', data);
+
+                        if (data.success) {
+                            userData = data.user;
+                            allTransactions = data.transactions;
+                            filteredTransactions = [...allTransactions];
+
+                            updateUI();
+                        } else {
+                            showError('Failed to load data');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showError('Error loading data');
+                    });
+            }
+
+            function updateUI() {
+                // Update balance
+                document.getElementById('currentBalance').textContent = `£${userData.balance.toFixed(2)}`;
+
+                // Calculate totals with detailed logging
+                console.log('=== CALCULATING TOTALS ===');
+                console.log('Total transactions:', allTransactions.length);
+
+                let totalDeposits = 0;
+                let totalWithdrawals = 0;
+                let approvedDeposits = 0;
+                let approvedWithdrawals = 0;
+                let pendingDeposits = 0;
+                let pendingWithdrawals = 0;
+
+                allTransactions.forEach((transaction, index) => {
+                    console.log(`Transaction ${index + 1}:`, {
+                        type: transaction.type,
+                        amount: transaction.amount,
+                        status: transaction.status
+                    });
+
+                    const amount = parseFloat(transaction.amount) || 0;
+
+                    if (transaction.type === 'deposit') {
+                        if (isApprovedStatus(transaction.status)) {
+                            totalDeposits += amount;
+                            approvedDeposits++;
+                        } else {
+                            pendingDeposits++;
+                        }
+                    } else if (transaction.type === 'withdrawal') {
+                        if (isApprovedStatus(transaction.status)) {
+                            totalWithdrawals += amount;
+                            approvedWithdrawals++;
+                        } else {
+                            pendingWithdrawals++;
+                        }
+                    }
+                });
+
+                console.log('Final totals:', {
+                    totalDeposits,
+                    totalWithdrawals,
+                    approvedDeposits,
+                    approvedWithdrawals,
+                    pendingDeposits,
+                    pendingWithdrawals
+                });
+
+                // Update UI
+                document.getElementById('totalDeposits').textContent = `£${totalDeposits.toFixed(2)}`;
+                document.getElementById('totalWithdrawals').textContent = `£${totalWithdrawals.toFixed(2)}`;
+
+                // Update breakdown text
+                document.getElementById('depositsBreakdown').textContent =
+                    `${approvedDeposits} approved${pendingDeposits > 0 ? `, ${pendingDeposits} pending` : ''}`;
+                document.getElementById('withdrawalsBreakdown').textContent =
+                    `${approvedWithdrawals} approved${pendingWithdrawals > 0 ? `, ${pendingWithdrawals} pending` : ''}`;
+
+                // Show/hide appropriate sections
+                if (allTransactions.length === 0) {
+                    document.getElementById('emptyState').classList.remove('hidden');
+                    document.getElementById('transactionsWithFilters').classList.add('hidden');
+                } else {
+                    document.getElementById('emptyState').classList.add('hidden');
+                    document.getElementById('transactionsWithFilters').classList.remove('hidden');
+                    displayTransactions();
+                }
+
+                // Show main content
+                document.getElementById('loadingIndicator').classList.add('hidden');
+                document.getElementById('mainContent').classList.remove('hidden');
+            }
+
+            // Helper function to check if status means approved/completed
+            function isApprovedStatus(status) {
+                const approvedStatuses = ['approved', 'completed', 'success', 'confirmed'];
+                return approvedStatuses.includes(status.toLowerCase());
+            }
+
+            function displayTransactions() {
+                const container = document.getElementById('transactionsList');
+                const noResults = document.getElementById('noSearchResults');
+
+                if (filteredTransactions.length === 0) {
+                    container.innerHTML = '';
+                    noResults.classList.remove('hidden');
+                    return;
+                }
+
+                noResults.classList.add('hidden');
+
+                container.innerHTML = filteredTransactions.map(transaction => {
+                    const isDeposit = transaction.type === 'deposit';
+                    const statusColors = {
+                        'approved': 'green',
+                        'completed': 'green',
+                        'success': 'green',
+                        'confirmed': 'green',
+                        'pending': 'yellow',
+                        'rejected': 'red',
+                        'failed': 'red',
+                        'cancelled': 'gray'
+                    };
+                    const statusColor = statusColors[transaction.status.toLowerCase()] || 'gray';
+
+                    // Capitalize first letter of status
+                    const statusDisplay = transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1).toLowerCase();
+
+                    return `
+                    <div class="p-6 hover:bg-gray-50 transition-colors cursor-pointer" onclick="showDetails(${transaction.id})">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-4">
+                                <div class="w-12 h-12 bg-${isDeposit ? 'green' : 'red'}-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-${isDeposit ? 'plus' : 'minus'} text-${isDeposit ? 'green' : 'red'}-600"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium text-gray-900">${isDeposit ? 'Deposit' : 'Withdrawal'} via ${transaction.network}</h4>
+                                    <p class="text-sm text-gray-600">${transaction.wallet_address ? transaction.wallet_address.substring(0, 10) + '...' : 'N/A'}</p>
+                                    <p class="text-xs text-gray-500">${transaction.date} ${transaction.time}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-lg font-semibold text-${isDeposit ? 'green' : 'red'}-600">
+                                    ${isDeposit ? '+' : '-'}£${parseFloat(transaction.amount).toFixed(2)}
+                                </p>
+                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-${statusColor}-100 text-${statusColor}-800">
+                                    ${statusDisplay}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                }).join('');
+            }
+
+            function filterByType(type) {
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector(`[data-type="${type}"]`).classList.add('active');
+                applyFilters();
+            }
+
+            function filterTransactions() {
+                applyFilters();
+            }
+
+            function applyFilters() {
+                const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                const activeType = document.querySelector('.filter-btn.active').dataset.type;
+                const dateFilter = document.getElementById('dateFilter').value;
+
+                filteredTransactions = allTransactions.filter(transaction => {
+                    // Type filter
+                    if (activeType !== 'all' && transaction.type !== activeType) {
+                        return false;
+                    }
+
+                    // Search filter
+                    if (searchTerm) {
+                        const searchText = `${transaction.network} ${transaction.wallet_address} ${transaction.status} ${transaction.amount}`.toLowerCase();
+                        if (!searchText.includes(searchTerm)) {
+                            return false;
+                        }
+                    }
+
+                    // Date filter
+                    if (dateFilter !== 'all') {
+                        const transactionDate = new Date(transaction.datetime);
+                        const now = new Date();
+
+                        switch (dateFilter) {
+                            case 'today':
+                                if (transactionDate.toDateString() !== now.toDateString()) return false;
+                                break;
+                            case 'week':
+                                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                                if (transactionDate < weekAgo) return false;
+                                break;
+                            case 'month':
+                                const monthAgo = new Date(now.getFullYear(), now.getMonth() - 1, now.getDate());
+                                if (transactionDate < monthAgo) return false;
+                                break;
+                            case 'year':
+                                const yearAgo = new Date(now.getFullYear() - 1, now.getMonth(), now.getDate());
+                                if (transactionDate < yearAgo) return false;
+                                break;
+                        }
+                    }
+
+                    return true;
+                });
+
+                displayTransactions();
+            }
+
+            function showDetails(transactionId) {
+                const transaction = allTransactions.find(t => t.id === transactionId);
+                if (!transaction) return;
+
+                const isDeposit = transaction.type === 'deposit';
+                const statusColors = {
+                    'approved': 'green',
+                    'completed': 'green',
+                    'success': 'green',
+                    'confirmed': 'green',
+                    'pending': 'yellow',
+                    'rejected': 'red',
+                    'failed': 'red',
+                    'cancelled': 'gray'
+                };
+                const statusColor = statusColors[transaction.status.toLowerCase()] || 'gray';
+                const statusDisplay = transaction.status.charAt(0).toUpperCase() + transaction.status.slice(1).toLowerCase();
+
+                document.getElementById('transactionDetails').innerHTML = `
+                <div class="text-center mb-6">
+                    <div class="w-16 h-16 bg-${isDeposit ? 'green' : 'red'}-100 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <i class="fas fa-${isDeposit ? 'plus' : 'minus'} text-${isDeposit ? 'green' : 'red'}-600 text-xl"></i>
+                    </div>
+                    <h4 class="text-2xl font-bold text-${isDeposit ? 'green' : 'red'}-600">
+                        ${isDeposit ? '+' : '-'}£${parseFloat(transaction.amount).toFixed(2)}
+                    </h4>
+                    <p class="text-gray-600">${transaction.type} via ${transaction.network}</p>
+                </div>
+                
+                <div class="space-y-3">
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Transaction ID:</span>
+                        <span class="font-medium">${transaction.id}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Date & Time:</span>
+                        <span class="font-medium">${transaction.datetime}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Network:</span>
+                        <span class="font-medium">${transaction.network}</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Wallet:</span>
+                        <span class="font-medium text-sm break-all">${transaction.wallet_address || 'N/A'}</span>
+                    </div>
+                    ${transaction.transaction_hash ? `
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Hash:</span>
+                        <span class="font-medium text-sm break-all">${transaction.transaction_hash}</span>
+                    </div>
+                    ` : ''}
+                    ${transaction.transaction_fee ? `
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Fee:</span>
+                        <span class="font-medium">£${parseFloat(transaction.transaction_fee).toFixed(2)}</span>
+                    </div>
+                    ` : ''}
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Status:</span>
+                        <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-${statusColor}-100 text-${statusColor}-800">
+                            ${statusDisplay}
+                        </span>
+                    </div>
+                    ${transaction.admin_notes ? `
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Admin Notes:</span>
+                    </div>
+                    ` : ''}
+                    ${transaction.rejection_reason ? `
+                    <div class="flex justify-between">
+                        <span class="text-gray-600">Rejection:</span>
+                        <span class="font-medium text-red-600">${transaction.rejection_reason}</span>
+                    </div>
+                    ` : ''}
+                </div>
+            `;
+
+                document.getElementById('transactionModal').classList.remove('hidden');
+            }
+
+            function closeModal() {
+                document.getElementById('transactionModal').classList.add('hidden');
+            }
+
+            function clearFilters() {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('dateFilter').value = 'all';
+                document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector('[data-type="all"]').classList.add('active');
+                applyFilters();
+            }
+
+            function showError(message) {
+                document.getElementById('loadingIndicator').innerHTML = `
+                <div class="text-center py-8">
+                    <i class="fas fa-exclamation-triangle text-4xl text-red-500 mb-4"></i>
+                    <p class="text-red-600 mb-4">${message}</p>
+                    <button onclick="loadData()" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
+                        Try Again
+                    </button>
+                </div>
+            `;
+            }
+
+            // Close modal when clicking outside
+            document.getElementById('transactionModal').addEventListener('click', function (e) {
+                if (e.target === this) closeModal();
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape') closeModal();
+            });
+        </script>
+    </body>
+
+</html>

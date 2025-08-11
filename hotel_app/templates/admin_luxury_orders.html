@@ -1,0 +1,520 @@
+{% extends 'admin_base.html' %}
+
+{% block title %}Luxury Orders Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid px-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center py-4">
+        <div>
+            <h1 class="h3 mb-0 text-gray-800">Luxury Orders Management</h1>
+            <p class="mb-0 text-muted">Manage and monitor all luxury order requests</p>
+        </div>
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-primary" onclick="refreshPage()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="row mb-4">
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                Total Orders</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ orders.total }}</div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-shopping-cart fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                Active Orders</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ orders.items|selectattr("status", "equalto", "pending")|list|length }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-clock fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                                Claimed Orders</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ orders.items|selectattr("status", "equalto", "claimed")|list|length }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-check-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-3 col-md-6 mb-4">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                Expired Orders</div>
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">
+                                {{ orders.items|selectattr("status", "equalto", "expired")|list|length }}
+                            </div>
+                        </div>
+                        <div class="col-auto">
+                            <i class="fas fa-times-circle fa-2x text-gray-300"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+            <h6 class="m-0 font-weight-bold text-primary">
+                <i class="fas fa-list"></i> Luxury Orders
+            </h6>
+            <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in"
+                    aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-header">Actions:</div>
+                    <a class="dropdown-item" href="#" onclick="exportOrders()">
+                        <i class="fas fa-download fa-sm fa-fw mr-2 text-gray-400"></i>
+                        Export Data
+                    </a>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            {% if orders.items %}
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover" id="ordersTable" width="100%" cellspacing="0">
+                    <thead class="thead-light">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>User</th>
+                            <th>Item Details</th>
+                            <th>Points Required</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders.items %}
+                        <tr id="order-row-{{ order.id }}">
+                            <td>
+                                <span class="font-weight-bold text-primary">#{{ order.id }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="mr-3">
+                                        <div class="icon-circle bg-primary">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="small font-weight-bold">{{ order.user.username }}</div>
+                                        <div class="small text-gray-500">ID: {{ order.user.id }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div>
+                                    <div class="font-weight-bold">{{ order.item_name }}</div>
+                                    {% if order.item_description %}
+                                    <div class="small text-gray-600">{{ order.item_description[:50] }}{% if order.item_description|length > 50 %}...{% endif %}</div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge badge-info badge-pill">
+                                    <i class="fas fa-star"></i> {{ order.points_required }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if order.status == 'pending' %}
+                                    <span class="badge badge-warning">
+                                        <i class="fas fa-clock"></i> Pending
+                                    </span>
+                                {% elif order.status == 'claimed' %}
+                                    <span class="badge badge-success">
+                                        <i class="fas fa-check"></i> Claimed
+                                    </span>
+                                {% elif order.status == 'expired' %}
+                                    <span class="badge badge-secondary">
+                                        <i class="fas fa-times"></i> Expired
+                                    </span>
+                                {% else %}
+                                    <span class="badge badge-light">{{ order.status|title }}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="small">
+                                    {{ order.created_at.strftime('%Y-%m-%d') }}
+                                    <br>
+                                    <span class="text-gray-500">{{ order.created_at.strftime('%H:%M:%S') }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <button class="btn btn-sm btn-outline-info" 
+                                            onclick="viewOrder({{ order.id }})"
+                                            data-toggle="tooltip" title="View Details">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    {% if order.status != 'claimed' %}
+                                    <button class="btn btn-sm btn-outline-danger" 
+                                            onclick="cancelOrder({{ order.id }})"
+                                            data-toggle="tooltip" title="Cancel Order">
+                                        <i class="fas fa-ban"></i>
+                                    </button>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            {% if orders.pages > 1 %}
+            <nav aria-label="Orders pagination">
+                <ul class="pagination justify-content-center">
+                    {% if orders.has_prev %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin_luxury_orders', page=orders.prev_num) }}">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+
+                    {% for page_num in orders.iter_pages() %}
+                        {% if page_num %}
+                            {% if page_num != orders.page %}
+                                <li class="page-item">
+                                    <a class="page-link" href="{{ url_for('admin_luxury_orders', page=page_num) }}">{{ page_num }}</a>
+                                </li>
+                            {% else %}
+                                <li class="page-item active">
+                                    <span class="page-link">{{ page_num }}</span>
+                                </li>
+                            {% endif %}
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if orders.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ url_for('admin_luxury_orders', page=orders.next_num) }}">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+            {% endif %}
+
+            {% else %}
+            <div class="text-center py-5">
+                <div class="mb-4">
+                    <i class="fas fa-shopping-cart fa-3x text-gray-300"></i>
+                </div>
+                <h5 class="text-gray-600">No Luxury Orders Found</h5>
+                <p class="text-gray-500">There are currently no luxury orders in the system.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Order Details Modal -->
+<div class="modal fade" id="orderDetailsModal" tabindex="-1" role="dialog" aria-labelledby="orderDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderDetailsModalLabel">
+                    <i class="fas fa-info-circle"></i> Order Details
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="orderDetailsContent">
+                <div class="text-center py-3">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="sr-only">Loading...</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cancel Confirmation Modal -->
+<div class="modal fade" id="cancelConfirmModal" tabindex="-1" role="dialog" aria-labelledby="cancelConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cancelConfirmModalLabel">
+                    <i class="fas fa-exclamation-triangle text-warning"></i> Confirm Cancellation
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to cancel this luxury order? This action cannot be undone.</p>
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle"></i>
+                    <strong>Note:</strong> The order will be marked as expired and the user will be notified.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">No, Keep Order</button>
+                <button type="button" class="btn btn-danger" id="confirmCancelBtn">
+                    <i class="fas fa-ban"></i> Yes, Cancel Order
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Global variables
+let currentOrderId = null;
+
+// Initialize tooltips
+$(document).ready(function() {
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    // Initialize DataTable if needed
+    if ($('#ordersTable tbody tr').length > 0) {
+        $('#ordersTable').DataTable({
+            "paging": false,
+            "searching": true,
+            "ordering": true,
+            "info": false,
+            "responsive": true,
+            "columnDefs": [
+                { "orderable": false, "targets": [6] } // Actions column
+            ]
+        });
+    }
+});
+
+// Refresh page function
+function refreshPage() {
+    window.location.reload();
+}
+
+// View order details
+function viewOrder(orderId) {
+    // For now, show basic order info. You can expand this to fetch more details via AJAX
+    const orderRow = document.querySelector(`#order-row-${orderId}`);
+    const cells = orderRow.querySelectorAll('td');
+    
+    const orderDetails = `
+        <div class="row">
+            <div class="col-md-6">
+                <h6 class="font-weight-bold">Order Information</h6>
+                <table class="table table-sm table-borderless">
+                    <tr><td><strong>Order ID:</strong></td><td>#${orderId}</td></tr>
+                    <tr><td><strong>User:</strong></td><td>${cells[1].querySelector('.font-weight-bold').textContent}</td></tr>
+                    <tr><td><strong>User ID:</strong></td><td>${cells[1].querySelector('.text-gray-500').textContent}</td></tr>
+                    <tr><td><strong>Status:</strong></td><td>${cells[4].innerHTML}</td></tr>
+                </table>
+            </div>
+            <div class="col-md-6">
+                <h6 class="font-weight-bold">Item Details</h6>
+                <table class="table table-sm table-borderless">
+                    <tr><td><strong>Item Name:</strong></td><td>${cells[2].querySelector('.font-weight-bold').textContent}</td></tr>
+                    <tr><td><strong>Points Required:</strong></td><td>${cells[3].textContent.trim()}</td></tr>
+                    <tr><td><strong>Created:</strong></td><td>${cells[5].textContent.trim()}</td></tr>
+                </table>
+            </div>
+        </div>
+    `;
+    
+    document.getElementById('orderDetailsContent').innerHTML = orderDetails;
+    $('#orderDetailsModal').modal('show');
+}
+
+// Cancel order
+function cancelOrder(orderId) {
+    currentOrderId = orderId;
+    $('#cancelConfirmModal').modal('show');
+}
+
+// Confirm cancel order
+document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+    if (currentOrderId) {
+        const btn = this;
+        const originalText = btn.innerHTML;
+        
+        // Show loading state
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
+        btn.disabled = true;
+        
+        // Make API call to cancel order
+        fetch(`/admin/api/luxury_orders/${currentOrderId}/cancel`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Update the UI
+                const orderRow = document.querySelector(`#order-row-${currentOrderId}`);
+                const statusCell = orderRow.querySelector('td:nth-child(5)');
+                statusCell.innerHTML = '<span class="badge badge-secondary"><i class="fas fa-times"></i> Expired</span>';
+                
+                // Remove cancel button
+                const actionsCell = orderRow.querySelector('td:nth-child(7)');
+                const cancelBtn = actionsCell.querySelector('.btn-outline-danger');
+                if (cancelBtn) {
+                    cancelBtn.remove();
+                }
+                
+                // Show success message
+                showAlert('success', data.message);
+                
+                // Close modal
+                $('#cancelConfirmModal').modal('hide');
+            } else {
+                showAlert('danger', data.error || 'Failed to cancel order');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showAlert('danger', 'An error occurred while cancelling the order');
+        })
+        .finally(() => {
+            // Reset button state
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+        });
+    }
+});
+
+// Show alert function
+function showAlert(type, message) {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+        ${message}
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    `;
+    
+    // Insert at the top of the container
+    const container = document.querySelector('.container-fluid');
+    container.insertBefore(alertDiv, container.firstChild);
+    
+    // Auto dismiss after 5 seconds
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.remove();
+        }
+    }, 5000);
+}
+
+// Export orders function (placeholder)
+function exportOrders() {
+    showAlert('info', 'Export functionality will be implemented soon.');
+}
+
+// Reset current order ID when modals are hidden
+$('#cancelConfirmModal').on('hidden.bs.modal', function() {
+    currentOrderId = null;
+});
+</script>
+
+<style>
+.icon-circle {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.border-left-primary {
+    border-left: 0.25rem solid #4e73df !important;
+}
+
+.border-left-success {
+    border-left: 0.25rem solid #1cc88a !important;
+}
+
+.border-left-info {
+    border-left: 0.25rem solid #36b9cc !important;
+}
+
+.border-left-warning {
+    border-left: 0.25rem solid #f6c23e !important;
+}
+
+.table td {
+    vertical-align: middle;
+}
+
+.badge-pill {
+    border-radius: 10rem;
+}
+
+#ordersTable_wrapper .dataTables_filter {
+    float: right;
+    margin-bottom: 1rem;
+}
+
+#ordersTable_wrapper .dataTables_filter input {
+    border: 1px solid #d1d3e2;
+    border-radius: 0.35rem;
+    padding: 0.375rem 0.75rem;
+}
+</style>
+{% endblock %}

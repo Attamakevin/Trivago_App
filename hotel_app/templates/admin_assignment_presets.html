@@ -1,0 +1,91 @@
+<!-- admin_assignment_presets.html template -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Assignment Presets</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <h2>Hotel Assignment Presets</h2>
+                <p class="text-muted">Quick assignment presets for common hotel groupings</p>
+                
+                <div class="row">
+                    {% for preset_key, preset in presets.items() %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ preset.name }}</h5>
+                                <p class="card-text">{{ preset.description }}</p>
+                                
+                                <div class="mb-3">
+                                    <strong>Suggested Commission:</strong> £{{ preset.suggested_commission }}
+                                </div>
+                                
+                                <form method="POST" action="{{ url_for('apply_assignment_preset') }}">
+                                    <input type="hidden" name="preset" value="{{ preset_key }}">
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Session Type</label>
+                                        <select name="session_type" class="form-select" required>
+                                            <option value="first">First Session</option>
+                                            <option value="second">Second Session</option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Select Users</label>
+                                        <div style="max-height: 150px; overflow-y: auto; border: 1px solid #dee2e6; padding: 10px;">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="select_all_{{ preset_key }}" onchange="toggleAllUsers('{{ preset_key }}')">
+                                                <label class="form-check-label" for="select_all_{{ preset_key }}">
+                                                    <strong>Select All</strong>
+                                                </label>
+                                            </div>
+                                            <hr>
+                                            {% for user in users %}
+                                            <div class="form-check">
+                                                <input class="form-check-input user-checkbox-{{ preset_key }}" type="checkbox" 
+                                                       name="user_ids" value="{{ user.id }}" id="user_{{ preset_key }}_{{ user.id }}">
+                                                <label class="form-check-label" for="user_{{ preset_key }}_{{ user.id }}">
+                                                    {{ user.nickname }}
+                                                </label>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary">Apply Preset</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{{ url_for('manage_hotel_assignments') }}" class="btn btn-secondary">
+                        Back to Assignments
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleAllUsers(presetKey) {
+            const selectAllCheckbox = document.getElementById(`select_all_${presetKey}`);
+            const userCheckboxes = document.querySelectorAll(`.user-checkbox-${presetKey}`);
+            
+            userCheckboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+        }
+    </script>
+</body>
+</html>

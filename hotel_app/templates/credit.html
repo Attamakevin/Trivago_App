@@ -24,11 +24,91 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
             rel="stylesheet">
-        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
         <!-- Custom Script -->
-        <script defer src="./static/js/main.js"></script>
-        <script defer src="./static/js/translate.js"></script>
-        <script defer src="./static/js/user.js"></script>
+        <script src="./static/js/main.js"></script>
+        <script src="./static/js/translate.js"></script>
+        <script src="./static/js/user.js"></script>
+
+        <style>
+            /* Credit Score Circle Styles */
+            .score-circle {
+                position: relative;
+                border-radius: 50%;
+                background: conic-gradient(from 0deg, #e5e7eb 0%, #e5e7eb 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.5s ease;
+            }
+
+            .score-circle.poor {
+                background: conic-gradient(from 0deg, #ef4444 0%, var(--progress-percent), #e5e7eb var(--progress-percent), #e5e7eb 100%);
+            }
+
+            .score-circle.fair {
+                background: conic-gradient(from 0deg, #f59e0b 0%, var(--progress-percent), #e5e7eb var(--progress-percent), #e5e7eb 100%);
+            }
+
+            .score-circle.good {
+                background: conic-gradient(from 0deg, #3b82f6 0%, var(--progress-percent), #e5e7eb var(--progress-percent), #e5e7eb 100%);
+            }
+
+            .score-circle.excellent {
+                background: conic-gradient(from 0deg, #10b981 0%, var(--progress-percent), #e5e7eb var(--progress-percent), #e5e7eb 100%);
+            }
+
+            .score-inner {
+                width: 85%;
+                height: 85%;
+                border-radius: 50%;
+                background: white;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            }
+
+            .score-animation {
+                animation: scoreGlow 2s ease-in-out infinite alternate;
+            }
+
+            @keyframes scoreGlow {
+                from {
+                    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+                }
+
+                to {
+                    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+                }
+            }
+
+            /* Withdrawal warning styles */
+            .withdrawal-warning {
+                background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+                border: 2px solid #f59e0b;
+                animation: warningPulse 2s ease-in-out infinite;
+            }
+
+            @keyframes warningPulse {
+
+                0%,
+                100% {
+                    border-color: #f59e0b;
+                }
+
+                50% {
+                    border-color: #dc2626;
+                }
+            }
+
+            .status-indicator {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                display: inline-block;
+                margin-right: 8px;
+            }
+        </style>
     </head>
 
     <body class="bg-gray-50 min-h-screen">
@@ -38,27 +118,31 @@
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-white text-sm md:text-md font-bold">Credit Score</h1>
+                <h1 data-translate class="text-white text-sm md:text-md font-bold">Credit Score</h1>
             </div>
         </header>
 
         <div class="px-4 py-6 space-y-6">
             <!-- Credit Score Overview -->
-            <div class="bg-white rounded-2xl shadow-l p-6 md:p-">
+            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
                 <div class="text-center mb-6">
-                    <p class="text-sm md:text-md font-bold text-gray-900 mb-2">Your Credit Score</p>
-                    <p class="text-gray-600 text-xs">Last updated: January 15, 2025</p>
+                    <p data-translate class="text-sm md:text-md font-bold text-gray-900 mb-2">Your Credit Score</p>
+                    <p data-translate class="text-gray-600 text-xs">Last updated: <span id="lastUpdated"></span></p>
                 </div>
 
                 <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-12">
                     <!-- Credit Score Circle -->
                     <div class="relative">
-                        <div class="score-circle w-48 h-48 md:w-48 md:h-48">
+                        <div id="scoreCircle" class="score-circle w-48 h-48 md:w-48 md:h-48 score-animation">
                             <div class="score-inner">
                                 <div class="text-center">
-                                    <div class="text-2xl md:text-2xl font-bold text-gray-900 mb-2">742</div>
-                                    <div class="text-lg md:text-xl font-semibold text-green-600">Excellent</div>
-                                    <div class="text-sm text-gray-500 mt-1">740-850</div>
+                                    <div id="scoreValue" class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                                        {{ user.member_points }}
+                                    </div>
+                                    <div id="scoreCategory" class="text-lg md:text-xl font-semibold mb-1">Loading...
+                                    </div>
+                                    <div id="scoreRange" class="text-sm text-gray-500"></div>
+                                    <div id="scorePercentage" class="text-xs text-gray-400 mt-2"></div>
                                 </div>
                             </div>
                         </div>
@@ -68,30 +152,50 @@
                     <div class="flex-1 w-full max-w-md">
                         <div class="space-y-4">
                             <div class="text-center md:text-left">
-                                <h3 class="text-sm font-semibold text-gray-900 mb-2">Credit Range</h3>
-                                <p class="text-gray-600 text-xs">Your score is in the excellent range, giving you access to the
-                                    best rates and terms.</p>
+                                <h3 data-translate class="text-sm font-semibold text-gray-900 mb-2">Credit Status</h3>
+                                <p data-translate id="scoreDescription" class="text-gray-600 text-xs">Calculating your credit status...
+                                </p>
                             </div>
 
                             <!-- Score Ranges -->
                             <div class="space-y-3">
-                                <div class="flex items-center justify-between p-3 bg-red-50 rounded-lg">
-                                    <span class="text-xs font-medium text-gray-700">Poor (300-579)</span>
-                                    <span class="text-xs text-red-600">Below Range</span>
+                                <div id="range-poor"
+                                    class="flex items-center justify-between p-3 bg-red-50 rounded-lg border border-transparent">
+                                    <span class="text-xs font-medium text-gray-700">
+                                        <span class="status-indicator bg-red-500"></span>
+                                        Poor (0-49)
+                                    </span>
+                                    <span data-translate class="text-xs text-red-600">Below Range</span>
                                 </div>
-                                <div class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg">
-                                    <span class="text-xs font-medium text-gray-700">Fair (580-669)</span>
-                                    <span class="text-xs text-yellow-600">Below Range</span>
+                                <div id="range-fair"
+                                    class="flex items-center justify-between p-3 bg-yellow-50 rounded-lg border border-transparent">
+                                    <span class="text-xs font-medium text-gray-700">
+                                        <span data-translate class="status-indicator bg-yellow-500"></span>
+                                        Fair (50-79)
+                                    </span>
+                                    <span data-translate class="text-xs text-yellow-600">Below Range</span>
                                 </div>
-                                <div class="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                                    <span class="text-xs font-medium text-gray-700">Good (670-739)</span>
-                                    <span class="text-xs text-blue-600">Below Range</span>
+                                <div id="range-good"
+                                    class="flex items-center justify-between p-3 bg-blue-50 rounded-lg border border-transparent">
+                                    <span class="text-xs font-medium text-gray-700">
+                                        <span data-translate class="status-indicator bg-blue-500"></span>
+                                        Good (80-139)
+                                    </span>
+                                    <span data-translate class="text-xs text-blue-600">Below Range</span>
                                 </div>
-                                <div
-                                    class="flex items-center justify-between p-3 bg-green-50 rounded-lg border-2 border-green-200">
-                                    <span class="text-xs font-medium text-gray-700">Excellent (740-850)</span>
-                                    <span class="text-xs text-green-600 font-semibold">Your Score</span>
+                                <div id="range-excellent"
+                                    class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-transparent">
+                                    <span class="text-xs font-medium text-gray-700">
+                                        <span data-translate class="status-indicator bg-green-500"></span>
+                                        Excellent (140-200)
+                                    </span>
+                                    <span data-translate class="text-xs text-green-600">Below Range</span>
                                 </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div id="actionButtons" class="mt-6 space-y-2">
+                                <!-- Will be populated by JavaScript -->
                             </div>
                         </div>
                     </div>
@@ -100,36 +204,218 @@
 
             <!-- Tips to Improve -->
             <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl shadow-lg p-6 md:p-8">
-                <h3 class="flex items-center justify-center text-sm md:text-sm font-bold text-gray-900 mb-6">What is Credit Score</h3>
+                <h3 data-translate class="flex items-center justify-center text-sm md:text-md font-bold text-gray-900 mb-6">
+                    <i class="fas fa-info-circle mr-2 text-blue-600"></i>
+                    What is Credit Score
+                </h3>
 
                 <div class="flex items-center justify-center">
-                    <p class="text-gray-800 text-sm">Every account has a credit score system. The credit score
-                        is determined by the
-                        performance of each member.
+                    <p data-translate class="text-gray-800 text-sm leading-relaxed">
+                        Every account has a credit score system. The credit score is determined by the performance of
+                        each member.
                         Completing daily tasks keeps the credit score high, but if tasks are not completed, it will
                         affect the score.
-                        When
-                        the credit score is below 80%, the system will disable withdrawal. To solve this problem,
-                        the member needs to
-                        complete tasks or make a deposit to increase the credit score.
+                        When the credit score is below 80%, the system will disable withdrawal. To solve this problem,
+                        the member needs to complete tasks or make a deposit to increase the credit score.
                     </p>
+                </div>
+
+                <!-- Score Impact Factors -->
+                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 data-translate class="font-semibold text-green-600 mb-2">
+                            <i class="fas fa-arrow-up mr-2"></i>
+                            Increases Score
+                        </h4>
+                        <ul data-translate class="text-sm text-gray-700 space-y-1">
+                            <li>• Completing daily tasks</li>
+                            <li>• Making timely deposits</li>
+                            <li>• Regular platform activity</li>
+                            <li>• Successful reservations</li>
+                        </ul>
+                    </div>
+                    <div class="bg-white rounded-lg p-4">
+                        <h4 data-translate class="font-semibold text-red-600 mb-2">
+                            <i class="fas fa-arrow-down mr-2"></i>
+                            Decreases Score
+                        </h4>
+                        <ul data-translate class="text-sm text-gray-700 space-y-1">
+                            <li>• Missing daily tasks</li>
+                            <li>• Incomplete reservations</li>
+                            <li>• Extended inactivity</li>
+                            <li>• Failed transactions</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Action Buttons -->
-        <!-- <div class="grid md:grid-cols-2 gap-4">
-            <button
-                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors flex items-center justify-center space-x-2">
-                <i class="fas fa-download"></i>
-                <span>Download Credit Report</span>
-            </button>
-            <button
-                class="bg-green-600 hover:bg-green-700 text-white font-semibold py-4 px-6 rounded-xl transition-colors flex items-center justify-center space-x-2">
-                <i class="fas fa-shield-alt"></i>
-                <span>Credit Monitoring</span>
-            </button>
-        </div> -->
+        <script>
+            // Credit Score System
+            class CreditScoreSystem {
+                constructor(userScore) {
+                    this.userScore = parseInt(userScore) || 0;
+                    this.maxScore = 200;
+                    this.init();
+                }
+
+                init() {
+                    this.updateLastUpdated();
+                    this.categorizeScore();
+                    this.updateDisplay();
+                    this.updateRangeHighlight();
+                    this.showWithdrawalWarning();
+                    this.updateActionButtons();
+                }
+
+                updateLastUpdated() {
+                    const now = new Date();
+                    const formatted = now.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    document.getElementById('lastUpdated').textContent = formatted;
+                }
+
+                categorizeScore() {
+                    if (this.userScore >= 0 && this.userScore <= 49) {
+                        this.category = 'poor';
+                        this.categoryName = 'Poor';
+                        this.categoryColor = 'text-red-600';
+                        this.range = '0-49';
+                        this.description = 'Your score needs immediate attention. Complete tasks and make deposits to improve.';
+                    } else if (this.userScore >= 50 && this.userScore <= 79) {
+                        this.category = 'fair';
+                        this.categoryName = 'Fair';
+                        this.categoryColor = 'text-yellow-600';
+                        this.range = '50-79';
+                        this.description = 'Your score is below the withdrawal threshold. Complete more tasks to improve.';
+                    } else if (this.userScore >= 80 && this.userScore <= 139) {
+                        this.category = 'good';
+                        this.categoryName = 'Good';
+                        this.categoryColor = 'text-blue-600';
+                        this.range = '80-139';
+                        this.description = 'Good credit score! You have full access to all platform features.';
+                    } else if (this.userScore >= 140 && this.userScore <= 200) {
+                        this.category = 'excellent';
+                        this.categoryName = 'Excellent';
+                        this.categoryColor = 'text-green-600';
+                        this.range = '140-200';
+                        this.description = 'Excellent credit score! You have access to premium features and best rates.';
+                    } else {
+                        // Handle scores above 200
+                        this.category = 'excellent';
+                        this.categoryName = 'Outstanding';
+                        this.categoryColor = 'text-green-600';
+                        this.range = '200+';
+                        this.description = 'Outstanding credit score! You are a valued premium member.';
+                    }
+                }
+
+                updateDisplay() {
+                    // Update score circle
+                    const scoreCircle = document.getElementById('scoreCircle');
+                    const progressPercent = Math.min((this.userScore / this.maxScore) * 100, 100);
+
+                    scoreCircle.className = `score-circle w-48 h-48 md:w-48 md:h-48 score-animation ${this.category}`;
+                    scoreCircle.style.setProperty('--progress-percent', `${progressPercent}%`);
+
+                    // Update text elements
+                    document.getElementById('scoreValue').textContent = this.userScore;
+
+                    const categoryElement = document.getElementById('scoreCategory');
+                    categoryElement.textContent = this.categoryName;
+                    categoryElement.className = `text-lg md:text-xl font-semibold mb-1 ${this.categoryColor}`;
+
+                    document.getElementById('scoreRange').textContent = this.range;
+                    document.getElementById('scorePercentage').textContent = `${progressPercent.toFixed(1)}% of maximum`;
+                    document.getElementById('scoreDescription').textContent = this.description;
+                }
+
+                updateRangeHighlight() {
+                    // Reset all ranges
+                    const ranges = ['poor', 'fair', 'good', 'excellent'];
+                    ranges.forEach(range => {
+                        const element = document.getElementById(`range-${range}`);
+                        element.className = `flex items-center justify-between p-3 bg-${range === 'poor' ? 'red' : range === 'fair' ? 'yellow' : range === 'good' ? 'blue' : 'green'}-50 rounded-lg border border-transparent`;
+                        element.querySelector('span:last-child').textContent = 'Below Range';
+                        element.querySelector('span:last-child').className = `text-xs text-${range === 'poor' ? 'red' : range === 'fair' ? 'yellow' : range === 'good' ? 'blue' : 'green'}-600`;
+                    });
+
+                    // Highlight current range
+                    const currentRange = document.getElementById(`range-${this.category}`);
+                    if (currentRange) {
+                        currentRange.className = `flex items-center justify-between p-3 bg-${this.category === 'poor' ? 'red' : this.category === 'fair' ? 'yellow' : this.category === 'good' ? 'blue' : 'green'}-100 rounded-lg border-2 border-${this.category === 'poor' ? 'red' : this.category === 'fair' ? 'yellow' : this.category === 'good' ? 'blue' : 'green'}-300`;
+                        currentRange.querySelector('span:last-child').textContent = 'Your Score';
+                        currentRange.querySelector('span:last-child').className = `text-xs text-${this.category === 'poor' ? 'red' : this.category === 'fair' ? 'yellow' : this.category === 'good' ? 'blue' : 'green'}-700 font-semibold`;
+                    }
+                }
+
+                showWithdrawalWarning() {
+                    const warningElement = document.getElementById('withdrawalWarning');
+                    if (this.userScore < 80) {
+                        warningElement.classList.remove('hidden');
+                    } else {
+                        warningElement.classList.add('hidden');
+                    }
+                }
+
+                updateActionButtons() {
+                    const actionButtons = document.getElementById('actionButtons');
+                    let buttonsHTML = '';
+
+                    if (this.userScore < 80) {
+                        buttonsHTML = `
+                            <button class="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
+                                <i class="fas fa-tasks mr-2"></i>Complete Tasks
+                            </button>
+                            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
+                                <i class="fas fa-plus mr-2"></i>Make Deposit
+                            </button>
+                        `;
+                    } else if (this.userScore < 140) {
+                        buttonsHTML = `
+                            <button class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
+                                <i class="fas fa-chart-line mr-2"></i>Improve Score
+                            </button>
+                        `;
+                    } else {
+                        buttonsHTML = `
+                            <div class="text-center p-3 bg-green-50 rounded-lg">
+                                <i class="fas fa-trophy text-green-600 text-2xl mb-2"></i>
+                                <p class="text-green-700 font-medium text-sm">Congratulations!</p>
+                                <p class="text-green-600 text-xs">You have an excellent credit score</p>
+                            </div>
+                        `;
+                    }
+
+                    actionButtons.innerHTML = buttonsHTML;
+                }
+
+                // Method to update score (can be called from backend)
+                updateScore(newScore) {
+                    this.userScore = parseInt(newScore) || 0;
+                    this.init();
+                }
+            }
+
+            // Initialize the credit score system when page loads
+            document.addEventListener('DOMContentLoaded', function () {
+                // Get user score from the template (Flask/Jinja2)
+                const userScore = document.getElementById('scoreValue').textContent;
+                window.creditScoreSystem = new CreditScoreSystem(userScore);
+            });
+
+            // Function to manually update score (for admin/testing purposes)
+            function updateCreditScore(newScore) {
+                if (window.creditScoreSystem) {
+                    window.creditScoreSystem.updateScore(newScore);
+                }
+            }
+        </script>
     </body>
 
 </html>

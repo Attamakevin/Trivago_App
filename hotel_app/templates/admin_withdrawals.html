@@ -1,4 +1,4 @@
-<!-- FIXED WITHDRAWAL TEMPLATE (admin_withdrawals.html) -->
+<!-- UPDATED WITHDRAWAL TEMPLATE (admin_withdrawals.html) -->
 {% extends "admin_base.html" %}
 
 {% block title %}Withdrawal Management{% endblock %}
@@ -14,13 +14,19 @@
         <form method="GET" class="d-flex">
             <select name="status" class="form-select me-2">
                 <option value="">All Status</option>
-                <option value="pending" {{ 'selected' if status_filter == 'pending' }}>Pending</option>
-                <option value="approved" {{ 'selected' if status_filter == 'approved' }}>Approved</option>
-                <option value="rejected" {{ 'selected' if status_filter == 'rejected' }}>Rejected</option>
+                <option value="Pending" {{ 'selected' if current_status=='Pending' }}>Pending</option>
+                <option value="Approved" {{ 'selected' if current_status=='Approved' }}>Approved</option>
+                <option value="Rejected" {{ 'selected' if current_status=='Rejected' }}>Rejected</option>
             </select>
             <button type="submit" class="btn btn-outline-primary">Filter</button>
         </form>
     </div>
+</div>
+
+<!-- Debug info (remove after testing) -->
+<div class="alert alert-info">
+    <strong>Debug:</strong> Found {{ withdrawals.items|length }} withdrawals on this page.
+    Total: {{ withdrawals.total if withdrawals.total else 'Unknown' }}
 </div>
 
 <!-- Withdrawals Table -->
@@ -33,8 +39,8 @@
                         <th>ID</th>
                         <th>User</th>
                         <th>Amount</th>
-                        <th>Withdrawal Method</th>
-                        <th>Account Details</th>
+                        <th>Network</th>
+                        <th>Wallet Address</th>
                         <th>Status</th>
                         <th>Date</th>
                         <th>Actions</th>
@@ -44,48 +50,81 @@
                     {% for withdrawal in withdrawals.items %}
                     <tr>
                         <td>{{ withdrawal.id }}</td>
-                        <td>{{ withdrawal.user.contact if withdrawal.user else 'Unknown' }}</td>
-                        <td>${{ "%.2f"|format(withdrawal.amount) }}</td>
-                        <td>{{ withdrawal.withdrawal_method or 'N/A' }}</td>
-                        <td>{{ withdrawal.account_details or 'N/A' }}</td>
                         <td>
-                            <span class="badge bg-{{ 'warning' if withdrawal.status == 'Pending' else ('success' if withdrawal.status == 'Approved' else 'danger') }}">
+                            {% if withdrawal.user_id %}
+                            {% set user = withdrawal.user if withdrawal.user else 'Loading...' %}
+                            {{ user.nickname if user and user.nickname else user.contact if user and user.contact else 'User #' + withdrawal.user_id|string }}
+                            {% else %}
+                            Unknown User
+                            {% endif %}
+                        </td>
+                        <td>£{{ "%.2f"|format(withdrawal.amount) }}</td>
+                        <td>{{ withdrawal.network or 'N/A' }}</td>
+                        <td>
+                            {% if withdrawal.wallet_address %}
+                            <div class="wallet-address-container">
+                                <div class="input-group input-group-sm" style="max-width: 300px;">
+                                    <input type="text" class="form-control font-monospace"
+                                        value="{{ withdrawal.wallet_address }}" readonly id="wallet-{{ withdrawal.id }}"
+                                        style="font-size: 12px; background-color: #f8f9fa;">
+                                    <button class="btn btn-outline-secondary" type="button"
+                                        onclick="copyToClipboard('wallet-{{ withdrawal.id }}', this)"
+                                        title="Copy wallet address">
+                                        <i class="fas fa-copy"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            {% else %}
+                            <span class="text-muted">N/A</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <span
+                                class="badge bg-{{ 'warning' if withdrawal.status == 'Pending' else ('success' if withdrawal.status == 'Approved' else 'danger') }}">
                                 {{ withdrawal.status }}
                             </span>
                         </td>
-                        <td>{{ withdrawal.created_at.strftime('%Y-%m-%d %H:%M') if withdrawal.created_at else 'N/A' }}</td>
+                        <td>{{ withdrawal.created_at.strftime('%Y-%m-%d %H:%M') if withdrawal.created_at else 'N/A' }}
+                        </td>
                         <td>
                             {% if withdrawal.status == 'Pending' %}
                             <div class="btn-group" role="group">
                                 <!-- Approve Form -->
-                                <form method="POST" action="{{ url_for('approve_withdrawal', withdrawal_id=withdrawal.id) }}" class="d-inline">
+                                <form method="POST"
+                                    action="{{ url_for('approve_withdrawal', withdrawal_id=withdrawal.id) }}"
+                                    class="d-inline">
                                     {% if csrf_token %}
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     {% endif %}
-                                    <input type="hidden" name="admin_notes" value="Approved by admin"/>
-                                    <input type="hidden" name="transaction_hash" value=""/>
-                                    <input type="hidden" name="transaction_fee" value="0"/>
-                                    <button type="submit" class="btn btn-success btn-sm" 
-                                            onclick="return confirm('Are you sure you want to approve this withdrawal of ${{ withdrawal.amount }}?')">
+                                    <input type="hidden" name="admin_notes" value="Approved by admin" />
+                                    <input type="hidden" name="transaction_hash" value="" />
+                                    <input type="hidden" name="transaction_fee" value="0" />
+                                    <button type="submit" class="btn btn-success btn-sm"
+                                        onclick="return confirm('Are you sure you want to approve this withdrawal of £{{ withdrawal.amount }}?')">
                                         Approve
                                     </button>
                                 </form>
-                                
+
                                 <!-- Reject Form -->
-                                <form method="POST" action="{{ url_for('reject_withdrawal', withdrawal_id=withdrawal.id) }}" class="d-inline">
+                                <form method="POST"
+                                    action="{{ url_for('reject_withdrawal', withdrawal_id=withdrawal.id) }}"
+                                    class="d-inline">
                                     {% if csrf_token %}
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
                                     {% endif %}
-                                    <input type="hidden" name="admin_notes" value="Rejected by admin"/>
-                                    <input type="hidden" name="rejection_reason" value="Admin decision"/>
-                                    <button type="submit" class="btn btn-danger btn-sm" 
-                                            onclick="return confirm('Are you sure you want to reject this withdrawal of ${{ withdrawal.amount }}?')">
+                                    <input type="hidden" name="admin_notes" value="Rejected by admin" />
+                                    <input type="hidden" name="rejection_reason" value="Admin decision" />
+                                    <button type="submit" class="btn btn-danger btn-sm"
+                                        onclick="return confirm('Are you sure you want to reject this withdrawal of £{{ withdrawal.amount }}?')">
                                         Reject
                                     </button>
                                 </form>
                             </div>
                             {% else %}
-                            <span class="text-muted">No actions available</span>
+                            <span class="text-muted">{{ withdrawal.status }}</span>
+                            {% if withdrawal.transaction_hash %}
+                            <br><small class="text-muted">TX: {{ withdrawal.transaction_hash[:10] }}...</small>
+                            {% endif %}
                             {% endif %}
                         </td>
                     </tr>
@@ -106,35 +145,174 @@
     <ul class="pagination justify-content-center">
         {% if withdrawals.has_prev %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('view_withdrawals', page=withdrawals.prev_num, status=status_filter) }}">Previous</a>
+            <a class="page-link"
+                href="{{ url_for('view_withdrawals', page=withdrawals.prev_num, status=current_status) }}">Previous</a>
         </li>
         {% endif %}
 
         {% for page_num in withdrawals.iter_pages() %}
-            {% if page_num %}
-                {% if page_num != withdrawals.page %}
-                <li class="page-item">
-                    <a class="page-link" href="{{ url_for('view_withdrawals', page=page_num, status=status_filter) }}">{{ page_num }}</a>
-                </li>
-                {% else %}
-                <li class="page-item active">
-                    <span class="page-link">{{ page_num }}</span>
-                </li>
-                {% endif %}
-            {% else %}
-            <li class="page-item disabled">
-                <span class="page-link">…</span>
-            </li>
-            {% endif %}
+        {% if page_num %}
+        {% if page_num != withdrawals.page %}
+        <li class="page-item">
+            <a class="page-link"
+                href="{{ url_for('view_withdrawals', page=page_num, status=current_status) }}">{{ page_num }}</a>
+        </li>
+        {% else %}
+        <li class="page-item active">
+            <span class="page-link">{{ page_num }}</span>
+        </li>
+        {% endif %}
+        {% else %}
+        <li class="page-item disabled">
+            <span class="page-link">…</span>
+        </li>
+        {% endif %}
         {% endfor %}
 
         {% if withdrawals.has_next %}
         <li class="page-item">
-            <a class="page-link" href="{{ url_for('view_withdrawals', page=withdrawals.next_num, status=status_filter) }}">Next</a>
+            <a class="page-link"
+                href="{{ url_for('view_withdrawals', page=withdrawals.next_num, status=current_status) }}">Next</a>
         </li>
         {% endif %}
     </ul>
 </nav>
 {% endif %}
+
+<!-- Toast Notification for Copy Success -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <div id="copyToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <i class="fas fa-check-circle text-success me-2"></i>
+            <strong class="me-auto">Success</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+            Wallet address copied to clipboard!
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyToClipboard(inputId, button) {
+        const input = document.getElementById(inputId);
+        const originalIcon = button.innerHTML;
+
+        // Select and copy the text
+        input.select();
+        input.setSelectionRange(0, 99999); // For mobile devices
+
+        try {
+            // Modern clipboard API
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(input.value).then(function () {
+                    showCopySuccess(button, originalIcon);
+                }).catch(function (err) {
+                    // Fallback to execCommand
+                    fallbackCopy(input, button, originalIcon);
+                });
+            } else {
+                // Fallback for older browsers
+                fallbackCopy(input, button, originalIcon);
+            }
+        } catch (err) {
+            fallbackCopy(input, button, originalIcon);
+        }
+    }
+
+    function fallbackCopy(input, button, originalIcon) {
+        try {
+            const successful = document.execCommand('copy');
+            if (successful) {
+                showCopySuccess(button, originalIcon);
+            } else {
+                showCopyError(button, originalIcon);
+            }
+        } catch (err) {
+            showCopyError(button, originalIcon);
+        }
+    }
+
+    function showCopySuccess(button, originalIcon) {
+        // Change button icon to checkmark
+        button.innerHTML = '<i class="fas fa-check text-success"></i>';
+        button.classList.add('btn-success');
+        button.classList.remove('btn-outline-secondary');
+
+        // Show toast notification
+        const toastElement = document.getElementById('copyToast');
+        const toast = new bootstrap.Toast(toastElement);
+        toast.show();
+
+        // Reset button after 2 seconds
+        setTimeout(function () {
+            button.innerHTML = originalIcon;
+            button.classList.remove('btn-success');
+            button.classList.add('btn-outline-secondary');
+        }, 2000);
+    }
+
+    function showCopyError(button, originalIcon) {
+        // Change button icon to error
+        button.innerHTML = '<i class="fas fa-times text-danger"></i>';
+        button.classList.add('btn-danger');
+        button.classList.remove('btn-outline-secondary');
+
+        // Reset button after 2 seconds
+        setTimeout(function () {
+            button.innerHTML = originalIcon;
+            button.classList.remove('btn-danger');
+            button.classList.add('btn-outline-secondary');
+        }, 2000);
+
+        // Fallback: show alert
+        alert('Failed to copy to clipboard. Please select and copy manually.');
+    }
+
+    // Optional: Add hover effect for better UX
+    document.addEventListener('DOMContentLoaded', function () {
+        const walletInputs = document.querySelectorAll('.wallet-address-container input');
+        walletInputs.forEach(function (input) {
+            input.addEventListener('click', function () {
+                this.select();
+            });
+        });
+    });
+</script>
+
+<style>
+    .wallet-address-container {
+        min-width: 280px;
+    }
+
+    .wallet-address-container .form-control {
+        border-right: none;
+        padding-right: 8px;
+    }
+
+    .wallet-address-container .btn {
+        border-left: none;
+        padding: 0.25rem 0.5rem;
+    }
+
+    .wallet-address-container .btn:hover {
+        background-color: #e9ecef;
+    }
+
+    .toast-container {
+        z-index: 1060;
+    }
+
+    /* Responsive design for mobile */
+    @media (max-width: 768px) {
+        .wallet-address-container {
+            min-width: 200px;
+        }
+
+        .wallet-address-container .form-control {
+            font-size: 11px;
+        }
+    }
+</style>
 
 {% endblock %}

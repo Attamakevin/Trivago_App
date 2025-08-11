@@ -1,243 +1,669 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="./static/images/ico.png" type="image/x-icon">
-    <title>trivago - Rate hotels worldwide</title>
-    <link rel="stylesheet" href="./static/css/main.css">
-    <link rel="stylesheet" href="./static/css/translate.css">
-    <!-- TailwindCSS -->
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FlatPickr -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <!-- Country-list & FlagIcon -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-        rel="stylesheet">
-    <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-    <!-- Custom Script -->
-    <script src="./static/js/main.js"></script>
-    <script src="./static/js/translate.js"></script>
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="shortcut icon" href="./static/images/ico.png" type="image/x-icon">
+        <title>trivago - Rate hotels worldwide</title>
+        <link rel="stylesheet" href="./static/css/main.css">
+        <link rel="stylesheet" href="./static/css/translate.css">
+        <!-- TailwindCSS -->
+        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <!-- FlatPickr -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <!-- country-list & FlagIcon -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
+        <!-- Iconify for flags -->
+        <script src="https://code.iconify.design/3/3.1.0/iconify.min.js"></script>
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+            rel="stylesheet">
+        <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+        <!-- Custom Script -->
+        <script src="./static/js/main.js"></script>
+        <script src="./static/js/translate.js"></script>
 
-<body class="min-h-screen">
-    <!-- Main Container -->
-    <div class="min-h-screen flex">
-        <!-- Left Side - Hero Section -->
-        <div
-            class="hidden lg:flex lg:w-1/2 bg-[linear-gradient(135deg,#0066cc_0%,#004499_100%)] hero-pattern relative overflow-hidden">
-            <div class="absolute inset-0 bg-black bg-opacity-20"></div>
-            <div class="relative z-10 flex flex-col justify-center items-center p-12 text-white">
-                <!-- Floating Elements -->
-                <div class="absolute top-20 left-20 w-20 h-20 bg-white bg-opacity-10 rounded-full float-animation">
+        <style>
+
+        </style>
+    </head>
+
+    <body class="min-h-screen">
+        <!-- Main Container -->
+        <div class="min-h-screen flex">
+            <!-- Left Side - Hero Section -->
+            <div
+                class="hidden lg:flex lg:w-1/2 bg-[linear-gradient(135deg,#0066cc_0%,#004499_100%)] hero-pattern relative overflow-hidden">
+                <div class="absolute inset-0 bg-black bg-opacity-20"></div>
+                <div class="relative z-10 flex flex-col justify-center items-center p-12 text-white">
+                    <!-- Floating Elements -->
+                    <div class="absolute top-20 left-20 w-20 h-20 bg-white bg-opacity-10 rounded-full float-animation">
+                    </div>
+                    <div class="absolute bottom-32 right-16 w-16 h-16 bg-white bg-opacity-10 rounded-full float-animation"
+                        style="animation-delay: -2s;"></div>
+                    <div class="absolute top-1/3 right-1/4 w-12 h-12 bg-white bg-opacity-10 rounded-full float-animation"
+                        style="animation-delay: -4s;"></div>
+
+                    <!-- Content -->
+                    <div class="text-center max-w-md">
+                        <div class="mb-8">
+                            <!-- Trivago Logo Placeholder -->
+                            <div
+                                class="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                                <img src="./static/images/logo.png" alt="">
+                            </div>
+                            <h1 data-translate class="text-4xl font-bold mb-4">Find Your Perfect Stay</h1>
+                            <p data-translate class="text-xl text-blue-100">Rate hotels from over 100 sites and earn amazing bonuses
+                            </p>
+                        </div>
+
+                        <!-- Features -->
+                        <div class="space-y-4 text-left">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <span data-translate class="text-lg">Free ratings</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <span data-translate class="text-lg">Best rewards guarantee</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fill-rule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <span data-translate class="text-lg">Exclusive member deals</span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="absolute bottom-32 right-16 w-16 h-16 bg-white bg-opacity-10 rounded-full float-animation"
-                    style="animation-delay: -2s;"></div>
-                <div class="absolute top-1/3 right-1/4 w-12 h-12 bg-white bg-opacity-10 rounded-full float-animation"
-                    style="animation-delay: -4s;"></div>
+            </div>
 
-                <!-- Content -->
-                <div class="text-center max-w-md">
-                    <div class="mb-8">
-                        <!-- Trivago Logo Placeholder -->
+            <!-- Right Side - Auth Forms -->
+            <div class="w-full lg:w-1/2 flex items-center justify-center px-5 py-8 bg-gray-50">
+                <div class="w-full max-w-md">
+                    <!-- Mobile Logo -->
+                    <div class="lg:hidden text-center mb-8">
                         <div
-                            class="w-24 h-24 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl">
+                            class="w-16 h-16 bg-white rounded-xl shadow-md flex items-center justify-center mx-auto mb-4">
                             <img src="./static/images/logo.png" alt="">
                         </div>
-                        <h1 class="text-4xl font-bold mb-4">Find Your Perfect Stay</h1>
-                        <p class="text-xl text-blue-100">Rate hotels from over 100 sites and earn amazing bonuses
-                        </p>
+                        <h1 data-translate class="text-2xl font-bold text-gray-900">Welcome to Trivago</h1>
                     </div>
 
-                    <!-- Features -->
-                    <div class="space-y-4 text-left">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <span class="text-lg">Free ratings</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <span class="text-lg">Best rewards guarantee</span>
-                        </div>
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                                <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                                        clip-rule="evenodd" />
-                                </svg>
-                            </div>
-                            <span class="text-lg">Exclusive member deals</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Right Side - Auth Forms -->
-        <div class="w-full lg:w-1/2 flex items-center justify-center p-8 bg-gray-50">
-            <div class="w-full max-w-md">
-                <!-- Mobile Logo -->
-                <div class="lg:hidden text-center mb-8">
-                    <div
-                        class="w-16 h-16 bg-white rounded-xl shadow-md flex items-center justify-center mx-auto mb-4">
-                        <img src="./static/images/logo.png" alt="">
-                    </div>
-                    <h1 class="text-2xl font-bold text-gray-900">Welcome to Trivago</h1>
-                </div>
-
-                <!-- Auth Card -->
-                <div class="glass-card rounded-2xl shadow-xl p-8 slide-in">
-                    <!-- Form Toggle -->
-                    <div class="flex mb-8 bg-gray-100 rounded-lg p-1">
-                        <button id="loginTab" onclick="switchTab('login')"
-                            class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 tab-button {% if form_type == 'login' %}bg-white text-blue-600 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
-                            Sign In
-                        </button>
-                        <button id="signupTab" onclick="switchTab('signup')"
-                            class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 tab-button {% if form_type == 'register' %}bg-white text-green-600 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
-                            Sign Up
-                        </button>
-                    </div>
-
-                    <!-- Flash Messages (shown for both forms) -->
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                    <div class="mb-4">
-                        {% for category, message in messages %}
-                        <div class="p-3 rounded-lg {% if category == 'success' %}bg-green-100 text-green-800{% elif category == 'warning' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
-                            {{ message }}
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    {% endwith %}
-
-                    <!-- Login Form -->
-                    <div id="loginForm" class="{% if form_type == 'register' %}hidden{% endif %}">
-                        <div class="text-center mb-6">
-                            <h2 class="text-2xl font-bold text-gray-900">Welcome Back</h2>
-                            <p class="text-gray-600 mt-2">Sign in to access exclusive deals</p>
-                        </div>
-
-                        <form class="space-y-4" action="{{ url_for('login_post') }}" method="POST">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                                <input type="text" name="phone" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="Enter your phone number">
-                            </div>
-
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                                <input type="password" name="password" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                                    placeholder="Enter your password">
-                            </div>
-
-                            <div class="flex items-center justify-between">
-                                <label class="flex items-center">
-                                    <input type="checkbox"
-                                        class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                    <span class="ml-2 text-sm text-gray-600">Remember me</span>
-                                </label>
-                                <a href="#" class="text-sm text-blue-600 hover:text-blue-500">Forgot password?</a>
-                            </div>
-
-                            <button type="submit"
-                                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200">
+                    <!-- Auth Card -->
+                    <div class="glass-card rounded-2xl shadow-xl p-8 slide-in">
+                        <!-- Form Toggle -->
+                        <div class="flex mb-8 bg-gray-100 rounded-lg p-1">
+                            <button id="loginTab" onclick="switchTab('login')"
+                                data-translate class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 tab-button {% if form_type == 'login' %}bg-white text-blue-600 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
                                 Sign In
                             </button>
-                        </form>
-                    </div>
-
-                    <!-- Signup Form -->
-                    <div id="signupForm" class="{% if form_type == 'login' %}hidden{% endif %}">
-                        <div class="text-center mb-6">
-                            <h2 class="text-2xl font-bold text-gray-900">Create Account</h2>
-                            <p class="text-gray-600 mt-2">Join millions of happy travelers</p>
+                            <button id="signupTab" onclick="switchTab('signup')"
+                                data-translate class="flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 tab-button {% if form_type == 'register' %}bg-white text-green-600 shadow-sm{% else %}text-gray-500 hover:text-gray-700{% endif %}">
+                                Sign Up
+                            </button>
                         </div>
 
-                        <form class="space-y-4" action="{{ url_for('register_post') }}" method="POST">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
-                                <input type="text" name="phone" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                    placeholder="Enter your phone number">
+                        <!-- Flash Messages (shown for both forms) -->
+                        {% with messages = get_flashed_messages(with_categories=true) %}
+                        {% if messages %}
+                        <div class="mb-4">
+                            {% for category, message in messages %}
+                            <div
+                                data-translate class="p-3 rounded-lg {% if category == 'success' %}bg-green-100 text-green-800{% elif category == 'warning' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
+                                {{ message }}
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                        {% endwith %}
+
+                        <!-- Login Form -->
+                        <div id="loginForm" class="{% if form_type == 'register' %}hidden{% endif %}">
+                            <div class="text-center mb-6">
+                                <h2 data-translate class="text-2xl font-bold text-gray-900">Welcome Back</h2>
+                                <p data-translate class="text-gray-600 mt-2">Sign in to access exclusive deals</p>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Password</label>
-                                <input type="password" name="password" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                    placeholder="Create password">
+                            <form class="space-y-4" action="{{ url_for('login_post') }}" method="POST"
+                                onsubmit="return updatePhoneField('login')">
+                                <div>
+                                    <label data-translate class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                    <div class="select-box" id="loginSelectBox">
+                                        <div class="selected-option">
+                                            <div id="loginSelectedOption">
+                                                <span class="iconify" data-icon="flag:us-4x3"></span>
+                                                <strong>+</strong>
+                                            </div>
+                                            <input type="tel" name="display_phone" placeholder="Phone Number"
+                                                id="loginPhone">
+                                        </div>
+                                        <div class="options" id="loginOptions">
+                                            <input type="text" class="search-box" placeholder="Search country Name"
+                                                id="loginSearchBox">
+                                            <ol id="logincountryLists"></ol>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="loginFullPhone" name="phone">
+                                </div>
+
+                                <div>
+                                    <label data-translate class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                                    <input type="password" name="password" required
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                        placeholder="Enter your password">
+                                </div>
+
+                                <div class="flex items-center justify-between">
+                                    <label class="flex items-center">
+                                        <input type="checkbox"
+                                            class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                        <span data-translate class="ml-2 text-sm text-gray-600">Remember me</span>
+                                    </label>
+                                    <!-- <a href="#" data-translate class="text-sm text-blue-600 hover:text-blue-500">Forgot password?</a> -->
+                                </div>
+
+                                <button type="submit"
+                                    data-translate class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200">
+                                    Sign In
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Signup Form -->
+                        <div id="signupForm" class="signup-form {% if form_type == 'login' %}hidden{% endif %}">
+                            <div class="text-center mb-6">
+                                <h2 data-translate class="text-2xl font-bold text-gray-900">Create Account</h2>
+                                <p data-translate class="text-gray-600 mt-2">Join millions of happy travelers</p>
                             </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
-                                <input type="password" name="confirm_password" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                    placeholder="Confirm password">
-                            </div>
+                            <form class="space-y-4" action="{{ url_for('register_post') }}" method="POST"
+                                onsubmit="return updatePhoneField('signup')">
+                                <div>
+                                    <label data-translate class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                                    <div class="select-box" id="signupSelectBox">
+                                        <div class="selected-option">
+                                            <div id="signupSelectedOption">
+                                                <span class="iconify" data-icon="flag:us-4x3"></span>
+                                                <strong>+</strong>
+                                            </div>
+                                            <input type="tel" name="display_phone" placeholder="Phone Number"
+                                                id="signupPhone">
+                                        </div>
+                                        <div class="options" id="signupOptions">
+                                            <input type="text" class="search-box" placeholder="Search country Name"
+                                                id="signupSearchBox">
+                                            <ol id="signupcountryLists"></ol>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" id="signupFullPhone" name="phone">
+                                </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">Invitation Code</label>
-                                <input type="text" name="invitation_code" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                    placeholder="Enter your invitation code">
-                            </div>
+                                <div>
+                                    <label data-translate class="block text-sm font-medium text-gray-700 mb-2">Password</label>
+                                    <input type="password" name="password" required
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                        placeholder="Create password">
+                                </div>
 
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-2">
-                                    Captcha: <strong class="text-blue-600">{{ captcha}}</strong>
-                                </label>
-                                <input type="text" name="captcha" required
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                                    placeholder="Enter captcha above">
-                            </div>
+                                <div>
+                                    <label data-translate class="block text-sm font-medium text-gray-700 mb-2">Confirm Password</label>
+                                    <input type="password" name="confirm_password" required
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                        placeholder="Confirm password">
+                                </div>
 
-                            <button type="submit"
-                                class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200">
-                                Create Account
-                            </button>
-                        </form>
-                    </div>
+                                <div>
+                                    <label data-translate class="block text-sm font-medium text-gray-700 mb-2">Invitation Code</label>
+                                    <input type="text" name="invitation_code" required
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                        placeholder="Enter your invitation code">
+                                </div>
 
-                    <!-- Back to Home -->
-                    <div class="mt-6 text-center">
-                        <a href="{{ url_for('home') }}"
-                            class="text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                            </svg>
-                            Back to Home
-                        </a>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">
+                                        Captcha: <strong class="text-blue-600">{{ captcha}}</strong>
+                                    </label>
+                                    <input type="text" name="captcha" required
+                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                                        placeholder="Enter captcha above">
+                                </div>
+
+                                <button type="submit"
+                                     data-translate class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors duration-200">
+                                    Create Account
+                                </button>
+                            </form>
+                        </div>
+
+                        <!-- Back to Home -->
+                        <div class="mt-6 text-center">
+                            <a href="{{ url_for('home') }}"
+                                data-translate class="text-sm text-gray-500 hover:text-gray-700 flex items-center justify-center gap-2">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                                Back to Home
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
-</body>
+
+        <script>
+            // 253 countries
+                const countries = [
+                    { name: "Afghanistan", code: "AF", phone: 93 },
+                    { name: "Aland Islands", code: "AX", phone: 358 },
+                    { name: "Albania", code: "AL", phone: 355 },
+                    { name: "Algeria", code: "DZ", phone: 213 },
+                    { name: "American Samoa", code: "AS", phone: 1684 },
+                    { name: "Andorra", code: "AD", phone: 376 },
+                    { name: "Angola", code: "AO", phone: 244 },
+                    { name: "Anguilla", code: "AI", phone: 1264 },
+                    { name: "Antarctica", code: "AQ", phone: 672 },
+                    { name: "Antigua and Barbuda", code: "AG", phone: 1268 },
+                    { name: "Argentina", code: "AR", phone: 54 },
+                    { name: "Armenia", code: "AM", phone: 374 },
+                    { name: "Aruba", code: "AW", phone: 297 },
+                    { name: "Australia", code: "AU", phone: 61 },
+                    { name: "Austria", code: "AT", phone: 43 },
+                    { name: "Azerbaijan", code: "AZ", phone: 994 },
+                    { name: "Bahamas", code: "BS", phone: 1242 },
+                    { name: "Bahrain", code: "BH", phone: 973 },
+                    { name: "Bangladesh", code: "BD", phone: 880 },
+                    { name: "Barbados", code: "BB", phone: 1246 },
+                    { name: "Belarus", code: "BY", phone: 375 },
+                    { name: "Belgium", code: "BE", phone: 32 },
+                    { name: "Belize", code: "BZ", phone: 501 },
+                    { name: "Benin", code: "BJ", phone: 229 },
+                    { name: "Bermuda", code: "BM", phone: 1441 },
+                    { name: "Bhutan", code: "BT", phone: 975 },
+                    { name: "Bolivia", code: "BO", phone: 591 },
+                    { name: "Bonaire, Sint Eustatius and Saba", code: "BQ", phone: 599 },
+                    { name: "Bosnia and Herzegovina", code: "BA", phone: 387 },
+                    { name: "Botswana", code: "BW", phone: 267 },
+                    { name: "Bouvet Island", code: "BV", phone: 55 },
+                    { name: "Brazil", code: "BR", phone: 55 },
+                    { name: "British Indian Ocean Territory", code: "IO", phone: 246 },
+                    { name: "Brunei Darussalam", code: "BN", phone: 673 },
+                    { name: "Bulgaria", code: "BG", phone: 359 },
+                    { name: "Burkina Faso", code: "BF", phone: 226 },
+                    { name: "Burundi", code: "BI", phone: 257 },
+                    { name: "Cambodia", code: "KH", phone: 855 },
+                    { name: "Cameroon", code: "CM", phone: 237 },
+                    { name: "Canada", code: "CA", phone: 1 },
+                    { name: "Cape Verde", code: "CV", phone: 238 },
+                    { name: "Cayman Islands", code: "KY", phone: 1345 },
+                    { name: "Central African Republic", code: "CF", phone: 236 },
+                    { name: "Chad", code: "TD", phone: 235 },
+                    { name: "Chile", code: "CL", phone: 56 },
+                    { name: "China", code: "CN", phone: 86 },
+                    { name: "Christmas Island", code: "CX", phone: 61 },
+                    { name: "Cocos (Keeling) Islands", code: "CC", phone: 672 },
+                    { name: "Colombia", code: "CO", phone: 57 },
+                    { name: "Comoros", code: "KM", phone: 269 },
+                    { name: "Congo", code: "CG", phone: 242 },
+                    { name: "Congo, Democratic Republic of the Congo", code: "CD", phone: 242 },
+                    { name: "Cook Islands", code: "CK", phone: 682 },
+                    { name: "Costa Rica", code: "CR", phone: 506 },
+                    { name: "Cote D'Ivoire", code: "CI", phone: 225 },
+                    { name: "Croatia", code: "HR", phone: 385 },
+                    { name: "Cuba", code: "CU", phone: 53 },
+                    { name: "Curacao", code: "CW", phone: 599 },
+                    { name: "Cyprus", code: "CY", phone: 357 },
+                    { name: "Czech Republic", code: "CZ", phone: 420 },
+                    { name: "Denmark", code: "DK", phone: 45 },
+                    { name: "Djibouti", code: "DJ", phone: 253 },
+                    { name: "Dominica", code: "DM", phone: 1767 },
+                    { name: "Dominican Republic", code: "DO", phone: 1809 },
+                    { name: "Ecuador", code: "EC", phone: 593 },
+                    { name: "Egypt", code: "EG", phone: 20 },
+                    { name: "El Salvador", code: "SV", phone: 503 },
+                    { name: "Equatorial Guinea", code: "GQ", phone: 240 },
+                    { name: "Eritrea", code: "ER", phone: 291 },
+                    { name: "Estonia", code: "EE", phone: 372 },
+                    { name: "Ethiopia", code: "ET", phone: 251 },
+                    { name: "Falkland Islands (Malvinas)", code: "FK", phone: 500 },
+                    { name: "Faroe Islands", code: "FO", phone: 298 },
+                    { name: "Fiji", code: "FJ", phone: 679 },
+                    { name: "Finland", code: "FI", phone: 358 },
+                    { name: "France", code: "FR", phone: 33 },
+                    { name: "French Guiana", code: "GF", phone: 594 },
+                    { name: "French Polynesia", code: "PF", phone: 689 },
+                    { name: "French Southern Territories", code: "TF", phone: 262 },
+                    { name: "Gabon", code: "GA", phone: 241 },
+                    { name: "Gambia", code: "GM", phone: 220 },
+                    { name: "Georgia", code: "GE", phone: 995 },
+                    { name: "Germany", code: "DE", phone: 49 },
+                    { name: "Ghana", code: "GH", phone: 233 },
+                    { name: "Gibraltar", code: "GI", phone: 350 },
+                    { name: "Greece", code: "GR", phone: 30 },
+                    { name: "Greenland", code: "GL", phone: 299 },
+                    { name: "Grenada", code: "GD", phone: 1473 },
+                    { name: "Guadeloupe", code: "GP", phone: 590 },
+                    { name: "Guam", code: "GU", phone: 1671 },
+                    { name: "Guatemala", code: "GT", phone: 502 },
+                    { name: "Guernsey", code: "GG", phone: 44 },
+                    { name: "Guinea", code: "GN", phone: 224 },
+                    { name: "Guinea-Bissau", code: "GW", phone: 245 },
+                    { name: "Guyana", code: "GY", phone: 592 },
+                    { name: "Haiti", code: "HT", phone: 509 },
+                    { name: "Heard Island and McDonald Islands", code: "HM", phone: 0 },
+                    { name: "Holy See (Vatican City State)", code: "VA", phone: 39 },
+                    { name: "Honduras", code: "HN", phone: 504 },
+                    { name: "Hong Kong", code: "HK", phone: 852 },
+                    { name: "Hungary", code: "HU", phone: 36 },
+                    { name: "Iceland", code: "IS", phone: 354 },
+                    { name: "India", code: "IN", phone: 91 },
+                    { name: "Indonesia", code: "ID", phone: 62 },
+                    { name: "Iran, Islamic Republic of", code: "IR", phone: 98 },
+                    { name: "Iraq", code: "IQ", phone: 964 },
+                    { name: "Ireland", code: "IE", phone: 353 },
+                    { name: "Isle of Man", code: "IM", phone: 44 },
+                    { name: "Israel", code: "IL", phone: 972 },
+                    { name: "Italy", code: "IT", phone: 39 },
+                    { name: "Jamaica", code: "JM", phone: 1876 },
+                    { name: "Japan", code: "JP", phone: 81 },
+                    { name: "Jersey", code: "JE", phone: 44 },
+                    { name: "Jordan", code: "JO", phone: 962 },
+                    { name: "Kazakhstan", code: "KZ", phone: 7 },
+                    { name: "Kenya", code: "KE", phone: 254 },
+                    { name: "Kiribati", code: "KI", phone: 686 },
+                    { name: "Korea, Democratic People's Republic of", code: "KP", phone: 850 },
+                    { name: "Korea, Republic of", code: "KR", phone: 82 },
+                    { name: "Kosovo", code: "XK", phone: 383 },
+                    { name: "Kuwait", code: "KW", phone: 965 },
+                    { name: "Kyrgyzstan", code: "KG", phone: 996 },
+                    { name: "Lao People's Democratic Republic", code: "LA", phone: 856 },
+                    { name: "Latvia", code: "LV", phone: 371 },
+                    { name: "Lebanon", code: "LB", phone: 961 },
+                    { name: "Lesotho", code: "LS", phone: 266 },
+                    { name: "Liberia", code: "LR", phone: 231 },
+                    { name: "Libyan Arab Jamahiriya", code: "LY", phone: 218 },
+                    { name: "Liechtenstein", code: "LI", phone: 423 },
+                    { name: "Lithuania", code: "LT", phone: 370 },
+                    { name: "Luxembourg", code: "LU", phone: 352 },
+                    { name: "Macao", code: "MO", phone: 853 },
+                    { name: "Macedonia, the Former Yugoslav Republic of", code: "MK", phone: 389 },
+                    { name: "Madagascar", code: "MG", phone: 261 },
+                    { name: "Malawi", code: "MW", phone: 265 },
+                    { name: "Malaysia", code: "MY", phone: 60 },
+                    { name: "Maldives", code: "MV", phone: 960 },
+                    { name: "Mali", code: "ML", phone: 223 },
+                    { name: "Malta", code: "MT", phone: 356 },
+                    { name: "Marshall Islands", code: "MH", phone: 692 },
+                    { name: "Martinique", code: "MQ", phone: 596 },
+                    { name: "Mauritania", code: "MR", phone: 222 },
+                    { name: "Mauritius", code: "MU", phone: 230 },
+                    { name: "Mayotte", code: "YT", phone: 262 },
+                    { name: "Mexico", code: "MX", phone: 52 },
+                    { name: "Micronesia, Federated States of", code: "FM", phone: 691 },
+                    { name: "Moldova, Republic of", code: "MD", phone: 373 },
+                    { name: "Monaco", code: "MC", phone: 377 },
+                    { name: "Mongolia", code: "MN", phone: 976 },
+                    { name: "Montenegro", code: "ME", phone: 382 },
+                    { name: "Montserrat", code: "MS", phone: 1664 },
+                    { name: "Morocco", code: "MA", phone: 212 },
+                    { name: "Mozambique", code: "MZ", phone: 258 },
+                    { name: "Myanmar", code: "MM", phone: 95 },
+                    { name: "Namibia", code: "NA", phone: 264 },
+                    { name: "Nauru", code: "NR", phone: 674 },
+                    { name: "Nepal", code: "NP", phone: 977 },
+                    { name: "Netherlands", code: "NL", phone: 31 },
+                    { name: "Netherlands Antilles", code: "AN", phone: 599 },
+                    { name: "New Caledonia", code: "NC", phone: 687 },
+                    { name: "New Zealand", code: "NZ", phone: 64 },
+                    { name: "Nicaragua", code: "NI", phone: 505 },
+                    { name: "Niger", code: "NE", phone: 227 },
+                    { name: "Nigeria", code: "NG", phone: 234 },
+                    { name: "Niue", code: "NU", phone: 683 },
+                    { name: "Norfolk Island", code: "NF", phone: 672 },
+                    { name: "Northern Mariana Islands", code: "MP", phone: 1670 },
+                    { name: "Norway", code: "NO", phone: 47 },
+                    { name: "Oman", code: "OM", phone: 968 },
+                    { name: "Pakistan", code: "PK", phone: 92 },
+                    { name: "Palau", code: "PW", phone: 680 },
+                    { name: "Palestinian Territory, Occupied", code: "PS", phone: 970 },
+                    { name: "Panama", code: "PA", phone: 507 },
+                    { name: "Papua New Guinea", code: "PG", phone: 675 },
+                    { name: "Paraguay", code: "PY", phone: 595 },
+                    { name: "Peru", code: "PE", phone: 51 },
+                    { name: "Philippines", code: "PH", phone: 63 },
+                    { name: "Pitcairn", code: "PN", phone: 64 },
+                    { name: "Poland", code: "PL", phone: 48 },
+                    { name: "Portugal", code: "PT", phone: 351 },
+                    { name: "Puerto Rico", code: "PR", phone: 1787 },
+                    { name: "Qatar", code: "QA", phone: 974 },
+                    { name: "Reunion", code: "RE", phone: 262 },
+                    { name: "Romania", code: "RO", phone: 40 },
+                    { name: "Russian Federation", code: "RU", phone: 7 },
+                    { name: "Rwanda", code: "RW", phone: 250 },
+                    { name: "Saint Barthelemy", code: "BL", phone: 590 },
+                    { name: "Saint Helena", code: "SH", phone: 290 },
+                    { name: "Saint Kitts and Nevis", code: "KN", phone: 1869 },
+                    { name: "Saint Lucia", code: "LC", phone: 1758 },
+                    { name: "Saint Martin", code: "MF", phone: 590 },
+                    { name: "Saint Pierre and Miquelon", code: "PM", phone: 508 },
+                    { name: "Saint Vincent and the Grenadines", code: "VC", phone: 1784 },
+                    { name: "Samoa", code: "WS", phone: 684 },
+                    { name: "San Marino", code: "SM", phone: 378 },
+                    { name: "Sao Tome and Principe", code: "ST", phone: 239 },
+                    { name: "Saudi Arabia", code: "SA", phone: 966 },
+                    { name: "Senegal", code: "SN", phone: 221 },
+                    { name: "Serbia", code: "RS", phone: 381 },
+                    { name: "Serbia and Montenegro", code: "CS", phone: 381 },
+                    { name: "Seychelles", code: "SC", phone: 248 },
+                    { name: "Sierra Leone", code: "SL", phone: 232 },
+                    { name: "Singapore", code: "SG", phone: 65 },
+                    { name: "St Martin", code: "SX", phone: 721 },
+                    { name: "Slovakia", code: "SK", phone: 421 },
+                    { name: "Slovenia", code: "SI", phone: 386 },
+                    { name: "Solomon Islands", code: "SB", phone: 677 },
+                    { name: "Somalia", code: "SO", phone: 252 },
+                    { name: "South Africa", code: "ZA", phone: 27 },
+                    { name: "South Georgia and the South Sandwich Islands", code: "GS", phone: 500 },
+                    { name: "South Sudan", code: "SS", phone: 211 },
+                    { name: "Spain", code: "ES", phone: 34 },
+                    { name: "Sri Lanka", code: "LK", phone: 94 },
+                    { name: "Sudan", code: "SD", phone: 249 },
+                    { name: "Suriname", code: "SR", phone: 597 },
+                    { name: "Svalbard and Jan Mayen", code: "SJ", phone: 47 },
+                    { name: "Swaziland", code: "SZ", phone: 268 },
+                    { name: "Sweden", code: "SE", phone: 46 },
+                    { name: "Switzerland", code: "CH", phone: 41 },
+                    { name: "Syrian Arab Republic", code: "SY", phone: 963 },
+                    { name: "Taiwan, Province of China", code: "TW", phone: 886 },
+                    { name: "Tajikistan", code: "TJ", phone: 992 },
+                    { name: "Tanzania, United Republic of", code: "TZ", phone: 255 },
+                    { name: "Thailand", code: "TH", phone: 66 },
+                    { name: "Timor-Leste", code: "TL", phone: 670 },
+                    { name: "Togo", code: "TG", phone: 228 },
+                    { name: "Tokelau", code: "TK", phone: 690 },
+                    { name: "Tonga", code: "TO", phone: 676 },
+                    { name: "Trinidad and Tobago", code: "TT", phone: 1868 },
+                    { name: "Tunisia", code: "TN", phone: 216 },
+                    { name: "Turkey", code: "TR", phone: 90 },
+                    { name: "Turkmenistan", code: "TM", phone: 7370 },
+                    { name: "Turks and Caicos Islands", code: "TC", phone: 1649 },
+                    { name: "Tuvalu", code: "TV", phone: 688 },
+                    { name: "Uganda", code: "UG", phone: 256 },
+                    { name: "Ukraine", code: "UA", phone: 380 },
+                    { name: "United Arab Emirates", code: "AE", phone: 971 },
+                    { name: "United Kingdom", code: "GB", phone: 44 },
+                    { name: "United States", code: "US", phone: 1 },
+                    { name: "United States Minor Outlying Islands", code: "UM", phone: 1 },
+                    { name: "Uruguay", code: "UY", phone: 598 },
+                    { name: "Uzbekistan", code: "UZ", phone: 998 },
+                    { name: "Vanuatu", code: "VU", phone: 678 },
+                    { name: "Venezuela", code: "VE", phone: 58 },
+                    { name: "Viet Nam", code: "VN", phone: 84 },
+                    { name: "Virgin Islands, British", code: "VG", phone: 1284 },
+                    { name: "Virgin Islands, U.s.", code: "VI", phone: 1340 },
+                    { name: "Wallis and Futuna", code: "WF", phone: 681 },
+                    { name: "Western Sahara", code: "EH", phone: 212 },
+                    { name: "Yemen", code: "YE", phone: 967 },
+                    { name: "Zambia", code: "ZM", phone: 260 },
+                    { name: "Zimbabwe", code: "ZW", phone: 263 }
+                ];
+
+                // Initialize phone inputs for both forms
+                function initializePhoneInput(formType) {
+                    const selectBox = document.getElementById(formType + 'SelectBox');
+                    const selectedOption = document.getElementById(formType + 'SelectedOption');
+                    const options = document.getElementById(formType + 'Options');
+                    const searchBox = document.getElementById(formType + 'SearchBox');
+                    const countryLists = document.getElementById(formType + 'countryLists');
+                    const phoneInput = document.getElementById(formType + 'Phone');
+                    const fullPhoneInput = document.getElementById(formType + 'FullPhone');
+
+                    // Populate country list
+                    countries.forEach(country => {
+                        const option = document.createElement('li');
+                        option.classList.add('option');
+                        option.innerHTML = `
+                    <div>
+                        
+                        <span class="country-name">${country.name}</span>
+                    </div>
+                    <strong>+${country.phone}</strong>
+                `;
+                        countryLists.appendChild(option);
+                    });
+
+                    // Get all options after population
+                    const allOptions = countryLists.querySelectorAll('.option');
+
+                    // Select country function
+                    function selectcountry(option) {
+
+                        const phoneCode = option.querySelector('strong').cloneNode(true);
+
+                        selectedOption.innerHTML = '';
+
+                        selectedOption.appendChild(phoneCode);
+
+                        options.classList.remove('active');
+                        selectedOption.classList.remove('active');
+
+                        searchBox.value = '';
+                        allOptions.forEach(opt => opt.classList.remove('hide'));
+
+                        // Update full phone number
+                        updateFullPhone(formType);
+                    }
+
+                    // Search function
+                    function searchcountry() {
+                        const searchQuery = searchBox.value.toLowerCase();
+                        allOptions.forEach(option => {
+                            const countryName = option.querySelector('.country-name').textContent.toLowerCase();
+                            const isMatched = countryName.includes(searchQuery);
+                            option.classList.toggle('hide', !isMatched);
+                        });
+                    }
+
+                    // Update full phone number
+                    function updateFullPhone(formType) {
+                        const phoneValue = phoneInput.value.replace(/^0+/, ''); // Remove leading zeros
+                        const countryCode = selectedOption.querySelector('strong').textContent;
+                        fullPhoneInput.value = phoneValue ? countryCode + phoneValue : '';
+                    }
+
+                    // Event listeners
+                    selectedOption.addEventListener('click', () => {
+                        options.classList.toggle('active');
+                        selectedOption.classList.toggle('active');
+                    });
+
+                    allOptions.forEach(option => {
+                        option.addEventListener('click', () => selectcountry(option));
+                    });
+
+                    searchBox.addEventListener('input', searchcountry);
+                    phoneInput.addEventListener('input', () => updateFullPhone(formType));
+
+                    // Close dropdown when clicking outside
+                    document.addEventListener('click', (e) => {
+                        if (!selectBox.contains(e.target)) {
+                            options.classList.remove('active');
+                            selectedOption.classList.remove('active');
+                        }
+                    });
+                }
+
+                // Initialize both forms
+                document.addEventListener('DOMContentLoaded', function () {
+                    initializePhoneInput('login');
+                    initializePhoneInput('signup');
+                });
+
+                // Update phone field before submission
+                function updatePhoneField(formType) {
+                    const phoneInput = document.getElementById(formType + 'Phone');
+                    const fullPhoneInput = document.getElementById(formType + 'FullPhone');
+                    const selectedOption = document.getElementById(formType + 'SelectedOption');
+
+                    const phoneValue = phoneInput.value.replace(/^0+/, '');
+                    const countryCode = selectedOption.querySelector('strong').textContent;
+                    fullPhoneInput.value = phoneValue ? countryCode + phoneValue : '';
+
+                    return fullPhoneInput.value.length > 0;
+                }
+
+                // Tab switching function
+                function switchTab(tabType) {
+                    if (tabType === 'login') {
+                        window.location.href = '/login';
+                    } else {
+                        window.location.href = '/register';
+                    }
+                }
+
+                // Initialize tab display based on URL
+                window.addEventListener('DOMContentLoaded', function () {
+                    const loginForm = document.getElementById('loginForm');
+                    const signupForm = document.getElementById('signupForm');
+                    const loginTab = document.getElementById('loginTab');
+                    const signupTab = document.getElementById('signupTab');
+
+                    if (window.location.pathname === '/login') {
+                        if (loginForm) loginForm.classList.remove('hidden');
+                        if (signupForm) signupForm.classList.add('hidden');
+                        if (loginTab) loginTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 tab-button bg-white text-blue-600 shadow-sm';
+                        if (signupTab) signupTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 tab-button text-gray-500 hover:text-gray-700';
+                    } else if (window.location.pathname === '/register') {
+                        if (signupForm) signupForm.classList.remove('hidden');
+                        if (loginForm) loginForm.classList.add('hidden');
+                        if (signupTab) signupTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 tab-button bg-white text-green-600 shadow-sm';
+                        if (loginTab) loginTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 tab-button text-gray-500 hover:text-gray-700';
+                    }
+                });
+        </script>
+    </body>
 
 </html>

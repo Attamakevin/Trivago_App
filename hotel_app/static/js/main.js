@@ -1,3 +1,11 @@
+function safeGetElement(id) {
+    const element = document.getElementById(id);
+    if (!element) {
+        console.warn(`Element with id '${id}' not found`);
+    }
+    return element;
+}
+
 function toggleMobileMenu() {
     const mobileMenu = document.getElementById('mobileMenu');
     const backdrop = document.getElementById('mobileMenuBackdrop');
@@ -681,6 +689,11 @@ function initializeCountrySelector() {
     const popularCodes = popularCountries.map(c => c.code);
     const otherCountries = allCountries.filter(c => !popularCodes.includes(c.code));
 
+    if (!carousel || carousel.length === 0) {
+        console.log('No carousel elements found');
+        return;
+    }
+
     currentCountries = [
         ...popularCountries,
         { separator: true }, // Add separator
@@ -693,6 +706,8 @@ function initializeCountrySelector() {
 function renderCountryList() {
     const countryList = document.getElementById('countryList');
     countryList.innerHTML = '';
+
+    if (!countryList) return;
 
     currentCountries.forEach(country => {
         if (country.separator) {
@@ -802,6 +817,10 @@ function initializeCarousel() {
     const cards = carousel.querySelectorAll('.flex-none');
     totalCards = cards.length;
 
+    if (!carousel || carousel.length === 0) {
+        console.log('No carousel elements found');
+        return;
+    }
     // Determine cards per view based on screen size
     if (window.innerWidth < 768) {
         cardsPerView = 1;
@@ -987,14 +1006,12 @@ function closeCompactModal() {
 
 // Redirect Functions (customize these URLs)
 function redirectToLogin() {
-    alert('Redirecting to login page...');
     window.location.href = "./login";
     closeLoginModal();
     closeCompactModal();
 }
 
 function redirectToSignup() {
-    alert('Redirecting to signup page... ');
     window.location.href = "./register";
     closeLoginModal();
 }
@@ -1176,33 +1193,3 @@ window.quickRedirectToTrivago = function () {
 };
 
 // Login/Signup Functions
-
-function switchTab(tabType) {
-        if (tabType === 'login') {
-            // Redirect to login URL (refresh page)
-            window.location.href = '/login';
-        } else {
-            // Redirect to register URL (refresh page)
-            window.location.href = '/register';
-        }
-    }
-
-    // On page load, detect which tab to show based on URL
-    window.addEventListener('DOMContentLoaded', function () {
-        const loginForm = document.getElementById('loginForm');
-        const signupForm = document.getElementById('signupForm');
-        const loginTab = document.getElementById('loginTab');
-        const signupTab = document.getElementById('signupTab');
-
-        if (window.location.pathname === '/login') {
-            loginForm.classList.remove('hidden');
-            signupForm.classList.add('hidden');
-            loginTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 bg-white text-blue-600 shadow-sm';
-            signupTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 text-gray-500 hover:text-gray-700';
-        } else if (window.location.pathname === '/register') {
-            signupForm.classList.remove('hidden');
-            loginForm.classList.add('hidden');
-            signupTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 bg-white text-green-600 shadow-sm';
-            loginTab.className = 'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all duration-200 text-gray-500 hover:text-gray-700';
-        }
-    });

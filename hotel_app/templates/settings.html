@@ -29,11 +29,29 @@
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-white text-sm md:text-md font-bold">Settings</h1>
+                <h1 data-translate class="text-white text-sm md:text-md font-bold">Settings</h1>
             </div>
         </header>
 
         <div class="max-w-4xl mx-auto px-4 py-6 space-y-6">
+            <!-- Flash Messages -->
+            <div data-translate id="flashMessages" class="hidden">
+                <div id="successMessage"
+                    class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-lg mb-4 hidden">
+                    <div class="flex items-center">
+                        <i class="fas fa-check-circle mr-2"></i>
+                        <span id="successText"></span>
+                    </div>
+                </div>
+                <div id="errorMessage"
+                    class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4 hidden">
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        <span id="errorText"></span>
+                    </div>
+                </div>
+            </div>
+
             <!-- Language Preferences -->
             <div class="bg-white rounded-2xl shadow-lg overflow-visible">
                 <div class="p-6 cursor-pointer hover:bg-gray-50 transition-colors" onclick="toggleLanguageSettings()">
@@ -43,8 +61,8 @@
                                 <i class="fas fa-language text-blue-600 text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm sm:text-xl font-bold text-gray-900">Language Preferences</h3>
-                                <p class="text-xs sm:text-sm text-gray-600">Choose your preferred language</p>
+                                <h3 data-translate class="text-sm sm:text-xl font-bold text-gray-900">Language Preferences</h3>
+                                <p data-translate class="text-xs sm:text-sm text-gray-600">Choose your preferred language</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
@@ -125,8 +143,8 @@
                                 <i class="fas fa-key text-green-600 text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm sm:text-xl font-bold text-gray-900">Change Login Password</h3>
-                                <p class="text-xs sm:text-sm text-gray-600">Manage your Login passwords</p>
+                                <h3 data-translate class="text-sm sm:text-xl font-bold text-gray-900">Change Login Password</h3>
+                                <p data-translate class="text-xs sm:text-sm text-gray-600">Manage your Login passwords</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-down text-gray-400 transform transition-transform" id="login-icon"></i>
@@ -138,156 +156,115 @@
                         <div class="pt-6 space-y-6">
                             <!-- Change Login Password -->
                             <div class="bg-gray-50 rounded-lg p-4">
-                                <h4 class="font-semibold text-gray-900 mb-4 flex items-center">
+                                <h4 data-translate class="font-semibold text-gray-900 mb-4 flex items-center">
                                     <i class="fas fa-key text-blue-600 mr-2"></i>
                                     Change Login Password
                                 </h4>
-                                <div class="space-y-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Current Login
-                                            Password</label>
-                                        <input type="password" id="currentLoginPassword"
-                                            placeholder="Enter current password"
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-                                    </div>
-                                    <div class="grid md:grid-cols-2 gap-4">
+                                <form id="passwordChangeForm" onsubmit="changeLoginPassword(event)">
+                                    <div class="space-y-4">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">New Login
-                                                Password</label>
-                                            <input type="password" id="newLoginPassword"
-                                                placeholder="Enter new password"
-                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                            <label data-translate class="block text-sm font-medium text-gray-700 mb-2">User
+                                                Identifier</label>
+                                            <input type="text" id="userIdentifier" name="user_identifier"
+                                                placeholder="Enter your User ID, Contact, or Nickname"
+                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                                required>
+                                            <p data-translate class="text-xs text-gray-500 mt-1">Use your User ID, phone number, or
+                                                nickname</p>
                                         </div>
-                                        <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-2">Confirm Login
-                                                Password</label>
-                                            <input type="password" id="confirmLoginPassword"
-                                                placeholder="Confirm new password"
-                                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                                        <div class="grid md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label data-translate class="block text-sm font-medium text-gray-700 mb-2">New
+                                                    Password</label>
+                                                <input type="password" id="newPassword" name="new_password"
+                                                    placeholder="Enter new password"
+                                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                                    required minlength="6">
+                                            </div>
+                                            <div>
+                                                <label data-translate class="block text-sm font-medium text-gray-700 mb-2">Confirm
+                                                    Password</label>
+                                                <input type="password" id="confirmPassword" name="confirm_password"
+                                                    placeholder="Confirm new password"
+                                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                                    required minlength="6">
+                                            </div>
                                         </div>
+                                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                            <div class="flex items-start gap-2">
+                                                <i class="fas fa-info-circle text-blue-600 mt-1"></i>
+                                                <div class="text-sm text-blue-800">
+                                                    <p data-translate class="font-medium mb-1">Password Requirements:</p>
+                                                    <ul data-translate class="space-y-1 text-xs">
+                                                        <li data-translate>• Minimum 6 characters long</li>
+                                                        <li data-translate>• Use a strong, unique password</li>
+                                                        <li data-translate>• Don't use the same password as other accounts</li>
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <button data-translate type="submit" id="passwordChangeBtn"
+                                            class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
+                                            <i class="fas fa-save mr-2"></i>Update Password
+                                        </button>
                                     </div>
-                                    <button onclick="changeLoginPassword()"
-                                        class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
-                                        <i class="fas fa-save mr-2"></i>Update Login Password
-                                    </button>
-                                </div>
+                                </form>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
 
+            <!-- Withdrawal Password -->
             <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-6 cursor-pointer hover:bg-gray-50 transition-colors" onclick="toggleWithdrawalSettings()">
+                <div onclick="window.location.href='set-withdrawal-password'"
+                    class="p-8 cursor-pointer hover:bg-gray-50 transition-colors">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4">
                             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                                 <i class="fas fa-shield-alt text-green-600 text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-sm sm:text-xl font-bold text-gray-900">Set Withdral Password</h3>
-                                <p class="text-xs sm:text-sm text-gray-600">Manage your withdrawl passwords</p>
+                                <h3 data-translate class="text-sm sm:text-xl font-bold text-gray-900">Set Withdrawal Password</h3>
+                                <p data-translate class="text-xs sm:text-sm text-gray-600">Manage your withdrawal passwords</p>
                             </div>
                         </div>
-                        <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
-                            id="withdrawal-icon"></i>
-                    </div>
-                </div>
-
-                <div class="security-content hidden" id="withdrawal-content">
-                    <div class="px-6 pb-6 border-t border-gray-100">
-                        <!-- Set Withdrawal Password -->
-                        <div class="bg-orange-50 rounded-lg p-4">
-                            <h4 class="font-semibold text-gray-900 mb-4 flex items-center">
-                                <i class="fas fa-lock text-orange-600 mr-2"></i>
-                                Set Withdrawal Password
-                            </h4>
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-medium text-gray-700 mb-2">Current Withdrawal
-                                        Password</label>
-                                    <input type="password" id="currentWithdrawalPassword"
-                                        placeholder="Enter current withdrawal password (if set)"
-                                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all">
-                                    <p class="text-xs text-gray-500 mt-1">Leave blank if you haven't set a
-                                        withdrawal password yet</p>
-                                </div>
-                                <div class="grid md:grid-cols-2 gap-4">
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">New Withdrawal
-                                            Password</label>
-                                        <input type="password" id="newWithdrawalPassword"
-                                            placeholder="Enter new withdrawal password"
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all">
-                                    </div>
-                                    <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-2">Confirm
-                                            Withdrawal Password</label>
-                                        <input type="password" id="confirmWithdrawalPassword"
-                                            placeholder="Confirm new withdrawal password"
-                                            class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent transition-all">
-                                    </div>
-                                </div>
-                                <div class="bg-orange-100 border border-orange-200 rounded-lg p-3">
-                                    <div class="flex items-start gap-2">
-                                        <i class="fas fa-info-circle text-orange-600 mt-1"></i>
-                                        <div class="text-sm text-orange-800">
-                                            <p class="font-medium mb-1">Important:</p>
-                                            <ul class="space-y-1 text-xs">
-                                                <li>• Withdrawal password is required for all withdrawal requests
-                                                </li>
-                                                <li>• Use a different password from your login password</li>
-                                                <li>• This adds an extra layer of security to your account</li>
-                                                <li>• Password must be at least 8 characters long</li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button onclick="setWithdrawalPassword()"
-                                    class="bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-6 rounded-lg transition-colors">
-                                    <i class="fas fa-shield-alt mr-2"></i>Set Withdrawal Password
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Danger Zone -->
-            <div class="danger-zone rounded-2xl shadow-lg overflow-hidden">
-                <div class="p-4 border-b border-red-200">
-                    <h3 class="text-lg font-semibold text-white flex items-center">
-                        <i class="fas fa-exclamation-triangle mr-3"></i>
-                        Danger Zone
-                    </h3>
-                </div>
-            
-                <div class="p-6 space-y-4">
-                    <div class="bg-white bg-opacity-90 rounded-xl p-4">
-                        <h4 class="font-medium text-gray-900 mb-2">Deactivate Account</h4>
-                        <p class="text-sm text-gray-600 mb-4">Temporarily disable your account. You can reactivate it
-                            anytime.</p>
-                        <button onclick="deactivateAccount()"
-                            class="bg-yellow-600 hover:bg-yellow-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
-                            Deactivate Account
-                        </button>
-                    </div>
-            
-                    <div class="bg-white bg-opacity-90 rounded-xl p-4">
-                        <h4 class="font-medium text-gray-900 mb-2">Delete Account</h4>
-                        <p class="text-sm text-gray-600 mb-4">Permanently delete your account and all associated data.
-                            This action cannot be undone.</p>
-                        <button onclick="deleteAccount()"
-                            class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-xl transition-colors">
-                            Delete Account
-                        </button>
+                        <i class="fas fa-chevron-right text-gray-400 transform transition-transform"></i>
                     </div>
                 </div>
             </div>
         </div>
 
-
         <script>
+            // Show flash messages
+            function showMessage(type, message) {
+                const flashContainer = document.getElementById('flashMessages');
+                const successMsg = document.getElementById('successMessage');
+                const errorMsg = document.getElementById('errorMessage');
+
+                // Hide all messages first
+                successMsg.classList.add('hidden');
+                errorMsg.classList.add('hidden');
+
+                if (type === 'success') {
+                    document.getElementById('successText').textContent = message;
+                    successMsg.classList.remove('hidden');
+                } else {
+                    document.getElementById('errorText').textContent = message;
+                    errorMsg.classList.remove('hidden');
+                }
+
+                flashContainer.classList.remove('hidden');
+
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    flashContainer.classList.add('hidden');
+                }, 5000);
+
+                // Scroll to top to show message
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
             // Language Settings Functions
             function toggleLanguageSettings() {
                 const content = document.getElementById('language-content');
@@ -338,7 +315,7 @@
                     translateToLanguage(langCode, langName);
                 }
 
-                alert(`Language changed to ${langName}`);
+                showMessage('success', `Language changed to ${langName}`);
             }
 
             // Security Settings Functions
@@ -350,97 +327,74 @@
                 icon.classList.toggle('rotate-180');
             }
 
-            function toggleWithdrawalSettings() {
-                const content = document.getElementById('withdrawal-content');
-                const icon = document.getElementById('withdrawal-icon');
+            function changeLoginPassword(event) {
+                event.preventDefault();
 
-                content.classList.toggle('hidden');
-                icon.classList.toggle('rotate-180');
-            }
+                const form = document.getElementById('passwordChangeForm');
+                const btn = document.getElementById('passwordChangeBtn');
+                const formData = new FormData(form);
 
-            function changeLoginPassword() {
-                const currentPassword = document.getElementById('currentLoginPassword').value;
-                const newPassword = document.getElementById('newLoginPassword').value;
-                const confirmPassword = document.getElementById('confirmLoginPassword').value;
+                // Client-side validation
+                const userIdentifier = formData.get('user_identifier');
+                const newPassword = formData.get('new_password');
+                const confirmPassword = formData.get('confirm_password');
 
-                if (!currentPassword || !newPassword || !confirmPassword) {
-                    alert('Please fill in all password fields');
+                if (!userIdentifier.trim()) {
+                    showMessage('error', 'User identifier is required');
+                    return;
+                }
+
+                if (!newPassword || newPassword.length < 6) {
+                    showMessage('error', 'Password must be at least 6 characters long');
                     return;
                 }
 
                 if (newPassword !== confirmPassword) {
-                    alert('New passwords do not match');
+                    showMessage('error', 'Passwords do not match');
                     return;
                 }
 
-                if (newPassword.length < 8) {
-                    alert('Password must be at least 8 characters long');
-                    return;
-                }
+                // Show loading state
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Updating...';
+                btn.disabled = true;
 
-                // Clear form
-                document.getElementById('currentLoginPassword').value = '';
-                document.getElementById('newLoginPassword').value = '';
-                document.getElementById('confirmLoginPassword').value = '';
+                // Send request to backend
+                fetch('/password_reset', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        user_identifier: userIdentifier,
+                        new_password: newPassword,
+                        confirm_password: confirmPassword
+                    })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            showMessage('success', data.message);
+                            form.reset();
 
-                alert('Login password updated successfully!');
+                            // Optional: Close the dropdown after successful change
+                            setTimeout(() => {
+                                toggleLoginSettings();
+                            }, 2000);
+                        } else {
+                            showMessage('error', data.message || 'Failed to update password');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        showMessage('error', 'An error occurred while updating password');
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        btn.innerHTML = originalText;
+                        btn.disabled = false;
+                    });
             }
-
-            function setWithdrawalPassword() {
-                const currentPassword = document.getElementById('currentWithdrawalPassword').value;
-                const newPassword = document.getElementById('newWithdrawalPassword').value;
-                const confirmPassword = document.getElementById('confirmWithdrawalPassword').value;
-
-                if (!newPassword || !confirmPassword) {
-                    alert('Please fill in the new withdrawal password fields');
-                    return;
-                }
-
-                if (newPassword !== confirmPassword) {
-                    alert('New passwords do not match');
-                    return;
-                }
-
-                if (newPassword.length < 8) {
-                    alert('Withdrawal password must be at least 8 characters long');
-                    return;
-                }
-
-                // Clear form
-                document.getElementById('currentWithdrawalPassword').value = '';
-                document.getElementById('newWithdrawalPassword').value = '';
-                document.getElementById('confirmWithdrawalPassword').value = '';
-
-                alert('Withdrawal password set successfully! This will be required for all future withdrawal requests.');
-            }
-
-            function deactivateAccount() {
-                if (confirm('Are you sure you want to deactivate your account? You can reactivate it anytime by logging in.')) {
-                    alert('Account deactivation initiated. You will receive a confirmation email shortly.');
-                }
-            }
-
-            function deleteAccount() {
-                const confirmation = prompt('Type "DELETE" to confirm account deletion:');
-                if (confirmation === 'DELETE') {
-                    if (confirm('This will permanently delete your account and all data. This action cannot be undone. Are you absolutely sure?')) {
-                        alert('Account deletion initiated. You will receive a final confirmation email.');
-                    }
-                } else if (confirmation !== null) {
-                    alert('Account deletion cancelled. Please type "DELETE" exactly to confirm.');
-                }
-            }
-
-            // Close dropdowns when clicking outside
-            // document.addEventListener('click', function (event) {
-            //     const languageDropdown = document.getElementById('languageDropdown');
-            //     const languageButton = event.target.closest('[onclick="toggleLanguageDropdown()"]');
-
-            //     if (!languageButton && !languageDropdown.contains(event.target)) {
-            //         languageDropdown.classList.add('hidden');
-            //         document.getElementById('languageChevron').classList.remove('rotate-180');
-            //     }
-            // });
 
             // Add smooth animations
             document.addEventListener('DOMContentLoaded', function () {

@@ -4,7 +4,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon"href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
         <title>Withdraw - trivago</title>
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
         <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
@@ -16,7 +16,6 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
             rel="stylesheet">
-        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
         <!-- Custom Script -->
         <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
         <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
@@ -30,28 +29,31 @@
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-white text-sm md:text-md font-bold">Withdraw Funds</h1>
+                <h1 data-translate class="text-white text-sm md:text-md font-bold">Withdraw Funds</h1>
             </div>
         </header>
-         <!-- Flash Messages (shown for both forms) -->
-                    {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                    <div class="mb-4">
-                        {% for category, message in messages %}
-                        <div class="p-3 rounded-lg {% if category == 'success' %}bg-green-100 text-green-800{% elif category == 'warning' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
-                            {{ message }}
-                        </div>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-                    {% endwith %}
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <div data-translate class="mb-4 max-w-4xl mx-auto px-4 pt-4">
+            {% for category, message in messages %}
+            <div
+                class="p-3 rounded-lg {% if category == 'success' %}bg-green-100 text-green-800{% elif category == 'warning' %}bg-yellow-100 text-yellow-800{% else %}bg-red-100 text-red-800{% endif %}">
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% endwith %}
+
         <div class="max-w-4xl mx-auto px-4 py-6 space-y-6">
             <!-- Available Balance -->
             <div class="withdraw-gradient rounded-2xl shadow-lg p-6 text-white">
                 <div class="text-center">
-                    <h3 class="text-lg font-semibold opacity-90">Available Balance</h3>
+                    <h3 data-translate class="text-lg font-semibold opacity-90">Available Balance</h3>
                     <div class="mt-2">
-                        <span class="text-3xl md:text-4xl font-bold">${{ "%.2f"|format(user.balance) }}</span>
+                        <span class="text-3xl md:text-4xl font-bold">€{{ "%.2f"|format(user.balance) }}</span>
                     </div>
                 </div>
             </div>
@@ -60,135 +62,134 @@
             <form method="POST" onsubmit="return handleWithdrawFormSubmit(event)">
                 <!-- Quick Amount Selection -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Withdrawal Amount</h3>
+                    <h3 data-translate class="text-lg font-semibold text-gray-900 mb-4">Withdrawal Amount</h3>
 
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
                         <button type="button" onclick="selectWithdrawAmount(100)"
                             class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-green-400">
-                            $100
+                            £100
                         </button>
                         <button type="button" onclick="selectWithdrawAmount(250)"
                             class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-green-400">
-                            $250
+                            £250
                         </button>
                         <button type="button" onclick="selectWithdrawAmount(500)"
                             class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-green-400">
-                            $500
+                            £500
                         </button>
                         <button type="button" onclick="selectWithdrawAmount(1000)"
                             class="amount-btn border border-gray-300 rounded-xl py-3 px-4 text-center font-medium hover:border-green-400">
-                            $1,000
+                            £1,000
                         </button>
                     </div>
 
                     <!-- Custom Amount -->
                     <div class="space-y-4">
-                        <label class="block text-sm font-medium text-gray-700">Custom Amount</label>
+                        <label data-translate class="block text-sm font-medium text-gray-700">Custom Amount</label>
                         <div class="relative">
                             <span
-                                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">$</span>
+                                class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">€</span>
                             <input type="number" id="customAmount" name="amount" placeholder="0.00" required
                                 class="w-full pl-8 pr-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg"
                                 min="25" max="{{ user.balance }}" step="0.01">
                         </div>
-                        <p class="text-sm text-gray-500">Minimum withdrawal: $25.00 | Maximum: ${{
+                        <p data-translate class="text-sm text-gray-500">Minimum withdrawal: £25.00 | Maximum: €{{
                             "%.2f"|format(user.balance) }} (your available balance)</p>
                     </div>
                 </div>
 
                 <!-- Withdrawal Methods -->
-<div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <h3 data-translate class="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
 
-    <div class="space-y-3">
-        <!-- USDT -->
-        <label class="withdraw-card border border-gray-200 rounded-xl p-4 cursor-pointer block">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-coins text-green-600 text-xl"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-medium">USDT</h4>
-                        <p class="text-sm text-gray-500">Tether USD (TRC-20)</p>
-                    </div>
-                </div>
-                <input type="radio" name="network" value="usdt" required class="hidden"
-                    onchange="selectWithdrawMethod('withdraw_usdt')">
-                <div class="w-6 h-6 border-2 border-gray-300 rounded-full withdraw-radio"
-                    id="withdraw_usdt-radio">
-                </div>
-            </div>
-        </label>
+                    <div class="space-y-3">
+                        <!-- USDT -->
+                        <label class="withdraw-card border border-gray-200 rounded-xl p-4 cursor-pointer block">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-coins text-green-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">USDT</h4>
+                                        <p class="text-sm text-gray-500">Tether USD (TRC-20)</p>
+                                    </div>
+                                </div>
+                                <input type="radio" name="network" value="usdt" required class="hidden"
+                                    onchange="selectWithdrawMethod('withdraw_usdt')">
+                                <div class="w-6 h-6 border-2 border-gray-300 rounded-full withdraw-radio"
+                                    id="withdraw_usdt-radio"></div>
+                            </div>
+                        </label>
 
-        <!-- USDT1 -->
-        <label class="withdraw-card border border-gray-200 rounded-xl p-4 cursor-pointer block">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <i class="fas fa-dollar-sign text-blue-600 text-xl"></i>
-                    </div>
-                    <div>
-                        <h4 class="font-medium">USDT1</h4>
-                        <p class="text-sm text-gray-500">Tether USD (ERC-20)</p>
+                        <!-- USDT1 -->
+                        <label class="withdraw-card border border-gray-200 rounded-xl p-4 cursor-pointer block">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-4">
+                                    <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                                        <i class="fas fa-dollar-sign text-blue-600 text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h4 class="font-medium">USDT1</h4>
+                                        <p class="text-sm text-gray-500">Tether USD (ERC-20)</p>
+                                    </div>
+                                </div>
+                                <input type="radio" name="network" value="usdt1" required class="hidden"
+                                    onchange="selectWithdrawMethod('withdraw_usdt1')">
+                                <div class="w-6 h-6 border-2 border-gray-300 rounded-full withdraw-radio"
+                                    id="withdraw_usdt1-radio"></div>
+                            </div>
+                        </label>
                     </div>
                 </div>
-                <input type="radio" name="network" value="usdt1" required class="hidden"
-                    onchange="selectWithdrawMethod('withdraw_usdt1')">
-                <div class="w-6 h-6 border-2 border-gray-300 rounded-full withdraw-radio"
-                    id="withdraw_usdt1-radio">
-                </div>
-            </div>
-        </label>
-    </div>
-</div>
 
-<!-- Wallet Address -->
-<div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-    <h3 class="text-lg font-semibold text-gray-900 mb-4">Wallet Address</h3>
-    <div class="relative">
-        <label class="block text-sm font-medium text-gray-700 mb-4">Enter your wallet address</label>
-        <input type="text" name="wallet_address" id="walletAddress" required
-            placeholder="Enter your USDT wallet address"
-            class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm">
-        <button type="button"
-            onclick="copyToClipboard(document.getElementById('walletAddress').value, this)"
-            class="absolute items-center right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
-            <i class="fas fa-copy"></i>
-        </button>
-        <p class="text-xs text-gray-500 mt-3">Make sure to enter the correct wallet address. Funds sent to
-            wrong addresses cannot be recovered.</p>
-    </div>
-</div>
-                <!-- <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Wallet Address</h3>
-                    <div class="space-y-4">
-                        <label class="block text-sm font-medium text-gray-700">Enter your wallet address</label>
-                        <input type="text" name="wallet" id="walletAddress" required
+                <!-- Wallet Address -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6">
+                    <h3 data-translate class="text-lg font-semibold text-gray-900 mb-4">Wallet Address</h3>
+                    <div class="relative">
+                        <label class="block text-sm font-medium text-gray-700 mb-4">Enter your wallet address</label>
+                        <input type="text" name="wallet_address" id="walletAddress" required
                             placeholder="Enter your USDT wallet address"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm">
-                        <p class="text-xs text-gray-500">Make sure to enter the correct wallet address. Funds sent to
-                            wrong
-                            addresses cannot be recovered.</p>
+                            class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-sm">
+                        <button type="button"
+                            onclick="copyToClipboard(document.getElementById('walletAddress').value, this)"
+                            class="absolute items-center right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors">
+                            <i class="fas fa-copy"></i>
+                        </button>
+                        <p data-translate class="text-xs text-gray-500 mt-3">Make sure to enter the correct wallet address. Funds sent
+                            to wrong addresses cannot be recovered.</p>
                     </div>
-                </div> -->
+                </div>
 
+                <!-- Security Note -->
+                <div class="bg-blue-50 rounded-2xl p-4 mb-6">
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                            <i class="fas fa-shield-alt text-blue-600 text-sm"></i>
+                        </div>
+                        <div>
+                            <h4 data-translate class="text-sm font-semibold text-blue-900">Security Protection</h4>
+                            <p data-translate class="text-xs text-blue-700">Your withdrawal will be secured with password verification
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
                 <!-- Summary -->
                 <div id="summary" class="bg-white rounded-2xl shadow-lg p-6 mb-6" style="display: none;">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Withdrawal Summary</h3>
+                    <h3 data-translate class="text-lg font-semibold text-gray-900 mb-4">Withdrawal Summary</h3>
                     <div class="space-y-3">
                         <div class="flex justify-between py-2 border-b border-gray-100">
-                            <span class="text-gray-600">Withdrawal Amount</span>
-                            <span class="font-medium" id="summaryAmount">$0.00</span>
+                            <span data-translate class="text-gray-600">Withdrawal Amount</span>
+                            <span class="font-medium" id="summaryAmount">£0.00</span>
                         </div>
                         <div class="flex justify-between py-2 border-b border-gray-100">
-                            <span class="text-gray-600">Processing Fee</span>
-                            <span class="font-medium" id="summaryFee">$0.00</span>
+                            <span data-translate class="text-gray-600">Processing Fee</span>
+                            <span class="font-medium" id="summaryFee">£0.00</span>
                         </div>
                         <div class="flex justify-between py-2 font-semibold text-lg">
                             <span>You'll Receive</span>
-                            <span id="summaryTotal">$0.00</span>
+                            <span id="summaryTotal">£0.00</span>
                         </div>
                     </div>
                 </div>
@@ -199,16 +200,385 @@
                         class="w-full bg-gray-400 text-white font-medium py-4 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2"
                         disabled>
                         <i class="fas fa-minus"></i>
-                        <span>Withdraw Funds</span>
+                        <span data-translate>Withdraw Funds</span>
                     </button>
                 </div>
             </form>
         </div>
 
+        <!-- Password Verification Modal -->
+        <div id="passwordVerificationModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-2xl shadow-xl w-full max-w-md slide-up">
+                    <div class="p-6">
+                        <div class="text-center mb-6">
+                            <div
+                                class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-shield-alt text-green-600 text-xl"></i>
+                            </div>
+                            <h3 data-translate class="text-xl font-bold text-gray-900">Security Verification</h3>
+                            <p data-translate class="text-gray-600 mt-2">Please enter your withdrawal password to continue</p>
+                        </div>
+
+                        <form onsubmit="return handlePasswordVerification(event)">
+                            <div class="space-y-4">
+                                <div>
+                                    <label data-translate class="block text-sm font-medium text-gray-700 mb-2">Withdrawal
+                                        Password</label>
+                                    <div class="relative">
+                                        <input type="password" id="verificationPassword" required
+                                            placeholder="Enter your withdrawal password"
+                                            class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                        <button type="button" onclick="togglePasswordVisibility('verificationPassword')"
+                                            class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                                            <i class="fas fa-eye" id="verificationPassword-icon"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="bg-yellow-50 rounded-lg p-3">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-exclamation-triangle text-yellow-600 mr-2"></i>
+                                        <p class="text-xs text-yellow-800">
+                                            <strong data-translate>Withdrawal Summary:</strong><br>
+                                            Amount: <span id="modalSummaryAmount">£0.00</span><br>
+                                            Fee: <span id="modalSummaryFee">£0.00</span><br>
+                                            You'll receive: <span id="modalSummaryTotal">£0.00</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="flex gap-3 mt-6">
+                                <button data-translate type="button" onclick="closePasswordVerificationModal()"
+                                    class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 text-sm whitespace-nowrap font-medium py-3 px-4 rounded-xl transition-colors">
+                                    Cancel
+                                </button>
+                                <button data-translate type="submit" id="verifyPasswordBtn"
+                                    class="flex-1 bg-green-600 hover:bg-green-700 text-white whitespace-nowrap text-sm font-medium py-3 px-4 rounded-xl transition-colors">
+                                    <i class="fas fa-check mr-2"></i>Confirm Withdrawal
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-50 hidden">
+            <div class="flex items-center justify-center min-h-screen p-4">
+                <div class="bg-white rounded-2xl shadow-xl w-full max-w-md slide-up text-center p-8">
+                    <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="fas fa-check text-green-600 text-3xl"></i>
+                    </div>
+                    <h3 data-translate class="text-2xl font-bold text-gray-900 mb-2" id="successTitle">Success!</h3>
+                    <p data-translate class="text-gray-600 mb-6" id="successMessage">Operation completed successfully.</p>
+                    <button onclick="closeSuccessModal()"
+                        class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-xl transition-colors">
+                        <i class="fas fa-thumbs-up mr-2"></i>Great!
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <script>
+            // Global variables
+            let withdrawSelectedAmount = 0;
+            let selectedWithdrawMethod = '';
+            const availableBalance = {{ user.balance| float }};
+            const hasWithdrawalPassword = {{ 'true' if user.withdrawal_password else 'false' }};
+
+            // Password visibility toggle
+            function togglePasswordVisibility(inputId) {
+                const input = document.getElementById(inputId);
+                const icon = document.getElementById(inputId + '-icon');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            }
+
+            // Password Verification Modal Functions
+            function openPasswordVerificationModal() {
+                const amount = parseFloat(document.getElementById('customAmount').value) || withdrawSelectedAmount;
+                const networkInput = document.querySelector('input[name="network"]:checked');
+                const fee = calculateWithdrawFee(amount, networkInput.value);
+                const total = amount - fee;
+
+                // Update modal summary
+                document.getElementById('modalSummaryAmount').textContent = '€' + amount.toFixed(2);
+                document.getElementById('modalSummaryFee').textContent = '€' + fee.toFixed(2);
+                document.getElementById('modalSummaryTotal').textContent = '€' + total.toFixed(2);
+
+                document.getElementById('passwordVerificationModal').classList.remove('hidden');
+            }
+
+            function closePasswordVerificationModal() {
+                document.getElementById('passwordVerificationModal').classList.add('hidden');
+                document.getElementById('verificationPassword').value = '';
+            }
+
+            function handlePasswordVerification(event) {
+                event.preventDefault();
+
+                const password = document.getElementById('verificationPassword').value;
+                const btn = document.getElementById('verifyPasswordBtn');
+
+                btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Verifying...';
+                btn.disabled = true;
+
+                // Create form data for submission
+                const formData = new FormData(document.querySelector('form[method="POST"]'));
+                formData.append('withdrawal_password', password);
+
+                // Submit withdrawal
+                fetch('/withdraw', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            closePasswordVerificationModal();
+                            showSuccessModal('Withdrawal Submitted!', 'Your withdrawal request has been submitted successfully and is pending approval.');
+                            // Redirect after success
+                            setTimeout(() => {
+                                window.location.href = '/profile';
+                            }, 3000);
+                        } else {
+                            return response.text().then(text => {
+                                // Parse error from response
+                                const parser = new DOMParser();
+                                const doc = parser.parseFromString(text, 'text/html');
+                                const errorElement = doc.querySelector('.bg-red-100');
+                                const errorMessage = errorElement ? errorElement.textContent.trim() : 'Withdrawal failed';
+                                throw new Error(errorMessage);
+                            });
+                        }
+                    })
+                    .catch(error => {
+                        alert(error.message || 'Error processing withdrawal');
+                    })
+                    .finally(() => {
+                        btn.innerHTML = '<i class="fas fa-check mr-2"></i>Confirm Withdrawal';
+                        btn.disabled = false;
+                    });
+
+                return false;
+            }
+
+            // Success Modal Functions
+            function showSuccessModal(title, message) {
+                document.getElementById('successTitle').textContent = title;
+                document.getElementById('successMessage').textContent = message;
+                document.getElementById('successModal').classList.remove('hidden');
+            }
+
+            function closeSuccessModal() {
+                document.getElementById('successModal').classList.add('hidden');
+            }
+
+            // Withdraw amount selection
+            function selectWithdrawAmount(amount) {
+                withdrawSelectedAmount = amount;
+                document.getElementById('customAmount').value = amount;
+
+                document.querySelectorAll('.amount-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+                event.target.classList.add('selected');
+
+                updateWithdrawSummary();
+            }
+
+            // Withdraw method selection
+            function selectWithdrawMethod(method) {
+                selectedWithdrawMethod = method;
+
+                const methodMap = {
+                    'withdraw_usdt': 'usdt',
+                    'withdraw_usdt1': 'usdt1'
+                };
+
+                const radioValue = methodMap[method] || method;
+                const radioInput = document.querySelector(`input[name="network"][value="${radioValue}"]`);
+                if (radioInput) {
+                    radioInput.checked = true;
+                }
+
+                document.querySelectorAll('.withdraw-card').forEach(card => {
+                    card.classList.remove('selected');
+                });
+                document.querySelectorAll('.withdraw-radio').forEach(radio => {
+                    radio.style.backgroundColor = 'transparent';
+                    radio.innerHTML = '';
+                });
+
+                if (radioInput) {
+                    const parentLabel = radioInput.closest('.withdraw-card');
+                    if (parentLabel) {
+                        parentLabel.classList.add('selected');
+                    }
+                }
+
+                const radioVisual = document.getElementById(method + '-radio');
+                radioVisual.style.backgroundColor = '#10b981';
+                radioVisual.innerHTML = '<i class="fas fa-check text-white text-sm"></i>';
+
+                updateWithdrawSummary();
+            }
+
+            // Update withdrawal summary
+            function updateWithdrawSummary() {
+                const amount = parseFloat(document.getElementById('customAmount').value) || withdrawSelectedAmount;
+                const hasPaymentMethod = document.querySelector('input[name="network"]:checked');
+                const hasWalletAddress = document.getElementById('walletAddress').value.trim();
+
+                if (amount > availableBalance) {
+                    alert(`Insufficient funds. Your available balance is €${availableBalance.toFixed(2)}`);
+                    document.getElementById('customAmount').value = '';
+                    withdrawSelectedAmount = 0;
+                    document.querySelectorAll('.amount-btn').forEach(btn => {
+                        btn.classList.remove('selected');
+                    });
+                    return;
+                }
+
+                if (amount > 0 && hasPaymentMethod && hasWalletAddress) {
+                    const fee = calculateWithdrawFee(amount, hasPaymentMethod.value);
+                    const total = amount - fee;
+
+                    document.getElementById('summaryAmount').textContent = '€' + amount.toFixed(2);
+                    document.getElementById('summaryFee').textContent = '€' + fee.toFixed(2);
+                    document.getElementById('summaryTotal').textContent = '€' + total.toFixed(2);
+                    document.getElementById('summary').style.display = 'block';
+
+                    const btn = document.getElementById('withdrawBtn');
+                    btn.disabled = false;
+                    btn.classList.remove('bg-gray-400');
+                    btn.classList.add('bg-green-600', 'hover:bg-green-700');
+                } else {
+                    document.getElementById('summary').style.display = 'none';
+                    const btn = document.getElementById('withdrawBtn');
+                    btn.disabled = true;
+                    btn.classList.add('bg-gray-400');
+                    btn.classList.remove('bg-green-600', 'hover:bg-green-700');
+                }
+            }
+
+            function calculateWithdrawFee(amount, method) {
+                const fees = {
+                    'usdt': amount * 0.01,
+                    'usdt1': amount * 0.015,
+                };
+                return fees[method] || 0;
+            }
+
+            function handleWithdrawFormSubmit(event) {
+                event.preventDefault();
+
+                const amount = parseFloat(document.getElementById('customAmount').value) || withdrawSelectedAmount;
+                const networkInput = document.querySelector('input[name="network"]:checked');
+                const walletAddress = document.getElementById('walletAddress').value.trim();
+
+                // Validations
+                if (amount < 25) {
+                    alert('Minimum withdrawal amount is £25.00');
+                    return false;
+                }
+
+                if (amount > availableBalance) {
+                    alert(`Insufficient funds. Your available balance is €${availableBalance.toFixed(2)}`);
+                    return false;
+                }
+
+                if (!networkInput) {
+                    alert('Please select a withdrawal method');
+                    return false;
+                }
+
+                if (!walletAddress) {
+                    alert('Please enter your wallet address');
+                    return false;
+                }
+
+                // Check if user has withdrawal password
+                if (hasWithdrawalPassword) {
+                    // Show password verification modal
+                    openPasswordVerificationModal();
+                } else {
+                    // Redirect to set password page
+                    window.location.href = '/set-withdrawal-password';
+                }
+
+                return false;
+            }
+
+            // Initialize page
             document.addEventListener('DOMContentLoaded', function () {
-                initializeWithdrawEvents();
+                const customAmountInput = document.getElementById('customAmount');
+                const walletInput = document.getElementById('walletAddress');
+
+                if (customAmountInput) {
+                    customAmountInput.addEventListener('input', function () {
+                        withdrawSelectedAmount = parseFloat(this.value) || 0;
+                        document.querySelectorAll('.amount-btn').forEach(btn => {
+                            btn.classList.remove('selected');
+                        });
+                        updateWithdrawSummary();
+                    });
+                }
+
+                if (walletInput) {
+                    walletInput.addEventListener('input', updateWithdrawSummary);
+                }
+
+                // Close modals on background click
+                document.addEventListener('click', function (event) {
+                    if (event.target.id === 'successModal') {
+                        closeSuccessModal();
+                    }
+                    if (event.target.id === 'passwordVerificationModal') {
+                        closePasswordVerificationModal();
+                    }
+                });
+
+                // Close modals on Escape key
+                document.addEventListener('keydown', function (event) {
+                    if (event.key === 'Escape') {
+                        if (!document.getElementById('successModal').classList.contains('hidden')) {
+                            closeSuccessModal();
+                        }
+                        if (!document.getElementById('passwordVerificationModal').classList.contains('hidden')) {
+                            closePasswordVerificationModal();
+                        }
+                    }
+                });
             });
+
+            // Utility function for alerts
+            function alert(message) {
+                window.alert(message);
+            }
+
+            // Copy to clipboard function
+            function copyToClipboard(text, button) {
+                navigator.clipboard.writeText(text).then(function () {
+                    const icon = button.querySelector('i');
+                    icon.classList.remove('fa-copy');
+                    icon.classList.add('fa-check');
+                    setTimeout(() => {
+                        icon.classList.remove('fa-check');
+                        icon.classList.add('fa-copy');
+                    }, 2000);
+                });
+            }
         </script>
     </body>
 

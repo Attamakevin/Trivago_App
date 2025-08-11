@@ -1,286 +1,341 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
-        <title>Membership - trivago</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
-        <!-- TailwindCSS -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-            rel="stylesheet">
-        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
-        <!-- Custom Script -->
-        <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
-        <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
-        <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+    <title>Membership - trivago</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
+    <!-- TailwindCSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <!-- Custom Script -->
+    <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
+</head>
 
-    <body class="luxury-bg min-h-screen">
-        <!-- Header -->
-        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
-            <div class="flex items-center justify-start gap-8 text-white h-full">
-                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
-                    <i class="fas fa-arrow-left text-xl"></i>
-                </button>
-                <h1 class="text-white text-sm md:text-md font-bold">Membership Levels</h1>
-            </div>
-        </header>
-
-        <div class="max-w-4xl mx-auto px-4 py-8">
-            <!-- Level Cards -->
-            <div class="space-y-4">
-                <!-- Level 1 - Basic -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-gray-400">
-                    <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
-                        onclick="toggleLevel('level1')">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-user text-gray-600 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-900">VIP 0</h3>
-                                    <!-- <p class="text-sm text-gray-600">Free • Perfect for new users</p> -->
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs rounded-full">Current</span>
-                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
-                                    id="level1-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="level-content hidden" id="level1-content">
-                        <div class="px-6 pb-6 border-t border-gray-100">
-                            <div class="pt-4">
-                                <h4 class="font-semibold text-gray-900 mb-3">What you get:</h4>
-                                <ul class="space-y-2">
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Task Order: 35</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Commission ratio: 0.36%</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Daily Tasks: 2</span>
-                                    </li>
-                                </ul>
-                                <div
-                                    class="mt-4 w-full bg-gray-600 hover:bg-gray-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                    Activated
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Level 2 - Premium -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-orange-400">
-                    <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
-                        onclick="toggleLevel('level2')">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-crown text-orange-600 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-900">VIP 1</h3>
-                                    <!-- <p class="text-sm text-gray-600">$9.99/month • Best for frequent travelers</p> -->
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-3 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">Most
-                                    Popular</span>
-                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
-                                    id="level2-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="level-content hidden" id="level2-content">
-                        <div class="px-6 pb-6 border-t border-gray-100">
-                            <div class="pt-4">
-                                <!-- <h4 class="font-semibold text-gray-900 mb-3">Everything in Basic, plus:</h4> -->
-                                <ul class="space-y-2">
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Task Order: 38</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Commissio ratio: 0.45%</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Daily Task: 2</span>
-                                    </li>
-                                </ul>
-                                <div
-                                    class="mt-4 w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                    Not Activated
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Level 3 - Elite -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-teal-400">
-                    <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
-                        onclick="toggleLevel('level3')">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-gem text-teal-600 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-900">VIP 2</h3>
-                                    <!-- <p class="text-sm text-gray-600">$19.99/month • For luxury travel enthusiasts</p> -->
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span class="px-3 py-1 bg-teal-100 text-teal-700 text-xs rounded-full">Premium</span>
-                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
-                                    id="level3-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="level-content hidden" id="level3-content">
-                        <div class="px-6 pb-6 border-t border-gray-100">
-                            <div class="pt-4">
-                                <!-- <h4 class="font-semibold text-gray-900 mb-3">Everything in Premium, plus:</h4> -->
-                                <ul class="space-y-2">
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Task Order: 40</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Commissio ratio: 0.54%</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Daily Task: 2</span>
-                                </ul>
-                                <div
-                                    class="mt-4 w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                    Not Activated
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Level 4 - VIP -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden border-l-4 border-purple-400">
-                    <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
-                        onclick="toggleLevel('level4')">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-4">
-                                <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-star text-purple-600 text-xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-xl font-bold text-gray-900">VIP 3</h3>
-                                    <!-- <p class="text-sm text-gray-600">$39.99/month • Ultimate luxury experience</p> -->
-                                </div>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <span
-                                    class="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">Exclusive</span>
-                                <i class="fas fa-chevron-down text-gray-400 transform transition-transform"
-                                    id="level4-icon"></i>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="level-content hidden" id="level4-content">
-                        <div class="px-6 pb-6 border-t border-gray-100">
-                            <div class="pt-4">
-                                <!-- <h4 class="font-semibold text-gray-900 mb-3">Everything in Elite, plus:</h4> -->
-                                <ul class="space-y-2">
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Task Order: 44</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Commissio ratio: 0.66%</span>
-                                    </li>
-                                    <li class="flex items-center gap-2">
-                                        <i class="fas fa-check text-green-500 text-sm"></i>
-                                        <span class="text-sm text-gray-700">Daily Task: 2</span>
-                                </ul>
-                                <div 
-                                    class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white font-medium py-2 px-4 rounded-lg transition-colors">
-                                    Not Activated
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<body class="luxury-bg min-h-screen">
+    <!-- Header -->
+    <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+        <div class="flex items-center justify-start gap-8 text-white h-full">
+            <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h1 data-translate class="text-white text-sm md:text-md font-bold">Membership Levels</h1>
         </div>
+    </header>
 
-        <script>
-            function toggleLevel(levelId) {
-                const content = document.getElementById(levelId + '-content');
-                const icon = document.getElementById(levelId + '-icon');
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- VIP Level Cards -->
+        <div class="space-y-6">
+            
+            <!-- VIP 0 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden border-l-4 border-gray-400">
+                <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+                    onclick="toggleLevel('vip0')">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-user text-gray-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 data-translate class="text-xl font-bold text-gray-900">VIP 0</h3>
+                                <p data-translate class="text-sm text-gray-600">Basic Level • Entry Point</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium">Current</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform duration-300"
+                                id="vip0-icon"></i>
+                        </div>
+                    </div>
+                </div>
 
-                // Close all other levels
-                const allContents = document.querySelectorAll('.level-content');
-                const allIcons = document.querySelectorAll('[id$="-icon"]');
+                <div class="level-content hidden" id="vip0-content">
+                    <div class="px-6 pb-6 border-t border-gray-100">
+                        <div class="pt-4">                           
+                            <h4 data-translate class="font-semibold text-gray-900 mb-3">Benefits & Features:</h4>
+                            <ul class="space-y-2 mb-4">
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500 text-sm"></i>
+                                    <span data-translate class="text-sm text-gray-700">Task Order: 35</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500 text-sm"></i>
+                                    <span data-translate class="text-sm text-gray-700">Commission ratio: 0.36%</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500 text-sm"></i>
+                                    <span data-translate class="text-sm text-gray-700">Daily Tasks: 2</span>
+                                </li>
+                            </ul>
+                            
+                            <div class="w-full bg-green-600 text-white font-medium py-3 px-4 rounded-lg text-center" id="vip0-status">
+                                <i class="fas fa-check mr-2"></i>
+                                Activated
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                allContents.forEach(content => {
-                    if (content.id !== levelId + '-content') {
-                        content.classList.add('hidden');
-                    }
-                });
+            <!-- VIP 1 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden border-l-4 border-orange-400">
+                <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+                    onclick="toggleLevel('vip1')">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-crown text-orange-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">VIP 1</h3>
+                                <p data-translate class="text-sm text-gray-600">Premium Level • Enhanced Benefits</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 bg-orange-100 text-orange-700 text-xs rounded-full font-medium">Most Popular</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform duration-300"
+                                id="vip1-icon"></i>
+                        </div>
+                    </div>
+                </div>
 
-                allIcons.forEach(icon => {
-                    if (icon.id !== levelId + '-icon') {
-                        icon.classList.remove('rotate-180');
-                    }
-                });
+                <div class="level-content hidden" id="vip1-content">
+                    <div class="px-6 pb-6 border-t border-gray-100">
+                        <div class="pt-4">
+                            <h4 data-translate class="font-semibold text-gray-900 mb-3">Benefits & Features:</h4>
+                            <ul class="space-y-2 mb-4">
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500 text-sm"></i>
+                                    <span data-translate class="text-sm text-gray-700">Task Order: 35</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500 text-sm"></i>
+                                    <span data-translate class="text-sm text-gray-700">Commission ratio: 0.45%</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500 text-sm"></i>
+                                    <span data-translate class="text-sm text-gray-700">Daily Tasks: 2</span>
+                                </li>
+                            </ul>
+                            
+                            <div class="w-full bg-gray-100 text-gray-600 font-medium py-3 px-4 rounded-lg text-center" id="vip1-status">
+                                <i class="fas fa-lock mr-2"></i>
+                                Not Activated
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                // Toggle current level
-                content.classList.toggle('hidden');
-                icon.classList.toggle('rotate-180');
-            }
+            <!-- VIP 2 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden border-l-4 border-teal-400">
+                <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+                    onclick="toggleLevel('vip2')">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-gem text-teal-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">VIP 2</h3>
+                                <p data-translate class="text-sm text-gray-600">Elite Level • Premium Experience</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 bg-teal-100 text-teal-700 text-xs rounded-full font-medium">Premium</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform duration-300"
+                                id="vip2-icon"></i>
+                        </div>
+                    </div>
+                </div>
 
-            function upgradeTo(level) {
-                const levelNames = {
-                    premium: 'Premium',
-                    elite: 'Elite',
-                    vip: 'VIP'
-                };
+                <div class="level-content hidden" id="vip2-content">
+                    <div class="px-6 pb-6 border-t border-gray-100">
+                        <div class="pt-4">
+                            <h4 data-translate class="font-semibold text-gray-900 mb-3">Benefits & Features:</h4>
+                            <ul class="space-y-2 mb-4">
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500 text-sm"></i>
+                                    <span data-translate class="text-sm text-gray-700">Task Order: 38</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500 text-sm"></i>
+                                    <span data-translate class="text-sm text-gray-700">Commission ratio: 0.54%</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500 text-sm"></i>
+                                    <span data-translate class="text-sm text-gray-700">Daily Tasks: 2</span>
+                                </li>
+                            </ul>
+                            
+                            <div class="w-full bg-gray-100 text-gray-600 font-medium py-3 px-4 rounded-lg text-center" id="vip2-status">
+                                <i class="fas fa-lock mr-2"></i>
+                                Not Activated
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                if (confirm(`Upgrade to ${levelNames[level]} membership?`)) {
-                    alert(`Processing upgrade to ${levelNames[level]} membership...`);
+            <!-- VIP 3 -->
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden border-l-4 border-purple-400">
+                <div class="level-header p-6 cursor-pointer hover:bg-gray-50 transition-colors"
+                    onclick="toggleLevel('vip3')">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-star text-purple-600 text-xl"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-bold text-gray-900">VIP 3</h3>
+                                <p data-translate class="text-sm text-gray-600">Exclusive Level • Ultimate Experience</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-3 py-1 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">Exclusive</span>
+                            <i class="fas fa-chevron-down text-gray-400 transform transition-transform duration-300"
+                                id="vip3-icon"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="level-content hidden" id="vip3-content">
+                    <div class="px-6 pb-6 border-t border-gray-100">
+                        <div class="pt-4">
+                            <h4 data-translate class="font-semibold text-gray-900 mb-3">Benefits & Features:</h4>
+                            <ul class="space-y-2 mb-4">
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500 text-sm"></i>
+                                    <span data-translate class="text-sm text-gray-700">Task Order: 40</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500 text-sm"></i>
+                                    <span data-translate class="text-sm text-gray-700">Commission ratio: 0.66%</span>
+                                </li>
+                                <li class="flex items-center gap-2">
+                                    <i class="fas fa-check text-green-500 text-sm"></i>
+                                    <span data-translate class="text-sm text-gray-700">Daily Tasks: 2</span>
+                                </li>
+                            </ul>
+                            
+                            <div class="w-full bg-gray-100 text-gray-600 font-medium py-3 px-4 rounded-lg text-center" id="vip3-status">
+                                <i class="fas fa-lock mr-2"></i>
+                                Not Activated
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // Current user VIP level (set this dynamically from your backend)
+        // Example: let currentVipLevel = '{{ user.vip_level }}';
+        let currentVipLevel = '{{ user.vip_level }}';
+
+        function toggleLevel(levelId) {
+            const content = document.getElementById(levelId + '-content');
+            const icon = document.getElementById(levelId + '-icon');
+
+            // Close all other levels
+            const allContents = document.querySelectorAll('.level-content');
+            const allIcons = document.querySelectorAll('[id$="-icon"]');
+
+            allContents.forEach(otherContent => {
+                if (otherContent.id !== levelId + '-content') {
+                    otherContent.classList.add('hidden');
                 }
-            }
-
-            // Add smooth animations
-            document.addEventListener('DOMContentLoaded', function () {
-                const contents = document.querySelectorAll('.level-content');
-                contents.forEach(content => {
-                    content.style.transition = 'all 0.3s ease';
-                });
             });
-        </script>
-    </body>
+
+            allIcons.forEach(otherIcon => {
+                if (otherIcon.id !== levelId + '-icon') {
+                    otherIcon.classList.remove('rotate-180');
+                }
+            });
+
+            // Toggle current level
+            content.classList.toggle('hidden');
+            icon.classList.toggle('rotate-180');
+        }
+
+        // Initialize the page based on current VIP level
+        function initializeVipStatus() {
+            // Define VIP level hierarchy
+            const vipLevels = ['vip0', 'vip1', 'vip2', 'vip3'];
+            
+            // Handle different VIP level formats from backend
+            let normalizedCurrentLevel = currentVipLevel.toLowerCase();
+            if (normalizedCurrentLevel.includes('vip')) {
+                // Already in vip0, vip1 format
+                normalizedCurrentLevel = normalizedCurrentLevel.replace(/\s+/g, '');
+            } else if (normalizedCurrentLevel.includes('0')) {
+                normalizedCurrentLevel = 'vip0';
+            } else if (normalizedCurrentLevel.includes('1')) {
+                normalizedCurrentLevel = 'vip1';
+            } else if (normalizedCurrentLevel.includes('2')) {
+                normalizedCurrentLevel = 'vip2';
+            } else if (normalizedCurrentLevel.includes('3')) {
+                normalizedCurrentLevel = 'vip3';
+            }
+            
+            const currentIndex = vipLevels.indexOf(normalizedCurrentLevel);
+            console.log('Current VIP Level:', currentVipLevel);
+            console.log('Normalized Level:', normalizedCurrentLevel);
+            console.log('Current Index:', currentIndex);
+
+            vipLevels.forEach((level, index) => {
+                const statusDiv = document.getElementById(`${level}-status`);
+                const badgeContainer = document.querySelector(`#${level}-content`).previousElementSibling.querySelector('.flex.items-center.gap-2');
+                const badge = badgeContainer.querySelector('span');
+                
+                if (index <= currentIndex) {
+                    // This level is activated
+                    statusDiv.innerHTML = '<i class="fas fa-check mr-2"></i>Activated';
+                    statusDiv.className = 'w-full bg-green-600 text-white font-medium py-3 px-4 rounded-lg text-center';
+                    
+                    // Update badge for current level
+                    if (index === currentIndex) {
+                        badge.className = 'px-3 py-1 bg-green-100 text-green-700 text-xs rounded-full font-medium';
+                        badge.textContent = 'Current';
+                    } else {
+                        // Lower levels should show as "Activated" badge
+                        badge.className = 'px-3 py-1 bg-blue-100 text-blue-700 text-xs rounded-full font-medium';
+                        badge.textContent = 'Activated';
+                    }
+                } else {
+                    // This level is not activated
+                    statusDiv.innerHTML = '<i class="fas fa-lock mr-2"></i>Not Activated';
+                    statusDiv.className = 'w-full bg-gray-100 text-gray-600 font-medium py-3 px-4 rounded-lg text-center';
+                    
+                    // Keep original badge for locked levels
+                    // Don't change the badge for locked levels
+                }
+            });
+        }
+
+        // Add smooth animations and initialize on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            const contents = document.querySelectorAll('.level-content');
+            contents.forEach(content => {
+                content.style.transition = 'all 0.3s ease';
+            });
+            
+            // Initialize VIP status based on backend data
+            initializeVipStatus();
+        });
+    </script>
+</body>
 
 </html>

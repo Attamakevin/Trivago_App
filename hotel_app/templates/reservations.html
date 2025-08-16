@@ -238,7 +238,7 @@
                             <div
                                 class="bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow">
                                 <div class="relative">
-                                    <img src="{{ url_for('static', filename='images/hotel1.jpg') }}"
+                                    <img src="{{ current_hotel_data.hotel.image_url }}"
                                         alt="{{ current_hotel_data.hotel.name }}" class="w-full h-48 object-cover">
                                     <div
                                         class="absolute top-3 right-3 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium">

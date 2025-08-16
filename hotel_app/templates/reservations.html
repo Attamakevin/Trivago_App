@@ -162,11 +162,10 @@
                                     <i class="fas fa-piggy-bank text-xl text-purple-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">€{{ "%.2f"|format(user_stats.deposit_balance)
+                            <div class="text-xl md:text-xl font-bold mb-1">€{{ "%.2f"|format(user.total_deposits)
                                 }}</div>
-                            <p data-translate class="text-[#101f56] text-sm">Booking Deposits</p>
-                            <p data-translate class="text-xs text-[#101f56] mt-1">{{ user_stats.active_bookings }}
-                                active bookings</p>
+                            <p data-translate class="text-[#101f56] text-sm">Freezing Amount</p>
+                            
                         </div>
                     </div>
                 </div>

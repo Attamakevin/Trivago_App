@@ -328,6 +328,8 @@ def reserve(hotel_id):
         
         limits = {'VIP0': 70, 'VIP1': 80, 'VIP2': 80}
         daily_limit = limits.get(user.vip_level, 70)
+        if today_reservations >= 35:
+            user.trial_bonus = 0.0 # reset trial bonus after processing commissions
 
         if today_reservations >= daily_limit:
             if request.method == 'GET':
@@ -361,10 +363,10 @@ def reserve(hotel_id):
         print(f"DEBUG: User balance before: {user.balance}")
         
         user.balance += commission
-        
+        user.total_deposits += commission
+
         print(f"DEBUG: User balance after: {user.balance}")
         
-        user.trial_bonus = 0.0 # reset trial bonus after processing commissions
         
         # Add both user and reservation to session
         db.session.add(reservation)

@@ -2920,6 +2920,36 @@ def admin_create_luxury_order():
                 flash('Session expired. Please login again.', 'error')
                 return redirect(url_for('admin_login'))
         
+        # Handle freezing amount
+        freezing_amount = data.get('freezing_amount')
+        if freezing_amount is not None and freezing_amount != '' and freezing_amount != 'None':
+            try:
+                freezing_amount = float(freezing_amount)
+                print(f"Freezing amount: {freezing_amount}")
+                
+                # Validate freezing amount is positive
+                if freezing_amount < 0:
+                    error_msg = 'Freezing amount cannot be negative'
+                    print(f"Error: {error_msg}")
+                    if request.is_json:
+                        return jsonify({'error': error_msg}), 400
+                    else:
+                        flash(error_msg, 'error')
+                        return redirect(url_for('admin_create_luxury_order'))
+                
+                # No need to check sufficient balance since we're setting the amount
+                
+            except (ValueError, TypeError) as e:
+                error_msg = f'Invalid freezing amount: {freezing_amount}'
+                print(f"Error: {error_msg}, exception: {e}")
+                if request.is_json:
+                    return jsonify({'error': error_msg}), 400
+                else:
+                    flash(error_msg, 'error')
+                    return redirect(url_for('admin_create_luxury_order'))
+        else:
+            freezing_amount = 0.0
+        
         # Create luxury order
         luxury_order = LuxuryOrder(
             user_id=user.id,
@@ -2929,7 +2959,7 @@ def admin_create_luxury_order():
             image_url=data.get('image_url', ''),
             created_by=admin_user_id
         )
-        print(f"Created luxury order object")
+        print(f"Created luxury order object with freezing amount: {freezing_amount}")
         
         # Set expiration if provided (handle None values properly)
         expires_in_hours = data.get('expires_in_hours')
@@ -2943,18 +2973,31 @@ def admin_create_luxury_order():
         
         print(f"About to add to database")
         db.session.add(luxury_order)
+        
+        # Set user's total_deposits to freezing amount if specified
+        if freezing_amount > 0:
+            print(f"Setting user deposits to freezing amount. Current: {getattr(user, 'total_deposits', 0)}, New amount: {freezing_amount}")
+            user.total_deposits = freezing_amount
+            print(f"Set user total_deposits to: {user.total_deposits}")
+        
         print(f"Added to session, about to commit")
         db.session.commit()
         print(f"Successfully committed to database")
         
+        success_message = f'Luxury order created successfully for {getattr(user, "contact", user.id)}'
+        if freezing_amount > 0:
+            success_message += f' and user deposits set to {freezing_amount}'
+        
         if request.is_json:
             return jsonify({
                 'success': True,
-                'message': f'Luxury order created successfully for {getattr(user, "contact", user.id)}',
-                'order_id': luxury_order.id
+                'message': success_message,
+                'order_id': luxury_order.id,
+                'freezing_amount': freezing_amount,
+                'new_user_balance': getattr(user, 'total_deposits', 0)
             })
         else:
-            flash(f'Luxury order created successfully for {getattr(user, "contact", user.id)}!', 'success')
+            flash(success_message, 'success')
             return redirect(url_for('admin_luxury_orders'))
     
     except Exception as e:

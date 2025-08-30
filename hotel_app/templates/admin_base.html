@@ -70,10 +70,10 @@
                                     <i class="fas fa-hotel"></i>
                                     <span>Hotels</span>
                                 </a>
-                                <a class="nav-link {% if request.endpoint == 'luxury orders' %}active{% endif %}"
-                                    href="{{ url_for('admin_luxury_orders') }}">
+                                <a class="nav-link {% if request.endpoint == 'golden_eggs' %}active{% endif %}"
+                                    href="{{ url_for('admin_golden_eggs') }}">
                                     <i class="fas fa-hotel"></i>
-                                    <span>Luxury Orders</span>
+                                    <span>Golden Eggs Orders</span>
                                 </a>
                                 <a class="nav-link {% if request.endpoint == 'assign_hotels_to_user' %}active{% endif %}"
                                     href="{{ url_for('assign_hotels_to_user')}}">

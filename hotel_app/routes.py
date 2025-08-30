@@ -4,7 +4,6 @@ from hotel_app import app, db
 from hotel_app.models import User, Hotel,GoldenEgg, UserHotelAssignment,Reservation, DepositRequest, WithdrawalRequest, EventAd, Admin, InvitationCode
 from datetime import datetime, date,timedelta
 from flask_login import login_required, login_user, logout_user, current_user
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
 @app.route('/')
 def home():
     return render_template('home.html')
@@ -1529,9 +1528,6 @@ def get_wallet_info():
             'message': 'No wallet bound yet'
         })
 
-<<<<<<< HEAD
-# Admin Routes - Complete and Organized
-=======
 
 @app.route('/transaction_details')
 def transaction_details():
@@ -1689,25 +1685,12 @@ def change_withdrawal_password():
         return jsonify({'success': False, 'message': 'User not found'}), 404
 
 # Admin Setup Functions
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
 from functools import wraps
 from flask import session, flash, redirect, url_for, request, render_template, jsonify
 from datetime import datetime
 import string
 import random
-<<<<<<< HEAD
-import logging
-
-# Assuming these imports based on the code structure
-from hotel_app.models import Admin, User, DepositRequest, WithdrawalRequest, Hotel, InvitationCode, UserHotelAssignment, Reservation
-from hotel_app import app, db
-
-logger = logging.getLogger(__name__)
-
-# Admin authentication decorator
-=======
 from hotel_app.models import Admin
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
 def admin_required(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
@@ -1726,13 +1709,7 @@ def admin_required(f):
         g.current_admin = admin
         return f(*args, **kwargs)
     return wrapper
-<<<<<<< HEAD
-
-# ============= AUTHENTICATION ROUTES =============
-
-=======
 # Separate admin login route
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
 @app.route('/admin/login', methods=['GET', 'POST'])
 def admin_login():
     if request.method == 'POST':
@@ -2013,9 +1990,6 @@ def delete_user(user_id):
         db.session.rollback()
         flash(f"Error deleting user: {str(e)}", "error")
     
-<<<<<<< HEAD
-    return redirect(url_for('view_users'))
-=======
     if new_vip_level not in valid_vip_levels:
         return jsonify({'error': 'Invalid VIP level'}), 400
     
@@ -2049,7 +2023,6 @@ def api_update_user_member_point(user_id):
         'new_member_point': new_member_point
     })
 
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
 
 # ============= DEPOSIT MANAGEMENT =============
 
@@ -2083,9 +2056,6 @@ def approve_deposit(deposit_id):
         deposit = DepositRequest.query.get_or_404(deposit_id)
         admin = Admin.query.get(session.get('admin_id'))
         
-<<<<<<< HEAD
-        if deposit.status != 'pending':
-=======
         if not admin:
             logger.error("Admin not found in session")
             flash("Admin session invalid", "error")
@@ -2122,7 +2092,6 @@ def approve_deposit(deposit_id):
                 
         else:
             logger.warning(f"Deposit {deposit_id} already processed with status: {deposit.status}")
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
             flash("Deposit has already been processed.", "warning")
             return redirect(url_for('view_deposits'))
         
@@ -2174,11 +2143,6 @@ def reject_deposit(deposit_id):
     
     return redirect(url_for('view_deposits'))
 
-<<<<<<< HEAD
-# ============= WITHDRAWAL MANAGEMENT =============
-
-=======
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
 @app.route('/admin/withdrawals')
 @admin_required
 def view_withdrawals():
@@ -2186,16 +2150,12 @@ def view_withdrawals():
         page = request.args.get('page', 1, type=int)
         status_filter = request.args.get('status', '')
         
-<<<<<<< HEAD
-        withdrawals_query = WithdrawalRequest.query
-=======
         # Debug: Check total withdrawals
         total_withdrawals = WithdrawalRequest.query.count()
         logger.debug(f"Total withdrawals in database: {total_withdrawals}")
         
         # Build query with join to User table for better performance
         withdrawals_query = WithdrawalRequest.query.options(db.joinedload(WithdrawalRequest.user))
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
         
         if status_filter and status_filter in ['pending', 'approved', 'rejected']:
             withdrawals_query = withdrawals_query.filter(WithdrawalRequest.status == status_filter)
@@ -2204,9 +2164,6 @@ def view_withdrawals():
             page=page, per_page=20, error_out=False
         )
         
-<<<<<<< HEAD
-        return render_template('admin_withdrawals.html', withdrawals=withdrawals, current_status=status_filter)
-=======
         logger.debug(f"Withdrawals found for page {page}: {len(withdrawals.items)}")
         logger.debug(f"Total pages: {withdrawals.pages}, Total items: {withdrawals.total}")
         
@@ -2217,17 +2174,12 @@ def view_withdrawals():
         return render_template('admin_withdrawals.html', 
                              withdrawals=withdrawals, 
                              current_status=status_filter)
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
         
     except Exception as e:
         logger.error(f"Error in view_withdrawals: {str(e)}")
         flash(f'Error loading withdrawals: {str(e)}', 'error')
         return redirect(url_for('admin_dashboard'))
-<<<<<<< HEAD
-
-=======
 # APPROVE WITHDRAWAL - Individual withdrawal approval (IMPROVED)
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
 @app.route('/admin/withdrawals/<int:withdrawal_id>/approve', methods=['POST'])
 @admin_required
 def approve_withdrawal(withdrawal_id):
@@ -2296,62 +2248,10 @@ def reject_withdrawal(withdrawal_id):
     
     return redirect(url_for('view_withdrawals'))
 
-<<<<<<< HEAD
-# ============= HOTEL MANAGEMENT =============
-=======
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
 
 @app.route('/admin/hotels', methods=['GET', 'POST'])
 def manage_hotels():
     if request.method == 'POST':
-<<<<<<< HEAD
-        try:
-            name = request.form['name']
-            primary_picture = request.form['primary_picture']
-            price = float(request.form['price'])
-            commission_multiplier = float(request.form.get('commission_multiplier', 1.0))
-            days_available = int(request.form.get('days_available', 1))
-            description = request.form.get('description', '')
-            location = request.form.get('location', '')
-            category = request.form.get('category', 'regular')
-            rating = int(request.form.get('rating', 5))
-
-            new_hotel = Hotel(
-                name=name,
-                primary_picture=primary_picture,
-                price=price,
-                commission_multiplier=commission_multiplier,
-                days_available=days_available,
-                description=description,
-                location=location,
-                category=category,
-                rating=rating
-            )
-            db.session.add(new_hotel)
-            db.session.commit()
-            flash('Hotel added successfully', 'success')
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Error adding hotel: {str(e)}', 'error')
-        
-        return redirect(url_for('manage_hotels'))
-
-    page = request.args.get('page', 1, type=int)
-    category_filter = request.args.get('category', '')
-    
-    hotels_query = Hotel.query
-    if category_filter:
-        hotels_query = hotels_query.filter_by(category=category_filter)
-    
-    hotels = hotels_query.order_by(Hotel.id.desc()).paginate(
-        page=page, per_page=20, error_out=False
-    )
-    
-    categories = ['regular', 'luxury']
-    
-    return render_template('admin_hotels.html', hotels=hotels, categories=categories, current_category=category_filter)
-
-=======
         # Handle hotel creation
         hotel = Hotel(
             name=request.form['name'],
@@ -2375,7 +2275,6 @@ def manage_hotels():
         if hotel.category is None:
             hotel.category = 'Uncategorized'
     return render_template('admin_hotels.html', hotels=hotels)
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
 @app.route('/admin/hotels/<int:hotel_id>/edit', methods=['GET', 'POST'])
 @admin_required
 def edit_hotel(hotel_id):
@@ -3258,7 +3157,6 @@ def delete_invitation_code(code_id):
         flash(f'Invitation code "{code_value}" deleted successfully', 'success')
         
     except Exception as e:
-<<<<<<< HEAD
         db.session.rollback()
         flash(f'Error deleting invitation code: {str(e)}', 'error')
     
@@ -3707,7 +3605,6 @@ def log_admin_action(action, details, admin_id=None):
 if __name__ == '__main__':
     # This won't run when imported as a module
     app.run(debug=True)
-=======
         print(f"Error during logout: {str(e)}")
         # Even if there's an error, clear the session and redirect
         session.clear()

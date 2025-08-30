@@ -719,8 +719,9 @@ class SystemSettings(db.Model):
         db.session.commit()
         return setting
     # Database Model (add to your models.py)
-class LuxuryOrder(db.Model):
-    __tablename__ = 'luxury_orders'
+# Golden Egg Model
+class GoldenEgg(db.Model):
+    __tablename__ = 'golden_eggs'
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
@@ -735,7 +736,7 @@ class LuxuryOrder(db.Model):
     expires_at = db.Column(db.DateTime)  # Optional expiration
     
     # Relationships
-    user = db.relationship('User', foreign_keys=[user_id], backref='luxury_orders')
+    user = db.relationship('User', foreign_keys=[user_id], backref='golden_eggs')
     admin = db.relationship('User', foreign_keys=[created_by])
     
     def is_expired(self):

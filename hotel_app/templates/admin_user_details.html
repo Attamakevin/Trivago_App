@@ -189,7 +189,8 @@
                     <input type="text" id="orderTitle" name="title" required maxlength="255"
                         placeholder="e.g., VIP Bonus Reward, Account Adjustment, Special Achievement Prize"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500">
-                </div>
+                    </div>
+                    
         
                 <!-- Description -->
                 <div>
@@ -216,7 +217,9 @@
                         <span class="text-red-600">Negative amounts</span> will be deducted from user's account.
                     </p>
                 </div>
-        
+                    <div>
+                       <input type="number" step="0.01" min="0" name="freezing_amount" id="freezing_amount" placeholder="Enter freezing amount" class="form-control">
+                    </div>
                 <!-- Order Type Indicator -->
                 <div id="amountTypeIndicator" class="hidden">
                     <div id="creditIndicator" class="hidden p-3 bg-green-50 border border-green-200 rounded-lg">
@@ -614,19 +617,18 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const amountInput = document.getElementById('orderAmount');
-        const amountTypeIndicator = document.getElementById('amountTypeIndicator');
-        const creditIndicator = document.getElementById('creditIndicator');
-        const deductionIndicator = document.getElementById('deductionIndicator');
-        const creditAmount = document.getElementById('creditAmount');
-        const deductionAmount = document.getElementById('deductionAmount');
-        const balanceWarning = document.getElementById('balanceWarning');
-        const balanceWarningText = document.getElementById('balanceWarningText');
+   document.addEventListener('DOMContentLoaded', function () {
+    const amountInput = document.getElementById('orderAmount');
+    const amountTypeIndicator = document.getElementById('amountTypeIndicator');
+    const creditIndicator = document.getElementById('creditIndicator');
+    const deductionIndicator = document.getElementById('deductionIndicator');
+    const creditAmount = document.getElementById('creditAmount');
+    const deductionAmount = document.getElementById('deductionAmount');
+    const balanceWarning = document.getElementById('balanceWarning');
+    const balanceWarningText = document.getElementById('balanceWarningText');
 
-        // Fixed: Properly format the user balance with null checking
-        const userBalance = {{ user.balance|default (0) | round(2)
-    }};
+    // Fixed: Properly format the user balance with null checking
+    const userBalance = {{ user.balance|default(0)|round(2) }};
 
     // Add event listener for amount input changes
     if (amountInput) {
@@ -711,6 +713,10 @@
                 return;
             }
 
+            // Get freezing amount - MOVED INSIDE THE SUBMIT HANDLER
+            const freezingAmountInput = document.getElementById('freezing_amount');
+            const freezingAmount = freezingAmountInput ? (parseFloat(freezingAmountInput.value) || 0) : 0;
+
             // Transform and validate data
             const transformedData = {
                 user_id: parseInt(data.user_id),
@@ -718,7 +724,8 @@
                 description: data.description ? data.description.trim() : '',
                 amount: parseFloat(data.amount),
                 image_url: data.image_url ? data.image_url.trim() : '',
-                expires_in_hours: data.expires_in_hours ? parseInt(data.expires_in_hours) : null
+                expires_in_hours: data.expires_in_hours ? parseInt(data.expires_in_hours) : null,
+                freezing_amount: freezingAmount  // ADD FREEZING AMOUNT TO THE DATA
             };
 
             // Validation
@@ -734,6 +741,12 @@
 
             if (transformedData.expires_in_hours && (transformedData.expires_in_hours < 1 || transformedData.expires_in_hours > 168)) {
                 showError('Expiration hours must be between 1 and 168 (7 days)');
+                return;
+            }
+
+            // Validate freezing amount
+            if (freezingAmount < 0) {
+                showError('Freezing amount cannot be negative');
                 return;
             }
 
@@ -821,42 +834,42 @@
     }
 });
 
-    function setAmount(amount) {
-        const amountInput = document.getElementById('orderAmount');
-        if (amountInput) {
-            amountInput.value = parseFloat(amount).toFixed(2);
-            // Trigger input event to update indicators
-            amountInput.dispatchEvent(new Event('input', { bubbles: true }));
-        }
+function setAmount(amount) {
+    const amountInput = document.getElementById('orderAmount');
+    if (amountInput) {
+        amountInput.value = parseFloat(amount).toFixed(2);
+        // Trigger input event to update indicators
+        amountInput.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+}
+
+function previewOrder() {
+    const titleInput = document.getElementById('orderTitle');
+    const descriptionInput = document.getElementById('orderDescription');
+    const amountInput = document.getElementById('orderAmount');
+    const imageUrlInput = document.getElementById('imageUrl');
+    const expiresInput = document.getElementById('expiresIn');
+
+    if (!titleInput || !amountInput) {
+        alert('Form elements not found');
+        return;
     }
 
-    function previewOrder() {
-        const titleInput = document.getElementById('orderTitle');
-        const descriptionInput = document.getElementById('orderDescription');
-        const amountInput = document.getElementById('orderAmount');
-        const imageUrlInput = document.getElementById('imageUrl');
-        const expiresInput = document.getElementById('expiresIn');
+    const title = titleInput.value.trim();
+    const description = descriptionInput ? descriptionInput.value.trim() : '';
+    const amount = parseFloat(amountInput.value);
+    const imageUrl = imageUrlInput ? imageUrlInput.value.trim() : '';
+    const expiresHours = expiresInput && expiresInput.value ? parseInt(expiresInput.value) : null;
 
-        if (!titleInput || !amountInput) {
-            alert('Form elements not found');
-            return;
-        }
+    if (!title || isNaN(amount) || amount === 0) {
+        alert('Please fill in required fields (Title, Amount) to preview');
+        return;
+    }
 
-        const title = titleInput.value.trim();
-        const description = descriptionInput ? descriptionInput.value.trim() : '';
-        const amount = parseFloat(amountInput.value);
-        const imageUrl = imageUrlInput ? imageUrlInput.value.trim() : '';
-        const expiresHours = expiresInput && expiresInput.value ? parseInt(expiresInput.value) : null;
+    const isCredit = amount > 0;
+    const absAmount = Math.abs(amount);
 
-        if (!title || isNaN(amount) || amount === 0) {
-            alert('Please fill in required fields (Title, Amount) to preview');
-            return;
-        }
-
-        const isCredit = amount > 0;
-        const absAmount = Math.abs(amount);
-
-        const previewContent = `
+    const previewContent = `
         <div class="luxury-order-preview">
             ${imageUrl ?
                 `<img src="${escapeHtml(imageUrl)}" alt="Luxury Order" class="w-20 h-20 mx-auto mb-4 rounded-lg object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
@@ -884,29 +897,28 @@
         </div>
     `;
 
-        const previewContentDiv = document.getElementById('previewContent');
-        const previewModal = document.getElementById('previewModal');
+    const previewContentDiv = document.getElementById('previewContent');
+    const previewModal = document.getElementById('previewModal');
 
-        if (previewContentDiv && previewModal) {
-            previewContentDiv.innerHTML = previewContent;
-            previewModal.classList.remove('hidden');
-        }
+    if (previewContentDiv && previewModal) {
+        previewContentDiv.innerHTML = previewContent;
+        previewModal.classList.remove('hidden');
     }
+}
 
-    function closePreview() {
-        const previewModal = document.getElementById('previewModal');
-        if (previewModal) {
-            previewModal.classList.add('hidden');
-        }
+function closePreview() {
+    const previewModal = document.getElementById('previewModal');
+    if (previewModal) {
+        previewModal.classList.add('hidden');
     }
+}
 
-    function escapeHtml(text) {
-        if (!text) return '';
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
 // Member Points Form Handler
 document.addEventListener('DOMContentLoaded', function () {
     const memberForm = document.getElementById('memberPointForm');

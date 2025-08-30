@@ -1,16 +1,7 @@
 # hotel_app/routes.py
 from flask import render_template, redirect, url_for, flash, request,jsonify, session
 from hotel_app import app, db
-<<<<<<< HEAD
-from hotel_app.models import User, Hotel, Reservation, DepositRequest, WithdrawalRequest, EventAd, Admin, InvitationCode
-from datetime import datetime, date
-from flask_login import login_required
-from functools import wraps
-import string
-import random
-import logging
-=======
-from hotel_app.models import User, Hotel,LuxuryOrder, UserHotelAssignment,Reservation, DepositRequest, WithdrawalRequest, EventAd, Admin, InvitationCode
+from hotel_app.models import User, Hotel,GoldenEgg, UserHotelAssignment,Reservation, DepositRequest, WithdrawalRequest, EventAd, Admin, InvitationCode
 from datetime import datetime, date,timedelta
 from flask_login import login_required, login_user, logout_user, current_user
 >>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
@@ -290,7 +281,7 @@ def credit():
     user = User.query.get(session['user_id'])
     return render_template('credit.html', user=user)
 
-# Updated reservation route with automatic completion and rating
+# Fixed reservation route with proper luxury order handling
 @app.route('/reserve/<int:hotel_id>', methods=['GET', 'POST'])
 def reserve(hotel_id):
     if 'user_id' not in session:
@@ -301,49 +292,173 @@ def reserve(hotel_id):
     try:
         user = User.query.get(session['user_id'])
         hotel = Hotel.query.get_or_404(hotel_id)
+        
+        print(f"DEBUG: Hotel {hotel_id} - checking luxury status")
+        print(f"DEBUG: Hotel attributes: {dir(hotel)}")
+        print(f"DEBUG: Hotel category: {getattr(hotel, 'category', 'NOT_SET')}")
+
+        # Check if user balance is negative (blocked from luxury order)
+        if user.balance < 0:
+            if request.method == 'GET':
+                flash('Your account is temporarily suspended. Please contact customer service.', 'error')
+                return redirect(url_for('reservations'))
+            return jsonify({'error': 'Account suspended. Contact customer service.'}), 403
 
         # Check if user has access to this hotel
-        hotel_assignment = UserHotelAssignment.query.filter_by(
+        hotel_assignments = UserHotelAssignment.query.filter_by(
             user_id=user.id, 
             hotel_id=hotel_id
-        ).first()
+        ).all()
         
-        if not hotel_assignment:
+        if not hotel_assignments:
             if request.method == 'GET':
                 flash('You do not have access to this hotel', 'error')
                 return redirect(url_for('reservations'))
             return jsonify({'error': 'You do not have access to this hotel'}), 403
 
-        # Check if user has already reserved and rated this hotel
-        existing_reservation = Reservation.query.filter_by(
+        # Count how many times this hotel has been reserved by this user
+        existing_reservations_count = Reservation.query.filter_by(
             user_id=user.id,
             hotel_id=hotel_id,
             status='Completed'
-        ).filter(Reservation.rating.isnot(None)).first()
+        ).filter(Reservation.rating.isnot(None)).count()
         
-        if existing_reservation:
+        # Check if user can still reserve this hotel (max 2 times if assigned twice)
+        max_reservations = len(hotel_assignments)
+        if existing_reservations_count >= max_reservations:
             if request.method == 'GET':
-                flash('You have already completed this hotel reservation', 'error')
+                flash('You have already completed all available reservations for this hotel', 'error')
                 return redirect(url_for('reservations'))
-            return jsonify({'error': 'You have already completed this hotel reservation'}), 400
+            return jsonify({'error': 'You have already completed all available reservations for this hotel'}), 400
 
-        # Check daily reservation limit
+        # Get today's reservation count
+        today_start = datetime.combine(date.today(), datetime.min.time())
         today_reservations = Reservation.query.filter_by(user_id=user.id).filter(
-            Reservation.timestamp >= datetime.combine(date.today(), datetime.min.time())).count()
+            Reservation.timestamp >= today_start).count()
         
-        limits = {'VIP0': 70, 'VIP1': 80, 'VIP2': 80}
-        daily_limit = limits.get(user.vip_level, 70)
-
-        if today_reservations >= daily_limit:
+        # Check session limits (35 per session, 70 total per day)
+        if today_reservations >= 70:
             if request.method == 'GET':
-                flash(f'Daily reservation limit reached ({daily_limit} reservations per day for {user.vip_level})', 'error')
+                flash('You have completed your reservations for today. Please check back tomorrow.', 'info')
                 return redirect(url_for('reservations'))
-            return jsonify({
-                'error': f'Daily reservation limit reached ({daily_limit} reservations per day for {user.vip_level})'
-            }), 403
+            return jsonify({'error': 'Daily reservation limit reached. Check back tomorrow.'}), 403
+        
+        # Check if user needs to contact customer service for second session
+        if today_reservations == 35:
+            if request.method == 'GET':
+                flash('You have finished your first task (35 reservations). Please contact customer service for more tasks.', 'info')
+                return redirect(url_for('reservations'))
+            return jsonify({'error': 'First session complete. Contact customer service for more tasks.'}), 403
+        
+        # Check if user is in second session but hasn't been assigned more hotels
+        if today_reservations > 35:
+            # User is in second session - check if they have been assigned the second batch
+            second_session_assignments = UserHotelAssignment.query.filter_by(
+                user_id=user.id
+            ).filter(
+                UserHotelAssignment.created_at >= today_start
+            ).count()
+            
+            if second_session_assignments == 0:
+                if request.method == 'GET':
+                    flash('Please contact customer service to get your second session assignments.', 'info')
+                    return redirect(url_for('reservations'))
+                return jsonify({'error': 'Contact customer service for second session assignments.'}), 403
 
-        # Calculate commission
-        commission = hotel_assignment.custom_commission * hotel.commission_multiplier
+        # Reset trial bonus after 35 reservations
+        if today_reservations >= 35:
+            user.trial_bonus = 0.0
+
+        # Get the appropriate assignment for this reservation
+        available_assignment = None
+        for assignment in hotel_assignments:
+            reservations_for_this_assignment = Reservation.query.filter_by(
+                user_id=user.id,
+                hotel_id=hotel_id
+            ).filter(Reservation.timestamp >= assignment.created_at).count()
+            
+            if reservations_for_this_assignment == 0:
+                available_assignment = assignment
+                break
+        
+        if not available_assignment:
+            available_assignment = hotel_assignments[-1]  # Use the latest assignment
+
+        # Calculate base commission
+        base_commission = available_assignment.custom_commission * hotel.commission_multiplier
+        
+        # IMPROVED LUXURY ORDER DETECTION
+        # Check multiple possible ways hotel might be marked as luxury
+        is_luxury_order = False
+        
+        # Method 1: Check category attribute
+        if hasattr(hotel, 'category') and hotel.category:
+            is_luxury_order = hotel.category.lower() == 'luxury'
+            print(f"DEBUG: Luxury check via category: {is_luxury_order}")
+        
+        # Method 2: Check if hotel name contains 'luxury' (fallback)
+        if not is_luxury_order and hotel.name:
+            is_luxury_order = 'luxury' in hotel.name.lower()
+            print(f"DEBUG: Luxury check via name: {is_luxury_order}")
+        
+        # Method 3: Check a luxury flag if it exists
+        if not is_luxury_order and hasattr(hotel, 'is_luxury'):
+            is_luxury_order = bool(hotel.is_luxury)
+            print(f"DEBUG: Luxury check via is_luxury flag: {is_luxury_order}")
+        
+        # Method 4: Check commission threshold (high commission = luxury)
+        if not is_luxury_order and available_assignment.custom_commission >= 5000:
+            is_luxury_order = True
+            print(f"DEBUG: Luxury check via high commission (>= 5000): {is_luxury_order}")
+        
+        print(f"DEBUG: Final luxury order status: {is_luxury_order}")
+        
+        if is_luxury_order:
+            print(f"DEBUG: Processing luxury order for hotel {hotel_id}")
+            
+            # Calculate luxury commission multiplier
+            if available_assignment.custom_commission < 1000:
+                luxury_multiplier = 10
+            else:
+                luxury_multiplier = 20
+            
+            luxury_commission = base_commission * luxury_multiplier
+            
+            print(f"DEBUG: Luxury commission calculated: {luxury_commission} (base: {base_commission}, multiplier: {luxury_multiplier})")
+            
+            # Present luxury order popup data
+            luxury_order_data = {
+                'hotel_name': hotel.name,
+                'base_commission': base_commission,
+                'luxury_multiplier': luxury_multiplier,
+                'luxury_commission': luxury_commission,
+                'current_balance': user.balance,
+                'projected_balance': user.balance + luxury_commission
+            }
+            
+            print(f"DEBUG: Luxury order data: {luxury_order_data}")
+            
+            if request.method == 'GET':
+                # For GET requests, store luxury order data in session
+                session['luxury_order_pending'] = {
+                    'hotel_id': hotel_id,
+                    'data': luxury_order_data
+                }
+                print(f"DEBUG: Stored luxury order in session")
+                flash('Luxury order available! Check the popup for details.', 'info')
+                return redirect(url_for('reservations'))
+            
+            # For POST/AJAX requests, return luxury order data
+            print(f"DEBUG: Returning luxury order JSON response")
+            return jsonify({
+                'luxury_order': True,
+                'luxury_data': luxury_order_data,
+                'message': 'Luxury order available - requires confirmation'
+            })
+        
+        # Regular hotel reservation (non-luxury)
+        print(f"DEBUG: Processing regular (non-luxury) reservation")
+        commission = base_commission
         
         # Generate unique order number
         order_number = f"ORD{user.id}{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -354,11 +469,11 @@ def reserve(hotel_id):
             hotel_id=hotel.id,
             order_number=order_number,
             commission_earned=commission,
-            status='Completed',  # Set to completed immediately
+            status='Completed',
             timestamp=datetime.utcnow(),
-            commission_paid=True,  # Mark commission as paid immediately
-            commission_paid_at=datetime.utcnow(),  # Set payment timestamp
-            rating=5  # Auto-rate as 5 stars to mark as completed
+            commission_paid=True,
+            commission_paid_at=datetime.utcnow(),
+            rating=5
         )
         
         # Add commission to user balance immediately
@@ -366,222 +481,329 @@ def reserve(hotel_id):
         print(f"DEBUG: User balance before: {user.balance}")
         
         user.balance += commission
-        
+        user.total_deposits += commission
+
         print(f"DEBUG: User balance after: {user.balance}")
-        
-        user.trial_bonus = 0.0 # reset trial bonus after processing commissions
         
         # Add both user and reservation to session
         db.session.add(reservation)
         db.session.add(user)
         db.session.commit()
-        db.session.refresh(user)  # Refresh to get updated data
+        db.session.refresh(user)
         
         print(f"DEBUG: User balance after commit: {user.balance}")
         print(f"DEBUG: Reservation created for hotel {hotel_id} with rating {reservation.rating}")
         
+        # Check if user completed first session
+        updated_today_count = today_reservations + 1
+        if updated_today_count == 35:
+            message = 'First session completed! You have finished your first task. Please contact customer service for more tasks.'
+        elif updated_today_count == 70:
+            message = 'Congratulations! You have completed your reservations for today. Please check back tomorrow.'
+        else:
+            message = 'Reservation completed successfully and commission added to your balance!'
+        
         if request.method == 'GET':
-            flash('Reservation completed successfully and commission added to your balance!', 'success')
+            flash(message, 'success')
             return redirect(url_for('reservations'))
         
         return jsonify({
             'success': True,
-            'message': 'Reservation completed successfully and commission added to your balance!',
+            'message': message,
             'reservation_id': reservation.id,
             'order_number': order_number,
             'commission_earned': commission,
-            'new_balance': user.balance
+            'new_balance': user.balance,
+            'today_count': updated_today_count,
+            'session_complete': updated_today_count in [35, 70]
         })
         
     except Exception as e:
         db.session.rollback()
         print(f"ERROR in reserve function: {str(e)}")
+        import traceback
+        traceback.print_exc()  # This will show the full error traceback
+        
         if request.method == 'GET':
             flash(f'Error creating reservation: {str(e)}', 'error')
             return redirect(url_for('reservations'))
         return jsonify({'error': str(e)}), 500
 
+
+# Enhanced luxury order confirmation route
+@app.route('/confirm_luxury_order', methods=['POST'])
+def confirm_luxury_order():
+    if 'user_id' not in session:
+        return jsonify({'error': 'Not authenticated'}), 401
+    
+    try:
+        user = User.query.get(session['user_id'])
+        
+        # Get luxury order data from request
+        hotel_id = request.json.get('hotel_id')
+        confirm = request.json.get('confirm', False)
+        
+        print(f"DEBUG: Luxury order confirmation - Hotel: {hotel_id}, Confirm: {confirm}")
+        
+        if not confirm:
+            print("DEBUG: User cancelled luxury order")
+            return jsonify({'success': True, 'message': 'Luxury order cancelled'})
+        
+        hotel = Hotel.query.get_or_404(hotel_id)
+        
+        # Get hotel assignment
+        hotel_assignments = UserHotelAssignment.query.filter_by(
+            user_id=user.id, 
+            hotel_id=hotel_id
+        ).all()
+        
+        available_assignment = None
+        for assignment in hotel_assignments:
+            reservations_for_this_assignment = Reservation.query.filter_by(
+                user_id=user.id,
+                hotel_id=hotel_id
+            ).filter(Reservation.timestamp >= assignment.created_at).count()
+            
+            if reservations_for_this_assignment == 0:
+                available_assignment = assignment
+                break
+        
+        if not available_assignment:
+            available_assignment = hotel_assignments[-1]
+        
+        # Calculate luxury commission
+        base_commission = available_assignment.custom_commission * hotel.commission_multiplier
+        if available_assignment.custom_commission < 1000:
+            luxury_multiplier = 10
+        else:
+            luxury_multiplier = 20
+        
+        luxury_commission = base_commission * luxury_multiplier
+        
+        print(f"DEBUG: Creating luxury reservation - Commission: {luxury_commission}")
+        
+        # Create luxury reservation
+        order_number = f"LUX{user.id}{datetime.now().strftime('%Y%m%d%H%M%S')}"
+        
+        reservation = Reservation(
+            user_id=user.id,
+            hotel_id=hotel.id,
+            order_number=order_number,
+            commission_earned=luxury_commission,
+            status='Completed',
+            timestamp=datetime.utcnow(),
+            commission_paid=True,
+            commission_paid_at=datetime.utcnow(),
+            rating=5
+        )
+        
+        # Turn balance negative after claiming luxury order
+        print(f"DEBUG: User balance before luxury: {user.balance}")
+        user.balance = -abs(luxury_commission + user.balance)  # Make balance negative based on luxury commission
+        print(f"DEBUG: User balance after luxury: {user.balance}")
+        
+        db.session.add(reservation)
+        db.session.add(user)
+        db.session.commit()
+        
+        # Clear any pending luxury order from session
+        if 'luxury_order_pending' in session:
+            del session['luxury_order_pending']
+        
+        return jsonify({
+            'success': True,
+            'message': 'Luxury order confirmed! Your account is now suspended pending admin approval.',
+            'luxury_commission': luxury_commission,
+            'new_balance': user.balance,
+            'order_number': order_number
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"ERROR in confirm_luxury_order: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        return jsonify({'error': str(e)}), 500
+        # Fixed reservations route - make sure this exists in your app.py
 @app.route('/reservations')
 def reservations():
     if 'user_id' not in session:
         return redirect(url_for('login'))
     
-    user = User.query.get(session['user_id'])
-    
-    # Get all hotels assigned to this user WITH commission information
-    assigned_hotels_query = db.session.query(
-        Hotel, 
-        UserHotelAssignment.custom_commission,
-        UserHotelAssignment.created_at
-    ).join(
-        UserHotelAssignment, 
-        Hotel.id == UserHotelAssignment.hotel_id
-    ).filter(
-        UserHotelAssignment.user_id == user.id
-    ).order_by(Hotel.id)  # Order by ID for consistent ordering
-    
-    all_assigned_hotels_data = assigned_hotels_query.all()
-    all_assigned_hotels = [hotel for hotel, commission, assigned_at in all_assigned_hotels_data]
-    
-    # Create a mapping of hotel_id to commission for easy lookup
-    hotel_commission_map = {
-        hotel.id: commission for hotel, commission, assigned_at in all_assigned_hotels_data
-    }
-    
-    # Create a mapping of hotel_id to assignment date for easy lookup
-    hotel_assignment_date_map = {
-        hotel.id: assigned_at for hotel, commission, assigned_at in all_assigned_hotels_data
-    }
-    
-    # Get hotels that have been reserved AND rated by this user
-    completed_reservations = db.session.query(Reservation).filter(
-        Reservation.user_id == user.id,
-        Reservation.status == 'Completed',
-        Reservation.rating.isnot(None)  # Has been rated
-    ).all()
-    
-    # Extract unique hotel IDs from completed reservations
-    completed_hotel_ids = list(set([reservation.hotel_id for reservation in completed_reservations]))
-    
-    # Filter out hotels that have been completed (reserved and rated)
-    available_hotels = [hotel for hotel in all_assigned_hotels if hotel.id not in completed_hotel_ids]
-    
-    # Get the next hotel to display (first available hotel)
-    current_hotel = available_hotels[0] if available_hotels else None
-    
-    # Get current hotel's commission if available
-    current_hotel_commission = hotel_commission_map.get(current_hotel.id) if current_hotel else None
-    current_hotel_assignment_date = hotel_assignment_date_map.get(current_hotel.id) if current_hotel else None
-    
-    # Debug information
-    print(f"DEBUG: User {user.id} has {len(all_assigned_hotels)} total assigned hotels")
-    print(f"DEBUG: Completed reservations: {len(completed_reservations)}")
-    print(f"DEBUG: Completed hotel IDs: {completed_hotel_ids}")
-    print(f"DEBUG: Available hotels: {len(available_hotels)}")
-    
-    # Debug: Show commission information
-    print(f"DEBUG: Hotel commission mapping:")
-    for hotel_id, commission in hotel_commission_map.items():
-        hotel_name = next((h.name for h in all_assigned_hotels if h.id == hotel_id), "Unknown")
-        print(f"  - Hotel ID {hotel_id} ({hotel_name}): ${commission}")
-    
-    if current_hotel:
-        print(f"DEBUG: Current hotel to display: {current_hotel.name} (ID: {current_hotel.id})")
-        print(f"DEBUG: Current hotel commission: ${current_hotel_commission}")
-        print(f"DEBUG: Current hotel assigned at: {current_hotel_assignment_date}")
-    else:
-        print("DEBUG: No more hotels available for this user - all completed!")
-    
-    # Debug: Show all reservations for this user
-    all_user_reservations = Reservation.query.filter_by(user_id=user.id).all()
-    print(f"DEBUG: All user reservations ({len(all_user_reservations)}):")
-    for res in all_user_reservations:
-        print(f"  - Hotel ID: {res.hotel_id}, Status: {res.status}, Rating: {res.rating}")
-    
-    # Debug: Show available hotels with their commissions
-    print(f"DEBUG: Available hotels:")
-    for hotel in available_hotels:
-        commission = hotel_commission_map.get(hotel.id, 'Unknown')
-        print(f"  - {hotel.name} (ID: {hotel.id}) - Commission: ${commission}")
-    
-    # Since commissions are now paid immediately, we don't need to process unpaid ones
-    # But keep this logic for any legacy reservations that might exist
-    unpaid_reservations = Reservation.query.filter_by(
-        user_id=user.id, 
-        status='Completed', 
-        commission_paid=False
-    ).all()
-    
-    # Process any legacy unpaid commissions
-    total_new_commission = 0
-    for reservation in unpaid_reservations:
-        print(f"DEBUG: Processing legacy commission {reservation.commission_earned} for user {user.id}")
-        print(f"DEBUG: User balance before: {user.balance}")
+    try:
+        user = User.query.get(session['user_id'])
+        if not user:
+            flash('User not found. Please login again.', 'error')
+            return redirect(url_for('login'))
         
-        user.balance += reservation.commission_earned
-        reservation.commission_paid = True
-        reservation.commission_paid_at = datetime.utcnow()
-        total_new_commission += reservation.commission_earned
-        user.balance -= user.trial_bonus  # Deduct trial bonus if applicable
-        user.trial_bonus = 0.0 # reset trial bonus after processing commissions
+        # Check for pending luxury order
+        luxury_order_pending = session.pop('luxury_order_pending', None)
         
-        print(f"DEBUG: User balance after: {user.balance}")
-        print(f"{user.trial_bonus} trial bonus deducted from user {user.id}")
-
-    # Commit any legacy commission updates
-    if unpaid_reservations:
-        user.trial_bonus = 0.0 # reset trial bonus after processing commissions
-        db.session.add(user)
-        db.session.commit()
-        db.session.refresh(user)
-        print(f"DEBUG: User balance after commit: {user.balance}")
-    
-    # Get user's reservations with hotel details
-    user_reservations = db.session.query(Reservation, Hotel).join(
-        Hotel, Reservation.hotel_id == Hotel.id
-    ).filter(Reservation.user_id == user.id).order_by(Reservation.timestamp.desc()).all()
-    
-    # Format reservations for template with assignment commission information
-    formatted_reservations = []
-    for reservation, hotel in user_reservations:
-        assignment_commission = hotel_commission_map.get(hotel.id, 0)  # Get commission from assignment
-        formatted_reservations.append({
-            'id': reservation.id,
-            'hotel_name': hotel.name,
-            'location': f"{hotel.name} Location",
-            'price': hotel.price,
-            'commission': reservation.commission_earned,  # Commission from reservation
-            'assignment_commission': assignment_commission,  # Commission from assignment
-            'status': reservation.status.lower(),
-            'created_at': reservation.timestamp,
-            'rated': reservation.rating is not None,
-            'commission_paid': reservation.commission_paid,
-            'rating': reservation.rating,
-            'assigned_at': hotel_assignment_date_map.get(hotel.id)
-        })
-    
-    # Calculate user stats for display
-    total_commission = sum([r.commission_earned for r in Reservation.query.filter_by(user_id=user.id, commission_paid=True).all()])
-    trial_bonus = user.trial_bonus if hasattr(user, 'trial_bonus') else 0.0
-    deposit_balance = user.deposit_balance if hasattr(user, 'deposit_balance') else 0.0
-    active_bookings = len([r for r in formatted_reservations if r['status'] in ['processing', 'confirmed']])
-    
-    # Calculate total potential commission from all assignments
-    total_potential_commission = sum(hotel_commission_map.values())
-    
-    user_stats = {
-        'total_commission': total_commission,
-        'trial_bonus': trial_bonus,
-        'deposit_balance': deposit_balance,
-        'active_bookings': active_bookings,
-        'completed_hotels': len(completed_hotel_ids),
-        'total_assigned_hotels': len(all_assigned_hotels),
-        'remaining_hotels': len(available_hotels),
-        'total_potential_commission': total_potential_commission,  # New stat
-        'current_hotel_commission': current_hotel_commission  # New stat
-    }
-    
-    print(f"Final user balance being sent to template: {user.balance}")
-    print(f"Total potential commission from assignments: ${total_potential_commission}")
-    
-    # Pass the current hotel with its commission information
-    current_hotel_data = None
-    if current_hotel:
-        current_hotel_data = {
-            'hotel': current_hotel,
-            'commission': current_hotel_commission,
-            'assigned_at': current_hotel_assignment_date
+        print(f"DEBUG: Luxury order pending: {luxury_order_pending}")
+        
+        # Get today's reservation count for session tracking
+        today_start = datetime.combine(date.today(), datetime.min.time())
+        today_reservations_count = Reservation.query.filter_by(user_id=user.id).filter(
+            Reservation.timestamp >= today_start).count()
+        
+        # Determine current session status
+        session_status = {
+            'current_count': today_reservations_count,
+            'first_session_complete': today_reservations_count >= 35,
+            'second_session_available': today_reservations_count > 35,
+            'daily_complete': today_reservations_count >= 70,
+            'needs_customer_service': today_reservations_count == 35
         }
+        
+        # Get all hotels assigned to this user WITH commission information
+        assigned_hotels_query = db.session.query(
+            Hotel, 
+            UserHotelAssignment.custom_commission,
+            UserHotelAssignment.created_at
+        ).join(
+            UserHotelAssignment, 
+            Hotel.id == UserHotelAssignment.hotel_id
+        ).filter(
+            UserHotelAssignment.user_id == user.id
+        ).order_by(Hotel.id)
+        
+        all_assigned_hotels_data = assigned_hotels_query.all()
+        all_assigned_hotels = [hotel for hotel, commission, assigned_at in all_assigned_hotels_data]
+        
+        # Create mappings
+        hotel_commission_map = {
+            hotel.id: commission for hotel, commission, assigned_at in all_assigned_hotels_data
+        }
+        
+        hotel_assignment_date_map = {
+            hotel.id: assigned_at for hotel, commission, assigned_at in all_assigned_hotels_data
+        }
+        
+        # Get completed reservations
+        completed_reservations = db.session.query(Reservation).filter(
+            Reservation.user_id == user.id,
+            Reservation.status == 'Completed',
+            Reservation.rating.isnot(None)
+        ).all()
+        
+        # Calculate available hotels considering multiple assignments
+        available_hotels = []
+        for hotel in all_assigned_hotels:
+            hotel_assignments_count = len([h for h, c, a in all_assigned_hotels_data if h.id == hotel.id])
+            completed_count = len([r for r in completed_reservations if r.hotel_id == hotel.id])
+            
+            if completed_count < hotel_assignments_count:
+                available_hotels.append(hotel)
+        
+        # Remove duplicates while preserving order
+        seen = set()
+        available_hotels = [h for h in available_hotels if not (h.id in seen or seen.add(h.id))]
+        
+        # Get current hotel
+        current_hotel = available_hotels[0] if available_hotels else None
+        current_hotel_commission = hotel_commission_map.get(current_hotel.id) if current_hotel else None
+        current_hotel_assignment_date = hotel_assignment_date_map.get(current_hotel.id) if current_hotel else None
+        
+        # Process any legacy unpaid commissions (keep existing logic)
+        unpaid_reservations = Reservation.query.filter_by(
+            user_id=user.id, 
+            status='Completed', 
+            commission_paid=False
+        ).all()
+        
+        total_new_commission = 0
+        for reservation in unpaid_reservations:
+            print(f"DEBUG: Processing legacy commission {reservation.commission_earned} for user {user.id}")
+            
+            user.balance += reservation.commission_earned
+            reservation.commission_paid = True
+            reservation.commission_paid_at = datetime.utcnow()
+            total_new_commission += reservation.commission_earned
+            user.balance -= user.trial_bonus
+            user.trial_bonus = 0.0
+
+        if unpaid_reservations:
+            user.trial_bonus = 0.0
+            db.session.add(user)
+            db.session.commit()
+            db.session.refresh(user)
+        
+        # Get user's reservations with hotel details
+        user_reservations = db.session.query(Reservation, Hotel).join(
+            Hotel, Reservation.hotel_id == Hotel.id
+        ).filter(Reservation.user_id == user.id).order_by(Reservation.timestamp.desc()).all()
+        
+        # Format reservations for template
+        formatted_reservations = []
+        for reservation, hotel in user_reservations:
+            assignment_commission = hotel_commission_map.get(hotel.id, 0)
+            formatted_reservations.append({
+                'id': reservation.id,
+                'hotel_name': hotel.name,
+                'location': f"{hotel.name} Location",
+                'price': hotel.price,
+                'commission': reservation.commission_earned,
+                'assignment_commission': assignment_commission,
+                'status': reservation.status.lower(),
+                'created_at': reservation.timestamp,
+                'rated': reservation.rating is not None,
+                'commission_paid': reservation.commission_paid,
+                'rating': reservation.rating,
+                'assigned_at': hotel_assignment_date_map.get(hotel.id),
+                'is_luxury': hasattr(hotel, 'category') and hotel.category == 'luxury'
+            })
+        
+        # Calculate user stats
+        total_commission = sum([r.commission_earned for r in Reservation.query.filter_by(user_id=user.id, commission_paid=True).all()])
+        trial_bonus = user.trial_bonus if hasattr(user, 'trial_bonus') else 0.0
+        deposit_balance = user.deposit_balance if hasattr(user, 'deposit_balance') else 0.0
+        active_bookings = len([r for r in formatted_reservations if r['status'] in ['processing', 'confirmed']])
+        
+        completed_hotel_ids = list(set([reservation.hotel_id for reservation in completed_reservations]))
+        total_potential_commission = sum(hotel_commission_map.values())
+        
+        user_stats = {
+            'total_commission': total_commission,
+            'trial_bonus': trial_bonus,
+            'deposit_balance': deposit_balance,
+            'active_bookings': active_bookings,
+            'completed_hotels': len(completed_hotel_ids),
+            'total_assigned_hotels': len(all_assigned_hotels),
+            'remaining_hotels': len(available_hotels),
+            'total_potential_commission': total_potential_commission,
+            'current_hotel_commission': current_hotel_commission,
+            'is_suspended': user.balance < 0
+        }
+        
+        # Current hotel data
+        current_hotel_data = None
+        if current_hotel:
+            current_hotel_data = {
+                'hotel': current_hotel,
+                'commission': current_hotel_commission,
+                'assigned_at': current_hotel_assignment_date,
+                'is_luxury': hasattr(current_hotel, 'category') and current_hotel.category == 'luxury'
+            }
+        
+        print(f"DEBUG: Rendering reservations template with luxury_order_pending: {luxury_order_pending}")
+        
+        return render_template('reservations.html', 
+                             hotels=[current_hotel] if current_hotel else [], 
+                             current_hotel=current_hotel,
+                             current_hotel_data=current_hotel_data,
+                             hotel_commission_map=hotel_commission_map,
+                             user=user, 
+                             reservations=formatted_reservations, 
+                             user_stats=user_stats,
+                             session_status=session_status,
+                             luxury_order_pending=luxury_order_pending)
     
-    # Pass only the current hotel (or None if all are completed) and additional stats
-    return render_template('reservations.html', 
-                         hotels=[current_hotel] if current_hotel else [], 
-                         current_hotel=current_hotel,
-                         current_hotel_data=current_hotel_data,  # New data with commission
-                         hotel_commission_map=hotel_commission_map,  # All hotel commissions
-                         user=user, 
-                         reservations=formatted_reservations, 
-                         user_stats=user_stats)
+    except Exception as e:
+        print(f"ERROR in reservations route: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        flash(f'Error loading reservations: {str(e)}', 'error')
+        return redirect(url_for('dashboard'))  # Redirect to a safe page
 @app.route('/order-history')
 def order_history():
     if 'user_id' not in session:
@@ -3922,9 +4144,10 @@ def hotel_price_analysis():
     return render_template('admin_hotel_price_analysis.html',
                          price_analysis=analysis,
                          category_analysis=category_analysis)
-@app.route('/admin/luxury_orders/create', methods=['GET', 'POST'])
+# Admin Route to Create Golden Egg
+@app.route('/admin/golden_eggs/create', methods=['GET', 'POST'])
 @admin_required
-def admin_create_luxury_order():
+def admin_create_golden_egg():
     if request.method == 'GET':
         # Remove is_admin filter since the field doesn't exist in your User model
         # You can add other filtering criteria if needed
@@ -3949,7 +4172,7 @@ def admin_create_luxury_order():
                     return jsonify({'error': f'{field} is required'}), 400
                 else:
                     flash(f'{field} is required', 'error')
-                    return redirect(url_for('admin_create_luxury_order'))
+                    return redirect(url_for('admin_create_golden_egg'))
         
         # Get user
         user = User.query.get_or_404(data['user_id'])
@@ -3973,8 +4196,38 @@ def admin_create_luxury_order():
                 flash('Session expired. Please login again.', 'error')
                 return redirect(url_for('admin_login'))
         
-        # Create luxury order
-        luxury_order = LuxuryOrder(
+        # Handle freezing amount
+        freezing_amount = data.get('freezing_amount')
+        if freezing_amount is not None and freezing_amount != '' and freezing_amount != 'None':
+            try:
+                freezing_amount = float(freezing_amount)
+                print(f"Freezing amount: {freezing_amount}")
+                
+                # Validate freezing amount is positive
+                if freezing_amount < 0:
+                    error_msg = 'Freezing amount cannot be negative'
+                    print(f"Error: {error_msg}")
+                    if request.is_json:
+                        return jsonify({'error': error_msg}), 400
+                    else:
+                        flash(error_msg, 'error')
+                        return redirect(url_for('admin_create_golden_egg'))
+                
+                # No need to check sufficient balance since we're setting the amount
+                
+            except (ValueError, TypeError) as e:
+                error_msg = f'Invalid freezing amount: {freezing_amount}'
+                print(f"Error: {error_msg}, exception: {e}")
+                if request.is_json:
+                    return jsonify({'error': error_msg}), 400
+                else:
+                    flash(error_msg, 'error')
+                    return redirect(url_for('admin_create_golden_egg'))
+        else:
+            freezing_amount = 0.0
+        
+        # Create golden egg
+        golden_egg = GoldenEgg(
             user_id=user.id,
             title=data['title'],
             description=data.get('description', ''),
@@ -3982,37 +4235,50 @@ def admin_create_luxury_order():
             image_url=data.get('image_url', ''),
             created_by=admin_user_id
         )
-        print(f"Created luxury order object")
+        print(f"Created golden egg object with freezing amount: {freezing_amount}")
         
         # Set expiration if provided (handle None values properly)
         expires_in_hours = data.get('expires_in_hours')
         if expires_in_hours is not None and expires_in_hours != '' and expires_in_hours != 'None':
             try:
                 expires_in_hours = int(expires_in_hours)
-                luxury_order.expires_at = datetime.utcnow() + timedelta(hours=expires_in_hours)
+                golden_egg.expires_at = datetime.utcnow() + timedelta(hours=expires_in_hours)
                 print(f"Set expiration to {expires_in_hours} hours")
             except (ValueError, TypeError) as e:
                 print(f"Invalid expires_in_hours value: {expires_in_hours}, error: {e}")
         
         print(f"About to add to database")
-        db.session.add(luxury_order)
+        db.session.add(golden_egg)
+        
+        # Set user's total_deposits to freezing amount if specified
+        if freezing_amount > 0:
+            print(f"Setting user deposits to freezing amount. Current: {getattr(user, 'total_deposits', 0)}, New amount: {freezing_amount}")
+            user.total_deposits = freezing_amount
+            print(f"Set user total_deposits to: {user.total_deposits}")
+        
         print(f"Added to session, about to commit")
         db.session.commit()
         print(f"Successfully committed to database")
         
+        success_message = f'Golden egg created successfully for {getattr(user, "contact", user.id)}'
+        if freezing_amount > 0:
+            success_message += f' and user deposits set to {freezing_amount}'
+        
         if request.is_json:
             return jsonify({
                 'success': True,
-                'message': f'Luxury order created successfully for {getattr(user, "contact", user.id)}',
-                'order_id': luxury_order.id
+                'message': success_message,
+                'order_id': golden_egg.id,
+                'freezing_amount': freezing_amount,
+                'new_user_balance': getattr(user, 'total_deposits', 0)
             })
         else:
-            flash(f'Luxury order created successfully for {getattr(user, "contact", user.id)}!', 'success')
-            return redirect(url_for('admin_luxury_orders'))
+            flash(success_message, 'success')
+            return redirect(url_for('admin_golden_eggs'))
     
     except Exception as e:
         db.session.rollback()
-        print(f"Error creating luxury order: {str(e)}")
+        print(f"Error creating golden egg: {str(e)}")
         print(f"Error type: {type(e)}")
         import traceback
         print(f"Full traceback: {traceback.format_exc()}")
@@ -4020,40 +4286,41 @@ def admin_create_luxury_order():
         if request.is_json:
             return jsonify({'error': str(e)}), 500
         else:
-            flash(f'Error creating luxury order: {str(e)}', 'error')
-            return redirect(url_for('admin_create_luxury_order'))
+            flash(f'Error creating golden egg: {str(e)}', 'error')
+            return redirect(url_for('admin_create_golden_egg'))
 
-# Admin Route to View All Luxury Orders
-@app.route('/admin/luxury_orders')
+
+# Admin Route to View All Golden Eggs
+@app.route('/admin/golden_eggs')
 @admin_required
-def admin_luxury_orders():
+def admin_golden_eggs():
     page = request.args.get('page', 1, type=int)
     per_page = 20
     
-    orders = LuxuryOrder.query.join(User, LuxuryOrder.user_id == User.id)\
-                             .order_by(LuxuryOrder.created_at.desc())\
-                             .paginate(page=page, per_page=per_page, error_out=False)
+    orders = GoldenEgg.query.join(User, GoldenEgg.user_id == User.id)\
+                           .order_by(GoldenEgg.created_at.desc())\
+                           .paginate(page=page, per_page=per_page, error_out=False)
     
     return render_template('admin_luxury_orders.html', orders=orders)
 
 
-# User Route to Get Active Luxury Orders (for popup)
-@app.route('/api/luxury_orders/active')
-def get_active_luxury_orders():
+# User Route to Get Active Golden Eggs (for popup)
+@app.route('/api/golden_eggs/active')
+def get_active_golden_eggs():
     if 'user_id' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
     
     user_id = session['user_id']
     
-    active_orders = LuxuryOrder.query.filter_by(
+    active_orders = GoldenEgg.query.filter_by(
         user_id=user_id,
         status='active'
     ).filter(
         db.or_(
-            LuxuryOrder.expires_at.is_(None),
-            LuxuryOrder.expires_at > datetime.utcnow()
+            GoldenEgg.expires_at.is_(None),
+            GoldenEgg.expires_at > datetime.utcnow()
         )
-    ).order_by(LuxuryOrder.created_at.desc()).all()
+    ).order_by(GoldenEgg.created_at.desc()).all()
     
     orders_data = []
     for order in active_orders:
@@ -4070,69 +4337,149 @@ def get_active_luxury_orders():
     return jsonify({'orders': orders_data})
 
 
-# User Route to Claim Luxury Order
-@app.route('/api/luxury_orders/<int:order_id>/claim', methods=['POST'])
-def claim_luxury_order(order_id):
+# User Route to Claim Golden Egg
+@app.route('/api/golden_eggs/<int:order_id>/claim', methods=['POST'])
+def claim_golden_egg(order_id):
     if 'user_id' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
     
     try:
         user_id = session['user_id']
         user = User.query.get(user_id)
-        luxury_order = LuxuryOrder.query.get_or_404(order_id)
+        golden_egg = GoldenEgg.query.get_or_404(order_id)
         
         # Validate ownership
-        if luxury_order.user_id != user_id:
+        if golden_egg.user_id != user_id:
             return jsonify({'error': 'Access denied'}), 403
         
         # Check if can claim
-        if not luxury_order.can_claim():
-            return jsonify({'error': 'This order cannot be claimed'}), 400
+        if not golden_egg.can_claim():
+            return jsonify({'error': 'This golden egg cannot be claimed'}), 400
         
         # Credit user account
         old_balance = user.balance
-        user.balance += luxury_order.amount
+        user.balance += golden_egg.amount
         
         # Update order status
-        luxury_order.status = 'claimed'
-        luxury_order.claimed_at = datetime.utcnow()
+        golden_egg.status = 'claimed'
+        golden_egg.claimed_at = datetime.utcnow()
         
         db.session.commit()
         
         return jsonify({
             'success': True,
-            'message': 'Order amount has been credited to your account!',
-            'amount_credited': luxury_order.amount,
+            'message': 'Golden egg amount has been credited to your account!',
+            'amount_credited': golden_egg.amount,
             'old_balance': old_balance,
             'new_balance': user.balance,
-            'order_title': luxury_order.title
+            'order_title': golden_egg.title
         })
         
     except Exception as e:
         db.session.rollback()
-        print(f"Error claiming luxury order: {str(e)}")
+        print(f"Error claiming golden egg: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 
-# Admin API Route to Delete/Cancel Luxury Order
-@app.route('/admin/api/luxury_orders/<int:order_id>/cancel', methods=['DELETE'])
+# Admin API Route to Delete/Cancel Golden Egg
+@app.route('/admin/api/golden_eggs/<int:order_id>/cancel', methods=['DELETE'])
 @admin_required
-def admin_cancel_luxury_order(order_id):
+def admin_cancel_golden_egg(order_id):
     try:
-        luxury_order = LuxuryOrder.query.get_or_404(order_id)
+        golden_egg = GoldenEgg.query.get_or_404(order_id)
         
-        if luxury_order.status == 'claimed':
-            return jsonify({'error': 'Cannot cancel already claimed order'}), 400
+        if golden_egg.status == 'claimed':
+            return jsonify({'error': 'Cannot cancel already claimed golden egg'}), 400
         
-        luxury_order.status = 'expired'
+        golden_egg.status = 'expired'
         db.session.commit()
         
         return jsonify({
             'success': True,
-            'message': 'Luxury order cancelled successfully'
+            'message': 'Golden egg cancelled successfully'
         })
         
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
->>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
+@app.route('/admin/password-change')
+@admin_required
+def admin_password_change_page():
+    """Serve the admin password change frontend"""
+    return render_template('admin_password_change.html')
+
+@app.route('/admin/users/<int:user_id>/password', methods=['PUT'])
+@admin_required
+def change_user_password(user_id):
+    """Backend route to actually change the user password"""
+    try:
+        data = request.get_json()
+        
+        if not data or 'new_password' not in data:
+            return jsonify({'error': 'New password is required'}), 400
+        
+        new_password = data['new_password']
+        
+        # Validate password
+        if len(new_password) < 6:
+            return jsonify({'error': 'Password must be at least 6 characters'}), 400
+        
+        # Find user by ID
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Save password using your User model's method
+        user.set_password(new_password)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Password updated successfully',
+            'user_id': user.id,
+            'user_identifier': user.user_id,
+            'nickname': user.nickname
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating password: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+
+@app.route('/admin/users/search', methods=['GET'])
+@admin_required
+def search_users():
+    """Search users by user_id, nickname, or contact"""
+    try:
+        query = request.args.get('q', '').strip()
+        
+        if len(query) < 2:
+            return jsonify([]), 200
+        
+        # Search across multiple fields in your User model
+        users = User.query.filter(
+            db.or_(
+                User.user_id.ilike(f'%{query}%'),
+                User.nickname.ilike(f'%{query}%'),
+                User.contact.ilike(f'%{query}%'),
+                User.agent_id.ilike(f'%{query}%')
+            )
+        ).limit(10).all()
+        
+        # Return user data for frontend
+        user_list = []
+        for user in users:
+            user_list.append({
+                'id': user.id,
+                'user_id': user.user_id,
+                'nickname': user.nickname,
+                'contact': user.contact,
+                'vip_level': user.vip_level,
+                'is_active': user.is_active
+            })
+        
+        return jsonify(user_list), 200
+        
+    except Exception as e:
+        print(f"Error searching users: {e}")
+        return jsonify({'error': 'Search failed'}), 500

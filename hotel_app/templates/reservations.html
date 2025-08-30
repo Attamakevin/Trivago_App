@@ -927,7 +927,7 @@ function getCurrentBalance() {
 }
 
 // Check for active luxury orders
-async function checkForActiveGoldenEggs() {
+async function checkForActiveLuxuryOrders() {
     try {
         const response = await fetch('/api/golden_eggs/active', {
             method: 'GET',

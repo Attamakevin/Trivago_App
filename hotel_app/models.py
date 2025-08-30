@@ -53,19 +53,49 @@ class User(db.Model, UserMixin):
     last_location_update = db.Column(db.DateTime, default=datetime.utcnow)
     
     
+    # New fields for session management
+    current_session = db.Column(db.String(10), default='first')  # 'first' or 'second'
+    session_reset_date = db.Column(db.Date)  # Date when session was last reset
+    first_session_completed = db.Column(db.Boolean, default=False)
+    first_session_reservations_count = db.Column(db.Integer, default=0)
+    second_session_reservations_count = db.Column(db.Integer, default=0)
+    max_first_session_reservations = db.Column(db.Integer, default=35)
+    session_locked = db.Column(db.Boolean, default=False)  # Lock between sessions
+    
+    # Commission tracking
+    total_commission_earned = db.Column(db.Float, default=0.0)  # Total commissions earned
+    first_session_commission = db.Column(db.Float, default=0.0)  # Commission from first session
+    second_session_commission = db.Column(db.Float, default=0.0)  # Commission from second session
+    
     # Relationships
     reservations = db.relationship('Reservation', backref='user', cascade="all, delete-orphan",
         passive_deletes=True,lazy=True)
     deposit_requests = db.relationship('DepositRequest', backref='user', lazy=True)
     withdrawal_requests = db.relationship('WithdrawalRequest', backref='user', lazy=True)
+<<<<<<< HEAD
+    user_hotel_assignments = db.relationship('UserHotelAssignment', backref='user', lazy=True)
+    rated_hotels = db.relationship('UserHotelRating', backref='user', lazy=True)
+   
+=======
     hotel_assignments = db.relationship('UserHotelAssignment', backref='user',cascade="all, delete-orphan",
         passive_deletes=True, lazy=True)
     hotel_ratings = db.relationship('UserHotelRating', backref='user', lazy=True)
 
+>>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
     def __init__(self, **kwargs):
         super(User, self).__init__(**kwargs)
         if not self.user_id:
             self.user_id = self.generate_user_id()
+<<<<<<< HEAD
+            
+    def generate_user_id(self):
+        # Generate a 6-digit numeric ID
+        return str(random.randint(100000, 999999))
+    
+    def can_make_reservation(self):
+        """Check if user can make a reservation based on session limits"""
+        today = datetime.now().date()
+=======
     
     def set_password(self, password):
         """Set password hash"""
@@ -93,6 +123,7 @@ class User(db.Model, UserMixin):
     def can_make_reservation(self):
         """Check if user can make a reservation based on session limits"""
         today = datetime.now().date().isoformat()
+>>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
         
         # Reset daily counters if it's a new day
         if self.session_reset_date != today:
@@ -137,7 +168,11 @@ class User(db.Model, UserMixin):
     def get_available_hotels(self):
         """Get hotels available for current session that user hasn't rated"""
         # Get rated hotel IDs for current session
+<<<<<<< HEAD
+        rated_hotel_ids = [r.hotel_id for r in self.rated_hotels 
+=======
         rated_hotel_ids = [r.hotel_id for r in self.hotel_ratings 
+>>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
                           if r.session_type == self.current_session]
         
         # Get assigned hotels for current session
@@ -179,7 +214,11 @@ class User(db.Model, UserMixin):
             commission_paid=False
         ).all()
         
+<<<<<<< HEAD
+        return sum(r.commission_earned for r in unpaid_reservations)
+=======
         return sum(r.commission_earned for r in unpaid_reservations if r.commission_earned)
+>>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
     
     def reset_daily_commission(self):
         """Reset daily commission counters (called on new day)"""
@@ -221,10 +260,55 @@ class Hotel(db.Model):
     category = db.Column(db.String(50))
     is_active = db.Column(db.Boolean, default=True)
     
+    # New fields for categorization
+    category = db.Column(db.String(50), default='regular')  # 'regular' or 'luxury'
+    is_active = db.Column(db.Boolean, default=True)  # Admin can activate/deactivate
+    
     # Relationships
     reservations = db.relationship('Reservation', backref='hotel', lazy=True)
     user_assignments = db.relationship('UserHotelAssignment', backref='hotel', lazy=True)
     user_ratings = db.relationship('UserHotelRating', backref='hotel', lazy=True)
+<<<<<<< HEAD
+    
+    def get_average_rating(self):
+        """Calculate average rating from all user ratings"""
+        if not self.user_ratings:
+            return 5  # Default rating if no reviews
+        return round(sum(r.rating for r in self.user_ratings) / len(self.user_ratings))
+
+class UserHotelAssignment(db.Model):
+    """Admin assigns specific hotels to users for each session"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotel.id'), nullable=False)
+    session_type = db.Column(db.String(10), nullable=False)  # 'first' or 'second'
+    custom_commission = db.Column(db.Float, nullable=False)  # Admin-set commission for this user-hotel combo
+    assigned_by = db.Column(db.Integer, db.ForeignKey('admin.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    assigned_by_admin = db.relationship('Admin', backref='hotel_assignments', lazy=True)
+    
+    # Unique constraint to prevent duplicate assignments
+    __table_args__ = (db.UniqueConstraint('user_id', 'hotel_id', 'session_type', 
+                                        name='unique_user_hotel_session'),)
+
+class UserHotelRating(db.Model):
+    """Track which hotels user has rated in each session"""
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    hotel_id = db.Column(db.Integer, db.ForeignKey('hotel.id'), nullable=False)
+    session_type = db.Column(db.String(10), nullable=False)  # 'first' or 'second'
+    rating = db.Column(db.Integer, nullable=False)  # 1-5 stars
+    feedback = db.Column(db.Text)
+    commission_earned = db.Column(db.Float, default=0.0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Unique constraint to prevent duplicate ratings
+    __table_args__ = (db.UniqueConstraint('user_id', 'hotel_id', 'session_type', 
+                                        name='unique_user_hotel_rating'),)
+=======
+>>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
 
     def get_average_rating(self):
         """Calculate average rating from all user ratings"""
@@ -274,6 +358,12 @@ class Reservation(db.Model):
     feedback = db.Column(db.Text)
     commission_earned = db.Column(db.Float, default=0.0)
     commission_paid = db.Column(db.Boolean, default=False)
+<<<<<<< HEAD
+    commission_paid_at = db.Column(db.DateTime, nullable=True)
+    
+    # New fields for session tracking
+    session_type = db.Column(db.String(10))  # 'first' or 'second'
+=======
     commission_paid_at = db.Column(db.DateTime)
     session_type = db.Column(db.String(10))
     
@@ -288,6 +378,7 @@ class Reservation(db.Model):
             order_number = 'ORD' + ''.join(random.choices(string.digits, k=10))
             if not Reservation.query.filter_by(order_number=order_number).first():
                 return order_number
+>>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
     
     def calculate_commission(self):
         """Calculate commission based on user's hotel assignment"""
@@ -313,7 +404,11 @@ class Reservation(db.Model):
         self.status = 'Completed'
         
         # Calculate commission if not already calculated
+<<<<<<< HEAD
+        if self.commission_earned == 0.0:
+=======
         if not self.commission_earned:
+>>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
             self.calculate_commission()
         
         # Create rating record
@@ -365,6 +460,116 @@ class Admin(db.Model):
     def check_password(self, password):
         """Check if provided password matches hash"""
         return check_password_hash(self.password_hash, password)
+    
+    def assign_hotels_to_user(self, user_id, hotel_assignments):
+        """
+        Assign hotels to user for a specific session
+        hotel_assignments: list of dicts with keys: hotel_id, session_type, custom_commission
+        """
+        for assignment in hotel_assignments:
+            # Check if assignment already exists
+            existing = UserHotelAssignment.query.filter_by(
+                user_id=user_id,
+                hotel_id=assignment['hotel_id'],
+                session_type=assignment['session_type']
+            ).first()
+            
+            if not existing:
+                new_assignment = UserHotelAssignment(
+                    user_id=user_id,
+                    hotel_id=assignment['hotel_id'],
+                    session_type=assignment['session_type'],
+                    custom_commission=assignment['custom_commission'],
+                    assigned_by=self.id
+                )
+                db.session.add(new_assignment)
+        
+        db.session.commit()
+    
+    def get_hotels_for_assignment(self, category=None, min_price=None, max_price=None, 
+                                 sort_by='name', sort_order='asc'):
+        """
+        Get hotels available for assignment with filtering and sorting
+        """
+        query = Hotel.query.filter_by(is_active=True)
+        
+        if category:
+            query = query.filter_by(category=category)
+        
+        if min_price is not None:
+            query = query.filter(Hotel.price >= min_price)
+        
+        if max_price is not None:
+            query = query.filter(Hotel.price <= max_price)
+        
+        # Apply sorting
+        if sort_by == 'price':
+            if sort_order == 'desc':
+                query = query.order_by(Hotel.price.desc())
+            else:
+                query = query.order_by(Hotel.price.asc())
+        elif sort_by == 'rating':
+            if sort_order == 'desc':
+                query = query.order_by(Hotel.rating.desc())
+            else:
+                query = query.order_by(Hotel.rating.asc())
+        elif sort_by == 'category':
+            if sort_order == 'desc':
+                query = query.order_by(Hotel.category.desc())
+            else:
+                query = query.order_by(Hotel.category.asc())
+        else:  # Default to name
+            if sort_order == 'desc':
+                query = query.order_by(Hotel.name.desc())
+            else:
+                query = query.order_by(Hotel.name.asc())
+        
+        return query.all()
+    
+    def pay_user_commission(self, user_id, amount=None):
+        """
+        Pay commission to user and mark reservations as paid
+        If amount is None, pays all unpaid commissions
+        """
+        user = User.query.get(user_id)
+        if not user:
+            return False
+        
+        unpaid_reservations = Reservation.query.filter_by(
+            user_id=user_id,
+            commission_paid=False
+        ).all()
+        
+        if not unpaid_reservations:
+            return False
+        
+        total_unpaid = sum(r.commission_earned for r in unpaid_reservations)
+        
+        if amount is None:
+            amount = total_unpaid
+        
+        # Add to user's balance
+        user.balance += amount
+        
+        # Mark reservations as paid (proportionally if partial payment)
+        if amount >= total_unpaid:
+            # Full payment - mark all as paid
+            for reservation in unpaid_reservations:
+                reservation.commission_paid = True
+                reservation.commission_paid_at = datetime.utcnow()
+        else:
+            # Partial payment - mark proportionally
+            remaining_amount = amount
+            for reservation in unpaid_reservations:
+                if remaining_amount >= reservation.commission_earned:
+                    reservation.commission_paid = True
+                    reservation.commission_paid_at = datetime.utcnow()
+                    remaining_amount -= reservation.commission_earned
+                else:
+                    break
+        
+        db.session.commit()
+        return True
 
 class DepositRequest(db.Model):
     __tablename__ = 'deposit_request'
@@ -373,13 +578,22 @@ class DepositRequest(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     amount = db.Column(db.Float, nullable=False)
     network = db.Column(db.String(20), nullable=False)
+<<<<<<< HEAD
+    wallet_address = db.Column(db.String(200), nullable=True)
+=======
     wallet_address = db.Column(db.String(200))
+>>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
     transaction_hash = db.Column(db.String(200))
     status = db.Column(db.String(20), default='Pending')
     admin_notes = db.Column(db.Text)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     processed_at = db.Column(db.DateTime)
     processed_by = db.Column(db.Integer, db.ForeignKey('admin.id'))
+<<<<<<< HEAD
+    
+    processed_by_admin = db.relationship('Admin', backref='processed_deposits', lazy=True)
+=======
+>>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
     
     @staticmethod
     def validate_wallet_address(address, network):
@@ -409,8 +623,13 @@ class DepositRequest(db.Model):
             bsc_pattern = r'^0x[a-fA-F0-9]{40}$'
             return re.match(bsc_pattern, address) is not None
         
+<<<<<<< HEAD
+        # USDT on Bitcoin (Omni Layer) - Legacy format
+        elif network == 'BTC' or network == 'OMNI':
+=======
         # USDT on Bitcoin (Omni Layer)
         elif network in ['BTC', 'OMNI']:
+>>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
             btc_pattern = r'^[13][a-km-zA-HJ-NP-Z1-9]{25,34}$'
             return re.match(btc_pattern, address) is not None
         
@@ -448,8 +667,12 @@ class WithdrawalRequest(db.Model):
     processed_at = db.Column(db.DateTime)
     processed_by = db.Column(db.Integer, db.ForeignKey('admin.id'))
     
+<<<<<<< HEAD
+    processed_by_admin = db.relationship('Admin', backref='processed_withdrawals', lazy=True)
+=======
     # Add relationship to User model
     #user = db.relationship('User', backref='withdrawal_requests', lazy=True)
+>>>>>>> 63f7ce8ae281c05fcd8d1abf23b2d07379e957a6
     
     @staticmethod
     def validate_wallet_address(address, network):

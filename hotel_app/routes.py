@@ -1,7 +1,7 @@
 # hotel_app/routes.py
 from flask import render_template, redirect, url_for, flash, request,jsonify, session
 from hotel_app import app, db
-from hotel_app.models import User, Hotel,LuxuryOrder, UserHotelAssignment,Reservation, DepositRequest, WithdrawalRequest, EventAd, Admin, InvitationCode
+from hotel_app.models import User, Hotel,GoldenEgg, UserHotelAssignment,Reservation, DepositRequest, WithdrawalRequest, EventAd, Admin, InvitationCode
 from datetime import datetime, date,timedelta
 from flask_login import login_required, login_user, logout_user, current_user
 @app.route('/')
@@ -3098,9 +3098,10 @@ def hotel_price_analysis():
     return render_template('admin_hotel_price_analysis.html',
                          price_analysis=analysis,
                          category_analysis=category_analysis)
-@app.route('/admin/luxury_orders/create', methods=['GET', 'POST'])
+# Admin Route to Create Golden Egg
+@app.route('/admin/golden_eggs/create', methods=['GET', 'POST'])
 @admin_required
-def admin_create_luxury_order():
+def admin_create_golden_egg():
     if request.method == 'GET':
         # Remove is_admin filter since the field doesn't exist in your User model
         # You can add other filtering criteria if needed
@@ -3125,7 +3126,7 @@ def admin_create_luxury_order():
                     return jsonify({'error': f'{field} is required'}), 400
                 else:
                     flash(f'{field} is required', 'error')
-                    return redirect(url_for('admin_create_luxury_order'))
+                    return redirect(url_for('admin_create_golden_egg'))
         
         # Get user
         user = User.query.get_or_404(data['user_id'])
@@ -3164,7 +3165,7 @@ def admin_create_luxury_order():
                         return jsonify({'error': error_msg}), 400
                     else:
                         flash(error_msg, 'error')
-                        return redirect(url_for('admin_create_luxury_order'))
+                        return redirect(url_for('admin_create_golden_egg'))
                 
                 # No need to check sufficient balance since we're setting the amount
                 
@@ -3175,12 +3176,12 @@ def admin_create_luxury_order():
                     return jsonify({'error': error_msg}), 400
                 else:
                     flash(error_msg, 'error')
-                    return redirect(url_for('admin_create_luxury_order'))
+                    return redirect(url_for('admin_create_golden_egg'))
         else:
             freezing_amount = 0.0
         
-        # Create luxury order
-        luxury_order = LuxuryOrder(
+        # Create golden egg
+        golden_egg = GoldenEgg(
             user_id=user.id,
             title=data['title'],
             description=data.get('description', ''),
@@ -3188,20 +3189,20 @@ def admin_create_luxury_order():
             image_url=data.get('image_url', ''),
             created_by=admin_user_id
         )
-        print(f"Created luxury order object with freezing amount: {freezing_amount}")
+        print(f"Created golden egg object with freezing amount: {freezing_amount}")
         
         # Set expiration if provided (handle None values properly)
         expires_in_hours = data.get('expires_in_hours')
         if expires_in_hours is not None and expires_in_hours != '' and expires_in_hours != 'None':
             try:
                 expires_in_hours = int(expires_in_hours)
-                luxury_order.expires_at = datetime.utcnow() + timedelta(hours=expires_in_hours)
+                golden_egg.expires_at = datetime.utcnow() + timedelta(hours=expires_in_hours)
                 print(f"Set expiration to {expires_in_hours} hours")
             except (ValueError, TypeError) as e:
                 print(f"Invalid expires_in_hours value: {expires_in_hours}, error: {e}")
         
         print(f"About to add to database")
-        db.session.add(luxury_order)
+        db.session.add(golden_egg)
         
         # Set user's total_deposits to freezing amount if specified
         if freezing_amount > 0:
@@ -3213,7 +3214,7 @@ def admin_create_luxury_order():
         db.session.commit()
         print(f"Successfully committed to database")
         
-        success_message = f'Luxury order created successfully for {getattr(user, "contact", user.id)}'
+        success_message = f'Golden egg created successfully for {getattr(user, "contact", user.id)}'
         if freezing_amount > 0:
             success_message += f' and user deposits set to {freezing_amount}'
         
@@ -3221,17 +3222,17 @@ def admin_create_luxury_order():
             return jsonify({
                 'success': True,
                 'message': success_message,
-                'order_id': luxury_order.id,
+                'order_id': golden_egg.id,
                 'freezing_amount': freezing_amount,
                 'new_user_balance': getattr(user, 'total_deposits', 0)
             })
         else:
             flash(success_message, 'success')
-            return redirect(url_for('admin_luxury_orders'))
+            return redirect(url_for('admin_golden_eggs'))
     
     except Exception as e:
         db.session.rollback()
-        print(f"Error creating luxury order: {str(e)}")
+        print(f"Error creating golden egg: {str(e)}")
         print(f"Error type: {type(e)}")
         import traceback
         print(f"Full traceback: {traceback.format_exc()}")
@@ -3239,40 +3240,41 @@ def admin_create_luxury_order():
         if request.is_json:
             return jsonify({'error': str(e)}), 500
         else:
-            flash(f'Error creating luxury order: {str(e)}', 'error')
-            return redirect(url_for('admin_create_luxury_order'))
+            flash(f'Error creating golden egg: {str(e)}', 'error')
+            return redirect(url_for('admin_create_golden_egg'))
 
-# Admin Route to View All Luxury Orders
-@app.route('/admin/luxury_orders')
+
+# Admin Route to View All Golden Eggs
+@app.route('/admin/golden_eggs')
 @admin_required
-def admin_luxury_orders():
+def admin_golden_eggs():
     page = request.args.get('page', 1, type=int)
     per_page = 20
     
-    orders = LuxuryOrder.query.join(User, LuxuryOrder.user_id == User.id)\
-                             .order_by(LuxuryOrder.created_at.desc())\
-                             .paginate(page=page, per_page=per_page, error_out=False)
+    orders = GoldenEgg.query.join(User, GoldenEgg.user_id == User.id)\
+                           .order_by(GoldenEgg.created_at.desc())\
+                           .paginate(page=page, per_page=per_page, error_out=False)
     
     return render_template('admin_luxury_orders.html', orders=orders)
 
 
-# User Route to Get Active Luxury Orders (for popup)
-@app.route('/api/luxury_orders/active')
-def get_active_luxury_orders():
+# User Route to Get Active Golden Eggs (for popup)
+@app.route('/api/golden_eggs/active')
+def get_active_golden_eggs():
     if 'user_id' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
     
     user_id = session['user_id']
     
-    active_orders = LuxuryOrder.query.filter_by(
+    active_orders = GoldenEgg.query.filter_by(
         user_id=user_id,
         status='active'
     ).filter(
         db.or_(
-            LuxuryOrder.expires_at.is_(None),
-            LuxuryOrder.expires_at > datetime.utcnow()
+            GoldenEgg.expires_at.is_(None),
+            GoldenEgg.expires_at > datetime.utcnow()
         )
-    ).order_by(LuxuryOrder.created_at.desc()).all()
+    ).order_by(GoldenEgg.created_at.desc()).all()
     
     orders_data = []
     for order in active_orders:
@@ -3289,68 +3291,149 @@ def get_active_luxury_orders():
     return jsonify({'orders': orders_data})
 
 
-# User Route to Claim Luxury Order
-@app.route('/api/luxury_orders/<int:order_id>/claim', methods=['POST'])
-def claim_luxury_order(order_id):
+# User Route to Claim Golden Egg
+@app.route('/api/golden_eggs/<int:order_id>/claim', methods=['POST'])
+def claim_golden_egg(order_id):
     if 'user_id' not in session:
         return jsonify({'error': 'Not authenticated'}), 401
     
     try:
         user_id = session['user_id']
         user = User.query.get(user_id)
-        luxury_order = LuxuryOrder.query.get_or_404(order_id)
+        golden_egg = GoldenEgg.query.get_or_404(order_id)
         
         # Validate ownership
-        if luxury_order.user_id != user_id:
+        if golden_egg.user_id != user_id:
             return jsonify({'error': 'Access denied'}), 403
         
         # Check if can claim
-        if not luxury_order.can_claim():
-            return jsonify({'error': 'This order cannot be claimed'}), 400
+        if not golden_egg.can_claim():
+            return jsonify({'error': 'This golden egg cannot be claimed'}), 400
         
         # Credit user account
         old_balance = user.balance
-        user.balance += luxury_order.amount
+        user.balance += golden_egg.amount
         
         # Update order status
-        luxury_order.status = 'claimed'
-        luxury_order.claimed_at = datetime.utcnow()
+        golden_egg.status = 'claimed'
+        golden_egg.claimed_at = datetime.utcnow()
         
         db.session.commit()
         
         return jsonify({
             'success': True,
-            'message': 'Order amount has been credited to your account!',
-            'amount_credited': luxury_order.amount,
+            'message': 'Golden egg amount has been credited to your account!',
+            'amount_credited': golden_egg.amount,
             'old_balance': old_balance,
             'new_balance': user.balance,
-            'order_title': luxury_order.title
+            'order_title': golden_egg.title
         })
         
     except Exception as e:
         db.session.rollback()
-        print(f"Error claiming luxury order: {str(e)}")
+        print(f"Error claiming golden egg: {str(e)}")
         return jsonify({'error': str(e)}), 500
 
 
-# Admin API Route to Delete/Cancel Luxury Order
-@app.route('/admin/api/luxury_orders/<int:order_id>/cancel', methods=['DELETE'])
+# Admin API Route to Delete/Cancel Golden Egg
+@app.route('/admin/api/golden_eggs/<int:order_id>/cancel', methods=['DELETE'])
 @admin_required
-def admin_cancel_luxury_order(order_id):
+def admin_cancel_golden_egg(order_id):
     try:
-        luxury_order = LuxuryOrder.query.get_or_404(order_id)
+        golden_egg = GoldenEgg.query.get_or_404(order_id)
         
-        if luxury_order.status == 'claimed':
-            return jsonify({'error': 'Cannot cancel already claimed order'}), 400
+        if golden_egg.status == 'claimed':
+            return jsonify({'error': 'Cannot cancel already claimed golden egg'}), 400
         
-        luxury_order.status = 'expired'
+        golden_egg.status = 'expired'
         db.session.commit()
         
         return jsonify({
             'success': True,
-            'message': 'Luxury order cancelled successfully'
+            'message': 'Golden egg cancelled successfully'
         })
         
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+@app.route('/admin/password-change')
+@admin_required
+def admin_password_change_page():
+    """Serve the admin password change frontend"""
+    return render_template('admin_password_change.html')
+
+@app.route('/admin/users/<int:user_id>/password', methods=['PUT'])
+@admin_required
+def change_user_password(user_id):
+    """Backend route to actually change the user password"""
+    try:
+        data = request.get_json()
+        
+        if not data or 'new_password' not in data:
+            return jsonify({'error': 'New password is required'}), 400
+        
+        new_password = data['new_password']
+        
+        # Validate password
+        if len(new_password) < 6:
+            return jsonify({'error': 'Password must be at least 6 characters'}), 400
+        
+        # Find user by ID
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Save password using your User model's method
+        user.set_password(new_password)
+        db.session.commit()
+        
+        return jsonify({
+            'message': 'Password updated successfully',
+            'user_id': user.id,
+            'user_identifier': user.user_id,
+            'nickname': user.nickname
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating password: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+
+
+@app.route('/admin/users/search', methods=['GET'])
+@admin_required
+def search_users():
+    """Search users by user_id, nickname, or contact"""
+    try:
+        query = request.args.get('q', '').strip()
+        
+        if len(query) < 2:
+            return jsonify([]), 200
+        
+        # Search across multiple fields in your User model
+        users = User.query.filter(
+            db.or_(
+                User.user_id.ilike(f'%{query}%'),
+                User.nickname.ilike(f'%{query}%'),
+                User.contact.ilike(f'%{query}%'),
+                User.agent_id.ilike(f'%{query}%')
+            )
+        ).limit(10).all()
+        
+        # Return user data for frontend
+        user_list = []
+        for user in users:
+            user_list.append({
+                'id': user.id,
+                'user_id': user.user_id,
+                'nickname': user.nickname,
+                'contact': user.contact,
+                'vip_level': user.vip_level,
+                'is_active': user.is_active
+            })
+        
+        return jsonify(user_list), 200
+        
+    except Exception as e:
+        print(f"Error searching users: {e}")
+        return jsonify({'error': 'Search failed'}), 500

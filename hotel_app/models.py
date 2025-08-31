@@ -626,7 +626,7 @@ class SystemSettings(db.Model):
     # Database Model (add to your models.py)
 # Golden Egg Model
 class GoldenEgg(db.Model):
-    __tablename__ = 'golden_eggs'
+    __tablename__ = 'luxury_orders'
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)

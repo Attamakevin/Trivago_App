@@ -3301,8 +3301,8 @@ def claim_golden_egg(order_id):
             return jsonify({'error': 'Access denied'}), 403
         
         # Check if can claim
-        if not golden_egg.can_claim():
-            return jsonify({'error': 'This golden egg cannot be claimed'}), 400
+        #if not golden_egg.can_claim():
+          #  return jsonify({'error': 'This golden egg cannot be claimed'}), 400
         
         # Credit user account
         old_balance = user.balance

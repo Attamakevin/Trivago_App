@@ -2690,22 +2690,16 @@ def assign_hotels_to_user():
                 hotel_id=hotel_id,
                 session_type=session_type
             ).first()
-            
-            if existing:
-                # Update existing assignment
-                existing.custom_commission = commission
-                flash(f'Updated commission for hotel {hotel_id}', 'info')
-            else:
-                # Create new assignment
-                new_assignment = UserHotelAssignment(
-                    user_id=user_id,
-                    hotel_id=hotel_id,
-                    session_type=session_type,
-                    custom_commission=commission,
-                    assigned_by=g.current_admin.id
-                )
-                db.session.add(new_assignment)
-                assignments_created += 1
+           
+            new_assignment = UserHotelAssignment(
+                user_id=user_id,
+                hotel_id=hotel_id,
+                session_type=session_type,
+                custom_commission=commission,
+                assigned_by=g.current_admin.id
+        )
+            db.session.add(new_assignment)
+            assignments_created += 1
         
         db.session.commit()
         flash(f'Created {assignments_created} new hotel assignments for user {user.nickname}', 'success')

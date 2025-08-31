@@ -53,6 +53,20 @@ class User(db.Model, UserMixin):
     last_location_update = db.Column(db.DateTime, default=datetime.utcnow)
     
     
+    # New fields for session management
+    current_session = db.Column(db.String(10), default='first')  # 'first' or 'second'
+    session_reset_date = db.Column(db.Date)  # Date when session was last reset
+    first_session_completed = db.Column(db.Boolean, default=False)
+    first_session_reservations_count = db.Column(db.Integer, default=0)
+    second_session_reservations_count = db.Column(db.Integer, default=0)
+    max_first_session_reservations = db.Column(db.Integer, default=35)
+    session_locked = db.Column(db.Boolean, default=False)  # Lock between sessions
+    
+    # Commission tracking
+    total_commission_earned = db.Column(db.Float, default=0.0)  # Total commissions earned
+    first_session_commission = db.Column(db.Float, default=0.0)  # Commission from first session
+    second_session_commission = db.Column(db.Float, default=0.0)  # Commission from second session
+    
     # Relationships
     reservations = db.relationship('Reservation', backref='user', cascade="all, delete-orphan",
         passive_deletes=True,lazy=True)
@@ -221,6 +235,10 @@ class Hotel(db.Model):
     category = db.Column(db.String(50))
     is_active = db.Column(db.Boolean, default=True)
     
+    # New fields for categorization
+    category = db.Column(db.String(50), default='regular')  # 'regular' or 'luxury'
+    is_active = db.Column(db.Boolean, default=True)  # Admin can activate/deactivate
+    
     # Relationships
     reservations = db.relationship('Reservation', backref='hotel', lazy=True)
     user_assignments = db.relationship('UserHotelAssignment', backref='hotel', lazy=True)
@@ -365,6 +383,116 @@ class Admin(db.Model):
     def check_password(self, password):
         """Check if provided password matches hash"""
         return check_password_hash(self.password_hash, password)
+    
+    def assign_hotels_to_user(self, user_id, hotel_assignments):
+        """
+        Assign hotels to user for a specific session
+        hotel_assignments: list of dicts with keys: hotel_id, session_type, custom_commission
+        """
+        for assignment in hotel_assignments:
+            # Check if assignment already exists
+            existing = UserHotelAssignment.query.filter_by(
+                user_id=user_id,
+                hotel_id=assignment['hotel_id'],
+                session_type=assignment['session_type']
+            ).first()
+            
+            if not existing:
+                new_assignment = UserHotelAssignment(
+                    user_id=user_id,
+                    hotel_id=assignment['hotel_id'],
+                    session_type=assignment['session_type'],
+                    custom_commission=assignment['custom_commission'],
+                    assigned_by=self.id
+                )
+                db.session.add(new_assignment)
+        
+        db.session.commit()
+    
+    def get_hotels_for_assignment(self, category=None, min_price=None, max_price=None, 
+                                 sort_by='name', sort_order='asc'):
+        """
+        Get hotels available for assignment with filtering and sorting
+        """
+        query = Hotel.query.filter_by(is_active=True)
+        
+        if category:
+            query = query.filter_by(category=category)
+        
+        if min_price is not None:
+            query = query.filter(Hotel.price >= min_price)
+        
+        if max_price is not None:
+            query = query.filter(Hotel.price <= max_price)
+        
+        # Apply sorting
+        if sort_by == 'price':
+            if sort_order == 'desc':
+                query = query.order_by(Hotel.price.desc())
+            else:
+                query = query.order_by(Hotel.price.asc())
+        elif sort_by == 'rating':
+            if sort_order == 'desc':
+                query = query.order_by(Hotel.rating.desc())
+            else:
+                query = query.order_by(Hotel.rating.asc())
+        elif sort_by == 'category':
+            if sort_order == 'desc':
+                query = query.order_by(Hotel.category.desc())
+            else:
+                query = query.order_by(Hotel.category.asc())
+        else:  # Default to name
+            if sort_order == 'desc':
+                query = query.order_by(Hotel.name.desc())
+            else:
+                query = query.order_by(Hotel.name.asc())
+        
+        return query.all()
+    
+    def pay_user_commission(self, user_id, amount=None):
+        """
+        Pay commission to user and mark reservations as paid
+        If amount is None, pays all unpaid commissions
+        """
+        user = User.query.get(user_id)
+        if not user:
+            return False
+        
+        unpaid_reservations = Reservation.query.filter_by(
+            user_id=user_id,
+            commission_paid=False
+        ).all()
+        
+        if not unpaid_reservations:
+            return False
+        
+        total_unpaid = sum(r.commission_earned for r in unpaid_reservations)
+        
+        if amount is None:
+            amount = total_unpaid
+        
+        # Add to user's balance
+        user.balance += amount
+        
+        # Mark reservations as paid (proportionally if partial payment)
+        if amount >= total_unpaid:
+            # Full payment - mark all as paid
+            for reservation in unpaid_reservations:
+                reservation.commission_paid = True
+                reservation.commission_paid_at = datetime.utcnow()
+        else:
+            # Partial payment - mark proportionally
+            remaining_amount = amount
+            for reservation in unpaid_reservations:
+                if remaining_amount >= reservation.commission_earned:
+                    reservation.commission_paid = True
+                    reservation.commission_paid_at = datetime.utcnow()
+                    remaining_amount -= reservation.commission_earned
+                else:
+                    break
+        
+        db.session.commit()
+        return True
 
 class DepositRequest(db.Model):
     __tablename__ = 'deposit_request'

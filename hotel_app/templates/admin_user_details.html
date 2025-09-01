@@ -165,12 +165,12 @@
             </div>
         </div>
 
-        <!-- Admin Create Luxury Order Form -->
+        <!-- Admin Create Golden Egg Form -->
         <div class="card mt-3">
             <div class="card-header mb-6">
                 <h5 class="card-title">
                     <i class="fas fa-gem text-purple-600 mr-3"></i>
-                    Create Luxury Order for {{ user.contact }}
+                    Create Golden Egg for {{ user.contact }}
                 </h5>
                 <p class="text-gray-600 mt-2">Create a special order that this user can claim. Use positive amounts for credits
                     or negative amounts for deductions.</p>
@@ -326,7 +326,7 @@
         
                     <button type="submit" class="btn btn-primary">
                         <i class="fas fa-gem mr-2"></i>
-                        Create Luxury Order
+                        Create Golden Egg
                     </button>
                 </div>
             </form>
@@ -349,7 +349,7 @@
                     <div class="bg-white rounded-lg shadow-xl max-w-md w-full">
                         <div class="p-6">
                             <div class="flex justify-between items-center mb-4">
-                                <h5 class="text-lg font-semibold">Preview Luxury Order</h5>
+                                <h5 class="text-lg font-semibold">Preview Golde Egg </h5>
                                 <button onclick="closePreview()" class="text-white-400 hover:text-white-600">
                                     <i class="fas fa-times"></i>
                                 </button>
@@ -774,7 +774,7 @@
                 })
                 .then(data => {
                     if (data.success) {
-                        showSuccess(data.message || 'Luxury order created successfully!');
+                        showSuccess(data.message || 'Golden Egg created successfully!');
                         form.reset();
                         const userIdField = document.getElementById('userId');
                         if (userIdField) {
@@ -805,7 +805,7 @@
                 .finally(() => {
                     if (submitButton) {
                         submitButton.disabled = false;
-                        submitButton.innerHTML = '<i class="fas fa-gem mr-2"></i>Create Luxury Order';
+                        submitButton.innerHTML = '<i class="fas fa-gem mr-2"></i>Create Golden Egg';
                     }
                 });
         });
@@ -872,7 +872,7 @@ function previewOrder() {
     const previewContent = `
         <div class="luxury-order-preview">
             ${imageUrl ?
-                `<img src="${escapeHtml(imageUrl)}" alt="Luxury Order" class="w-20 h-20 mx-auto mb-4 rounded-lg object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                `<img src="${escapeHtml(imageUrl)}" alt="Golden Egg" class="w-20 h-20 mx-auto mb-4 rounded-lg object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                  <div class="w-20 h-20 mx-auto mb-4 bg-purple-100 rounded-lg flex items-center justify-center" style="display:none;"><i class="fas fa-gem text-purple-500 text-2xl"></i></div>` :
                 '<div class="w-20 h-20 mx-auto mb-4 bg-purple-100 rounded-lg flex items-center justify-center"><i class="fas fa-gem text-purple-500 text-2xl"></i></div>'
             }

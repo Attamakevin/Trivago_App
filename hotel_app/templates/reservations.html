@@ -272,8 +272,7 @@
                         </div>
 
                         <!-- Hotel Booking Deposit -->
-                        <div id="freezingAmountCard" class="card-hover bg-[#f7b437] rounded-2xl p-6 text-white"
-                            style="display: none;">
+                        <div id="freezingAmountCard" class="card-hover bg-[#f7b437] rounded-2xl p-6 text-white hidden">
                             <div class="flex items-center justify-between mb-4">
                                 <div
                                     class="w-12 h-12 bg-white bg-opacity-80 rounded-full flex items-center justify-center">
@@ -363,18 +362,18 @@
             </div>
         </div>
 
-        <div id="luxurySuccessModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-[110] hidden">
+        <div id="goldenEggSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-[110] hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm slide-up text-center p-8">
                     <div class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-6">
                         <i class="fas fa-crown text-yellow-600 text-3xl"></i>
                     </div>
-                    <h3 data-translate class="text-2xl font-bold text-gray-900 mb-2">Luxury Order Claimed!</h3>
-                    <p data-translate id="luxurySuccessMessage" class="text-gray-600 mb-6">Your luxury order has been
+                    <h3 data-translate class="text-2xl font-bold text-gray-900 mb-2">Golden Egg Claimed!</h3>
+                    <p data-translate id="goldenEggSuccessMessage" class="text-gray-600 mb-6">Your golden egg has been
                         successfully claimed!</p>
                     <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
                         <div class="flex items-center justify-center">
-                            <span id="luxuryAmountCredited" class="text-lg font-bold text-green-600">£0.00</span>
+                            <span id="goldenEggAmountCredited" class="text-lg font-bold text-green-600">£0.00</span>
                         </div>
                         <p data-translate class="text-xs text-green-600 mt-1">Added to your account balance</p>
                     </div>
@@ -562,7 +561,8 @@
                             <i class="fas fa-check-circle text-green-400 text-6xl mb-4"></i>
                             <h4 data-translate class="font-semibold text-2xl text-gray-600 mb-1">Task Completed!
                             </h4>
-                            <p data-translate class="text-gray-800 text-lg mb-4">Please contact customer service to reset.</p>
+                            <p data-translate class="text-gray-800 text-lg mb-4">Please contact customer service to
+                                reset.</p>
                             <a href="{{ url_for('customer_service') }}"
                                 class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-4 px-8 rounded-lg transition-colors mt-4">
                                 Confirm
@@ -941,15 +941,21 @@
             let luxuryCheckInterval = null;
             let currentUserBalance = 0; // Track current user balance
 
-            // Initialize luxury order checking on page load
+            // Initialize luxury order checking on page load - IMPROVED VERSION
             function initializeLuxuryOrderCheck() {
                 console.log('Initializing luxury order check...');
 
-                // Wait a bit for DOM to be fully loaded and rendered
-                setTimeout(() => {
+                // Use DOMContentLoaded to ensure DOM is ready
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', function () {
+                        getCurrentBalance();
+                        checkInitialFreezingCardState();
+                    });
+                } else {
+                    // DOM is already loaded
                     getCurrentBalance();
                     checkInitialFreezingCardState();
-                }, 100);
+                }
 
                 checkForActiveLuxuryOrders();
 
@@ -957,7 +963,7 @@
                 luxuryCheckInterval = setInterval(checkForActiveLuxuryOrders, 30000);
             }
 
-            // Check initial freezing card state based on balance
+            // Check initial freezing card state based on balance - IMPROVED VERSION
             function checkInitialFreezingCardState() {
                 const freezingCard = document.getElementById('freezingAmountCard');
                 if (!freezingCard) {
@@ -965,128 +971,61 @@
                     return;
                 }
 
-                console.log('Checking initial freezing card state...');
-                console.log('Current balance:', currentUserBalance);
-                console.log('Freezing card current display:', window.getComputedStyle(freezingCard).display);
-                console.log('Freezing card inline style display:', freezingCard.style.display);
+                // Remove any inline display style that might be blocking visibility
+                freezingCard.style.removeProperty('display');
 
-                if (currentUserBalance < 0) {
-                    // Balance is negative, ensure card is visible
+                // Get the current balance
+                const balance = getCurrentBalance();
+
+                console.log('Checking freezing card state - Balance:', balance);
+
+                if (balance < 0) {
+                    // Balance is negative, show the card
                     console.log('Balance is negative, showing freezing card');
-                    freezingCard.style.display = 'block';
-                    freezingCard.style.opacity = '1';
-                    freezingCard.style.transform = 'translateY(0)';
-                    freezingCard.style.transition = '';
-                } else if (currentUserBalance >= 0) {
-                    // Balance is positive or zero, hide card
-                    console.log('Balance is positive/zero, hiding freezing card');
-                    hideFreezingAmountCard();
+                    showFreezingAmountCard();
                 } else {
-                    // Balance not detected, keep current state but log warning
-                    console.warn('Balance not properly detected, keeping current freezing card state');
+                    // Balance is positive or zero, hide the card
+                    console.log('Balance is non-negative, hiding freezing card');
+                    hideFreezingAmountCard();
                 }
             }
 
-            // Get current balance from page elements
+            // Get current balance from page elements - IMPROVED VERSION
             function getCurrentBalance() {
-                // Try to find balance from various possible elements
-                const balanceElements = [
-                    // Look for data attributes first (most reliable)
-                    document.querySelector('[data-balance]'),
-                    document.querySelector('#userBalance'),
-                    document.querySelector('.user-balance'),
-
-                    // Look for elements with balance in class or id
-                    document.querySelector('[class*="balance"]'),
-                    document.querySelector('[id*="balance"]'),
-
-                    // Look for common balance display elements
-                    document.querySelector('[data-balance-display]'),
-                    document.querySelector('.text-xl.font-bold'),
-                    document.querySelector('.balance-display'),
-                    document.querySelector('.balance'),
-
-                    // Look for elements that might contain currency symbols
-                    document.querySelector('[class*="euro"]'),
-                    document.querySelector('[class*="currency"]'),
-
-                    // Look for elements containing € symbol
-                    ...Array.from(document.querySelectorAll('*')).filter(el =>
-                        el.textContent && el.textContent.includes('€') &&
-                        el.children.length === 0 // Only text nodes, no child elements
-                    )
-                ];
-
-                for (const element of balanceElements) {
-                    if (element) {
-                        // First check for data-balance attribute
-                        if (element.dataset.balance !== undefined) {
-                            const balance = parseFloat(element.dataset.balance);
-                            if (!isNaN(balance)) {
-                                currentUserBalance = balance;
-                                console.log('Balance found in data-balance attribute:', currentUserBalance, 'from element:', element);
-                                return balance;
-                            }
-                        }
-
-                        // Then check text content
-                        if (element.textContent) {
-                            const balanceText = element.textContent.replace(/[€,$\s]/g, '').trim();
-                            // Handle negative numbers with minus sign or parentheses
-                            const cleanText = balanceText.replace(/[()]/g, '');
-                            let balance = parseFloat(cleanText);
-
-                            // If original text had parentheses, it's likely negative
-                            if (balanceText.includes('(') && balanceText.includes(')')) {
-                                balance = -Math.abs(balance);
-                            }
-
-                            if (!isNaN(balance)) {
-                                currentUserBalance = balance;
-                                console.log('Balance found in text content:', currentUserBalance, 'from element:', element, 'original text:', element.textContent);
-                                return balance;
-                            }
-                        }
-                    }
-                }
-
-                // If still no balance found, look for hidden input fields
-                const hiddenInputs = document.querySelectorAll('input[type="hidden"]');
-                for (const input of hiddenInputs) {
-                    if (input.name && (input.name.includes('balance') || input.name.includes('Balance'))) {
-                        const balance = parseFloat(input.value);
-                        if (!isNaN(balance)) {
-                            currentUserBalance = balance;
-                            console.log('Balance found in hidden input:', currentUserBalance, 'from input:', input);
-                            return balance;
-                        }
-                    }
-                }
-
-                // Last resort: look for any element with a number that looks like a balance
-                const potentialBalanceElements = Array.from(document.querySelectorAll('*')).filter(el => {
-                    if (!el.textContent || el.children.length > 0) return false;
-                    const text = el.textContent.trim();
-                    // Look for currency-like patterns
-                    return /^[€$£]?\s*-?\d+\.?\d*$/.test(text.replace(/\s/g, '')) ||
-                        /^-?\d+\.?\d*\s*[€$£]?$/.test(text.replace(/\s/g, ''));
-                });
-
-                for (const element of potentialBalanceElements) {
-                    const balanceText = element.textContent.replace(/[€,$£\s]/g, '').trim();
-                    const balance = parseFloat(balanceText);
+                // First, try the hidden userBalance element with data-balance attribute
+                const userBalanceElement = document.getElementById('userBalance');
+                if (userBalanceElement && userBalanceElement.dataset.balance !== undefined) {
+                    const balance = parseFloat(userBalanceElement.dataset.balance);
                     if (!isNaN(balance)) {
                         currentUserBalance = balance;
-                        console.log('Balance found in potential element:', currentUserBalance, 'from element:', element, 'text:', element.textContent);
+                        console.log('Balance found from userBalance element:', currentUserBalance);
                         return balance;
                     }
                 }
 
-                console.log('No balance found in DOM, keeping existing balance:', currentUserBalance);
+                // Look for the visible balance display (€XX.XX format)
+                const balanceDisplays = document.querySelectorAll('.text-xl.font-bold');
+                for (const element of balanceDisplays) {
+                    const text = element.textContent.trim();
+                    if (text.includes('€')) {
+                        // Extract number from €XX.XX format
+                        const balanceMatch = text.match(/€?\s*([-]?\d+\.?\d*)/);
+                        if (balanceMatch) {
+                            const balance = parseFloat(balanceMatch[1]);
+                            if (!isNaN(balance)) {
+                                currentUserBalance = balance;
+                                console.log('Balance found from display element:', currentUserBalance);
+                                return balance;
+                            }
+                        }
+                    }
+                }
+
+                console.log('Could not find balance in DOM, using default:', currentUserBalance);
                 return currentUserBalance;
             }
 
-             // ========== GOLDEN EGG FUNCTIONS ==========
+            // ========== GOLDEN EGG FUNCTIONS ==========
             let activeGoldenEggs = [];
             let goldenEggCheckInterval = null;
 
@@ -1292,575 +1231,74 @@
                 claimGoldenEgg(orderId);
             }
 
-            // Update balance display on page
-            function updateBalanceDisplay(newBalance) {
-                const balanceElements = document.querySelectorAll('[data-balance-display]');
-                balanceElements.forEach(element => {
-                    element.textContent = `€${newBalance.toFixed(2)}`;
-                });
 
-                // Update specific balance display if it exists
-                const balanceDisplay = document.querySelector('.text-xl.font-bold');
-                if (balanceDisplay && balanceDisplay.textContent.includes('€')) {
-                    balanceDisplay.textContent = `${newBalance.toFixed(2)}`;
-                }
-            }
-
-            // Show freezing amount card (add this function if it doesn't exist)
+            // Show freezing amount card - IMPROVED VERSION
             function showFreezingAmountCard() {
-                // Implementation depends on your HTML structure
                 const freezingCard = document.getElementById('freezingAmountCard');
                 if (freezingCard) {
+                    // Remove any hiding styles
+                    freezingCard.style.removeProperty('display');
                     freezingCard.classList.remove('hidden');
+
+                    // Ensure it's visible
+                    freezingCard.style.opacity = '1';
+                    freezingCard.style.transform = 'translateY(0)';
+                    freezingCard.style.visibility = 'visible';
+
+                    console.log('Freezing card shown');
                 }
             }
 
-            // UPDATED: Complete JavaScript to match your backend
-            let currentReservationId = null;
-            let currentHotelName = null;
-            let selectedRating = 0;
-            let currentHotelId = null; // For pre-reservation modal
-
-            // ========== MODAL FUNCTIONS ==========
-
-            // Hotel Selection Modal
-            function openReservationModal() {
-                document.getElementById('reservationModal').classList.remove('hidden');
-            }
-
-            function closeReservationModal() {
-                document.getElementById('reservationModal').classList.add('hidden');
-            }
-
-            // ========== PRE-RESERVATION SURVEY MODAL ==========
-            function openPreReservationModal(hotelId, hotelName) {
-                console.log('Opening pre-reservation modal for hotel:', hotelId, hotelName);
-                currentHotelId = hotelId;
-                document.getElementById('preReservationHotelName').textContent = hotelName;
-
-                // Reset all checkboxes
-                document.querySelectorAll('#preReservationModal input[type="checkbox"]').forEach(checkbox => {
-                    checkbox.checked = false;
-                });
-
-                // Show the modal
-                document.getElementById('preReservationModal').classList.remove('hidden');
-            }
-
-            function closePreReservationModal() {
-                console.log('Closing pre-reservation modal');
-                document.getElementById('preReservationModal').classList.add('hidden');
-                currentHotelId = null;
-            }
-
-            function submitPreReservation() {
-                const submitBtn = document.getElementById('submitPreReservationBtn');
-                const originalText = submitBtn.textContent;
-
-                // Get checkbox responses
-                const responses = {
-                    serviceQuality: document.getElementById('serviceQuality').checked,
-                    roomCleanliness: document.getElementById('roomCleanliness').checked,
-                    staffFriendliness: document.getElementById('staffFriendliness').checked,
-                    overallSatisfaction: document.getElementById('overallSatisfaction').checked,
-                    recommendService: document.getElementById('recommendService').checked
-                };
-
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Processing...';
-
-                // Make the actual reservation
-                const formData = new FormData();
-                // Add survey responses to form data if needed
-                Object.keys(responses).forEach(key => {
-                    formData.append(key, responses[key]);
-                });
-
-                fetch(`/reserve/${currentHotelId}`, {
-                    method: 'POST',
-                    body: formData,
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            closePreReservationModal();
-                            closeReservationModal(); // Close hotel selection modal too
-                            document.getElementById('successModal').classList.remove('hidden');
-                        } else {
-                            showNotification(data.error || 'Failed to create reservation', 'error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        showNotification('An unexpected error occurred', 'error');
-                    })
-                    .finally(() => {
-                        submitBtn.textContent = originalText;
-                        submitBtn.disabled = false;
-                    });
-            }
-
-            // Hotel Star Rating Function
-            function rateHotel(hotelId, rating) {
-                // console.log(`Rating hotel ${hotelId} with ${rating} stars`);
-
-                // Update the visual display for this hotel
-                const hotelStars = document.querySelectorAll(`[data-hotel-id="${hotelId}"]`);
-                hotelStars.forEach((star, index) => {
-                    const starRating = parseInt(star.dataset.rating);
-                    if (starRating <= rating) {
-                        star.classList.add('text-yellow-400');
-                        star.classList.remove('text-gray-300');
-                    } else {
-                        star.classList.remove('text-yellow-400');
-                        star.classList.add('text-gray-300');
-                    }
-                });
-
-                // You can add an API call here to save the hotel rating
-                showNotification(`Rated hotel with ${rating} stars!`, 'success');
-            }
-
-            function openRulesModal() {
-                document.getElementById('rulesModal').classList.remove('hidden');
-            }
-
-            function closeRulesModal() {
-                document.getElementById('rulesModal').classList.add('hidden');
-            }
-
-            function openOrderHistoryModal() {
-                document.getElementById('orderHistoryModal').classList.remove('hidden');
-            }
-
-            function closeOrderHistoryModal() {
-                document.getElementById('orderHistoryModal').classList.add('hidden');
-            }
-
-            function closeSuccessModal() {
-                document.getElementById('successModal').classList.add('hidden');
-                setTimeout(() => {
-                    window.location.reload();
-                }, 500);
-            }
-
-            function closeErrorModal() {
-                document.getElementById('errorModal').classList.add('hidden');
-            }
-
-            // CHANGE: Updated rating function to match your backend
-            function rateReservation(reservationId) {
-                console.log('Rating reservation:', reservationId);
-                currentReservationId = reservationId;
-                selectedRating = 0;
-
-                // Get hotel name from the DOM
-                const orderItem = document.querySelector(`[data-reservation-id="${reservationId}"]`);
-                if (orderItem) {
-                    currentHotelName = orderItem.querySelector('h4').textContent.trim();
-                } else {
-                    currentHotelName = 'Hotel';
-                }
-
-                // Reset star rating
-                document.querySelectorAll('.star-btn').forEach(btn => {
-                    btn.classList.remove('text-yellow-400');
-                    btn.classList.add('text-gray-300');
-                });
-
-                // Reset form
-                document.getElementById('ratingFeedback').value = '';
-                document.getElementById('ratingText').textContent = 'Click stars to rate';
-                document.getElementById('submitRatingBtn').disabled = true;
-
-                // Set hotel name and show modal
-                document.getElementById('ratingHotelName').textContent = currentHotelName;
-                document.getElementById('ratingModal').classList.remove('hidden');
-            }
-
-            function closeRatingModal() {
-                document.getElementById('ratingModal').classList.add('hidden');
-                currentReservationId = null;
-                currentHotelName = null;
-                selectedRating = 0;
-            }
-
-            // CHANGE: Updated to use your backend endpoint
-            function submitRating() {
-                if (!selectedRating || selectedRating < 1 || selectedRating > 5) {
-                    showNotification('Please select a rating', 'warning');
-                    return;
-                }
-
-                const feedback = document.getElementById('ratingFeedback').value;
-                const submitBtn = document.getElementById('submitRatingBtn');
-
-                submitBtn.disabled = true;
-                submitBtn.textContent = 'Submitting...';
-
-                // CHANGE: Using your backend's endpoint format
-                fetch(`/rate/${currentReservationId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        rating: selectedRating,
-                        feedback: feedback
-                    })
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            showNotification(data.message, 'success');
-                            closeRatingModal();
-                            setTimeout(() => {
-                                window.location.reload();
-                            }, 1500);
-                        } else {
-                            showNotification(data.error || 'Failed to submit rating', 'error');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Network error:', error);
-                        showNotification('Network error. Please try again.', 'error');
-                    })
-                    .finally(() => {
-                        submitBtn.disabled = false;
-                        submitBtn.textContent = 'Submit Rating';
-                    });
-            }
-
-            // Order filtering functions
-            function filterOrders(status) {
-                const orderItems = document.querySelectorAll('.order-item');
-                const filterBtns = document.querySelectorAll('.filter-btn');
-
-                filterBtns.forEach(btn => {
-                    btn.classList.remove('active', 'bg-blue-600', 'text-white');
-                    btn.classList.add('bg-gray-200', 'text-gray-700');
-                });
-
-                const clickedBtn = event.target;
-                clickedBtn.classList.add('active', 'bg-blue-600', 'text-white');
-                clickedBtn.classList.remove('bg-gray-200', 'text-gray-700');
-
-                orderItems.forEach(item => {
-                    const itemStatus = item.dataset.status.toLowerCase();
-                    if (status === 'all' || itemStatus === status.toLowerCase()) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            }
-
-            function cancelReservation(reservationId) {
-                if (confirm('Are you sure you want to cancel this reservation?')) {
-                    showNotification('Reservation cancellation requested', 'info');
-                }
-            }
-
-            // Star rating functionality for reservation rating modal
-            function updateStarDisplay() {
-                document.querySelectorAll('.star-btn').forEach((btn, index) => {
-                    if (index < selectedRating) {
-                        btn.classList.add('text-yellow-400');
-                        btn.classList.remove('text-gray-300');
-                    } else {
-                        btn.classList.remove('text-yellow-400');
-                        btn.classList.add('text-gray-300');
-                    }
-                });
-            }
-
-            function highlightStars(rating) {
-                document.querySelectorAll('.star-btn').forEach((btn, index) => {
-                    if (index < rating) {
-                        btn.classList.add('text-yellow-400');
-                        btn.classList.remove('text-gray-300');
-                    } else {
-                        btn.classList.remove('text-yellow-400');
-                        btn.classList.add('text-gray-300');
-                    }
-                });
-            }
-
-            function updateRatingText() {
-                const ratingTexts = {
-                    1: 'Poor - 1 star',
-                    2: 'Fair - 2 stars',
-                    3: 'Good - 3 stars',
-                    4: 'Very Good - 4 stars',
-                    5: 'Excellent - 5 stars'
-                };
-                document.getElementById('ratingText').textContent = ratingTexts[selectedRating] || 'Click stars to rate';
-            }
-
-            function showNotification(message, type = 'info') {
-                const notification = document.createElement('div');
-                notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 ${type === 'success' ? 'bg-green-500 text-white' :
-                    type === 'error' ? 'bg-red-500 text-white' :
-                        type === 'warning' ? 'bg-yellow-500 text-black' :
-                            'bg-blue-500 text-white'
-                    }`;
-                notification.innerHTML = `
-                                    <div class="flex items-center">
-                                        <i class="fas fa-${type === 'success' ? 'check-circle' :
-                        type === 'error' ? 'exclamation-triangle' :
-                            type === 'warning' ? 'exclamation-circle' :
-                                'info-circle'
-                    } mr-2"></i>
-                                        <span>${message}</span>
-                                        <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                `;
-
-                document.body.appendChild(notification);
-
-                // Auto remove after 5 seconds
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.style.opacity = '0';
-                        notification.style.transform = 'translateX(100%)';
-                        setTimeout(() => {
-                            notification.remove();
-                        }, 300);
-                    }
-                }, 5000);
-            }
-
-            // Initialize when DOM is loaded
-            document.addEventListener('DOMContentLoaded', function () {
-
-                // ⭐ NEW: Initialize golden egg checking
-                initializeGoldenEggCheck();
-                // Star rating click handlers for reservation rating modal
-                document.querySelectorAll('.star-btn').forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        selectedRating = parseInt(this.dataset.rating);
-                        updateStarDisplay();
-                        updateRatingText();
-                        document.getElementById('submitRatingBtn').disabled = false;
-                    });
-
-                    btn.addEventListener('mouseenter', function () {
-                        const hoverRating = parseInt(this.dataset.rating);
-                        highlightStars(hoverRating);
-                    });
-                });
-
-                const starRating = document.getElementById('starRating');
-                if (starRating) {
-                    starRating.addEventListener('mouseleave', function () {
-                        updateStarDisplay();
-                    });
-                }
-
-                // Hotel star hover effects
-                document.querySelectorAll('.hotel-star-btn').forEach(btn => {
-                    btn.addEventListener('mouseenter', function () {
-                        const hotelId = this.dataset.hotelId;
-                        const hoverRating = parseInt(this.dataset.rating);
-
-                        const hotelStars = document.querySelectorAll(`[data-hotel-id="${hotelId}"]`);
-                        hotelStars.forEach((star, index) => {
-                            const starRating = parseInt(star.dataset.rating);
-                            if (starRating <= hoverRating) {
-                                star.classList.add('text-yellow-400');
-                                star.classList.remove('text-gray-300');
-                            } else {
-                                star.classList.remove('text-yellow-400');
-                                star.classList.add('text-gray-300');
-                            }
-                        });
-                    });
-
-                    btn.addEventListener('mouseleave', function () {
-                        const hotelId = this.dataset.hotelId;
-                        // Reset to original rating - you might want to store original rating
-                        // For now, we'll just keep the last clicked rating
-                    });
-                });
-
-                // Optional: Play notification sound (you can add this if you want)
-                function playNotificationSound() {
-                    try {
-                        // Create a subtle notification sound
-                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                        const oscillator = audioContext.createOscillator();
-                        const gainNode = audioContext.createGain();
-
-                        oscillator.connect(gainNode);
-                        gainNode.connect(audioContext.destination);
-
-                        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-
-                        oscillator.start();
-                        oscillator.stop(audioContext.currentTime + 0.5);
-                    } catch (error) {
-                        console.log('Audio context not available');
-                    }
-                }
-
-                // Close modals when clicking outside
-                const modals = document.querySelectorAll('[id$="Modal"]');
-                modals.forEach(modal => {
-                    modal.addEventListener('click', function (e) {
-                        if (e.target === modal) {
-                            // Don't auto-close golden egg modal to prevent accidental dismissal
-                            if (modal.id !== 'goldenEggsModal') {
-                                modal.classList.add('hidden');
-                            }
-                        }
-                    });
-                });
-
-                document.addEventListener('keydown', function (e) {
-                    if (e.key === 'Escape') {
-                        modals.forEach(modal => {
-                            if (!modal.classList.contains('hidden')) {
-                                // Don't auto-close golden egg modal to prevent accidental dismissal
-                                if (modal.id !== 'goldenEggsModal') {
-                                    modal.classList.add('hidden');
-                                }
-                            }
-                        });
-                    }
-                });
-                // Cleanup interval when page unloads
-                window.addEventListener('beforeunload', function () {
-                    if (goldenEggCheckInterval) {
-                        clearInterval(goldenEggCheckInterval);
-                    }
-                });
-            });
-        </script>
-
-        <!-- CHANGE: Added script to handle success modal on page load -->
-        <script>
-            function closeSuccessModal() {
-                document.getElementById('successModal').classList.add('hidden');
-                window.location.href = "/reservations"; // Redirect to reservations page
-            }
-
-            // Function to show freezing amount card
-            function showFreezingAmountCard() {
-                const freezingCard = document.getElementById('freezingAmountCard');
-                if (freezingCard) {
-                    freezingCard.style.display = 'block';
-                    // Add smooth animation
-                    freezingCard.style.opacity = '0';
-                    freezingCard.style.transform = 'translateY(20px)';
-
-                    setTimeout(() => {
-                        freezingCard.style.transition = 'all 0.5s ease-in-out';
-                        freezingCard.style.opacity = '1';
-                        freezingCard.style.transform = 'translateY(0)';
-                    }, 100);
-                }
-            }
-
-            // Function to hide freezing amount card with animation
+            // Hide freezing amount card - IMPROVED VERSION
             function hideFreezingAmountCard() {
                 const freezingCard = document.getElementById('freezingAmountCard');
-                if (freezingCard && freezingCard.style.display !== 'none' && window.getComputedStyle(freezingCard).display !== 'none') {
-                    console.log('Hiding freezing card');
+                if (freezingCard) {
                     freezingCard.style.transition = 'all 0.5s ease-in-out';
                     freezingCard.style.opacity = '0';
                     freezingCard.style.transform = 'translateY(-20px)';
 
                     setTimeout(() => {
                         freezingCard.style.display = 'none';
+                        console.log('Freezing card hidden');
                     }, 500);
                 }
             }
 
-            // Check if freezing card should be hidden based on balance
-            function checkFreezingCardVisibility(newBalance) {
+            // Update balance display on page - IMPROVED VERSION
+            function updateBalanceDisplay(newBalance) {
                 currentUserBalance = newBalance;
 
-                // Hide freezing card if balance becomes positive or zero
-                if (newBalance >= 0) {
-                    hideFreezingAmountCard();
+                // Update the hidden balance element
+                const userBalanceElement = document.getElementById('userBalance');
+                if (userBalanceElement) {
+                    userBalanceElement.dataset.balance = newBalance;
                 }
-                // Show freezing card if balance is negative and card is not visible
-                else if (newBalance < 0) {
-                    const freezingCard = document.getElementById('freezingAmountCard');
-                    if (freezingCard && freezingCard.style.display === 'none') {
-                        showFreezingAmountCard();
+
+                // Update all visible balance displays
+                const balanceDisplays = document.querySelectorAll('.text-xl.font-bold');
+                balanceDisplays.forEach(element => {
+                    if (element.textContent.includes('€')) {
+                        element.textContent = `€${newBalance.toFixed(2)}`;
                     }
-                }
-            }
-
-            // Close luxury order modal
-            function closeLuxuryOrderModal() {
-                const modal = document.getElementById('goldenEggsModal');
-                const modalContent = modal.querySelector('.luxury-popup-slide-in');
-
-                modalContent.classList.remove('luxury-popup-slide-in');
-                modalContent.classList.add('luxury-popup-slide-out');
-
-                setTimeout(() => {
-                    modal.classList.add('hidden');
-                    modalContent.classList.remove('luxury-popup-slide-out');
-                    modalContent.classList.add('luxury-popup-slide-in');
-                }, 300);
-            }
-
-            // Close luxury success modal
-            function closeLuxurySuccessModal() {
-                document.getElementById('luxurySuccessModal').classList.add('hidden');
-                // Optionally refresh page or update balance
-                setTimeout(() => {
-                    window.location.reload();
-                }, 500);
-            }
-
-            // Update balance display on page - UPDATED TO CHECK FREEZING CARD
-            function updateBalanceDisplay(newBalance) {
-                const balanceElements = document.querySelectorAll('[data-balance-display]');
-                balanceElements.forEach(element => {
-                    element.textContent = `€${newBalance.toFixed(2)}`;
                 });
-
-                // Update specific balance display if it exists
-                const balanceDisplay = document.querySelector('.text-xl.font-bold');
-                if (balanceDisplay && balanceDisplay.textContent.includes('€')) {
-                    balanceDisplay.textContent = `${newBalance.toFixed(2)}`;
-                }
 
                 // Check if freezing card should be shown/hidden
                 checkFreezingCardVisibility(newBalance);
             }
 
-            // Play notification sound
-            function playNotificationSound() {
-                try {
-                    // Create a subtle notification sound
-                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    const oscillator = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
+            // Check if freezing card should be hidden based on balance - IMPROVED VERSION
+            function checkFreezingCardVisibility(newBalance) {
+                const freezingCard = document.getElementById('freezingAmountCard');
+                if (!freezingCard) return;
 
-                    oscillator.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
+                console.log('Checking freezing card visibility for balance:', newBalance);
 
-                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-
-                    oscillator.start();
-                    oscillator.stop(audioContext.currentTime + 0.5);
-                } catch (error) {
-                    // Ignore audio errors
-                    console.log('Audio not available');
+                if (newBalance < 0) {
+                    // Balance is negative, ensure card is visible
+                    showFreezingAmountCard();
+                } else {
+                    // Balance is non-negative, hide the card
+                    hideFreezingAmountCard();
                 }
             }
 
@@ -2169,6 +1607,35 @@
                     });
             }
 
+            function closeLuxuryOrderModal() {
+                const modal = document.getElementById('goldenEggsModal');
+                const modalContent = modal.querySelector('.luxury-popup-slide-in');
+
+                modalContent.classList.remove('luxury-popup-slide-in');
+                modalContent.classList.add('luxury-popup-slide-out');
+
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modalContent.classList.remove('luxury-popup-slide-out');
+                    modalContent.classList.add('luxury-popup-slide-in');
+                }, 300);
+            }
+
+            function closeSuccessModal() {
+                document.getElementById('successModal').classList.add('hidden');
+                window.location.href = "/reservations"; // Redirect to reservations page
+            }
+
+            // Close luxury success modal
+            function closeLuxurySuccessModal() {
+                document.getElementById('luxurySuccessModal').classList.add('hidden');
+                // Optionally refresh page or update balance
+                setTimeout(() => {
+                    window.location.reload();
+                }, 500);
+            }
+
+
             // Hotel Star Rating Function
             function rateHotel(hotelId, rating) {
                 // Update the visual display for this hotel
@@ -2378,18 +1845,18 @@
                             'bg-blue-500 text-white'
                     }`;
                 notification.innerHTML = `
-        <div class="flex items-center">
-            <i class="fas fa-${type === 'success' ? 'check-circle' :
+                                    <div class="flex items-center">
+                                        <i class="fas fa-${type === 'success' ? 'check-circle' :
                         type === 'error' ? 'exclamation-triangle' :
                             type === 'warning' ? 'exclamation-circle' :
                                 'info-circle'
                     } mr-2"></i>
-            <span>${message}</span>
-            <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    `;
+                                        <span>${message}</span>
+                                        <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
+                                            <i class="fas fa-times"></i>
+                                        </button>
+                                    </div>
+                                `;
 
                 document.body.appendChild(notification);
 
@@ -2407,14 +1874,9 @@
 
             // Initialize when DOM is loaded
             document.addEventListener('DOMContentLoaded', function () {
-                // Initialize luxury order checking
-                initializeLuxuryOrderCheck();
 
-                // Additional check after a short delay to ensure all content is loaded
-                setTimeout(() => {
-                    checkInitialFreezingCardState();
-                }, 500);
-
+                // ⭐ NEW: Initialize golden egg checking
+                initializeGoldenEggCheck();
                 // Star rating click handlers for reservation rating modal
                 document.querySelectorAll('.star-btn').forEach(btn => {
                     btn.addEventListener('click', function () {
@@ -2437,38 +1899,34 @@
                     });
                 }
 
-                // Hotel star hover effects
-                // document.querySelectorAll('.hotel-star-btn').forEach(btn => {
-                //     btn.addEventListener('mouseenter', function () {
-                //         const hotelId = this.dataset.hotelId;
-                //         const hoverRating = parseInt(this.dataset.rating);
+                // Optional: Play notification sound (you can add this if you want)
+                function playNotificationSound() {
+                    try {
+                        // Create a subtle notification sound
+                        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                        const oscillator = audioContext.createOscillator();
+                        const gainNode = audioContext.createGain();
 
-                //         const hotelStars = document.querySelectorAll(`[data-hotel-id="${hotelId}"]`);
-                //         hotelStars.forEach((star, index) => {
-                //             const starRating = parseInt(star.dataset.rating);
-                //             if (starRating <= hoverRating) {
-                //                 star.classList.add('text-yellow-400');
-                //                 star.classList.remove('text-gray-300');
-                //             } else {
-                //                 star.classList.remove('text-yellow-400');
-                //                 star.classList.add('text-gray-300');
-                //             }
-                //         });
-                //     });
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioContext.destination);
 
-                //     btn.addEventListener('mouseleave', function () {
-                //         const hotelId = this.dataset.hotelId;
-                //         // Reset to original rating - you might want to store original rating
-                //         // For now, we'll just keep the last clicked rating
-                //     });
-                // });
+                        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                        gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                        gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+
+                        oscillator.start();
+                        oscillator.stop(audioContext.currentTime + 0.5);
+                    } catch (error) {
+                        console.log('Audio context not available');
+                    }
+                }
 
                 // Close modals when clicking outside
                 const modals = document.querySelectorAll('[id$="Modal"]');
                 modals.forEach(modal => {
                     modal.addEventListener('click', function (e) {
                         if (e.target === modal) {
-                            // Don't auto-close golden eggs modal to prevent accidental dismissal
+                            // Don't auto-close golden egg modal to prevent accidental dismissal
                             if (modal.id !== 'goldenEggsModal') {
                                 modal.classList.add('hidden');
                             }
@@ -2480,7 +1938,7 @@
                     if (e.key === 'Escape') {
                         modals.forEach(modal => {
                             if (!modal.classList.contains('hidden')) {
-                                // Don't auto-close golden eggs modal to prevent accidental dismissal
+                                // Don't auto-close golden egg modal to prevent accidental dismissal
                                 if (modal.id !== 'goldenEggsModal') {
                                     modal.classList.add('hidden');
                                 }
@@ -2488,17 +1946,42 @@
                         });
                     }
                 });
-
                 // Cleanup interval when page unloads
                 window.addEventListener('beforeunload', function () {
-                    if (luxuryCheckInterval) {
-                        clearInterval(luxuryCheckInterval);
+                    if (goldenEggCheckInterval) {
+                        clearInterval(goldenEggCheckInterval);
                     }
                 });
             });
+
+            // Force check freezing card on page load
+            window.addEventListener('load', function () {
+                console.log('Page fully loaded - checking freezing card');
+
+                // Get balance from the hidden element
+                const balanceElement = document.getElementById('userBalance');
+                const balance = parseFloat(balanceElement?.dataset?.balance || 0);
+
+                console.log('Detected balance:', balance);
+
+                // Get freezing card
+                const freezingCard = document.getElementById('freezingAmountCard');
+
+                if (freezingCard) {
+                    if (balance < 0) {
+                        console.log('Balance is negative, showing freezing card');
+                        // Force show the card
+                        freezingCard.style.cssText = 'display: block !important; opacity: 1 !important; visibility: visible !important;';
+                        freezingCard.classList.remove('hidden');
+                    } else {
+                        console.log('Balance is positive/zero, hiding freezing card');
+                        freezingCard.style.display = 'none';
+                    }
+                } else {
+                    console.error('Freezing card not found!');
+                }
+            });
         </script>
-
-
     </body>
 
 </html>

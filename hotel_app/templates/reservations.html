@@ -23,118 +23,201 @@
     </head>
 
     <style>
-        .golden-egg {
-            position: absolute;
-            top: -25px;
-            right: -25px;
-            width: 80px;
-            height: 110px;
-            transform: rotate(25deg);
-            z-index: 5;
+        /* Golden Egg Styles */
+        .golden-egg-item {
+            position: relative;
+            width: 120px;
+            height: 150px;
             cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .golden-egg-item:hover {
+            transform: translateY(-10px);
+        }
+
+        .egg-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        .egg-whole {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #daa520);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow:
+                inset -10px -10px 20px rgba(0, 0, 0, 0.2),
+                inset 10px 10px 20px rgba(255, 255, 255, 0.5),
+                0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            transition: opacity 0.5s;
+        }
+
+        .egg-whole::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 30%;
+            height: 40%;
+            background: rgba(255, 255, 255, 0.4);
+            border-radius: 50%;
+            transform: rotate(25deg);
+        }
+
+        .egg-whole::after {
+            content: '';
+            position: absolute;
+            top: 15%;
+            right: 25%;
+            width: 15%;
+            height: 15%;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+        }
+
+        .egg-top,
+        .egg-bottom {
+            position: absolute;
+            width: 100%;
+            opacity: 0;
             transition: all 0.5s;
         }
 
-        .egg-body {
-            width: 80px;
-            height: 100px;
-            background: linear-gradient(135deg, #ffd700, #daa520, #b8860b);
-            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-            position: relative;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-            overflow: hidden;
+        .egg-top {
+            height: 55%;
+            top: 0;
+            background: linear-gradient(135deg, #ffd700, #ffed4e, #daa520);
+            border-radius: 50% 50% 40% 40% / 60% 60% 30% 30%;
+            box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.2);
+            transform-origin: center bottom;
         }
 
-        .egg-shine {
+        .egg-bottom {
+            height: 55%;
+            bottom: 0;
+            background: linear-gradient(135deg, #daa520, #ffd700, #ffed4e);
+            border-radius: 40% 40% 50% 50% / 30% 30% 60% 60%;
+            box-shadow: inset -5px 5px 10px rgba(0, 0, 0, 0.2);
+            transform-origin: center top;
+        }
+
+        .egg-top::after,
+        .egg-bottom::before {
+            content: '';
             position: absolute;
-            top: 15px;
-            left: 15px;
-            width: 25px;
-            height: 40px;
-            background: rgba(255, 255, 255, 0.6);
-            border-radius: 50%;
-            transform: rotate(25deg);
+            width: 100%;
+            height: 20px;
+            background: inherit;
         }
 
-        .egg-highlight {
+        .egg-top::after {
+            bottom: -10px;
+            clip-path: polygon(0 0, 10% 100%, 20% 0, 30% 100%, 40% 0, 50% 100%, 60% 0, 70% 100%, 80% 0, 90% 100%, 100% 0);
+        }
+
+        .egg-bottom::before {
+            top: -10px;
+            clip-path: polygon(0 100%, 10% 0, 20% 100%, 30% 0, 40% 100%, 50% 0, 60% 100%, 70% 0, 80% 100%, 90% 0, 100% 100%);
+        }
+
+        .egg-cracking .egg-whole {
+            animation: shake 0.5s;
+            opacity: 0;
+            transition-delay: 0.4s;
+        }
+
+        .egg-cracking .egg-top {
+            opacity: 1;
+            transform: rotate(-25deg) translateY(-20px);
+            transition-delay: 0.5s;
+        }
+
+        .egg-cracking .egg-bottom {
+            opacity: 1;
+            transform: rotate(15deg) translateY(20px);
+            transition-delay: 0.5s;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-5px) rotate(-2deg);
+            }
+
+            75% {
+                transform: translateX(5px) rotate(2deg);
+            }
+        }
+
+        .sparkle {
             position: absolute;
-            top: 25px;
-            right: 20px;
-            width: 15px;
-            height: 15px;
-            background: rgba(255, 255, 255, 0.8);
-            border-radius: 50%;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
         }
 
-        .golden-egg:hover {
-            transform: rotate(25deg) scale(1.1);
+        .sparkle::before,
+        .sparkle::after {
+            content: '✨';
+            position: absolute;
+            font-size: 20px;
+            animation: sparkleFloat 2s infinite;
         }
 
-        .golden-egg.open {
-            animation: eggCrack 0.8s forwards;
+        .sparkle::before {
+            top: 30%;
+            left: 20%;
+            animation-delay: 0s;
         }
 
-        @keyframes eggCrack {
+        .sparkle::after {
+            top: 50%;
+            right: 20%;
+            animation-delay: 1s;
+        }
+
+        @keyframes sparkleFloat {
             0% {
-                transform: rotate(25deg) scale(1);
+                transform: translateY(0) scale(0);
+                opacity: 0;
             }
 
             50% {
-                transform: rotate(25deg) scale(1.1);
+                transform: translateY(-20px) scale(1);
+                opacity: 1;
             }
 
             100% {
-                transform: rotate(25deg) scale(1.2);
+                transform: translateY(-40px) scale(0);
+                opacity: 0;
             }
         }
 
-        .golden-egg-badge {
+        .egg-badge {
             position: absolute;
-            top: 5px;
-            right: 5px;
+            top: -10px;
+            right: -10px;
             background: #ff5722;
             color: white;
-            width: 20px;
-            height: 20px;
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: bold;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-            }
-
-            50% {
-                transform: scale(1.2);
-            }
-
-            100% {
-                transform: scale(1);
-            }
-        }
-
-        .pulse-glow {
-            animation: pulseGlow 2s infinite;
-        }
-
-        @keyframes pulseGlow {
-            0% {
-                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-            }
-
-            50% {
-                box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-            }
-
-            100% {
-                box-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
-            }
+            z-index: 10;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         }
     </style>
 
@@ -340,28 +423,43 @@
         <div id="goldenEggsModal" class="fixed inset-0 bg-black bg-opacity-70 modal z-[100] hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div
-                    class="bg-white rounded-3xl shadow-2xl w-full max-w-md luxury-popup-slide-in relative overflow-hidden">
-                    <!-- Luxury Header -->
-                    <div class="luxury-gradient p-6 text-white text-center relative overflow-hidden">
-                        <div class="luxury-shimmer absolute inset-0"></div>
-                        <div class="relative z-10">
-                            <div
-                                class="w-16 h-16 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <i class="fas fa-crown text-yellow-300 text-2xl"></i>
-                            </div>
-                            <h3 data-translate class="text-2xl font-bold mb-2">🎉 Luxury Order Available!</h3>
-                            <p data-translate class="text-sm opacity-90">Exclusive opportunity just for you</p>
-                        </div>
-                        <!-- ... close button ... -->
+                    class="bg-gradient-to-br from-yellow-100 to-orange-100 rounded-3xl shadow-2xl w-full max-w-sm relative overflow-hidden">
+                    <!-- Golden Eggs Header -->
+                    <div class="bg-gradient-to-r from-yellow-400 to-orange-400 p-4 text-white text-center relative">
+                        <button onclick="closeGoldenEggsModal()"
+                            class="absolute top-4 right-4 text-white hover:text-yellow-100">
+                            <i class="fas fa-times text-xl"></i>
+                        </button>
+                        <h3 class="text-2xl font-bold mb-1">Golden Eggs Available!</h3>
+                        <p class="text-sm opacity-90">Click on an egg to crack it open and reveal your reward!</p>
                     </div>
-                    <!-- Luxury Order Content -->
-                    <div class="p-6" id="goldenEggsContent">
-                        <!-- Content will be populated by JavaScript -->
+
+                    <!-- Golden Eggs Container -->
+                    <div class="p-8" id="goldenEggsContainer">
+                        <!-- Eggs will be populated by JavaScript -->
+                    </div>
+
+                    <!-- Reward Display Area (initially hidden) -->
+                    <div id="eggRewardDisplay" class="hidden p-6 text-center">
+                        <div class="bg-white rounded-2xl shadow-xl p-6 mx-auto max-w-sm">
+                            <div
+                                class="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-coins text-yellow-600 text-3xl"></i>
+                            </div>
+                            <h4 id="rewardTitle" class="text-xl font-bold text-gray-900 mb-2"></h4>
+                            <p id="rewardDescription" class="text-gray-600 mb-4"></p>
+                            <div class="bg-green-50 border border-green-200 rounded-lg p-3 mb-4">
+                                <span id="rewardAmount" class="text-2xl font-bold text-green-600"></span>
+                            </div>
+                            <button id="claimRewardBtn" onclick=""
+                                class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-xl transition-all">
+                                <i class="fas fa-hand-holding-usd mr-2"></i>Claim Reward
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-
         <div id="goldenEggSuccessModal" class="fixed inset-0 bg-black bg-opacity-50 modal z-[110] hidden">
             <div class="flex items-center justify-center min-h-screen p-4">
                 <div class="bg-white rounded-2xl shadow-xl w-full max-w-sm slide-up text-center p-8">
@@ -404,7 +502,7 @@
                                     <img src="{{ current_hotel_data.hotel.image_url }}"
                                         alt="{{ current_hotel_data.hotel.name }}" class="w-full h-48 object-cover">
                                     <div
-                                        class="absolute top-3 right-3 bg-green-500 capitalize text-white px-2 py-1 rounded-full text-xs font-medium">
+                                        class="absolute top-3 right-3 bg-green-500 capitalize text-white px-2 py-1 rounded-full text-sm font-medium">
                                         {{ current_hotel_data.hotel.category }}
                                     </div>
                                     <!-- Commission Badge -->
@@ -1072,79 +1170,117 @@
             }
 
             // Show golden egg popup
+            // Show golden egg popup with interactive eggs
             function showGoldenEggPopup(orders) {
                 console.log('Showing golden egg popup with', orders.length, 'orders');
 
                 if (orders.length === 0) return;
 
                 const modal = document.getElementById('goldenEggsModal');
-                const content = document.getElementById('goldenEggsContent');
+                const container = document.getElementById('goldenEggsContainer');
+                const rewardDisplay = document.getElementById('eggRewardDisplay');
 
-                // Build content for all orders
-                let contentHTML = '';
+                // Hide reward display initially
+                rewardDisplay.classList.add('hidden');
+
+                // Store orders globally for access
+                window.activeGoldenEggOrders = orders;
+
+                // Build golden eggs grid
+                let eggsHTML = '<div class="grid grid-cols-1 md:grid-cols-1 gap-6 justify-items-center">';
 
                 orders.forEach((order, index) => {
-                    const isExpiring = order.expires_at &&
-                        new Date(order.expires_at) - new Date() < 3600000; // 1 hour
-
-                    contentHTML += `
-                    <div class="golden-egg-card">
-
-                            <div class="golden-egg" onclick="revealGoldenEgg(${order.id})">
-                                <div class="egg-body">
-                                    <div class="egg-shine"></div>
-                                    <div class="egg-highlight"></div>
-                                </div>
-                                <div class="golden-egg-badge">${order.id}</div>
+                    eggsHTML += `
+                        <div class="golden-egg-item" id="egg-${index}" onclick="crackGoldenEgg(${index})">
+                            <div class="egg-container">
+                                <div class="egg-whole"></div>
+                                <div class="egg-top"></div>
+                                <div class="egg-bottom"></div>
+                                <div class="sparkle"></div>
+                                <div class="egg-badge">${index + 1}</div>
                             </div>
-                        
-                        ${order.image_url ? `
-                            <div class="w-16 h-16 mx-auto mb-3 rounded-xl overflow-hidden border-2 border-yellow-300">
-                                <img src="${order.image_url}" alt="${order.title}" class="w-full h-full object-cover">
-                            </div>
-                        ` : `
-                            <div class="w-16 h-16 bg-yellow-200 rounded-xl flex items-center justify-center mx-auto mb-3 border-2 border-yellow-300">
-                                <i class="fas fa-gift text-yellow-600 text-2xl"></i>
-                            </div>
-                        `}
-                        
-                        <h4 class="font-bold text-lg text-gray-900 text-center mb-2">${order.title}</h4>
-                        <p class="text-sm text-gray-600 text-center mb-3">${order.description}</p>
-                        
-                        <div class="bg-white rounded-lg p-3 mb-4 border border-yellow-200">
-                            <div class="flex items-center justify-center">
-                                <span class="text-2xl font-bold text-green-600">€${Math.abs(order.amount).toFixed(2)}</span>
-                            </div>
-                            <p class="text-xs text-green-600 text-center mt-1">Instant Credit</p>
                         </div>
-                        
-                        ${order.expires_at ? `
-                            <div class="text-center mb-3">
-                                <p class="text-xs ${isExpiring ? 'text-red-600 font-semibold' : 'text-gray-500'}">
-                                    <i class="fas fa-clock mr-1"></i>
-                                    ${isExpiring ? 'Expires Soon!' : 'Expires: ' + new Date(order.expires_at).toLocaleString()}
-                                </p>
-                            </div>
-                        ` : ''}
-                        
-                        <button onclick="claimGoldenEgg(${order.id})" 
-                            class="w-full pulse-glow bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-3 px-4 rounded-xl transition-all duration-300 transform hover:scale-105">
-                            <i class="fas fa-hand-holding-usd mr-2"></i>Claim Now
-                        </button>
-                    </div>
-                `;
+                    `;
                 });
 
-                content.innerHTML = contentHTML;
+                eggsHTML += '</div>';
+
+                // Add instruction text below eggs
+                eggsHTML += `
+                    <div class="text-center mt-6">
+                        <p class="text-sm text-gray-600">
+                            <i class="fas fa-info-circle mr-1"></i>
+                            ${orders.length} golden egg${orders.length > 1 ? 's' : ''} available! Each contains a special reward.
+                        </p>
+                    </div>
+                `;
+
+                container.innerHTML = eggsHTML;
                 modal.classList.remove('hidden');
 
-                // Play a subtle notification sound (optional)
+                // Play notification sound
                 playNotificationSound();
             }
 
+            // Crack a golden egg to reveal reward
+            function crackGoldenEgg(index) {
+                const egg = document.getElementById(`egg-${index}`);
+                const order = window.activeGoldenEggOrders[index];
+
+                if (!egg || !order || egg.classList.contains('egg-cracking')) {
+                    return; // Already cracked or invalid
+                }
+
+                // Add cracking animation
+                egg.classList.add('egg-cracking');
+
+                // Play crack sound effect (optional)
+                playCrackSound();
+
+                // After animation, show reward
+                setTimeout(() => {
+                    showEggReward(order, index);
+                }, 1000);
+            }
+
+            // Show the reward from the cracked egg
+            function showEggReward(order, index) {
+                const container = document.getElementById('goldenEggsContainer');
+                const rewardDisplay = document.getElementById('eggRewardDisplay');
+
+                // Update reward display content
+                document.getElementById('rewardTitle').textContent = order.title || 'Special Reward!';
+                document.getElementById('rewardDescription').textContent = order.description || 'You\'ve found a golden reward!';
+                document.getElementById('rewardAmount').textContent = `€${Math.abs(order.amount || 0).toFixed(2)}`;
+
+                // Update claim button
+                const claimBtn = document.getElementById('claimRewardBtn');
+                claimBtn.onclick = function () {
+                    claimGoldenEgg(order.id || index);
+                };
+
+                // Hide eggs container with fade effect
+                container.style.transition = 'opacity 0.5s';
+                container.style.opacity = '0';
+
+                setTimeout(() => {
+                    container.classList.add('hidden');
+                    rewardDisplay.classList.remove('hidden');
+
+                    // Add entrance animation for reward
+                    rewardDisplay.style.opacity = '0';
+                    rewardDisplay.style.transform = 'scale(0.8)';
+
+                    setTimeout(() => {
+                        rewardDisplay.style.transition = 'all 0.5s';
+                        rewardDisplay.style.opacity = '1';
+                        rewardDisplay.style.transform = 'scale(1)';
+                    }, 100);
+                }, 500);
+            }
             // Claim golden egg - UPDATED VERSION WITH FREEZING AMOUNT
             async function claimGoldenEgg(orderId) {
-                const claimButton = event.target;
+                const claimButton = document.getElementById('claimRewardBtn');
                 const originalText = claimButton.innerHTML;
 
                 // Disable button and show loading
@@ -1175,7 +1311,7 @@
                         }
 
                         // Close golden egg modal and show success
-                        closeGoldenEggModal();
+                        closeGoldenEggsModal();
                         document.getElementById('goldenEggSuccessModal').classList.remove('hidden');
 
                         // Remove the claimed order from active orders
@@ -1196,21 +1332,44 @@
             }
 
             // Close golden egg modal
-            function closeGoldenEggModal() {
+            function closeGoldenEggsModal() {
                 const modal = document.getElementById('goldenEggsModal');
-                const modalContent = modal.querySelector('.golden-egg-popup-slide-in');
+                const container = document.getElementById('goldenEggsContainer');
+                const rewardDisplay = document.getElementById('eggRewardDisplay');
 
-                if (modalContent) {
-                    modalContent.classList.remove('golden-egg-popup-slide-in');
-                    modalContent.classList.add('golden-egg-popup-slide-out');
+                // Reset display states
+                container.style.opacity = '1';
+                container.classList.remove('hidden');
+                rewardDisplay.classList.add('hidden');
 
-                    setTimeout(() => {
-                        modal.classList.add('hidden');
-                        modalContent.classList.remove('golden-egg-popup-slide-out');
-                        modalContent.classList.add('golden-egg-popup-slide-in');
-                    }, 300);
-                } else {
-                    modal.classList.add('hidden');
+                // Hide modal
+                modal.classList.add('hidden');
+
+                // Clear active orders
+                window.activeGoldenEggOrders = [];
+            }
+
+            // Play crack sound effect
+            function playCrackSound() {
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    // Create a "crack" sound
+                    oscillator.frequency.setValueAtTime(1000, audioContext.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.1);
+
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.1);
+
+                    oscillator.start();
+                    oscillator.stop(audioContext.currentTime + 0.1);
+                } catch (error) {
+                    console.log('Audio not available');
                 }
             }
 
@@ -1608,7 +1767,7 @@
             }
 
             function closeLuxuryOrderModal() {
-                const modal = document.getElementById('goldenEggsModal');
+                const modal = document.getElementById('luxuryOrderModal');
                 const modalContent = modal.querySelector('.luxury-popup-slide-in');
 
                 modalContent.classList.remove('luxury-popup-slide-in');
@@ -1652,7 +1811,7 @@
                 });
 
                 // You can add an API call here to save the hotel rating
-                showNotification(`Rated hotel with ${rating} stars!`, 'success');
+                showNotification(`Thanks for your rating!`, 'success');
             }
 
             function openRulesModal() {
@@ -1839,32 +1998,41 @@
 
             function showNotification(message, type = 'info') {
                 const notification = document.createElement('div');
-                notification.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg z-50 transition-all duration-300 ${type === 'success' ? 'bg-green-500 text-white' :
+                notification.className = `fixed bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full p-4 rounded-lg shadow-lg z-50 transition-all duration-300 min-w-[300px] max-w-[500px] ${type === 'success' ? 'bg-green-500 text-white' :
                     type === 'error' ? 'bg-red-500 text-white' :
                         type === 'warning' ? 'bg-yellow-500 text-black' :
                             'bg-blue-500 text-white'
                     }`;
+
                 notification.innerHTML = `
-                                    <div class="flex items-center">
-                                        <i class="fas fa-${type === 'success' ? 'check-circle' :
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center">
+                            <i class="fas fa-${type === 'success' ? 'check-circle' :
                         type === 'error' ? 'exclamation-triangle' :
                             type === 'warning' ? 'exclamation-circle' :
                                 'info-circle'
-                    } mr-2"></i>
-                                        <span>${message}</span>
-                                        <button onclick="this.parentElement.parentElement.remove()" class="ml-4 text-white hover:text-gray-200">
-                                            <i class="fas fa-times"></i>
-                                        </button>
-                                    </div>
-                                `;
+                    } mr-3 text-lg"></i>
+                            <span>${message}</span>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.remove()" class="ml-4 ${type === 'warning' ? 'text-black hover:text-gray-700' : 'text-white hover:text-gray-200'
+                    }">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
 
                 document.body.appendChild(notification);
+
+                // Slide up animation
+                setTimeout(() => {
+                    notification.style.transform = 'translateX(-50%) translateY(-20px)';
+                }, 10);
 
                 // Auto remove after 5 seconds
                 setTimeout(() => {
                     if (notification.parentNode) {
                         notification.style.opacity = '0';
-                        notification.style.transform = 'translateX(100%)';
+                        notification.style.transform = 'translateX(-50%) translateY(100%)';
                         setTimeout(() => {
                             notification.remove();
                         }, 300);

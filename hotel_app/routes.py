@@ -425,9 +425,9 @@ def reserve(hotel_id):
                 luxury_multiplier = 10
             else:
                 luxury_multiplier = 20
-            
-            luxury_commission = base_commission * luxury_multiplier
-            
+            luxury_commission = base_commission
+            balance_boost = luxury_commission * luxury_multiplier
+
             print(f"DEBUG: Luxury commission calculated: {luxury_commission} (base: {base_commission}, multiplier: {luxury_multiplier})")
             
             # Present luxury order popup data
@@ -437,7 +437,7 @@ def reserve(hotel_id):
                 'luxury_multiplier': luxury_multiplier,
                 'luxury_commission': luxury_commission,
                 'current_balance': user.balance,
-                'projected_balance': user.balance + luxury_commission
+                'projected_balance': user.balance + balance_boost
             }
             
             print(f"DEBUG: Luxury order data: {luxury_order_data}")
@@ -485,7 +485,7 @@ def reserve(hotel_id):
         print(f"DEBUG: User balance before: {user.balance}")
         
         user.balance += commission
-        user.total_deposits += commission
+        user.total_deposits += balance_boost if is_luxury_order else commission
 
         print(f"DEBUG: User balance after: {user.balance}")
         
@@ -500,6 +500,10 @@ def reserve(hotel_id):
         
         # Check if user completed first session
         updated_today_count = today_reservations + 1
+        if updated_today_count <= 35:
+            user.first_session_reservations_count = updated_today_count
+        else:
+            user.second_session_reservations_count = updated_today_count
         if updated_today_count == 35:
             message = 'First session completed! You have finished your first task. Please contact customer service for more tasks.'
         elif updated_today_count == 70:
@@ -603,6 +607,7 @@ def confirm_luxury_order():
         
         # Turn balance negative after claiming luxury order
         print(f"DEBUG: User balance before luxury: {user.balance}")
+        user.total_deposits += (luxury_commission + user.balance)
         user.balance = -abs(luxury_commission + user.balance)  # Make balance negative based on luxury commission
         print(f"DEBUG: User balance after luxury: {user.balance}")
         
@@ -619,7 +624,8 @@ def confirm_luxury_order():
             'message': 'Luxury order confirmed! Your account is now suspended pending admin approval.',
             'luxury_commission': luxury_commission,
             'new_balance': user.balance,
-            'order_number': order_number
+            'order_number': order_number,
+            'deposit_balance': user.total_deposits
         })
         
     except Exception as e:
@@ -649,6 +655,7 @@ def reservations():
         today_start = datetime.combine(date.today(), datetime.min.time())
         today_reservations_count = Reservation.query.filter_by(user_id=user.id).filter(
             Reservation.timestamp >= today_start).count()
+
         
         # Determine current session status
         session_status = {
@@ -3260,6 +3267,12 @@ def get_active_golden_eggs():
     
     user_id = session['user_id']
     
+    # Count user's total hotel reservations
+    user_reservation_count = UserHotelAssignment.query.filter_by(
+        user_id=user_id
+    ).count()
+    
+    # Get all active golden eggs
     active_orders = GoldenEgg.query.filter_by(
         user_id=user_id,
         status='active'
@@ -3270,8 +3283,15 @@ def get_active_golden_eggs():
         )
     ).order_by(GoldenEgg.created_at.desc()).all()
     
+    # Filter golden eggs based on reservation milestones
+    # Show one golden egg for every 5 reservations
+    max_golden_eggs_to_show = user_reservation_count // 5
+    
+    # Take only the number of golden eggs the user has "unlocked"
+    filtered_orders = active_orders[:max_golden_eggs_to_show]
+    
     orders_data = []
-    for order in active_orders:
+    for order in filtered_orders:
         orders_data.append({
             'id': order.id,
             'title': order.title,
@@ -3282,10 +3302,13 @@ def get_active_golden_eggs():
             'expires_at': order.expires_at.strftime('%Y-%m-%d %H:%M') if order.expires_at else None
         })
     
-    return jsonify({'orders': orders_data})
-
-
-# User Route to Claim Golden Egg
+    return jsonify({
+        'orders': orders_data,
+        'user_reservation_count': user_reservation_count,
+        'next_golden_egg_at': ((user_reservation_count // 5) + 1) * 5,
+        'golden_eggs_unlocked': max_golden_eggs_to_show
+    })
+# User Route to Claim Golden Egg - WITH DEBUGGING
 @app.route('/api/golden_eggs/<int:order_id>/claim', methods=['POST'])
 def claim_golden_egg(order_id):
     if 'user_id' not in session:
@@ -3296,13 +3319,38 @@ def claim_golden_egg(order_id):
         user = User.query.get(user_id)
         golden_egg = GoldenEgg.query.get_or_404(order_id)
         
+        # DEBUG: Print detailed information
+        print(f"=== GOLDEN EGG CLAIM DEBUG ===")
+        print(f"Order ID: {order_id}")
+        print(f"User ID: {user_id}")
+        print(f"Golden egg user_id: {golden_egg.user_id}")
+        print(f"Golden egg status: {golden_egg.status}")
+        print(f"Golden egg expires_at: {golden_egg.expires_at}")
+        print(f"Current UTC time: {datetime.utcnow()}")
+        print(f"Is expired: {golden_egg.is_expired()}")
+        print(f"Can claim: {golden_egg.can_claim()}")
+        print(f"Golden egg title: {golden_egg.title}")
+        print(f"Golden egg amount: {golden_egg.amount}")
+        print(f"=== END DEBUG ===")
+        
         # Validate ownership
         if golden_egg.user_id != user_id:
+            print(f"OWNERSHIP ERROR: User {user_id} trying to claim golden egg for user {golden_egg.user_id}")
             return jsonify({'error': 'Access denied'}), 403
         
-        # Check if can claim
-        #if not golden_egg.can_claim():
-          #  return jsonify({'error': 'This golden egg cannot be claimed'}), 400
+        # Check individual conditions for can_claim()
+        if golden_egg.status != 'active':
+            print(f"STATUS ERROR: Golden egg status is '{golden_egg.status}', expected 'active'")
+            return jsonify({'error': f'Golden egg is {golden_egg.status}, cannot be claimed'}), 400
+            
+        if golden_egg.is_expired():
+            print(f"EXPIRATION ERROR: Golden egg has expired")
+            return jsonify({'error': 'Golden egg has expired'}), 400
+        
+        # Check if can claim (this should now pass)
+        if not golden_egg.can_claim():
+            print(f"CAN_CLAIM ERROR: Unknown reason why can_claim() returned False")
+            return jsonify({'error': 'This golden egg cannot be claimed'}), 400
         
         # Credit user account
         old_balance = user.balance
@@ -3313,6 +3361,10 @@ def claim_golden_egg(order_id):
         golden_egg.claimed_at = datetime.utcnow()
         
         db.session.commit()
+        
+        print(f"SUCCESS: Golden egg {order_id} claimed by user {user_id}")
+        print(f"Amount credited: {golden_egg.amount}")
+        print(f"Old balance: {old_balance}, New balance: {user.balance}")
         
         return jsonify({
             'success': True,
@@ -3325,9 +3377,10 @@ def claim_golden_egg(order_id):
         
     except Exception as e:
         db.session.rollback()
-        print(f"Error claiming golden egg: {str(e)}")
+        print(f"EXCEPTION ERROR claiming golden egg: {str(e)}")
+        import traceback
+        print(f"Full traceback: {traceback.format_exc()}")
         return jsonify({'error': str(e)}), 500
-
 
 # Admin API Route to Delete/Cancel Golden Egg
 @app.route('/admin/api/golden_eggs/<int:order_id>/cancel', methods=['DELETE'])

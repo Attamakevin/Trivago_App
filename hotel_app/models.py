@@ -262,7 +262,7 @@ class UserHotelAssignment(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     
     # Unique constraint to prevent duplicate assignments
-    __table_args__ = (db.UniqueConstraint('user_id', 'hotel_id', 'session_type'),)
+    #__table_args__ = (db.UniqueConstraint('user_id', 'hotel_id', 'session_type'),)
 
 class UserHotelRating(db.Model):
     __tablename__ = 'user_hotel_rating'

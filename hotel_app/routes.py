@@ -285,7 +285,7 @@ def credit():
     user = User.query.get(session['user_id'])
     return render_template('credit.html', user=user)
 
-# Fixed reservation route with proper luxury order handling
+# Fixed reservation route with proper session tracking
 @app.route('/reserve/<int:hotel_id>', methods=['GET', 'POST'])
 def reserve(hotel_id):
     if 'user_id' not in session:
@@ -340,59 +340,10 @@ def reserve(hotel_id):
         today_reservations = Reservation.query.filter_by(user_id=user.id).filter(
             Reservation.timestamp >= today_start).count()
         
-        # Check session limits (35 per session, 70 total per day)
-        if today_reservations >= 70:
-            if request.method == 'GET':
-                flash('You have completed your reservations for today. Please check back tomorrow.', 'info')
-                return redirect(url_for('reservations'))
-            return jsonify({'error': 'Daily reservation limit reached. Check back tomorrow.'}), 403
-        
-        # Check if user needs to contact customer service for second session
-        if today_reservations == 35:
-            if request.method == 'GET':
-                flash('You have finished your first task (35 reservations). Please contact customer service for more tasks.', 'info')
-                return redirect(url_for('reservations'))
-            return jsonify({'error': 'First session complete. Contact customer service for more tasks.'}), 403
-        
-        # Check if user is in second session but hasn't been assigned more hotels
-        if today_reservations > 35:
-            # User is in second session - check if they have been assigned the second batch
-            second_session_assignments = UserHotelAssignment.query.filter_by(
-                user_id=user.id
-            ).filter(
-                UserHotelAssignment.created_at >= today_start
-            ).count()
-            
-            if second_session_assignments == 0:
-                if request.method == 'GET':
-                    flash('Please contact customer service to get your second session assignments.', 'info')
-                    return redirect(url_for('reservations'))
-                return jsonify({'error': 'Contact customer service for second session assignments.'}), 403
+        # FIXED SESSION LOGIC - Calculate what the count will be after this reservation
+        updated_today_count = today_reservations + 1
 
-        # Reset trial bonus after 35 reservations
-        if today_reservations >= 35:
-            user.trial_bonus = 0.0
-
-        # Get the appropriate assignment for this reservation
-        available_assignment = None
-        for assignment in hotel_assignments:
-            reservations_for_this_assignment = Reservation.query.filter_by(
-                user_id=user.id,
-                hotel_id=hotel_id
-            ).filter(Reservation.timestamp >= assignment.created_at).count()
-            
-            if reservations_for_this_assignment == 0:
-                available_assignment = assignment
-                break
-        
-        if not available_assignment:
-            available_assignment = hotel_assignments[-1]  # Use the latest assignment
-
-        # Calculate base commission
-        base_commission = available_assignment.custom_commission * hotel.commission_multiplier
-        
-        # IMPROVED LUXURY ORDER DETECTION
-        # Check multiple possible ways hotel might be marked as luxury
+        # LUXURY ORDER DETECTION AND PROCESSING
         is_luxury_order = False
         
         # Method 1: Check category attribute
@@ -419,6 +370,24 @@ def reserve(hotel_id):
         
         if is_luxury_order:
             print(f"DEBUG: Processing luxury order for hotel {hotel_id}")
+            
+            # Get the appropriate assignment for this reservation
+            available_assignment = None
+            for assignment in hotel_assignments:
+                reservations_for_this_assignment = Reservation.query.filter_by(
+                    user_id=user.id,
+                    hotel_id=hotel_id
+                ).filter(Reservation.timestamp >= assignment.created_at).count()
+                
+                if reservations_for_this_assignment == 0:
+                    available_assignment = assignment
+                    break
+            
+            if not available_assignment:
+                available_assignment = hotel_assignments[-1]  # Use the latest assignment
+
+            # Calculate base commission
+            base_commission = available_assignment.custom_commission * hotel.commission_multiplier
             
             # Calculate luxury commission multiplier
             if available_assignment.custom_commission < 1000:
@@ -460,9 +429,35 @@ def reserve(hotel_id):
                 'message': 'Luxury order available - requires confirmation'
             })
         
-        # Regular hotel reservation (non-luxury)
-        print(f"DEBUG: Processing regular (non-luxury) reservation")
-        commission = base_commission
+        # Get the appropriate assignment for this reservation
+        available_assignment = None
+        for assignment in hotel_assignments:
+            reservations_for_this_assignment = Reservation.query.filter_by(
+                user_id=user.id,
+                hotel_id=hotel_id
+            ).filter(Reservation.timestamp >= assignment.created_at).count()
+            
+            if reservations_for_this_assignment == 0:
+                available_assignment = assignment
+                break
+        
+        if not available_assignment:
+            available_assignment = hotel_assignments[-1]  # Use the latest assignment
+
+        # Calculate commission based on order type
+        if is_luxury_order:
+            # Luxury order commission calculation
+            base_commission = available_assignment.custom_commission * hotel.commission_multiplier
+            if available_assignment.custom_commission < 1000:
+                luxury_multiplier = 10
+            else:
+                luxury_multiplier = 20
+            commission = base_commission * luxury_multiplier
+            print(f"DEBUG: Luxury commission calculated: {commission} (base: {base_commission} * multiplier: {luxury_multiplier})")
+        else:
+            # Regular commission calculation
+            commission = available_assignment.custom_commission * hotel.commission_multiplier
+            print(f"DEBUG: Regular commission calculated: {commission}")
         
         # Generate unique order number
         order_number = f"ORD{user.id}{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -485,9 +480,39 @@ def reserve(hotel_id):
         print(f"DEBUG: User balance before: {user.balance}")
         
         user.balance += commission
-        user.total_deposits += balance_boost if is_luxury_order else commission
+        
+        # Set total_deposits based on reservation type
+        if is_luxury_order:
+            user.total_deposits = user.balance * 3
+            print(f"DEBUG: Luxury order - total_deposits set to: {user.total_deposits} (balance * 3)")
+        else:
+            # For regular reservations, you might want to just add the commission or handle differently
+            # Uncomment the line below if you want to accumulate total_deposits for regular reservations
+            # user.total_deposits += commission
+            pass
 
         print(f"DEBUG: User balance after: {user.balance}")
+        
+        # FIXED SESSION TRACKING
+        # Properly track session counts separately
+        if updated_today_count <= 35:
+            user.first_session_reservations_count = updated_today_count
+        else:
+            # Keep first session at 35, track second session separately
+            user.first_session_reservations_count = 35
+            user.second_session_reservations_count = updated_today_count - 35
+        
+        # Reset trial bonus after 35 reservations (first session complete)
+        if updated_today_count >= 35:
+            user.trial_bonus = 0.0
+        
+        # Set appropriate completion messages
+        if updated_today_count == 35:
+            message = 'First session completed! You have finished your first task. Please contact customer service for more tasks.'
+        elif updated_today_count == 70:
+            message = 'Congratulations! You have completed your reservations for today. Please check back tomorrow.'
+        else:
+            message = 'Reservation completed successfully and commission added to your balance!'
         
         # Add both user and reservation to session
         db.session.add(reservation)
@@ -497,19 +522,7 @@ def reserve(hotel_id):
         
         print(f"DEBUG: User balance after commit: {user.balance}")
         print(f"DEBUG: Reservation created for hotel {hotel_id} with rating {reservation.rating}")
-        
-        # Check if user completed first session
-        updated_today_count = today_reservations + 1
-        if updated_today_count <= 35:
-            user.first_session_reservations_count = updated_today_count
-        else:
-            user.second_session_reservations_count = updated_today_count
-        if updated_today_count == 35:
-            message = 'First session completed! You have finished your first task. Please contact customer service for more tasks.'
-        elif updated_today_count == 70:
-            message = 'Congratulations! You have completed your reservations for today. Please check back tomorrow.'
-        else:
-            message = 'Reservation completed successfully and commission added to your balance!'
+        print(f"DEBUG: Updated counts - First session: {user.first_session_reservations_count}, Second session: {user.second_session_reservations_count}")
         
         if request.method == 'GET':
             flash(message, 'success')

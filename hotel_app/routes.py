@@ -362,15 +362,7 @@ def reserve(hotel_id):
             print(f"DEBUG: Luxury check via is_luxury flag: {is_luxury_order}")
         
         # Method 4: Check commission threshold (high commission = luxury)
-        if not is_luxury_order and available_assignment.custom_commission >= 5000:
-            is_luxury_order = True
-            print(f"DEBUG: Luxury check via high commission (>= 5000): {is_luxury_order}")
         
-        print(f"DEBUG: Final luxury order status: {is_luxury_order}")
-        
-        if is_luxury_order:
-            print(f"DEBUG: Processing luxury order for hotel {hotel_id}")
-            
             # Get the appropriate assignment for this reservation
             available_assignment = None
             for assignment in hotel_assignments:

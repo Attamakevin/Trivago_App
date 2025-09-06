@@ -3489,3 +3489,8 @@ def search_users():
     except Exception as e:
         print(f"Error searching users: {e}")
         return jsonify({'error': 'Search failed'}), 500
+
+# Add this to your Flask app (usually in your main app file)
+@app.template_filter('cycle_reset')
+def cycle_reset(value, reset_at=70):
+    return (value % reset_at) if value else 0

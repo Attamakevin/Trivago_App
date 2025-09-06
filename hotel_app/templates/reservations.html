@@ -238,7 +238,7 @@
             <div class="flex flex-col sm:flex-row items-center sm:justify-between p-6">
                 <div class="mb-6 bg-white rounded-lg shadow-sm p-4 text ">
                     <div class="text-sm md:text-sm font-bold text-purple-600 mb-2">
-                        {{ reservations|length if reservations else 0 }}
+                       {{ reservations|length|cycle_reset(70) }}
                     </div>
                     <p data-translate class="text-xs text-gray-700 font-medium">Total Reservations Made</p>
                     <p class="text-xs text-gray-500">VIP Level: <span

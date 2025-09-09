@@ -285,7 +285,7 @@ def credit():
     user = User.query.get(session['user_id'])
     return render_template('credit.html', user=user)
 
-# Fixed reservation route with proper session tracking
+# Fixed reservation route with proper luxury order detection and flow
 @app.route('/reserve/<int:hotel_id>', methods=['GET', 'POST'])
 def reserve(hotel_id):
     if 'user_id' not in session:
@@ -340,10 +340,10 @@ def reserve(hotel_id):
         today_reservations = Reservation.query.filter_by(user_id=user.id).filter(
             Reservation.timestamp >= today_start).count()
         
-        # FIXED SESSION LOGIC - Calculate what the count will be after this reservation
+        # Calculate what the count will be after this reservation
         updated_today_count = today_reservations + 1
 
-        # LUXURY ORDER DETECTION AND PROCESSING
+        # LUXURY ORDER DETECTION - This is the main fix
         is_luxury_order = False
         
         # Method 1: Check category attribute
@@ -360,67 +360,9 @@ def reserve(hotel_id):
         if not is_luxury_order and hasattr(hotel, 'is_luxury'):
             is_luxury_order = bool(hotel.is_luxury)
             print(f"DEBUG: Luxury check via is_luxury flag: {is_luxury_order}")
-        
-        # Method 4: Check commission threshold (high commission = luxury)
-        
-            # Get the appropriate assignment for this reservation
-            available_assignment = None
-            for assignment in hotel_assignments:
-                reservations_for_this_assignment = Reservation.query.filter_by(
-                    user_id=user.id,
-                    hotel_id=hotel_id
-                ).filter(Reservation.timestamp >= assignment.created_at).count()
-                
-                if reservations_for_this_assignment == 0:
-                    available_assignment = assignment
-                    break
-            
-            if not available_assignment:
-                available_assignment = hotel_assignments[-1]  # Use the latest assignment
 
-            # Calculate base commission
-            base_commission = available_assignment.custom_commission * hotel.commission_multiplier
-            
-            # Calculate luxury commission multiplier
-            if available_assignment.custom_commission < 1000:
-                luxury_multiplier = 10
-            else:
-                luxury_multiplier = 20
-            luxury_commission = base_commission
-            balance_boost = luxury_commission * luxury_multiplier
+        print(f"DEBUG: Final luxury order status: {is_luxury_order}")
 
-            print(f"DEBUG: Luxury commission calculated: {luxury_commission} (base: {base_commission}, multiplier: {luxury_multiplier})")
-            
-            # Present luxury order popup data
-            luxury_order_data = {
-                'hotel_name': hotel.name,
-                'base_commission': base_commission,
-                'luxury_multiplier': luxury_multiplier,
-                'luxury_commission': luxury_commission,
-                'current_balance': user.balance,
-                'projected_balance': user.balance + balance_boost
-            }
-            
-            print(f"DEBUG: Luxury order data: {luxury_order_data}")
-            
-            if request.method == 'GET':
-                # For GET requests, store luxury order data in session
-                session['luxury_order_pending'] = {
-                    'hotel_id': hotel_id,
-                    'data': luxury_order_data
-                }
-                print(f"DEBUG: Stored luxury order in session")
-                flash('Luxury order available! Check the popup for details.', 'info')
-                return redirect(url_for('reservations'))
-            
-            # For POST/AJAX requests, return luxury order data
-            print(f"DEBUG: Returning luxury order JSON response")
-            return jsonify({
-                'luxury_order': True,
-                'luxury_data': luxury_order_data,
-                'message': 'Luxury order available - requires confirmation'
-            })
-        
         # Get the appropriate assignment for this reservation
         available_assignment = None
         for assignment in hotel_assignments:
@@ -436,20 +378,59 @@ def reserve(hotel_id):
         if not available_assignment:
             available_assignment = hotel_assignments[-1]  # Use the latest assignment
 
-        # Calculate commission based on order type
+        # LUXURY ORDER PROCESSING - Fixed logic flow
         if is_luxury_order:
-            # Luxury order commission calculation
+            print(f"DEBUG: Processing luxury order for hotel {hotel_id}")
+            
+            # Calculate luxury commission
             base_commission = available_assignment.custom_commission * hotel.commission_multiplier
+            
+            # Calculate luxury multiplier
             if available_assignment.custom_commission < 1000:
                 luxury_multiplier = 10
             else:
                 luxury_multiplier = 20
-            commission = base_commission * luxury_multiplier
-            print(f"DEBUG: Luxury commission calculated: {commission} (base: {base_commission} * multiplier: {luxury_multiplier})")
-        else:
-            # Regular commission calculation
-            commission = available_assignment.custom_commission * hotel.commission_multiplier
-            print(f"DEBUG: Regular commission calculated: {commission}")
+            
+            luxury_commission = base_commission * luxury_multiplier
+            
+            print(f"DEBUG: Luxury commission calculated: {luxury_commission} (base: {base_commission}, multiplier: {luxury_multiplier})")
+            
+            # Present luxury order popup data
+            luxury_order_data = {
+                'hotel_name': hotel.name,
+                'base_commission': base_commission,
+                'luxury_multiplier': luxury_multiplier,
+                'luxury_commission': luxury_commission,
+                'current_balance': user.balance,
+                'projected_balance': user.balance + luxury_commission
+            }
+            
+            print(f"DEBUG: Luxury order data: {luxury_order_data}")
+            
+            if request.method == 'GET':
+                # For GET requests, store luxury order data in session
+                session['luxury_order_pending'] = {
+                    'hotel_id': hotel_id,
+                    'data': luxury_order_data
+                }
+                print(f"DEBUG: Stored luxury order in session for GET request")
+                flash('Luxury order available! Check the popup for details.', 'info')
+                return redirect(url_for('reservations'))
+            
+            # For POST/AJAX requests, return luxury order data for popup
+            print(f"DEBUG: Returning luxury order JSON response for POST request")
+            return jsonify({
+                'luxury_order': True,
+                'luxury_data': luxury_order_data,
+                'message': 'Luxury order available - requires confirmation'
+            })
+        
+        # REGULAR ORDER PROCESSING
+        print(f"DEBUG: Processing regular order for hotel {hotel_id}")
+        
+        # Calculate regular commission
+        commission = available_assignment.custom_commission * hotel.commission_multiplier
+        print(f"DEBUG: Regular commission calculated: {commission}")
         
         # Generate unique order number
         order_number = f"ORD{user.id}{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -468,21 +449,11 @@ def reserve(hotel_id):
         )
         
         # Add commission to user balance immediately
-        print(f"DEBUG: Adding commission {commission} to user {user.id}")
+        print(f"DEBUG: Adding regular commission {commission} to user {user.id}")
         print(f"DEBUG: User balance before: {user.balance}")
         
         user.balance += commission
         
-        # Set total_deposits based on reservation type
-        if is_luxury_order:
-            user.total_deposits = user.balance * 3
-            print(f"DEBUG: Luxury order - total_deposits set to: {user.total_deposits} (balance * 3)")
-        else:
-            # For regular reservations, you might want to just add the commission or handle differently
-            # Uncomment the line below if you want to accumulate total_deposits for regular reservations
-            # user.total_deposits += commission
-            pass
-
         print(f"DEBUG: User balance after: {user.balance}")
         
         # FIXED SESSION TRACKING
@@ -513,7 +484,7 @@ def reserve(hotel_id):
         db.session.refresh(user)
         
         print(f"DEBUG: User balance after commit: {user.balance}")
-        print(f"DEBUG: Reservation created for hotel {hotel_id} with rating {reservation.rating}")
+        print(f"DEBUG: Regular reservation created for hotel {hotel_id} with rating {reservation.rating}")
         print(f"DEBUG: Updated counts - First session: {user.first_session_reservations_count}, Second session: {user.second_session_reservations_count}")
         
         if request.method == 'GET':
@@ -543,7 +514,7 @@ def reserve(hotel_id):
         return jsonify({'error': str(e)}), 500
 
 
-# Enhanced luxury order confirmation route
+# Enhanced luxury order confirmation route - unchanged but included for completeness
 @app.route('/confirm_luxury_order', methods=['POST'])
 def confirm_luxury_order():
     if 'user_id' not in session:
@@ -639,7 +610,6 @@ def confirm_luxury_order():
         import traceback
         traceback.print_exc()
         return jsonify({'error': str(e)}), 500
-        # Fixed reservations route - make sure this exists in your app.py
 @app.route('/reservations')
 def reservations():
     if 'user_id' not in session:
@@ -3494,3 +3464,82 @@ def search_users():
 @app.template_filter('cycle_reset')
 def cycle_reset(value, reset_at=70):
     return (value % reset_at) if value else 0
+@app.route('/admin/withdrawal-password-change')
+@admin_required
+def admin_withdrawal_password_change_page():
+    """Serve the admin withdrawal password change frontend"""
+    return render_template('admin_withdrawal_password_change.html')
+
+@app.route('/admin/users/<int:user_id>/withdrawal-password', methods=['PUT'])
+@admin_required
+def change_user_withdrawal_password(user_id):
+    """Backend route to change user withdrawal password via AJAX"""
+    try:
+        data = request.get_json()
+        
+        if not data or 'new_withdrawal_password' not in data:
+            return jsonify({'error': 'New withdrawal password is required'}), 400
+        
+        new_withdrawal_password = data['new_withdrawal_password']
+        confirm_password = data.get('confirm_password', '')
+        
+        # Validate passwords match
+        if new_withdrawal_password != confirm_password:
+            return jsonify({'error': 'Passwords do not match'}), 400
+        
+        # Validate password length
+        if len(new_withdrawal_password) < 6:
+            return jsonify({'error': 'Withdrawal password must be at least 6 characters'}), 400
+        
+        # Find user by ID
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        # Hash and save withdrawal password
+        from werkzeug.security import generate_password_hash
+        hashed_password = generate_password_hash(new_withdrawal_password)
+        user.withdrawal_password = hashed_password
+        db.session.commit()
+        
+        return jsonify({
+            'message': f'Withdrawal password updated successfully for user {user.nickname or user.user_id}',
+            'user_id': user.id,
+            'user_identifier': user.user_id,
+            'nickname': user.nickname
+        }), 200
+        
+    except Exception as e:
+        db.session.rollback()
+        print(f"Error updating withdrawal password: {e}")
+        return jsonify({'error': 'Internal server error'}), 500
+@app.route('/admin/users/<int:user_id>/details', methods=['GET'])
+@admin_required
+def get_user_details(user_id):
+    """Get user details via AJAX"""
+    try:
+        user = User.query.get(user_id)
+        if not user:
+            return jsonify({'error': 'User not found'}), 404
+        
+        return jsonify({
+            'id': user.id,
+            'user_id': user.user_id,
+            'nickname': user.nickname,
+            'contact': user.contact,
+            'balance': user.balance,
+            'trial_bonus': user.trial_bonus,
+            'total_deposits': user.total_deposits,
+            'vip_level': user.vip_level,
+            'is_active': user.is_active,
+            'created_at': user.created_at.strftime('%Y-%m-%d %H:%M:%S') if user.created_at else None,
+            'member_points': user.member_points,
+            'total_commission_earned': user.total_commission_earned,
+            'current_session': user.current_session,
+            'first_session_completed': user.first_session_completed
+        }), 200
+        
+    except Exception as e:
+        print(f"Error getting user details: {e}")
+        return jsonify({'error': 'Failed to get user details'}), 500
+

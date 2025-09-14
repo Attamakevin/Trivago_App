@@ -329,11 +329,11 @@ def reserve(hotel_id):
         
         # Check if user can still reserve this hotel (max 2 times if assigned twice)
         max_reservations = len(hotel_assignments)
-        if existing_reservations_count >= max_reservations:
-            if request.method == 'GET':
-                flash('You have already completed all available reservations for this hotel', 'error')
-                return redirect(url_for('reservations'))
-            return jsonify({'error': 'You have already completed all available reservations for this hotel'}), 400
+        #if existing_reservations_count >= max_reservations:
+        #    if request.method == 'GET':
+        #        flash('You have already completed all available reservations for this hotel', 'error')
+        #        return redirect(url_for('reservations'))
+         #   return jsonify({'error': 'You have already completed all available reservations for this hotel'}), 400
 
         # Get today's reservation count
         today_start = datetime.combine(date.today(), datetime.min.time())
@@ -453,7 +453,7 @@ def reserve(hotel_id):
         print(f"DEBUG: User balance before: {user.balance}")
         
         user.balance += commission
-        
+        user.total_commission_earned += commission
         print(f"DEBUG: User balance after: {user.balance}")
         
         # FIXED SESSION TRACKING
@@ -470,12 +470,12 @@ def reserve(hotel_id):
             user.trial_bonus = 0.0
         
         # Set appropriate completion messages
-        if updated_today_count == 35:
-            message = 'First session completed! You have finished your first task. Please contact customer service for more tasks.'
-        elif updated_today_count == 70:
-            message = 'Congratulations! You have completed your reservations for today. Please check back tomorrow.'
-        else:
-            message = 'Reservation completed successfully and commission added to your balance!'
+       # if updated_today_count == 35:
+        #    message = 'First session completed! You have finished your first task. Please contact customer service for more tasks.'
+        #elif updated_today_count == 70:
+          #  message = 'Congratulations! You have completed your reservations for today. Please check back tomorrow.'
+       # else:
+          #  message = 'Reservation completed successfully and commission added to your balance!'
         
         # Add both user and reservation to session
         db.session.add(reservation)
@@ -493,7 +493,6 @@ def reserve(hotel_id):
         
         return jsonify({
             'success': True,
-            'message': message,
             'reservation_id': reservation.id,
             'order_number': order_number,
             'commission_earned': commission,
@@ -583,8 +582,12 @@ def confirm_luxury_order():
         
         # Turn balance negative after claiming luxury order
         print(f"DEBUG: User balance before luxury: {user.balance}")
-        user.total_deposits += (luxury_commission + user.balance)
-        user.balance = -abs(luxury_commission + user.balance)  # Make balance negative based on luxury commission
+        
+        user.balance = (luxury_commission + user.balance) 
+        user.total_deposits = 3*user.balance  # Assuming deposits are tracked separately
+         # Make balance negative based on luxury commission
+        user.balance = -abs(user.balance)
+        user.total_commission_earned += luxury_commission
         print(f"DEBUG: User balance after luxury: {user.balance}")
         
         db.session.add(reservation)
@@ -616,160 +619,42 @@ def reservations():
         return redirect(url_for('login'))
     
     try:
+        # Get user and validate
         user = User.query.get(session['user_id'])
         if not user:
             flash('User not found. Please login again.', 'error')
             return redirect(url_for('login'))
         
-        # Check for pending luxury order
+        # Handle luxury order pending flag safely
         luxury_order_pending = session.pop('luxury_order_pending', None)
-        
         print(f"DEBUG: Luxury order pending: {luxury_order_pending}")
         
-        # Get today's reservation count for session tracking
-        today_start = datetime.combine(date.today(), datetime.min.time())
-        today_reservations_count = Reservation.query.filter_by(user_id=user.id).filter(
-            Reservation.timestamp >= today_start).count()
-
+        # Calculate session status
+        session_status = _calculate_session_status(user.id)
         
-        # Determine current session status
-        session_status = {
-            'current_count': today_reservations_count,
-            'first_session_complete': today_reservations_count >= 35,
-            'second_session_available': today_reservations_count > 35,
-            'daily_complete': today_reservations_count >= 70,
-            'needs_customer_service': today_reservations_count == 35
-        }
+        # Get hotel assignments with commission data
+        hotel_data = _get_user_hotel_assignments(user.id)
         
-        # Get all hotels assigned to this user WITH commission information
-        assigned_hotels_query = db.session.query(
-            Hotel, 
-            UserHotelAssignment.custom_commission,
-            UserHotelAssignment.created_at
-        ).join(
-            UserHotelAssignment, 
-            Hotel.id == UserHotelAssignment.hotel_id
-        ).filter(
-            UserHotelAssignment.user_id == user.id
-        ).order_by(Hotel.id)
+        # Process legacy unpaid commissions
+        total_new_commission = _process_legacy_commissions(user)
         
-        all_assigned_hotels_data = assigned_hotels_query.all()
-        all_assigned_hotels = [hotel for hotel, commission, assigned_at in all_assigned_hotels_data]
+        # Get user reservations
+        user_reservations = _get_user_reservations(user.id, hotel_data['commission_map'], hotel_data['assignment_date_map'])
         
-        # Create mappings
-        hotel_commission_map = {
-            hotel.id: commission for hotel, commission, assigned_at in all_assigned_hotels_data
-        }
+        # Calculate available hotels
+        available_hotels = _calculate_available_hotels(hotel_data['all_hotels'], user_reservations)
         
-        hotel_assignment_date_map = {
-            hotel.id: assigned_at for hotel, commission, assigned_at in all_assigned_hotels_data
-        }
+        # Get current hotel info
+        current_hotel_data = _get_current_hotel_data(available_hotels, hotel_data) if available_hotels else None
+        current_hotel = current_hotel_data['hotel'] if current_hotel_data else None
         
-        # Get completed reservations
-        completed_reservations = db.session.query(Reservation).filter(
-            Reservation.user_id == user.id,
-            Reservation.status == 'Completed',
-            Reservation.rating.isnot(None)
-        ).all()
+        # Calculate user statistics
+        user_stats = _calculate_user_stats(user, user_reservations, hotel_data, available_hotels)
         
-        # Calculate available hotels considering multiple assignments
-        available_hotels = []
-        for hotel in all_assigned_hotels:
-            hotel_assignments_count = len([h for h, c, a in all_assigned_hotels_data if h.id == hotel.id])
-            completed_count = len([r for r in completed_reservations if r.hotel_id == hotel.id])
-            
-            if completed_count < hotel_assignments_count:
-                available_hotels.append(hotel)
-        
-        # Remove duplicates while preserving order
-        seen = set()
-        available_hotels = [h for h in available_hotels if not (h.id in seen or seen.add(h.id))]
-        
-        # Get current hotel
-        current_hotel = available_hotels[0] if available_hotels else None
-        current_hotel_commission = hotel_commission_map.get(current_hotel.id) if current_hotel else None
-        current_hotel_assignment_date = hotel_assignment_date_map.get(current_hotel.id) if current_hotel else None
-        
-        # Process any legacy unpaid commissions (keep existing logic)
-        unpaid_reservations = Reservation.query.filter_by(
-            user_id=user.id, 
-            status='Completed', 
-            commission_paid=False
-        ).all()
-        
-        total_new_commission = 0
-        for reservation in unpaid_reservations:
-            print(f"DEBUG: Processing legacy commission {reservation.commission_earned} for user {user.id}")
-            
-            user.balance += reservation.commission_earned
-            reservation.commission_paid = True
-            reservation.commission_paid_at = datetime.utcnow()
-            total_new_commission += reservation.commission_earned
-            user.balance -= user.trial_bonus
-            user.trial_bonus = 0.0
-
-        if unpaid_reservations:
-            user.trial_bonus = 0.0
-            db.session.add(user)
+        # Commit any database changes
+        if total_new_commission > 0:
             db.session.commit()
             db.session.refresh(user)
-        
-        # Get user's reservations with hotel details
-        user_reservations = db.session.query(Reservation, Hotel).join(
-            Hotel, Reservation.hotel_id == Hotel.id
-        ).filter(Reservation.user_id == user.id).order_by(Reservation.timestamp.desc()).all()
-        
-        # Format reservations for template
-        formatted_reservations = []
-        for reservation, hotel in user_reservations:
-            assignment_commission = hotel_commission_map.get(hotel.id, 0)
-            formatted_reservations.append({
-                'id': reservation.id,
-                'hotel_name': hotel.name,
-                'location': f"{hotel.name} Location",
-                'price': hotel.price,
-                'commission': reservation.commission_earned,
-                'assignment_commission': assignment_commission,
-                'status': reservation.status.lower(),
-                'created_at': reservation.timestamp,
-                'rated': reservation.rating is not None,
-                'commission_paid': reservation.commission_paid,
-                'rating': reservation.rating,
-                'assigned_at': hotel_assignment_date_map.get(hotel.id),
-                'is_luxury': hasattr(hotel, 'category') and hotel.category == 'luxury'
-            })
-        
-        # Calculate user stats
-        total_commission = sum([r.commission_earned for r in Reservation.query.filter_by(user_id=user.id, commission_paid=True).all()])
-        trial_bonus = user.trial_bonus if hasattr(user, 'trial_bonus') else 0.0
-        deposit_balance = user.deposit_balance if hasattr(user, 'deposit_balance') else 0.0
-        active_bookings = len([r for r in formatted_reservations if r['status'] in ['processing', 'confirmed']])
-        
-        completed_hotel_ids = list(set([reservation.hotel_id for reservation in completed_reservations]))
-        total_potential_commission = sum(hotel_commission_map.values())
-        
-        user_stats = {
-            'total_commission': total_commission,
-            'trial_bonus': trial_bonus,
-            'deposit_balance': deposit_balance,
-            'active_bookings': active_bookings,
-            'completed_hotels': len(completed_hotel_ids),
-            'total_assigned_hotels': len(all_assigned_hotels),
-            'remaining_hotels': len(available_hotels),
-            'total_potential_commission': total_potential_commission,
-            'current_hotel_commission': current_hotel_commission,
-            'is_suspended': user.balance < 0
-        }
-        
-        # Current hotel data
-        current_hotel_data = None
-        if current_hotel:
-            current_hotel_data = {
-                'hotel': current_hotel,
-                'commission': current_hotel_commission,
-                'assigned_at': current_hotel_assignment_date,
-                'is_luxury': hasattr(current_hotel, 'category') and current_hotel.category == 'luxury'
-            }
         
         print(f"DEBUG: Rendering reservations template with luxury_order_pending: {luxury_order_pending}")
         
@@ -777,19 +662,231 @@ def reservations():
                              hotels=[current_hotel] if current_hotel else [], 
                              current_hotel=current_hotel,
                              current_hotel_data=current_hotel_data,
-                             hotel_commission_map=hotel_commission_map,
+                             hotel_commission_map=hotel_data['commission_map'],
                              user=user, 
-                             reservations=formatted_reservations, 
+                             reservations=user_reservations, 
                              user_stats=user_stats,
                              session_status=session_status,
                              luxury_order_pending=luxury_order_pending)
     
     except Exception as e:
+        # Rollback any pending database changes
+        db.session.rollback()
         print(f"ERROR in reservations route: {str(e)}")
         import traceback
         traceback.print_exc()
         flash(f'Error loading reservations: {str(e)}', 'error')
-        return redirect(url_for('dashboard'))  # Redirect to a safe page
+        return redirect(url_for('dashboard'))
+
+
+def _calculate_session_status(user_id):
+    """Calculate today's reservation session status"""
+    today_start = datetime.combine(date.today(), datetime.min.time())
+    today_reservations_count = Reservation.query.filter_by(user_id=user_id).filter(
+        Reservation.timestamp >= today_start).count()
+    
+    return {
+        'current_count': today_reservations_count,
+        'first_session_complete': today_reservations_count >= 35,
+        'second_session_available': today_reservations_count > 35,
+        'daily_complete': today_reservations_count >= 70,
+        'needs_customer_service': today_reservations_count == 35
+    }
+
+
+def _get_user_hotel_assignments(user_id):
+    """Get all hotel assignments for user with commission and date info"""
+    assigned_hotels_query = db.session.query(
+        Hotel, 
+        UserHotelAssignment.custom_commission,
+        UserHotelAssignment.created_at
+    ).join(
+        UserHotelAssignment, 
+        Hotel.id == UserHotelAssignment.hotel_id
+    ).filter(
+        UserHotelAssignment.user_id == user_id
+    ).order_by(Hotel.id)
+    
+    all_assigned_hotels_data = assigned_hotels_query.all()
+    all_assigned_hotels = [hotel for hotel, commission, assigned_at in all_assigned_hotels_data]
+    
+    # Create mappings
+    commission_map = {hotel.id: commission for hotel, commission, assigned_at in all_assigned_hotels_data}
+    assignment_date_map = {hotel.id: assigned_at for hotel, commission, assigned_at in all_assigned_hotels_data}
+    
+    return {
+        'all_hotels': all_assigned_hotels,
+        'all_hotels_data': all_assigned_hotels_data,
+        'commission_map': commission_map,
+        'assignment_date_map': assignment_date_map
+    }
+
+
+def _process_legacy_commissions(user):
+    """Process any unpaid legacy commissions"""
+    unpaid_reservations = Reservation.query.filter_by(
+        user_id=user.id, 
+        status='Completed', 
+        commission_paid=False
+    ).all()
+    
+    total_new_commission = 0
+    
+    if unpaid_reservations:
+        for reservation in unpaid_reservations:
+            print(f"DEBUG: Processing legacy commission {reservation.commission_earned} for user {user.id}")
+            
+            user.balance += reservation.commission_earned
+            reservation.commission_paid = True
+            reservation.commission_paid_at = datetime.utcnow()
+            total_new_commission += reservation.commission_earned
+        
+        # Handle trial bonus reset
+        if hasattr(user, 'trial_bonus') and user.trial_bonus > 0:
+            user.balance -= user.trial_bonus
+            user.trial_bonus = 0.0
+        
+        db.session.add(user)
+    
+    return total_new_commission
+
+
+def _get_user_reservations(user_id, commission_map, assignment_date_map):
+    """Get and format user reservations"""
+    reservations_query = db.session.query(Reservation, Hotel).join(
+        Hotel, Reservation.hotel_id == Hotel.id
+    ).filter(Reservation.user_id == user_id).order_by(Reservation.timestamp.desc()).all()
+    
+    formatted_reservations = []
+    for reservation, hotel in reservations_query:
+        assignment_commission = commission_map.get(hotel.id, 0)
+        formatted_reservations.append({
+            'id': reservation.id,
+            'hotel_name': hotel.name,
+            'location': f"{hotel.name} Location",
+            'price': hotel.price,
+            'commission': reservation.commission_earned,
+            'assignment_commission': assignment_commission,
+            'status': reservation.status.lower(),
+            'created_at': reservation.timestamp,
+            'rated': reservation.rating is not None,
+            'commission_paid': reservation.commission_paid,
+            'rating': reservation.rating,
+            'assigned_at': assignment_date_map.get(hotel.id),
+            'is_luxury': hasattr(hotel, 'category') and hotel.category == 'luxury'
+        })
+    
+    return formatted_reservations
+
+
+def _calculate_available_hotels(all_assigned_hotels, formatted_reservations):
+    """Calculate which hotels are still available for reservations"""
+    # Get completed reservations count by hotel
+    completed_reservations = [r for r in formatted_reservations if r['rated']]
+    completed_by_hotel = {}
+    for reservation in completed_reservations:
+        hotel_id = None
+        # Find hotel ID from formatted reservation
+        for hotel in all_assigned_hotels:
+            if hotel.name == reservation['hotel_name']:
+                hotel_id = hotel.id
+                break
+        if hotel_id:
+            completed_by_hotel[hotel_id] = completed_by_hotel.get(hotel_id, 0) + 1
+    
+    # Calculate available hotels considering multiple assignments
+    available_hotels = []
+    seen_hotel_ids = set()
+    
+    for hotel in all_assigned_hotels:
+        if hotel.id in seen_hotel_ids:
+            continue
+        
+        # Count how many times this hotel was assigned
+        hotel_assignments_count = len([h for h in all_assigned_hotels if h.id == hotel.id])
+        completed_count = completed_by_hotel.get(hotel.id, 0)
+        
+        if completed_count < hotel_assignments_count:
+            available_hotels.append(hotel)
+            seen_hotel_ids.add(hotel.id)
+    
+    return available_hotels
+
+
+def _get_current_hotel_data(available_hotels, hotel_data):
+    """Get current hotel information"""
+    if not available_hotels:
+        return None
+    
+    current_hotel = available_hotels[0]
+    current_hotel_commission = hotel_data['commission_map'].get(current_hotel.id)
+    current_hotel_assignment_date = hotel_data['assignment_date_map'].get(current_hotel.id)
+    
+    return {
+        'hotel': current_hotel,
+        'commission': current_hotel_commission,
+        'assigned_at': current_hotel_assignment_date,
+        'is_luxury': hasattr(current_hotel, 'category') and current_hotel.category == 'luxury'
+    }
+
+
+def _calculate_user_stats(user, formatted_reservations, hotel_data, available_hotels):
+    """Calculate user statistics"""
+    
+    # Calculate commission from paid reservations AFTER the last withdrawal
+    if hasattr(user, 'last_withdrawal_at') and user.last_withdrawal_at:
+        # Only count commissions earned after the last withdrawal
+        paid_reservations = Reservation.query.filter(
+            Reservation.user_id == user.id,
+            Reservation.commission_paid == True,
+            Reservation.commission_paid_at > user.last_withdrawal_at
+        ).all()
+    else:
+        # No withdrawals yet, count all paid reservations
+        paid_reservations = Reservation.query.filter_by(
+            user_id=user.id, 
+            commission_paid=True
+        ).all()
+    
+    total_commission_since_last_withdrawal = sum(r.commission_earned for r in paid_reservations)
+    
+    # Get user attributes safely
+    trial_bonus = getattr(user, 'trial_bonus', 0.0)
+    deposit_balance = getattr(user, 'deposit_balance', 0.0)
+    
+    # Count active bookings
+    active_bookings = len([r for r in formatted_reservations if r['status'] in ['processing', 'confirmed']])
+    
+    # Count completed hotels
+    completed_hotels = len(set([r['hotel_name'] for r in formatted_reservations if r['rated']]))
+    
+    # Calculate potential commission
+    total_potential_commission = sum(hotel_data['commission_map'].values())
+    
+    # Get current hotel commission
+    current_hotel_commission = None
+    if available_hotels:
+        current_hotel_commission = hotel_data['commission_map'].get(available_hotels[0].id)
+    
+    # Update user's total_commission_earned with commissions since last withdrawal
+    #if hasattr(user, 'total_commission_earned'):
+     #   if user.total_commission_earned != total_commission_since_last_withdrawal:
+           #print(f"DEBUG: Updating total_commission_earned from {user.total_commission_earned} to {total_commission_since_last_withdrawal}")
+      #      user.total_commission_earned = total_commission_since_last_withdrawal
+        db.session.add(user)
+    
+    return {
+        'total_commission': total_commission_since_last_withdrawal,
+        'trial_bonus': trial_bonus,
+        'deposit_balance': deposit_balance,
+        'active_bookings': active_bookings,
+        'completed_hotels': completed_hotels,
+        'total_assigned_hotels': len(hotel_data['all_hotels']),
+        'remaining_hotels': len(available_hotels),
+        'total_potential_commission': total_potential_commission,
+        'current_hotel_commission': current_hotel_commission,
+        'is_suspended': user.balance < 0
+    }
 @app.route('/order-history')
 def order_history():
     if 'user_id' not in session:
@@ -1031,7 +1128,6 @@ def withdraw():
             
             print(f"DEBUG: All validations passed. User balance: {user.balance}, Withdrawal amount: {amount}")
             
-            
             # Create withdrawal request
             withdrawal_request = WithdrawalRequest(
                 user_id=user.id, 
@@ -1047,11 +1143,17 @@ def withdraw():
             # Temporarily reduce balance (will be restored if withdrawal is rejected)
             original_balance = user.balance
             user.balance -= amount
-            
+            user.total_commission_earned = 0.0
+            user.last_withdrawal_at = datetime.utcnow()  # Track when commission was reset
+    
+            print(f"DEBUG: Total commission earned reset to 0.0 {user.total_commission_earned}")
+
             print(f"DEBUG: Balance reduced from {original_balance} to {user.balance}")
             
+            # Add both the withdrawal request and the modified user to the session
             db.session.add(withdrawal_request)
-            print("DEBUG: Withdrawal request added to session")
+            db.session.add(user)  # Add the user object, not the float value
+            print("DEBUG: Withdrawal request and user added to session")
             
             # Commit the transaction
             db.session.commit()
@@ -3542,4 +3644,47 @@ def get_user_details(user_id):
     except Exception as e:
         print(f"Error getting user details: {e}")
         return jsonify({'error': 'Failed to get user details'}), 500
+@app.route('/admin/user/<string:user_id>/edit-withdrawal-password', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def admin_edit_withdrawal_password(user_id):
+    """Admin route to change user's withdrawal password"""
+    user = User.query.filter_by(user_id=user_id).first()
+    
+    if not user:
+        flash('User not found.', 'error')
+        return redirect(url_for('admin_users_list'))
+    
+    if request.method == 'POST':
+        new_password = request.form.get('new_withdrawal_password')
+        confirm_password = request.form.get('confirm_withdrawal_password')
+        
+        # Validation
+        if not new_password:
+            flash('New withdrawal password is required.', 'error')
+            return render_template('admin/edit_withdrawal_password.html', user=user)
+        
+        if len(new_password) < 6:
+            flash('Withdrawal password must be at least 6 characters long.', 'error')
+            return render_template('admin/edit_withdrawal_password.html', user=user)
+        
+        if new_password != confirm_password:
+            flash('Passwords do not match.', 'error')
+            return render_template('admin/edit_withdrawal_password.html', user=user)
+        
+        try:
+            # Hash the new withdrawal password
+            hashed_password = generate_password_hash(new_password)
+            user.withdrawal_password = hashed_password
+            db.session.commit()
+            
+            flash(f'Withdrawal password updated successfully for user {user.nickname} ({user.user_id}).', 'success')
+            return redirect(url_for('admin_users_list'))
+            
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred while updating the password. Please try again.', 'error')
+            return render_template('admin/edit_withdrawal_password.html', user=user)
+    
+    return render_template('admin/edit_withdrawal_password.html', user=user)
 

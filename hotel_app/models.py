@@ -30,7 +30,7 @@ class User(db.Model, UserMixin):
     bound_wallet_type = db.Column(db.String(20))
     max_first_session_reservations = db.Column(db.Integer, default=35)
     wallet_bound_at = db.Column(db.DateTime)
-    second_session_reservations_count = db.Column(db.Integer, default=35)
+    second_session_reservations_count = db.Column(db.Integer, default=0)
     second_session_commission = db.Column(db.Float, default=0.0)
     bound_wallet_address = db.Column(db.String(200))
     first_session_commission = db.Column(db.Float, default=0.0)

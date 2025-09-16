@@ -286,6 +286,7 @@ def credit():
     return render_template('credit.html', user=user)
 
 # Fixed reservation route with proper luxury order detection and flow
+# Fixed reservation route with proper assignment tracking
 @app.route('/reserve/<int:hotel_id>', methods=['GET', 'POST'])
 def reserve(hotel_id):
     if 'user_id' not in session:
@@ -298,8 +299,6 @@ def reserve(hotel_id):
         hotel = Hotel.query.get_or_404(hotel_id)
         
         print(f"DEBUG: Hotel {hotel_id} - checking luxury status")
-        print(f"DEBUG: Hotel attributes: {dir(hotel)}")
-        print(f"DEBUG: Hotel category: {getattr(hotel, 'category', 'NOT_SET')}")
 
         # Check if user balance is negative (blocked from luxury order)
         if user.balance < 0:
@@ -308,7 +307,7 @@ def reserve(hotel_id):
                 return redirect(url_for('reservations'))
             return jsonify({'error': 'Account suspended. Contact customer service.'}), 403
 
-        # Check if user has access to this hotel
+        # Get all hotel assignments for this user and hotel
         hotel_assignments = UserHotelAssignment.query.filter_by(
             user_id=user.id, 
             hotel_id=hotel_id
@@ -320,20 +319,19 @@ def reserve(hotel_id):
                 return redirect(url_for('reservations'))
             return jsonify({'error': 'You do not have access to this hotel'}), 403
 
-        # Count how many times this hotel has been reserved by this user
-        existing_reservations_count = Reservation.query.filter_by(
+        # FIXED: Count ALL reservations for this hotel (not just completed with ratings)
+        total_reservations_count = Reservation.query.filter_by(
             user_id=user.id,
-            hotel_id=hotel_id,
-            status='Completed'
-        ).filter(Reservation.rating.isnot(None)).count()
+            hotel_id=hotel_id
+        ).count()
         
-        # Check if user can still reserve this hotel (max 2 times if assigned twice)
+        # FIXED: Check reservation limit against total assignments
         max_reservations = len(hotel_assignments)
-        #if existing_reservations_count >= max_reservations:
-        #    if request.method == 'GET':
-        #        flash('You have already completed all available reservations for this hotel', 'error')
-        #        return redirect(url_for('reservations'))
-         #   return jsonify({'error': 'You have already completed all available reservations for this hotel'}), 400
+        if total_reservations_count >= max_reservations:
+            if request.method == 'GET':
+                flash('You have already completed all available reservations for this hotel', 'error')
+                return redirect(url_for('reservations'))
+            return jsonify({'error': 'You have already completed all available reservations for this hotel'}), 400
 
         # Get today's reservation count
         today_start = datetime.combine(date.today(), datetime.min.time())
@@ -343,7 +341,7 @@ def reserve(hotel_id):
         # Calculate what the count will be after this reservation
         updated_today_count = today_reservations + 1
 
-        # LUXURY ORDER DETECTION - This is the main fix
+        # LUXURY ORDER DETECTION
         is_luxury_order = False
         
         # Method 1: Check category attribute
@@ -363,22 +361,27 @@ def reserve(hotel_id):
 
         print(f"DEBUG: Final luxury order status: {is_luxury_order}")
 
-        # Get the appropriate assignment for this reservation
+        # FIXED: Proper assignment selection based on usage count
         available_assignment = None
-        for assignment in hotel_assignments:
-            reservations_for_this_assignment = Reservation.query.filter_by(
-                user_id=user.id,
-                hotel_id=hotel_id
-            ).filter(Reservation.timestamp >= assignment.created_at).count()
+        
+        # Sort assignments by creation date (oldest first)
+        sorted_assignments = sorted(hotel_assignments, key=lambda x: x.created_at)
+        
+        for i, assignment in enumerate(sorted_assignments):
+            # Count how many reservations have been made using assignments up to this point
+            # This assumes reservations use assignments in chronological order
+            reservations_used = min(total_reservations_count, i + 1)
             
-            if reservations_for_this_assignment == 0:
+            # If this assignment hasn't been used yet, use it
+            if total_reservations_count == i:
                 available_assignment = assignment
                 break
         
+        # Fallback: use the last assignment if somehow we get here
         if not available_assignment:
-            available_assignment = hotel_assignments[-1]  # Use the latest assignment
+            available_assignment = sorted_assignments[-1]
 
-        # LUXURY ORDER PROCESSING - Fixed logic flow
+        # LUXURY ORDER PROCESSING
         if is_luxury_order:
             print(f"DEBUG: Processing luxury order for hotel {hotel_id}")
             
@@ -393,7 +396,7 @@ def reserve(hotel_id):
             
             luxury_commission = base_commission * luxury_multiplier
             
-            print(f"DEBUG: Luxury commission calculated: {luxury_commission} (base: {base_commission}, multiplier: {luxury_multiplier})")
+            print(f"DEBUG: Luxury commission calculated: {luxury_commission}")
             
             # Present luxury order popup data
             luxury_order_data = {
@@ -405,20 +408,16 @@ def reserve(hotel_id):
                 'projected_balance': user.balance + luxury_commission
             }
             
-            print(f"DEBUG: Luxury order data: {luxury_order_data}")
-            
             if request.method == 'GET':
                 # For GET requests, store luxury order data in session
                 session['luxury_order_pending'] = {
                     'hotel_id': hotel_id,
                     'data': luxury_order_data
                 }
-                print(f"DEBUG: Stored luxury order in session for GET request")
                 flash('Luxury order available! Check the popup for details.', 'info')
                 return redirect(url_for('reservations'))
             
             # For POST/AJAX requests, return luxury order data for popup
-            print(f"DEBUG: Returning luxury order JSON response for POST request")
             return jsonify({
                 'luxury_order': True,
                 'luxury_data': luxury_order_data,
@@ -430,7 +429,6 @@ def reserve(hotel_id):
         
         # Calculate regular commission
         commission = available_assignment.custom_commission * hotel.commission_multiplier
-        print(f"DEBUG: Regular commission calculated: {commission}")
         
         # Generate unique order number
         order_number = f"ORD{user.id}{datetime.now().strftime('%Y%m%d%H%M%S')}"
@@ -449,43 +447,28 @@ def reserve(hotel_id):
         )
         
         # Add commission to user balance immediately
-        print(f"DEBUG: Adding regular commission {commission} to user {user.id}")
-        print(f"DEBUG: User balance before: {user.balance}")
-        
         user.balance += commission
         user.total_commission_earned += commission
-        print(f"DEBUG: User balance after: {user.balance}")
         
-        # FIXED SESSION TRACKING
-        # Properly track session counts separately
+        # Track session counts
         if updated_today_count <= 35:
             user.first_session_reservations_count = updated_today_count
         else:
-            # Keep first session at 35, track second session separately
             user.first_session_reservations_count = 35
             user.second_session_reservations_count = updated_today_count - 35
         
-        # Reset trial bonus after 35 reservations (first session complete)
+        # Reset trial bonus after 35 reservations
         if updated_today_count >= 35:
             user.trial_bonus = 0.0
         
-        # Set appropriate completion messages
-       # if updated_today_count == 35:
-        #    message = 'First session completed! You have finished your first task. Please contact customer service for more tasks.'
-        #elif updated_today_count == 70:
-          #  message = 'Congratulations! You have completed your reservations for today. Please check back tomorrow.'
-       # else:
-          #  message = 'Reservation completed successfully and commission added to your balance!'
-        
-        # Add both user and reservation to session
+       
         db.session.add(reservation)
         db.session.add(user)
         db.session.commit()
         db.session.refresh(user)
         
-        print(f"DEBUG: User balance after commit: {user.balance}")
-        print(f"DEBUG: Regular reservation created for hotel {hotel_id} with rating {reservation.rating}")
-        print(f"DEBUG: Updated counts - First session: {user.first_session_reservations_count}, Second session: {user.second_session_reservations_count}")
+        print(f"DEBUG: Regular reservation created for hotel {hotel_id}")
+        print(f"DEBUG: Total reservations for this hotel: {total_reservations_count + 1}/{max_reservations}")
         
         if request.method == 'GET':
             flash(message, 'success')
@@ -498,14 +481,16 @@ def reserve(hotel_id):
             'commission_earned': commission,
             'new_balance': user.balance,
             'today_count': updated_today_count,
-            'session_complete': updated_today_count in [35, 70]
+            'session_complete': updated_today_count in [35, 70],
+            'hotel_reservations_used': total_reservations_count + 1,
+            'hotel_reservations_max': max_reservations
         })
         
     except Exception as e:
         db.session.rollback()
         print(f"ERROR in reserve function: {str(e)}")
         import traceback
-        traceback.print_exc()  # This will show the full error traceback
+        traceback.print_exc()
         
         if request.method == 'GET':
             flash(f'Error creating reservation: {str(e)}', 'error')

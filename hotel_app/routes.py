@@ -326,7 +326,7 @@ def reserve(hotel_id):
         ).count()
         
         # FIXED: Check reservation limit against total assignments
-        max_reservations = len(hotel_assignments)
+        max_reservations = 70
         if total_reservations_count >= max_reservations:
             if request.method == 'GET':
                 flash('You have already completed all available reservations for this hotel', 'error')

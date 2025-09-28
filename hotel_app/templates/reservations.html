@@ -238,9 +238,11 @@
             <div class="flex flex-col sm:flex-row items-center sm:justify-between p-6">
                 <div class="mb-6 bg-white rounded-lg shadow-sm p-4 text ">
                     <div class="text-sm md:text-sm font-bold text-purple-600 mb-2">
-                       {{ reservations|length|cycle_reset(70) }}
+                       {{ today_count or 0 }}
+                        <span data-translate>Reservations For this session</span>
+
                     </div>
-                    <p data-translate class="text-xs text-gray-700 font-medium">Total Reservations Made</p>
+                    
                     <p class="text-xs text-gray-500">VIP Level: <span
                             class="text-lg text-purple-600">{{ user.vip_level }} </span></p>
                 </div>
@@ -348,7 +350,7 @@
                                     <i class="fas fa-chart-line text-xl text-orange-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl md:text-xl font-bold mb-1">€{{user.total_commission_earned}}</div>
+                            <div class="text-xl md:text-xl font-bold mb-1">€{{"%.2f"|format(user.total_commission_earned)}}</div>
                             <p data-translate class="text-[#101f56] text-sm">Earned Commission</p>
                             <p data-translate class="text-xs text-[#101f56] mt-1">Total earnings</p>
                         </div>

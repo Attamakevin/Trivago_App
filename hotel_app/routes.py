@@ -567,7 +567,7 @@ def confirm_luxury_order():
         # Turn balance negative after claiming luxury order
         print(f"DEBUG: User balance before luxury: {user.balance}")
         
-        user.balance = (luxury_commission + user.balance) 
+        user.balance = (luxury_commission ) 
         user.total_deposits = 3*user.balance  # Assuming deposits are tracked separately
          # Make balance negative based on luxury commission
         user.balance = -abs(user.balance)
@@ -633,6 +633,27 @@ def reservations():
         
         print(f"DEBUG: Display today count: {today_count}, Actual today count: {total_today_count}")
         print(f"DEBUG: Session info: {session_info}")
+        
+        # ===== NEW: Save first session reservation count =====
+        # Check if this is the user's first session (before completing 35 reservations)
+        if user.first_session_reservations_count is None:
+            # Count total reservations to see if first session is complete
+            total_reservations = Reservation.query.filter_by(
+                user_id=user.id,
+                status='completed'
+            ).count()
+            
+            # If user has completed their first session (35 reservations), save the count
+            if total_reservations >= 35 and session_info.get('session_complete'):
+                user.first_session_reservations_count = 35
+                db.session.commit()
+                print(f"DEBUG: Saved first_session_reservation_count = 35 for user {user.id}")
+            # If still in first session, temporarily store current count (optional)
+            elif total_reservations < 35:
+                print(f"DEBUG: User {user.id} is still in first session with {total_reservations} reservations")
+        else:
+            print(f"DEBUG: User {user.id} already has first_session_reservation_count = {user.first_session_reservations_count}")
+        # ===== END NEW CODE =====
         
         # Calculate available hotels
         available_hotels = _calculate_available_hotels(hotel_data['all_hotels'], user_reservations)
@@ -1949,6 +1970,14 @@ def toggle_user(user_id):
     
     action = 'activated' if user.is_active else 'deactivated'
     flash(f"User {user.nickname} has been {action}.", "success")
+    return redirect(url_for('view_users'))
+@app.route('/admin/reset_first_session/<int:user_id>', methods=['POST'])
+def reset_first_session_count(user_id):
+    user = User.query.get_or_404(user_id)
+    user.first_session_reservations_count = 0
+    db.session.commit()
+    
+    flash(f"User {user.nickname}'s first session count has been reset.", "success")
     return redirect(url_for('view_users'))
 
 @app.route('/admin/users/<int:user_id>/update_vip', methods=['POST'])

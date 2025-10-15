@@ -17,40 +17,38 @@
                     </a>
                 </div>
                 
-                <!-- User Selection with Integrated Search -->
+                <!-- User Selection Section -->
                 <div class="user-selection-section">
                     <h4>Select User</h4>
                     <form method="GET" id="filterForm">
                         <div class="row">
-                            <!-- User Selection with Search -->
+                            <!-- User Search and Selection -->
                             <div class="col-md-4">
-                                <label for="user_id" class="form-label">Select User</label>
-                                <div class="input-group mb-2">
-                                    <span class="input-group-text"><i class="fas fa-search"></i></span>
-                                    <input type="text" class="form-control" id="userSearch" 
-                                           placeholder="Search users..." onkeyup="filterUsers()">
+                                <label class="form-label">Search User</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" name="user_search" class="form-control" 
+                                           value="{{ user_search or '' }}" 
+                                           placeholder="Search by ID, nickname, contact...">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Search
+                                    </button>
                                 </div>
-                                <select name="user_id" id="user_id" class="form-select" size="8" style="height: auto;">
-                                    <option value="">Choose a user from the list below...</option>
+                                
+                                <label for="user_id" class="form-label">Select User</label>
+                                <select name="user_id" id="user_id" class="form-select" size="8" onchange="this.form.submit()">
+                                    <option value="">-- Choose a user --</option>
                                     {% for user in users %}
-                                    <option value="{{ user.id }}" {% if selected_user and selected_user.id == user.id %}selected{% endif %}
-                                            data-nickname="{{ user.nickname|lower if user.nickname else '' }}"
-                                            data-email="{{ user.email|lower if user.email else '' }}"
-                                            data-contact="{{ user.contact|lower if user.contact else '' }}"
-                                            data-id="{{ user.id }}">
-                                        {% if user.nickname %}
-                                        {{ user.nickname }} (ID: {{ user.id }})
-                                        {% else %}
-                                        User {{ user.id }} 
-                                        {% endif %}
-                                        - {{ user.email or user.contact or 'No contact' }}
-                                    
+                                    <option value="{{ user.id }}" {% if selected_user and selected_user.id == user.id %}selected{% endif %}>
+                                        ID: {{ user.id }} | 
+                                        {% if user.nickname %}{{ user.nickname }} | {% endif %}
+                                        {{ user.contact or user.email or 'No contact' }} | 
+                                        VIP: {{ user.vip_level }}
                                     </option>
                                     {% endfor %}
                                 </select>
                                 <small class="text-muted">
                                     <i class="fas fa-info-circle"></i> 
-                                    {{ users|length }} users total • Newest users first • Type to search
+                                    {{ users|length }} users found • Newest users first
                                 </small>
                             </div>
                             
@@ -83,7 +81,7 @@
                                         <label class="form-label">&nbsp;</label>
                                         <div class="d-flex gap-2">
                                             <button type="submit" class="btn btn-primary w-100">
-                                                <i class="fas fa-filter"></i> Apply Filters
+                                                <i class="fas fa-filter"></i> Apply
                                             </button>
                                             <a href="{{ url_for('assign_hotels_to_user') }}" class="btn btn-secondary">
                                                 <i class="fas fa-times"></i>
@@ -122,10 +120,12 @@
                 <div class="user-info-card card mt-3">
                     <div class="card-body">
                         <h5 class="card-title">
-                            <i class="fas fa-user-check"></i> Selected User 
-                            <button type="button" class="btn btn-sm btn-outline-secondary float-end" onclick="clearUserSelection()">
-                                <i class="fas fa-times"></i> Change User
-                            </button>
+                            <i class="fas fa-user-check"></i> Selected User: 
+                            {% if selected_user.nickname %}
+                            {{ selected_user.nickname }}
+                            {% else %}
+                            User {{ selected_user.id }}
+                            {% endif %}
                         </h5>
                         <div class="row">
                             <div class="col-md-2">
@@ -145,8 +145,8 @@
                                 {{ selected_user.contact or selected_user.email or 'N/A' }}
                             </div>
                             <div class="col-md-3">
-                                <strong>Nickname:</strong><br>
-                                {{ selected_user.nickname or 'Not set' }}
+                                <strong>Status:</strong><br>
+                                <span class="badge bg-success">Active</span>
                             </div>
                         </div>
                     </div>
@@ -154,9 +154,12 @@
                 {% endif %}
 
                 <!-- Filter Summary -->
-                {% if category_filter or min_price or max_price %}
+                {% if category_filter or min_price or max_price or user_search %}
                 <div class="filter-summary mt-3">
-                    <strong>Active Hotel Filters:</strong>
+                    <strong>Active Filters:</strong>
+                    {% if user_search %}
+                    <span class="badge bg-primary">User Search: "{{ user_search }}"</span>
+                    {% endif %}
                     {% if category_filter %}
                     <span class="badge bg-info">Category: {{ category_filter|title }}</span>
                     {% endif %}
@@ -167,16 +170,7 @@
                     <span class="badge bg-warning">Max Price: £{{ max_price }}</span>
                     {% endif %}
                     <span class="badge bg-secondary">{{ hotels|length }} hotels found</span>
-                </div>
-                {% endif %}
-
-                <!-- Price Statistics -->
-                {% if price_stats %}
-                <div class="alert alert-info mt-3">
-                    <strong>Hotel Price Range:</strong> £{{ price_stats.min_price }} - £{{ price_stats.max_price }}
-                    {% if price_stats.avg_price %}
-                    | <strong>Average:</strong> £{{ price_stats.avg_price }}
-                    {% endif %}
+                    <span class="badge bg-info">{{ users|length }} users found</span>
                 </div>
                 {% endif %}
 
@@ -244,12 +238,6 @@
                                             </div>
                                             {% endif %}
 
-                                            {% if hotel.description %}
-                                            <div class="small text-muted mt-2">
-                                                {{ hotel.description|truncate(100) }}
-                                            </div>
-                                            {% endif %}
-
                                             <div class="mt-3">
                                                 <label for="commission_{{ hotel.id }}" class="form-label small">Commission (£)</label>
                                                 <input type="number" class="form-control form-control-sm"
@@ -264,7 +252,7 @@
 
                             <div class="mt-4">
                                 <button type="submit" class="btn btn-success btn-lg">
-                                    <i class="fas fa-paper-plane"></i> Assign Selected Hotels to {{ selected_user.nickname or 'User ' + selected_user.id|string }}
+                                    <i class="fas fa-paper-plane"></i> Assign Selected Hotels
                                 </button>
                                 <a href="{{ url_for('manage_hotels') }}" class="btn btn-secondary">
                                     <i class="fas fa-times"></i> Cancel
@@ -273,7 +261,7 @@
                             {% else %}
                             <div class="alert alert-warning">
                                 <i class="fas fa-exclamation-triangle"></i> 
-                                No hotels found matching your criteria. Try adjusting your filters.
+                                No hotels found matching your criteria.
                             </div>
                             {% endif %}
                         </div>
@@ -282,29 +270,19 @@
                 {% else %}
                 <div class="alert alert-info mt-3">
                     <i class="fas fa-info-circle"></i> 
-                    Please select a user from the list above to assign hotels.
+                    {% if user_search and users|length == 0 %}
+                    No users found matching "{{ user_search }}". Try a different search term.
+                    {% elif user_search %}
+                    Please select a user from the search results above.
+                    {% else %}
+                    Please search for and select a user to assign hotels.
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
         </div>
     </div>
-    
-    <!-- Display flash messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show mt-3"
-        role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
 
-    {% endblock %}
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function setPrice(min, max) {
             document.getElementById('min_price').value = min || '';
@@ -314,106 +292,24 @@
         function selectAll() {
             document.querySelectorAll('.hotel-checkbox').forEach(checkbox => {
                 checkbox.checked = true;
-                checkbox.closest('.hotel-card').classList.add('selected');
             });
         }
 
         function deselectAll() {
             document.querySelectorAll('.hotel-checkbox').forEach(checkbox => {
                 checkbox.checked = false;
-                checkbox.closest('.hotel-card').classList.remove('selected');
             });
         }
 
         function selectByCategory(category) {
             document.querySelectorAll('.hotel-card').forEach(card => {
                 const checkbox = card.querySelector('.hotel-checkbox');
-                if (card.dataset.category === category) {
-                    checkbox.checked = true;
-                    card.classList.add('selected');
-                } else {
-                    checkbox.checked = false;
-                    card.classList.remove('selected');
-                }
+                checkbox.checked = (card.dataset.category === category);
             });
         }
-
-        // User search functionality
-        function filterUsers() {
-            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
-            const userOptions = document.querySelectorAll('#user_id option');
-            
-            userOptions.forEach(option => {
-                if (option.value === '') {
-                    option.style.display = 'block';
-                    return;
-                }
-                
-                const nickname = option.getAttribute('data-nickname') || '';
-                const email = option.getAttribute('data-email') || '';
-                const contact = option.getAttribute('data-contact') || '';
-                const id = option.getAttribute('data-id') || '';
-                
-                const matches = nickname.includes(searchTerm) || 
-                               email.includes(searchTerm) || 
-                               contact.includes(searchTerm) || 
-                               id.includes(searchTerm) ||
-                               option.textContent.toLowerCase().includes(searchTerm);
-                
-                option.style.display = matches ? 'block' : 'none';
-            });
-        }
-
-        function clearUserSelection() {
-            document.getElementById('user_id').value = '';
-            document.getElementById('filterForm').submit();
-        }
-
-        // Add visual feedback for selected hotels
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.hotel-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', function () {
-                    const card = this.closest('.hotel-card');
-                    if (this.checked) {
-                        card.classList.add('selected');
-                        card.style.border = '2px solid #198754';
-                    } else {
-                        card.classList.remove('selected');
-                        card.style.border = '';
-                    }
-                });
-            });
-
-            // Auto-focus on user search
-            const userSearch = document.getElementById('userSearch');
-            if (userSearch) {
-                userSearch.focus();
-            }
-        });
-
-        // Auto-submit when user is selected
-        document.getElementById('user_id').addEventListener('change', function () {
-            if (this.value) {
-                document.getElementById('filterForm').submit();
-            }
-        });
     </script>
     
     <style>
-        .hotel-card.selected {
-            border: 2px solid #198754 !important;
-            background-color: #f8fff9;
-        }
-        .hotel-card:hover {
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-        .filter-summary {
-            padding: 10px;
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            border-left: 4px solid #007bff;
-        }
         .user-selection-section {
             background-color: #f8f9fa;
             padding: 20px;
@@ -423,15 +319,21 @@
         .user-info-card {
             border-left: 4px solid #28a745;
         }
+        .filter-summary {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
         #user_id {
-            font-size: 0.9em;
+            font-size: 0.85em;
         }
-        #user_id option {
-            padding: 8px 12px;
-            border-bottom: 1px solid #eee;
+        .hotel-card {
+            transition: all 0.3s ease;
         }
-        #user_id option:hover {
-            background-color: #e9ecef;
+        .hotel-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
     </style>
 </body>
+{% endblock %}

@@ -2993,7 +2993,7 @@ def assign_hotels_to_user():
                 session_type=session_type,
                 custom_commission=commission,
                 assigned_by=g.current_admin.id
-        )
+            )
             db.session.add(new_assignment)
             assignments_created += 1
         
@@ -3003,11 +3003,24 @@ def assign_hotels_to_user():
     
     # GET request - show form with filtering
     user_id = request.args.get('user_id')
+    user_search = request.args.get('user_search', '')  # ADD THIS LINE
     category_filter = request.args.get('category', '')
     min_price = request.args.get('min_price', type=float)
     max_price = request.args.get('max_price', type=float)
     
-    users = User.query.filter_by(is_active=True).all()
+    # Build user query with search - UPDATED SECTION
+    users_query = User.query.filter_by(is_active=True)
+    
+    if user_search:
+        users_query = users_query.filter(
+            db.or_(
+                User.id.cast(db.String).ilike(f'%{user_search}%'),
+                User.nickname.ilike(f'%{user_search}%'),
+                User.contact.ilike(f'%{user_search}%'),
+            )
+        )
+    
+    users = users_query.order_by(User.id.desc()).all()  # Newest users first
     
     # Build hotel query with filters
     query = Hotel.query.filter_by(is_active=True)
@@ -3040,8 +3053,8 @@ def assign_hotels_to_user():
                          category_filter=category_filter,
                          min_price=min_price,
                          max_price=max_price,
-                         price_stats=price_stats)
-
+                         price_stats=price_stats,
+                         user_search=user_search) 
 @app.route('/admin/bulk-assign-hotels', methods=['GET', 'POST'])
 @admin_required
 def bulk_assign_hotels():

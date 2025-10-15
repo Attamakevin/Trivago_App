@@ -44,8 +44,7 @@
                                         User {{ user.id }} 
                                         {% endif %}
                                         - {{ user.email or user.contact or 'No contact' }}
-                                        - VIP: {{ user.vip_level }}
-                                        - £{{ "%.2f"|format(user.balance) }}
+                                    
                                     </option>
                                     {% endfor %}
                                 </select>

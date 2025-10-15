@@ -103,6 +103,13 @@
                                 </a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link {% if request.endpoint == 'admin_edit_withdrawal_password' %}active{% endif %}"
+                                    href="{{ url_for('admin_telegram_settings') }}">
+                                    <i class="fas fa-cog"></i>
+                                    <span>Telegram Link Settings</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link {% if request.endpoint == 'admin_password_change_page' %}active{% endif %}"
                                     href="{{ url_for('admin_password_change_page') }}">
                                     <i class="fas fa-cog"></i>

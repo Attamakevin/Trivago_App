@@ -1,104 +1,175 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
-        <title>Customer Support - trivago</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
-        <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
-        <!-- TailwindCSS -->
-        <script src="https://cdn.tailwindcss.com"></script>
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-            rel="stylesheet">
-        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
-        <!-- Custom Script -->
-        <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
-        <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
-        <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+    <title>Customer Support - trivago</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/user.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/translate.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <script defer src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/translate.js') }}"></script>
+    <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
+</head>
 
-    <body class="luxury-bg min-h-screen">
-        <!-- Header -->
-        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
-            <div class="flex items-center justify-start gap-8 text-white h-full">
-                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
-                    <i class="fas fa-arrow-left text-xl"></i>
-                </button>
-                <h1 data-translate class="text-white text-sm md:text-md font-bold">Customer Support</h1>
-            </div>
-        </header>
+<body class="luxury-bg min-h-screen">
+    <!-- Header -->
+    <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+        <div class="flex items-center justify-start gap-8 text-white h-full">
+            <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h1 data-translate class="text-white text-sm md:text-md font-bold">Customer Support</h1>
+        </div>
+    </header>
 
-        <div class="max-w-2xl mx-auto px-4 py-12">
-            <!-- Support Card -->
-            <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-                <!-- Header Section -->
-                <div class="bg-gradient-to-r from-blue-500 to-cyan-500 p-8 text-center text-white">
-                    <div
-                        class="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <i class="fas fa-headset text-3xl"></i>
-                    </div>
-                    <h2 data-translate class="text-2xl md:text-3xl font-bold mb-2">Need Help?</h2>
-                    <p data-translate class="text-blue-100">Get instant support through Telegram</p>
+    <div class="max-w-2xl mx-auto px-4 py-12">
+        <!-- Support Card -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <!-- Header Section -->
+            <div class="bg-gradient-to-r from-blue-500 to-cyan-500 p-8 text-center text-white">
+                <div class="w-20 h-20 bg-white bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-headset text-3xl"></i>
                 </div>
+                <h2 data-translate class="text-2xl md:text-3xl font-bold mb-2">Need Help?</h2>
+                <p data-translate class="text-blue-100">Get instant support through Telegram</p>
+            </div>
 
-                <!-- Support Button Section -->
-                <div class="p-8 text-center">
-                    <div class="mb-6">
-                        <h3 data-translate class="text-xl font-semibold text-gray-900 mb-3">Contact Our Support Team</h3>
-                        <p data-translate class="text-gray-600">Chat with our support agents on Telegram for quick assistance</p>
-                    </div>
-
-                    <!-- Telegram Button -->
-                    <button onclick="openTelegramSupport()"
-                        class="inline-flex items-center gap-3 bg-[#0088cc] hover:bg-[#0077b5] text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
-                        <i class="fab fa-telegram-plane text-2xl"></i>
-                        <span data-translate class="text-lg">Open Telegram Support</span>
-                    </button>
-
-                    <p data-translate class="text-sm text-gray-500 mt-3">
-                        Available 24/7 • Average response time: 2 minutes
+            <!-- Support Button Section -->
+            <div class="p-8 text-center">
+                <div class="mb-6">
+                    <h3 data-translate class="text-xl font-semibold text-gray-900 mb-3">Contact Our Support Team</h3>
+                    <p data-translate class="text-gray-600">
+                        {{ support_message or 'Chat with our support agents on Telegram for quick assistance' }}
                     </p>
                 </div>
 
-                <!-- Support Hours -->
-                <div class="mt-6 text-center mb-5">
-                    <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg">
-                        <i class="fas fa-clock"></i>
-                        <span data-translate class="text-sm font-medium">24/7 Support Available</span>
-                    </div>
+                <!-- Telegram Button -->
+                <button onclick="openTelegramSupport()"
+                    class="inline-flex items-center gap-3 bg-[#0088cc] hover:bg-[#0077b5] text-white font-semibold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                    <i class="fab fa-telegram-plane text-2xl"></i>
+                    <span data-translate class="text-lg">Open Telegram Support</span>
+                </button>
+
+                <p data-translate class="text-sm text-gray-500 mt-3">
+                    Available 24/7 • Average response time: 2 minutes
+                </p>
+            </div>
+
+            <!-- Support Hours -->
+            <div class="mt-6 text-center mb-5">
+                <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-lg">
+                    <i class="fas fa-clock"></i>
+                    <span data-translate class="text-sm font-medium">24/7 Support Available</span>
                 </div>
             </div>
         </div>
+
+        <!-- Alternative Contact Methods (Optional) -->
+        <div class="mt-6 bg-white rounded-xl shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Other Ways to Reach Us</h3>
+            <div class="space-y-3">
+                <div class="flex items-center gap-3 text-gray-600">
+                    <i class="fas fa-envelope text-blue-500"></i>
+                    <span>Email: support@trivago-work.com</span>
+                </div>
+                <div class="flex items-center gap-3 text-gray-600">
+                    <i class="fas fa-phone text-green-500"></i>
+                    <span>Response Time: Within 24 hours</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Store Telegram link from backend
+        const TELEGRAM_LINK = "{{ telegram_link|safe }}";
         
-        <script>
-            function openTelegramSupport() {
-                // Replace 'yourbotusername' with your actual Telegram bot username
-                // You can also use a direct link to a support group or channel
-                const telegramUrl = 'https://t.me/trivago_work?start=support';
-
-                // Try to open in Telegram app first, fallback to web version
-                window.open(telegramUrl, '_blank');
-
-                // Optional: Show a confirmation message
-                setTimeout(() => {
-                    if (confirm('Did Telegram open successfully? If not, please install the Telegram app first.')) {
-                        // User confirmed it worked
-                    } else {
-                        // Provide alternative instructions
-                        alert('Please install Telegram from your app store and try again, or contact us via email at support@company.com');
-                    }
-                }, 2000);
+        function openTelegramSupport() {
+            // Validate link exists
+            if (!TELEGRAM_LINK || TELEGRAM_LINK === 'None') {
+                alert('Support link is not configured. Please contact administration.');
+                return;
             }
 
-            // Add smooth animations on page load
-            document.addEventListener('DOMContentLoaded', function () {
-                const card = document.querySelector('.bg-white');
+            // Open Telegram link
+            window.open(TELEGRAM_LINK, '_blank');
+
+            // Optional: Show confirmation after delay
+            setTimeout(() => {
+                const opened = confirm('Did Telegram open successfully? If not, please install the Telegram app first.');
+                
+                if (!opened) {
+                    // Provide alternative instructions
+                    showAlternativeInstructions();
+                }
+            }, 2000);
+        }
+
+        function showAlternativeInstructions() {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4';
+            modal.innerHTML = `
+                <div class="bg-white rounded-xl shadow-2xl max-w-md w-full p-6">
+                    <div class="text-center mb-4">
+                        <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-info-circle text-blue-600 text-2xl"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Install Telegram</h3>
+                        <p class="text-gray-600">To contact support, please install Telegram from your app store</p>
+                    </div>
+                    
+                    <div class="space-y-3 mb-6">
+                        <a href="https://play.google.com/store/apps/details?id=org.telegram.messenger" 
+                           target="_blank"
+                           class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fab fa-google-play text-2xl text-green-600"></i>
+                            <div class="text-left">
+                                <div class="font-medium">Android</div>
+                                <div class="text-sm text-gray-500">Get from Play Store</div>
+                            </div>
+                        </a>
+                        
+                        <a href="https://apps.apple.com/app/telegram-messenger/id686449807" 
+                           target="_blank"
+                           class="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                            <i class="fab fa-apple text-2xl text-gray-800"></i>
+                            <div class="text-left">
+                                <div class="font-medium">iOS</div>
+                                <div class="text-sm text-gray-500">Get from App Store</div>
+                            </div>
+                        </a>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button onclick="this.closest('.fixed').remove()" 
+                            class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors">
+                            Got it
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close on backdrop click
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // Add smooth animations on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            const cards = document.querySelectorAll('.bg-white');
+            cards.forEach((card, index) => {
                 card.style.opacity = '0';
                 card.style.transform = 'translateY(20px)';
 
@@ -106,9 +177,10 @@
                     card.style.transition = 'all 0.6s ease';
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
-                }, 100);
+                }, 100 * index);
             });
-        </script>
-    </body>
+        });
+    </script>
+</body>
 
 </html>

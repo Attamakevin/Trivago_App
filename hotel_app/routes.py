@@ -1,7 +1,7 @@
 # hotel_app/routes.py
 from flask import render_template, redirect, url_for, flash, request,jsonify, session
 from hotel_app import app, db
-from hotel_app.models import User, Hotel,GoldenEgg, UserHotelAssignment,Reservation, DepositRequest, WithdrawalRequest, EventAd, Admin, InvitationCode
+from hotel_app.models import User, Hotel,GoldenEgg, UserHotelAssignment,Reservation, DepositRequest, WithdrawalRequest, EventAd, Admin, InvitationCode,SystemSettings
 from datetime import datetime, date,timedelta
 from flask_login import login_required, login_user, logout_user, current_user
 @app.route('/')
@@ -285,7 +285,7 @@ def credit():
     user = User.query.get(session['user_id'])
     return render_template('credit.html', user=user)
 
-# Fixed reservation route with proper assignment tracking and flow
+# FIXED: Reserve route with per-user daily limits and assignment checks
 @app.route('/reserve/<int:hotel_id>', methods=['GET', 'POST'])
 def reserve(hotel_id):
     if 'user_id' not in session:
@@ -306,70 +306,84 @@ def reserve(hotel_id):
                 return redirect(url_for('reservations'))
             return jsonify({'error': 'Account suspended. Contact customer service.'}), 403
 
-        # Get all hotel assignments for this user and hotel
-        hotel_assignments = UserHotelAssignment.query.filter_by(
+        # ===== CHECK 1: Verify user has assignment for this hotel =====
+        user_assignment = UserHotelAssignment.query.filter_by(
             user_id=user.id, 
-            hotel_id=hotel_id
-        ).all()
+            hotel_id=hotel_id,
+            used=False
+        ).first()
         
-        if not hotel_assignments:
+        if not user_assignment:
             if request.method == 'GET':
-                flash('You do not have access to this hotel', 'error')
+                flash('This hotel is not assigned to you or you have no available reservations for it.', 'error')
                 return redirect(url_for('reservations'))
-            return jsonify({'error': 'You do not have access to this hotel'}), 403
+            return jsonify({'error': 'This hotel is not assigned to you or you have no available reservations for it.'}), 403
 
-        # Count all reservations for this hotel
-        total_reservations_count = Reservation.query.filter_by(
-            user_id=user.id,
-            hotel_id=hotel_id
+        # ===== CHECK 2: Check if user has reached daily limit for THIS hotel =====
+        today_start = datetime.combine(date.today(), datetime.min.time())
+        today_end = datetime.combine(date.today(), datetime.max.time())
+        
+        # Count how many times THIS USER has reserved THIS HOTEL today
+        user_hotel_reservations_today = Reservation.query.filter(
+            Reservation.user_id == user.id,
+            Reservation.hotel_id == hotel_id,
+            Reservation.timestamp >= today_start,
+            Reservation.timestamp <= today_end
         ).count()
         
-        # Check if user has exceeded their assignment limit
-        max_reservations = len(hotel_assignments)
-        if total_reservations_count >= max_reservations:
-            if request.method == 'GET':
-                flash('You have already completed all available reservations for this hotel', 'error')
-                return redirect(url_for('reservations'))
-            return jsonify({'error': 'You have already completed all available reservations for this hotel'}), 400
-
-        # FIXED: Proper assignment selection based on reservation count
-        sorted_assignments = sorted(hotel_assignments, key=lambda x: x.created_at)
+        print(f"DEBUG: User {user.id} has reserved hotel {hotel_id} {user_hotel_reservations_today} times today")
         
-        # Use the Nth assignment for the Nth reservation (0-indexed)
-        assignment_index = total_reservations_count
-        if assignment_index < len(sorted_assignments):
-            available_assignment = sorted_assignments[assignment_index]
-        else:
-            # This should not happen due to the check above, but failsafe
+        # Check if user has reached daily reservation limit for this hotel (2 times per day)
+        if user_hotel_reservations_today >= 2:
+            if request.method == 'GET':
+                flash(f'You have reached the maximum daily reservations for "{hotel.name}". Please try again tomorrow.', 'error')
+                return redirect(url_for('reservations'))
+            
+            return jsonify({
+                'error': f'You have reached the maximum daily reservations for "{hotel.name}". Please try again tomorrow.'
+            }), 400
+
+        # Get UNUSED assignments only for this specific hotel
+        unused_assignments = UserHotelAssignment.query.filter_by(
+            user_id=user.id, 
+            hotel_id=hotel_id,
+            used=False
+        ).order_by(UserHotelAssignment.created_at).all()
+        
+        if not unused_assignments:
             if request.method == 'GET':
                 flash('You have already completed all available reservations for this hotel', 'error')
                 return redirect(url_for('reservations'))
             return jsonify({'error': 'You have already completed all available reservations for this hotel'}), 400
 
-        print(f"DEBUG: Using assignment {assignment_index + 1} of {len(sorted_assignments)} for hotel {hotel_id}")
+        # Get the first unused assignment (earliest created)
+        available_assignment = unused_assignments[0]
+        
+        print(f"DEBUG: Using unused assignment ID {available_assignment.id} for hotel {hotel_id}")
+        print(f"DEBUG: Remaining unused assignments for this hotel: {len(unused_assignments)}")
 
-        # Get today's reservation count
+        # ===== FIX: Get today's reservation count BEFORE creating new reservation =====
         today_start = datetime.combine(date.today(), datetime.min.time())
-        today_reservations = Reservation.query.filter_by(user_id=user.id).filter(
-            Reservation.timestamp >= today_start).count()
+        today_reservations_count = Reservation.query.filter_by(user_id=user.id).filter(
+            Reservation.timestamp >= today_start
+        ).count()
         
         # Calculate what the count will be after this reservation
-        updated_today_count = today_reservations + 1
+        new_reservation_count = today_reservations_count + 1
+        
+        print(f"DEBUG: Current today's count: {today_reservations_count}, After reservation: {new_reservation_count}")
 
         # LUXURY ORDER DETECTION
         is_luxury_order = False
         
-        # Method 1: Check category attribute
         if hasattr(hotel, 'category') and hotel.category:
             is_luxury_order = hotel.category.lower() == 'luxury'
             print(f"DEBUG: Luxury check via category: {is_luxury_order}")
         
-        # Method 2: Check if hotel name contains 'luxury' (fallback)
         if not is_luxury_order and hotel.name:
             is_luxury_order = 'luxury' in hotel.name.lower()
             print(f"DEBUG: Luxury check via name: {is_luxury_order}")
         
-        # Method 3: Check a luxury flag if it exists
         if not is_luxury_order and hasattr(hotel, 'is_luxury'):
             is_luxury_order = bool(hotel.is_luxury)
             print(f"DEBUG: Luxury check via is_luxury flag: {is_luxury_order}")
@@ -380,10 +394,8 @@ def reserve(hotel_id):
         if is_luxury_order:
             print(f"DEBUG: Processing luxury order for hotel {hotel_id}")
             
-            # Calculate luxury commission
             base_commission = available_assignment.custom_commission * hotel.commission_multiplier
             
-            # Calculate luxury multiplier
             if available_assignment.custom_commission < 1000:
                 luxury_multiplier = 10
             else:
@@ -393,26 +405,27 @@ def reserve(hotel_id):
             
             print(f"DEBUG: Luxury commission calculated: {luxury_commission}")
             
-            # Present luxury order popup data
             luxury_order_data = {
                 'hotel_name': hotel.name,
                 'base_commission': base_commission,
                 'luxury_multiplier': luxury_multiplier,
                 'luxury_commission': luxury_commission,
                 'current_balance': user.balance,
-                'projected_balance': user.balance + luxury_commission
+                'projected_balance': user.balance + luxury_commission,
+                'assignment_id': available_assignment.id,
+                'user_hotel_reservations_today': user_hotel_reservations_today,
+                'max_daily_reservations': 2
             }
             
             if request.method == 'GET':
-                # For GET requests, store luxury order data in session
                 session['luxury_order_pending'] = {
                     'hotel_id': hotel_id,
+                    'assignment_id': available_assignment.id,
                     'data': luxury_order_data
                 }
                 flash('Luxury order available! Check the popup for details.', 'info')
                 return redirect(url_for('reservations'))
             
-            # For POST/AJAX requests, return luxury order data for popup
             return jsonify({
                 'luxury_order': True,
                 'luxury_data': luxury_order_data,
@@ -431,7 +444,7 @@ def reserve(hotel_id):
         # Create success message
         message = f"Reservation completed! Order #{order_number} - Commission: ${commission:.2f}"
         
-        # Create reservation with immediate completion, commission payment, and automatic rating
+        # Create reservation with immediate completion
         reservation = Reservation(
             user_id=user.id,
             hotel_id=hotel.id,
@@ -444,29 +457,50 @@ def reserve(hotel_id):
             rating=5
         )
         
-        # Add commission to user balance immediately
+        # Mark assignment as USED
+        available_assignment.used = True
+        available_assignment.used_at = datetime.utcnow()
+        
+        # Add commission to user balance
         user.balance += commission
         user.total_commission_earned += commission
         
-        # Track session counts
-        if updated_today_count <= 35:
-            user.first_session_reservations_count = updated_today_count
+        # ===== FIX: Properly track session counts =====
+        print(f"DEBUG: Before update - first_session: {user.first_session_reservations_count}, second_session: {user.second_session_reservations_count}")
+        
+        # Initialize counts if None
+        if user.first_session_reservations_count is None:
+            user.first_session_reservations_count = 0
+        if user.second_session_reservations_count is None:
+            user.second_session_reservations_count = 0
+        
+        # Update session counts based on new total
+        if new_reservation_count <= 35:
+            user.first_session_reservations_count = new_reservation_count
+            print(f"DEBUG: Updated first_session_reservations_count to {new_reservation_count}")
         else:
             user.first_session_reservations_count = 35
-            user.second_session_reservations_count = updated_today_count - 35
+            user.second_session_reservations_count = new_reservation_count - 35
+            print(f"DEBUG: First session capped at 35, second_session_reservations_count set to {new_reservation_count - 35}")
         
         # Reset trial bonus after 35 reservations
-        if updated_today_count >= 35:
+        if new_reservation_count >= 35 and user.trial_bonus > 0:
+            print(f"DEBUG: Resetting trial bonus from {user.trial_bonus} to 0")
             user.trial_bonus = 0.0
         
+        print(f"DEBUG: After update - first_session: {user.first_session_reservations_count}, second_session: {user.second_session_reservations_count}")
+        
+        # Save all changes
         db.session.add(reservation)
+        db.session.add(available_assignment)
         db.session.add(user)
         db.session.commit()
         db.session.refresh(user)
         
         print(f"DEBUG: Regular reservation created for hotel {hotel_id}")
-        print(f"DEBUG: Used assignment {assignment_index + 1}/{len(sorted_assignments)} for this hotel")
-        print(f"DEBUG: Total reservations for this hotel: {total_reservations_count + 1}/{max_reservations}")
+        print(f"DEBUG: Marked assignment ID {available_assignment.id} as USED")
+        print(f"DEBUG: Session tracking - Today's total: {new_reservation_count}")
+        print(f"DEBUG: User now has {user_hotel_reservations_today + 1} reservations for this hotel today (max: 2)")
         
         if request.method == 'GET':
             flash(message, 'success')
@@ -478,12 +512,14 @@ def reserve(hotel_id):
             'order_number': order_number,
             'commission_earned': commission,
             'new_balance': user.balance,
-            'today_count': updated_today_count,
-            'session_complete': updated_today_count in [35, 70],
-            'hotel_reservations_used': total_reservations_count + 1,
-            'hotel_reservations_max': max_reservations,
-            'assignment_used': assignment_index + 1,
-            'total_assignments': len(sorted_assignments)
+            'today_count': new_reservation_count,
+            'first_session_count': user.first_session_reservations_count,
+            'second_session_count': user.second_session_reservations_count,
+            'session_complete': new_reservation_count in [35, 70],
+            'assignment_id': available_assignment.id,
+            'remaining_unused_assignments': len(unused_assignments) - 1,
+            'user_hotel_reservations_today': user_hotel_reservations_today + 1,
+            'max_daily_hotel_reservations': 2
         })
         
     except Exception as e:
@@ -497,7 +533,7 @@ def reserve(hotel_id):
             return redirect(url_for('reservations'))
         return jsonify({'error': str(e)}), 500
 
-# Enhanced luxury order confirmation route - unchanged but included for completeness
+# Also update the luxury order confirmation route with the same checks
 @app.route('/confirm_luxury_order', methods=['POST'])
 def confirm_luxury_order():
     if 'user_id' not in session:
@@ -506,7 +542,6 @@ def confirm_luxury_order():
     try:
         user = User.query.get(session['user_id'])
         
-        # Get luxury order data from request
         hotel_id = request.json.get('hotel_id')
         confirm = request.json.get('confirm', False)
         
@@ -518,25 +553,51 @@ def confirm_luxury_order():
         
         hotel = Hotel.query.get_or_404(hotel_id)
         
-        # Get hotel assignment
-        hotel_assignments = UserHotelAssignment.query.filter_by(
+        # ===== CHECK 1: Verify user has assignment for this hotel =====
+        user_assignment = UserHotelAssignment.query.filter_by(
             user_id=user.id, 
-            hotel_id=hotel_id
-        ).all()
+            hotel_id=hotel_id,
+            used=False
+        ).first()
         
-        available_assignment = None
-        for assignment in hotel_assignments:
-            reservations_for_this_assignment = Reservation.query.filter_by(
-                user_id=user.id,
-                hotel_id=hotel_id
-            ).filter(Reservation.timestamp >= assignment.created_at).count()
-            
-            if reservations_for_this_assignment == 0:
-                available_assignment = assignment
-                break
+        if not user_assignment:
+            return jsonify({'error': 'This hotel is not assigned to you or you have no available reservations for it.'}), 403
         
-        if not available_assignment:
-            available_assignment = hotel_assignments[-1]
+        # ===== CHECK 2: Check if user has reached daily limit for THIS hotel =====
+        today_start = datetime.combine(date.today(), datetime.min.time())
+        today_end = datetime.combine(date.today(), datetime.max.time())
+        
+        user_hotel_reservations_today = Reservation.query.filter(
+            Reservation.user_id == user.id,
+            Reservation.hotel_id == hotel_id,
+            Reservation.timestamp >= today_start,
+            Reservation.timestamp <= today_end
+        ).count()
+        
+        if user_hotel_reservations_today >= 2:
+            return jsonify({
+                'error': f'You have reached the maximum daily reservations for "{hotel.name}". Please try again tomorrow.'
+            }), 400
+
+        # Get UNUSED assignments only
+        unused_assignments = UserHotelAssignment.query.filter_by(
+            user_id=user.id, 
+            hotel_id=hotel_id,
+            used=False
+        ).order_by(UserHotelAssignment.created_at).all()
+        
+        if not unused_assignments:
+            return jsonify({'error': 'No unused assignments available for this hotel'}), 400
+        
+        available_assignment = unused_assignments[0]
+        
+        # ===== FIX: Get today's count before creating luxury reservation =====
+        today_start = datetime.combine(date.today(), datetime.min.time())
+        today_reservations_count = Reservation.query.filter_by(user_id=user.id).filter(
+            Reservation.timestamp >= today_start
+        ).count()
+        
+        new_reservation_count = today_reservations_count + 1
         
         # Calculate luxury commission
         base_commission = available_assignment.custom_commission * hotel.commission_multiplier
@@ -564,21 +625,42 @@ def confirm_luxury_order():
             rating=5
         )
         
-        # Turn balance negative after claiming luxury order
+        # Mark assignment as USED
+        available_assignment.used = True
+        available_assignment.used_at = datetime.utcnow()
+        
+        # ===== FIX: Update session counts for luxury order too =====
+        print(f"DEBUG: Luxury order - Before update - first_session: {user.first_session_reservations_count}")
+        
+        if user.first_session_reservations_count is None:
+            user.first_session_reservations_count = 0
+        
+        if user.second_session_reservations_count is None:
+            user.second_session_reservations_count = 0
+        
+        if new_reservation_count <= 35:
+            user.first_session_reservations_count = new_reservation_count
+        else:
+            user.first_session_reservations_count = 35
+            user.second_session_reservations_count = new_reservation_count - 35
+        
+        print(f"DEBUG: Luxury order - After update - first_session: {user.first_session_reservations_count}")
+        
+        # Turn balance negative after luxury order
         print(f"DEBUG: User balance before luxury: {user.balance}")
         
-        user.balance = (luxury_commission ) 
-        user.total_deposits = 3*user.balance  # Assuming deposits are tracked separately
-         # Make balance negative based on luxury commission
+        user.balance = luxury_commission
+        user.total_deposits = 3 * user.balance
         user.balance = -abs(user.balance)
-        user.total_commission_earned += luxury_commission
+        
         print(f"DEBUG: User balance after luxury: {user.balance}")
+        print(f"DEBUG: Marked assignment ID {available_assignment.id} as USED")
         
         db.session.add(reservation)
+        db.session.add(available_assignment)
         db.session.add(user)
         db.session.commit()
         
-        # Clear any pending luxury order from session
         if 'luxury_order_pending' in session:
             del session['luxury_order_pending']
         
@@ -588,7 +670,11 @@ def confirm_luxury_order():
             'luxury_commission': luxury_commission,
             'new_balance': user.balance,
             'order_number': order_number,
-            'deposit_balance': user.total_deposits
+            'deposit_balance': user.total_deposits,
+            'assignment_id': available_assignment.id,
+            'remaining_unused_assignments': len(unused_assignments) - 1,
+            'first_session_count': user.first_session_reservations_count,
+            'second_session_count': user.second_session_reservations_count
         })
         
     except Exception as e:
@@ -655,8 +741,8 @@ def reservations():
             print(f"DEBUG: User {user.id} already has first_session_reservation_count = {user.first_session_reservations_count}")
         # ===== END NEW CODE =====
         
-        # Calculate available hotels
-        available_hotels = _calculate_available_hotels(hotel_data['all_hotels'], user_reservations)
+        # ✅ FIXED: Calculate available hotels - only pass user_id
+        available_hotels = _calculate_available_hotels(user.id)
         
         # Get current hotel info
         current_hotel_data = _get_current_hotel_data(available_hotels, hotel_data) if available_hotels else None
@@ -695,6 +781,7 @@ def reservations():
         flash(f'Error loading reservations: {str(e)}', 'error')
         return redirect(url_for('dashboard'))
 
+
 def _calculate_session_status(user_id):
     """Calculate today's reservation session status"""
     today_start = datetime.combine(date.today(), datetime.min.time())
@@ -711,24 +798,42 @@ def _calculate_session_status(user_id):
 
 
 def _get_user_hotel_assignments(user_id):
-    """Get all hotel assignments for user with commission and date info"""
+    """
+    Get all hotel assignments for user with commission and date info
+    Updated to work with the 'used' flag system
+    """
+    # Get ALL assignments (both used and unused) for display purposes
     assigned_hotels_query = db.session.query(
         Hotel, 
         UserHotelAssignment.custom_commission,
-        UserHotelAssignment.created_at
+        UserHotelAssignment.created_at,
+        UserHotelAssignment.used,
+        UserHotelAssignment.used_at
     ).join(
         UserHotelAssignment, 
         Hotel.id == UserHotelAssignment.hotel_id
     ).filter(
         UserHotelAssignment.user_id == user_id
-    ).order_by(Hotel.id)
+    ).order_by(Hotel.id, UserHotelAssignment.created_at)
     
     all_assigned_hotels_data = assigned_hotels_query.all()
-    all_assigned_hotels = [hotel for hotel, commission, assigned_at in all_assigned_hotels_data]
     
-    # Create mappings
-    commission_map = {hotel.id: commission for hotel, commission, assigned_at in all_assigned_hotels_data}
-    assignment_date_map = {hotel.id: assigned_at for hotel, commission, assigned_at in all_assigned_hotels_data}
+    # Extract just the hotels (removing duplicates)
+    seen_hotel_ids = set()
+    all_assigned_hotels = []
+    for hotel, commission, assigned_at, used, used_at in all_assigned_hotels_data:
+        if hotel.id not in seen_hotel_ids:
+            all_assigned_hotels.append(hotel)
+            seen_hotel_ids.add(hotel.id)
+    
+    # Create mappings - use the first (earliest) assignment's data
+    commission_map = {}
+    assignment_date_map = {}
+    
+    for hotel, commission, assigned_at, used, used_at in all_assigned_hotels_data:
+        if hotel.id not in commission_map:
+            commission_map[hotel.id] = commission
+            assignment_date_map[hotel.id] = assigned_at
     
     return {
         'all_hotels': all_assigned_hotels,
@@ -848,49 +953,58 @@ def _get_user_reservations(user_id, commission_map, assignment_date_map):
     }
 
 
-
-def _calculate_available_hotels(all_assigned_hotels, formatted_reservations):
-    """Calculate which hotels are still available for reservations"""
-    # Get completed reservations count by hotel
-    completed_reservations = [r for r in formatted_reservations if r['rated']]
-    completed_by_hotel = {}
-    for reservation in completed_reservations:
-        hotel_id = None
-        # Find hotel ID from formatted reservation
-        for hotel in all_assigned_hotels:
-            if hotel.name == reservation['hotel_name']:
-                hotel_id = hotel.id
-                break
-        if hotel_id:
-            completed_by_hotel[hotel_id] = completed_by_hotel.get(hotel_id, 0) + 1
+def _calculate_available_hotels(user_id):
+    """
+    Calculate which hotels are still available for reservations
+    using the 'used' flag on UserHotelAssignment
+    """
+    # Get all UNUSED assignments for this user
+    unused_assignments = UserHotelAssignment.query.filter_by(
+        user_id=user_id,
+        used=False
+    ).order_by(UserHotelAssignment.created_at).all()
     
-    # Calculate available hotels considering multiple assignments
+    print(f"DEBUG: Found {len(unused_assignments)} unused assignments for user {user_id}")
+    
+    # Get unique hotels from unused assignments
     available_hotels = []
     seen_hotel_ids = set()
     
-    for hotel in all_assigned_hotels:
-        if hotel.id in seen_hotel_ids:
-            continue
-        
-        # Count how many times this hotel was assigned
-        hotel_assignments_count = len([h for h in all_assigned_hotels if h.id == hotel.id])
-        completed_count = completed_by_hotel.get(hotel.id, 0)
-        
-        if completed_count < hotel_assignments_count:
-            available_hotels.append(hotel)
-            seen_hotel_ids.add(hotel.id)
+    for assignment in unused_assignments:
+        if assignment.hotel_id not in seen_hotel_ids:
+            hotel = Hotel.query.get(assignment.hotel_id)
+            if hotel:
+                available_hotels.append(hotel)
+                seen_hotel_ids.add(assignment.hotel_id)
+                print(f"DEBUG: Hotel {hotel.id} ({hotel.name}) has unused assignments")
     
+    print(f"DEBUG: Total available hotels: {len(available_hotels)}")
     return available_hotels
 
 
 def _get_current_hotel_data(available_hotels, hotel_data):
-    """Get current hotel information"""
+    """
+    Get current hotel information
+    Updated to show data from the next unused assignment
+    """
     if not available_hotels:
         return None
     
     current_hotel = available_hotels[0]
-    current_hotel_commission = hotel_data['commission_map'].get(current_hotel.id)
-    current_hotel_assignment_date = hotel_data['assignment_date_map'].get(current_hotel.id)
+    
+    # Get the UNUSED assignment for this hotel
+    unused_assignment = UserHotelAssignment.query.filter_by(
+        hotel_id=current_hotel.id,
+        used=False
+    ).order_by(UserHotelAssignment.created_at).first()
+    
+    if unused_assignment:
+        current_hotel_commission = unused_assignment.custom_commission
+        current_hotel_assignment_date = unused_assignment.created_at
+    else:
+        # Fallback to the map (shouldn't happen)
+        current_hotel_commission = hotel_data['commission_map'].get(current_hotel.id)
+        current_hotel_assignment_date = hotel_data['assignment_date_map'].get(current_hotel.id)
     
     return {
         'hotel': current_hotel,
@@ -901,18 +1015,19 @@ def _get_current_hotel_data(available_hotels, hotel_data):
 
 
 def _calculate_user_stats(user, formatted_reservations, hotel_data, available_hotels):
-    """Calculate user statistics"""
+    """
+    Calculate user statistics
+    Updated to properly count assignments with the 'used' flag
+    """
     
     # Calculate commission from paid reservations AFTER the last withdrawal
     if hasattr(user, 'last_withdrawal_at') and user.last_withdrawal_at:
-        # Only count commissions earned after the last withdrawal
         paid_reservations = Reservation.query.filter(
             Reservation.user_id == user.id,
             Reservation.commission_paid == True,
             Reservation.commission_paid_at > user.last_withdrawal_at
         ).all()
     else:
-        # No withdrawals yet, count all paid reservations
         paid_reservations = Reservation.query.filter_by(
             user_id=user.id, 
             commission_paid=True
@@ -927,23 +1042,37 @@ def _calculate_user_stats(user, formatted_reservations, hotel_data, available_ho
     # Count active bookings
     active_bookings = len([r for r in formatted_reservations if r['status'] in ['processing', 'confirmed']])
     
-    # Count completed hotels
+    # Count completed hotels (rated reservations)
     completed_hotels = len(set([r['hotel_name'] for r in formatted_reservations if r['rated']]))
     
-    # Calculate potential commission
-    total_potential_commission = sum(hotel_data['commission_map'].values())
+    # Calculate total assignments (used + unused)
+    total_assignments = UserHotelAssignment.query.filter_by(user_id=user.id).count()
     
-    # Get current hotel commission
+    # Calculate used assignments
+    used_assignments = UserHotelAssignment.query.filter_by(user_id=user.id, used=True).count()
+    
+    # Calculate unused assignments
+    unused_assignments = UserHotelAssignment.query.filter_by(user_id=user.id, used=False).count()
+    
+    # Calculate total potential commission from ALL assignments
+    all_assignments = UserHotelAssignment.query.filter_by(user_id=user.id).all()
+    total_potential_commission = sum(
+        assignment.custom_commission * (Hotel.query.get(assignment.hotel_id).commission_multiplier if Hotel.query.get(assignment.hotel_id) else 1)
+        for assignment in all_assignments
+    )
+    
+    # Get current hotel commission from unused assignment
     current_hotel_commission = None
     if available_hotels:
-        current_hotel_commission = hotel_data['commission_map'].get(available_hotels[0].id)
+        unused_assignment = UserHotelAssignment.query.filter_by(
+            hotel_id=available_hotels[0].id,
+            used=False
+        ).order_by(UserHotelAssignment.created_at).first()
+        
+        if unused_assignment:
+            current_hotel_commission = unused_assignment.custom_commission
     
-    # Update user's total_commission_earned with commissions since last withdrawal
-    #if hasattr(user, 'total_commission_earned'):
-     #   if user.total_commission_earned != total_commission_since_last_withdrawal:
-           #print(f"DEBUG: Updating total_commission_earned from {user.total_commission_earned} to {total_commission_since_last_withdrawal}")
-      #      user.total_commission_earned = total_commission_since_last_withdrawal
-        db.session.add(user)
+    print(f"DEBUG: User stats - Total assignments: {total_assignments}, Used: {used_assignments}, Unused: {unused_assignments}")
     
     return {
         'total_commission': total_commission_since_last_withdrawal,
@@ -952,6 +1081,9 @@ def _calculate_user_stats(user, formatted_reservations, hotel_data, available_ho
         'active_bookings': active_bookings,
         'completed_hotels': completed_hotels,
         'total_assigned_hotels': len(hotel_data['all_hotels']),
+        'total_assignments': total_assignments,
+        'used_assignments': used_assignments,
+        'unused_assignments': unused_assignments,
         'remaining_hotels': len(available_hotels),
         'total_potential_commission': total_potential_commission,
         'current_hotel_commission': current_hotel_commission,
@@ -1428,9 +1560,6 @@ def settings():
     user = User.query.get(session['user_id'])
     return render_template('settings.html', user=user)
 
-@app.route('/customer_service')
-def customer_service():
-    return render_template('customer_service.html')
 
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
@@ -1940,10 +2069,15 @@ def view_users():
     
     users_query = User.query
     if search:
+        # Check which fields actually exist in your User model
+        # Common fields might be: id, nickname, email, username, agent_id, etc.
         users_query = users_query.filter(
-            User.nickname.contains(search) | 
-            User.user.agent_id.contains(search)
+            User.id.contains(search) | 
+            User.contact.contains(search) |
+            User.nickname.contains(search)
         )
+        # If you have an agent_id field directly on User model, use:
+        # User.agent_id.contains(search)
     
     if vip_filter:
         users_query = users_query.filter(User.vip_level == vip_filter)
@@ -3766,3 +3900,106 @@ def admin_edit_withdrawal_password(user_id):
     
     return render_template('admin/edit_withdrawal_password.html', user=user)
 
+
+# Admin route to view/edit Telegram settings
+@app.route('/admin/telegram-settings', methods=['GET'])
+@admin_required  # Add your admin authentication decorator
+def admin_telegram_settings():
+    """Display the Telegram settings page"""
+    
+    # Get current settings from database
+    current_telegram_link = SystemSettings.get_setting('telegram_support_link')
+    support_message = SystemSettings.get_setting('telegram_support_message')
+    link_type = SystemSettings.get_setting('telegram_link_type', 'bot')
+    
+    # Get last updated timestamp
+    last_updated_setting = SystemSettings.query.filter_by(key='telegram_support_link').first()
+    last_updated = last_updated_setting.updated_at.strftime('%B %d, %Y at %I:%M %p') if last_updated_setting else 'Never'
+    
+    return render_template('admitelegram_settings.html',
+                         current_telegram_link=current_telegram_link,
+                         support_message=support_message,
+                         link_type=link_type,
+                         last_updated=last_updated)
+
+
+# Route to update Telegram settings
+@app.route('/admin/telegram-settings/update', methods=['POST'])
+@admin_required
+def admin_update_telegram_link():
+    """Update the Telegram support link"""
+    
+    try:
+        telegram_link = request.form.get('telegram_link', '').strip()
+        link_type = request.form.get('link_type', 'bot')
+        support_message = request.form.get('support_message', '').strip()
+        
+        # Validation
+        if not telegram_link:
+            flash('Telegram link is required', 'error')
+            return redirect(url_for('admin_telegram_settings'))
+        
+        if not telegram_link.startswith('https://t.me/'):
+            flash('Invalid Telegram link. Must start with https://t.me/', 'error')
+            return redirect(url_for('admin_telegram_settings'))
+        
+        # Save to database
+        SystemSettings.set_setting(
+            'telegram_support_link', 
+            telegram_link, 
+            f'Telegram support link ({link_type})'
+        )
+        
+        SystemSettings.set_setting(
+            'telegram_link_type', 
+            link_type, 
+            'Type of Telegram link (bot/group/channel)'
+        )
+        
+        if support_message:
+            SystemSettings.set_setting(
+                'telegram_support_message', 
+                support_message, 
+                'Custom support message'
+            )
+        
+        flash('Telegram settings updated successfully!', 'success')
+        return redirect(url_for('admin_telegram_settings'))
+        
+    except Exception as e:
+        flash(f'Error updating settings: {str(e)}', 'error')
+        return redirect(url_for('admin_telegram_settings'))
+
+
+# Public route - Customer service page (updated)
+@app.route('/customer-service')
+def customer_service():
+    """Display customer service page with dynamic Telegram link"""
+    
+    # Get Telegram link from settings
+    telegram_link = SystemSettings.get_setting('telegram_support_link', 'https://t.me/trivago_work?start=support')
+    support_message = SystemSettings.get_setting('telegram_support_message', 'Chat with our support agents on Telegram for quick assistance')
+    
+    return render_template('customer_service.html',
+                         telegram_link=telegram_link,
+                         support_message=support_message)
+
+
+# API route to get Telegram link (for AJAX requests)
+@app.route('/api/telegram-link', methods=['GET'])
+def get_telegram_link():
+    """API endpoint to get current Telegram link"""
+    
+    telegram_link = SystemSettings.get_setting('telegram_support_link')
+    
+    if not telegram_link:
+        return jsonify({
+            'success': False,
+            'error': 'Telegram link not configured'
+        }), 404
+    
+    return jsonify({
+        'success': True,
+        'telegram_link': telegram_link,
+        'support_message': SystemSettings.get_setting('telegram_support_message')
+    })

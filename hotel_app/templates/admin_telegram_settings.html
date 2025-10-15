@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/ico.png') }}" type="image/x-icon">
+    <title>Telegram Settings - Admin Panel</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-blue-600 shadow-lg py-4 px-6">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
+                    <i class="fas fa-arrow-left text-xl"></i>
+                </button>
+                <h1 class="text-white text-xl font-bold">Telegram Support Settings</h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="max-w-4xl mx-auto px-4 py-8">
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="mb-6">
+                    {% for category, message in messages %}
+                    <div class="bg-{{ 'green' if category == 'success' else 'red' }}-100 border border-{{ 'green' if category == 'success' else 'red' }}-400 text-{{ 'green' if category == 'success' else 'red' }}-700 px-4 py-3 rounded relative mb-3" role="alert">
+                        <span class="block sm:inline">{{ message }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Current Settings Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <div class="flex items-center gap-3 mb-6">
+                <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <i class="fab fa-telegram-plane text-blue-600 text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-gray-900">Current Telegram Link</h2>
+                    <p class="text-sm text-gray-500">This link is shown to users on the support page</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1">
+                        <p class="text-sm text-gray-600 mb-1">Active Link:</p>
+                        <p id="currentLink" class="text-lg font-mono text-blue-600 break-all">
+                            {{ current_telegram_link or 'Not set' }}
+                        </p>
+                    </div>
+                    <button onclick="copyCurrentLink()" 
+                        class="ml-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-colors">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2 text-sm text-gray-600">
+                <i class="fas fa-info-circle text-blue-500"></i>
+                <span>Last updated: {{ last_updated or 'Never' }}</span>
+            </div>
+        </div>
+
+        <!-- Update Form Card -->
+        <div class="bg-white rounded-xl shadow-lg p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-6">Update Telegram Support Link</h3>
+
+            <form method="POST" action="{{ url_for('admin_update_telegram_link') }}" class="space-y-6">
+                <!-- Telegram Link Input -->
+                <div>
+                    <label for="telegram_link" class="block text-sm font-medium text-gray-700 mb-2">
+                        Telegram Link
+                    </label>
+                    <input type="url" 
+                        id="telegram_link" 
+                        name="telegram_link" 
+                        value="{{ current_telegram_link or '' }}"
+                        placeholder="https://t.me/your_bot_or_group"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        required>
+                    <p class="mt-2 text-sm text-gray-500">
+                        <i class="fas fa-lightbulb text-yellow-500"></i>
+                        Enter your Telegram bot, group, or channel link
+                    </p>
+                </div>
+
+                <!-- Link Type Selection -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-3">
+                        Link Type
+                    </label>
+                    <div class="space-y-2">
+                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="radio" name="link_type" value="bot" class="mr-3" checked>
+                            <div>
+                                <div class="font-medium">Telegram Bot</div>
+                                <div class="text-sm text-gray-500">Direct link to a bot (e.g., https://t.me/your_bot)</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="radio" name="link_type" value="group" class="mr-3">
+                            <div>
+                                <div class="font-medium">Telegram Group</div>
+                                <div class="text-sm text-gray-500">Link to a support group</div>
+                            </div>
+                        </label>
+                        <label class="flex items-center p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                            <input type="radio" name="link_type" value="channel" class="mr-3">
+                            <div>
+                                <div class="font-medium">Telegram Channel</div>
+                                <div class="text-sm text-gray-500">Link to a broadcast channel</div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Support Message (Optional) -->
+                <div>
+                    <label for="support_message" class="block text-sm font-medium text-gray-700 mb-2">
+                        Support Message (Optional)
+                    </label>
+                    <textarea 
+                        id="support_message" 
+                        name="support_message" 
+                        rows="3"
+                        placeholder="Enter a custom message to show users (optional)"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent">{{ support_message or '' }}</textarea>
+                </div>
+
+                <!-- Test Link Button -->
+                <div class="flex items-center justify-between p-4 bg-blue-50 rounded-lg">
+                    <div class="flex items-center gap-2">
+                        <i class="fas fa-flask text-blue-600"></i>
+                        <span class="text-sm text-gray-700">Test the link before saving</span>
+                    </div>
+                    <button type="button" 
+                        onclick="testTelegramLink()" 
+                        class="px-4 py-2 bg-white border border-blue-300 text-blue-600 rounded-lg hover:bg-blue-50 transition-colors">
+                        Test Link
+                    </button>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="flex gap-3 pt-4 border-t">
+                    <button type="submit" 
+                        class="flex-1 bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors">
+                        <i class="fas fa-save mr-2"></i>
+                        Save Changes
+                    </button>
+                    <button type="button" 
+                        onclick="history.back()" 
+                        class="px-6 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Help Section -->
+        <div class="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-6 mt-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">
+                <i class="fas fa-question-circle text-blue-600 mr-2"></i>
+                How to get your Telegram link?
+            </h3>
+            <div class="space-y-3 text-sm text-gray-700">
+                <div class="flex gap-3">
+                    <div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">1</div>
+                    <div>
+                        <strong>For Bots:</strong> Create a bot via @BotFather and get your bot username. Your link will be: https://t.me/your_bot_username
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">2</div>
+                    <div>
+                        <strong>For Groups:</strong> Create a public group, set a username in group settings. Your link will be: https://t.me/your_group_username
+                    </div>
+                </div>
+                <div class="flex gap-3">
+                    <div class="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold">3</div>
+                    <div>
+                        <strong>For Channels:</strong> Create a public channel, set a username. Your link will be: https://t.me/your_channel_username
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function testTelegramLink() {
+            const link = document.getElementById('telegram_link').value;
+            
+            if (!link) {
+                alert('Please enter a Telegram link first');
+                return;
+            }
+
+            if (!link.startsWith('https://t.me/')) {
+                alert('Invalid Telegram link. It should start with https://t.me/');
+                return;
+            }
+
+            // Open link in new tab
+            window.open(link, '_blank');
+            
+            // Show confirmation after delay
+            setTimeout(() => {
+                if (confirm('Did the Telegram link open correctly?')) {
+                    showNotification('Test successful! You can now save the link.', 'success');
+                } else {
+                    showNotification('Please check your link and try again.', 'error');
+                }
+            }, 2000);
+        }
+
+        function copyCurrentLink() {
+            const linkText = document.getElementById('currentLink').textContent.trim();
+            
+            if (linkText === 'Not set') {
+                showNotification('No link to copy', 'error');
+                return;
+            }
+
+            navigator.clipboard.writeText(linkText).then(() => {
+                showNotification('Link copied to clipboard!', 'success');
+            }).catch(err => {
+                showNotification('Failed to copy link', 'error');
+            });
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 px-6 py-4 rounded-lg shadow-lg z-50 ${
+                type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            } text-white transform transition-all duration-300`;
+            notification.innerHTML = `
+                <div class="flex items-center gap-3">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transform = 'translateX(400px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const link = document.getElementById('telegram_link').value;
+            
+            if (!link.startsWith('https://t.me/')) {
+                e.preventDefault();
+                showNotification('Invalid Telegram link format', 'error');
+            }
+        });
+
+        // Add smooth animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.bg-white');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                
+                setTimeout(() => {
+                    card.style.transition = 'all 0.5s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+
+</html>

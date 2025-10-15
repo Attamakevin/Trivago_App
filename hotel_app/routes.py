@@ -3929,7 +3929,7 @@ def admin_telegram_settings():
     last_updated_setting = SystemSettings.query.filter_by(key='telegram_support_link').first()
     last_updated = last_updated_setting.updated_at.strftime('%B %d, %Y at %I:%M %p') if last_updated_setting else 'Never'
     
-    return render_template('admitelegram_settings.html',
+    return render_template('admin_telegram_settings.html',
                          current_telegram_link=current_telegram_link,
                          support_message=support_message,
                          link_type=link_type,

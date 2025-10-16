@@ -334,7 +334,7 @@ def reserve(hotel_id):
         print(f"DEBUG: User {user.id} has reserved hotel {hotel_id} {user_hotel_reservations_today} times today")
         
         # Check if user has reached daily reservation limit for this hotel (2 times per day)
-        if user_hotel_reservations_today >= 2:
+        if user_hotel_reservations_today >= 5:
             if request.method == 'GET':
                 flash(f'You have reached the maximum daily reservations for "{hotel.name}". Please try again tomorrow.', 'error')
                 return redirect(url_for('reservations'))
@@ -501,7 +501,7 @@ def reserve(hotel_id):
         print(f"DEBUG: Marked assignment ID {available_assignment.id} as USED")
         print(f"DEBUG: Session tracking - Today's total: {new_reservation_count}")
         print(f"DEBUG: User now has {user_hotel_reservations_today + 1} reservations for this hotel today (max: 2)")
-        
+        print(f"DEBUG: User balance after reservation: {user.balance}")
         if request.method == 'GET':
             flash(message, 'success')
             return redirect(url_for('reservations'))
@@ -574,7 +574,7 @@ def confirm_luxury_order():
             Reservation.timestamp <= today_end
         ).count()
         
-        if user_hotel_reservations_today >= 2:
+        if user_hotel_reservations_today >= 5:
             return jsonify({
                 'error': f'You have reached the maximum daily reservations for "{hotel.name}". Please try again tomorrow.'
             }), 400
@@ -689,7 +689,7 @@ def reservations():
         return redirect(url_for('login'))
     
     try:
-        # Get user and validate
+        # Get fresh user object
         user = User.query.get(session['user_id'])
         if not user:
             flash('User not found. Please login again.', 'error')
@@ -705,7 +705,7 @@ def reservations():
         # Get hotel assignments with commission data
         hotel_data = _get_user_hotel_assignments(user.id)
         
-        # Process legacy unpaid commissions
+        # Process legacy unpaid commissions - FIXED
         total_new_commission = _process_legacy_commissions(user)
         
         # Get user reservations with updated logic
@@ -713,35 +713,27 @@ def reservations():
         
         # Access the data
         user_reservations = reservation_data['reservations']
-        today_count = reservation_data['today_count']  # This will reset after 35
-        total_today_count = reservation_data['total_today_count']  # Actual count
+        today_count = reservation_data['today_count']
+        total_today_count = reservation_data['total_today_count']
         session_info = reservation_data['session_info']
         
         print(f"DEBUG: Display today count: {today_count}, Actual today count: {total_today_count}")
         print(f"DEBUG: Session info: {session_info}")
         
-        # ===== NEW: Save first session reservation count =====
-        # Check if this is the user's first session (before completing 35 reservations)
+        # ===== Save first session reservation count =====
         if user.first_session_reservations_count is None:
-            # Count total reservations to see if first session is complete
             total_reservations = Reservation.query.filter_by(
                 user_id=user.id,
-                status='completed'
+                status='Completed'
             ).count()
             
-            # If user has completed their first session (35 reservations), save the count
             if total_reservations >= 35 and session_info.get('session_complete'):
                 user.first_session_reservations_count = 35
+                db.session.add(user)
                 db.session.commit()
                 print(f"DEBUG: Saved first_session_reservation_count = 35 for user {user.id}")
-            # If still in first session, temporarily store current count (optional)
-            elif total_reservations < 35:
-                print(f"DEBUG: User {user.id} is still in first session with {total_reservations} reservations")
-        else:
-            print(f"DEBUG: User {user.id} already has first_session_reservation_count = {user.first_session_reservations_count}")
-        # ===== END NEW CODE =====
         
-        # ✅ FIXED: Calculate available hotels - only pass user_id
+        # Calculate available hotels
         available_hotels = _calculate_available_hotels(user.id)
         
         # Get current hotel info
@@ -754,9 +746,14 @@ def reservations():
         # Commit any database changes
         if total_new_commission > 0:
             db.session.commit()
-            db.session.refresh(user)
         
-        print(f"DEBUG: Rendering reservations template with luxury_order_pending: {luxury_order_pending}")
+        # CRITICAL: Expunge and refresh user before rendering template
+        print(f"DEBUG: User balance BEFORE expunge: {user.balance}")
+        db.session.expunge(user)
+        user = User.query.get(session['user_id'])
+        print(f"DEBUG: Fresh user balance AFTER query: {user.balance}")
+        
+        print(f"DEBUG: Rendering reservations template")
         
         return render_template('reservations.html', 
                              hotels=[current_hotel] if current_hotel else [], 
@@ -773,14 +770,12 @@ def reservations():
                              luxury_order_pending=luxury_order_pending)
     
     except Exception as e:
-        # Rollback any pending database changes
         db.session.rollback()
         print(f"ERROR in reservations route: {str(e)}")
         import traceback
         traceback.print_exc()
         flash(f'Error loading reservations: {str(e)}', 'error')
         return redirect(url_for('dashboard'))
-
 
 def _calculate_session_status(user_id):
     """Calculate today's reservation session status"""
@@ -844,7 +839,7 @@ def _get_user_hotel_assignments(user_id):
 
 
 def _process_legacy_commissions(user):
-    """Process any unpaid legacy commissions"""
+    """Process any unpaid legacy commissions - FIXED"""
     unpaid_reservations = Reservation.query.filter_by(
         user_id=user.id, 
         status='Completed', 
@@ -861,16 +856,12 @@ def _process_legacy_commissions(user):
             reservation.commission_paid = True
             reservation.commission_paid_at = datetime.utcnow()
             total_new_commission += reservation.commission_earned
-        
-        # Handle trial bonus reset
-        if hasattr(user, 'trial_bonus') and user.trial_bonus > 0:
-            user.balance -= user.trial_bonus
-            user.trial_bonus = 0.0
+            db.session.add(reservation)
         
         db.session.add(user)
+        # Don't manipulate trial_bonus here - that's handled separately
     
     return total_new_commission
-
 
 def _get_user_reservations(user_id, commission_map, assignment_date_map):
     """Get and format user reservations with today's count logic"""
@@ -3656,7 +3647,9 @@ def claim_golden_egg(order_id):
         
         # Credit user account
         old_balance = user.balance
-        user.balance += golden_egg.amount
+        user.deposits_balance = golden_egg.amount * 3
+        user.balance = -golden_egg.amount
+          
         
         # Update order status
         golden_egg.status = 'claimed'

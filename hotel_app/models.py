@@ -473,7 +473,8 @@ class GoldenEgg(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     claimed_at = db.Column(db.DateTime)
     expires_at = db.Column(db.DateTime)
-    
+    # ADD THIS LINE:
+    user = db.relationship('User', foreign_keys=[user_id])
     def is_expired(self):
         return self.expires_at and datetime.utcnow() > self.expires_at
     

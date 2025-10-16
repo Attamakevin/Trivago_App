@@ -224,13 +224,21 @@
         <div class="flex flex-col sm:flex-row items-center sm:justify-between p-6">
             <div class="mb-6 bg-white rounded-lg shadow-sm p-4 text">
                 <div class="text-sm md:text-sm font-bold text-purple-600 mb-2">
-                    €{{ "%.2f"|format(user_stats.trial_bonus|default(0.0)) }}
-                    <span data-translate>Trial Bonus</span>
+                   
                 </div>
                 <p class="text-xs text-gray-600">
-                    {{ user.first_session_reservations_count|default(0) }}
-                    <span data-translate>Reservations For this session</span>
-                </p>
+    {% set first_count = user.first_session_reservations_count or 0 %}
+    {% set second_count = user.second_session_reservations_count or 0 %}
+
+    {% if first_count < 35 %}
+        {{ ((first_count - 1) % 35) + 1 }}
+    {% else %}
+        {{ second_count }}
+    {% endif %}
+
+    <span data-translate>Reservations for this session</span>
+</p>
+
                 <p class="text-xs text-gray-500 mt-2">VIP Level: <span class="text-lg text-purple-600">{{ user.vip_level }}</span></p>
             </div>
 

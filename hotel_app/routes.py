@@ -2096,15 +2096,21 @@ def toggle_user(user_id):
     action = 'activated' if user.is_active else 'deactivated'
     flash(f"User {user.nickname} has been {action}.", "success")
     return redirect(url_for('view_users'))
-@app.route('/admin/reset_first_session/<int:user_id>', methods=['POST'])
-def reset_first_session_count(user_id):
+@app.route('/admin/reset_user_reservations/<int:user_id>', methods=['POST'])
+def reset_user_reservations(user_id):
     user = User.query.get_or_404(user_id)
+    
+    # Reset both session reservation counts
     user.first_session_reservations_count = 0
+    user.second_session_reservations_count = 0
+    
+    # Remove all hotel assignments for this user
+    UserHotelAssignment.query.filter_by(user_id=user.id).delete()
+    
     db.session.commit()
     
-    flash(f"User {user.nickname}'s first session count has been reset.", "success")
+    flash(f"User {user.nickname}'s reservations and hotel assignments have been reset.", "success")
     return redirect(url_for('view_users'))
-
 @app.route('/admin/users/<int:user_id>/update_vip', methods=['POST'])
 @admin_required
 def update_user_vip(user_id):

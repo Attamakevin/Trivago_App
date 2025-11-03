@@ -2097,7 +2097,7 @@ def toggle_user(user_id):
     flash(f"User {user.nickname} has been {action}.", "success")
     return redirect(url_for('view_users'))
 @app.route('/admin/reset_user_reservations/<int:user_id>', methods=['POST'])
-def reset_user_reservations(user_id):
+def reset_first_session_count(user_id):
     user = User.query.get_or_404(user_id)
     
     # Reset both session reservation counts

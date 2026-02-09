@@ -208,6 +208,7 @@ def register_post():
         # Clear captcha from session after successful registration
         session.pop('captcha_code', None)
         new_user.trial_bonus = 564.00
+        User.member_points = 50
         flash('Registration successful! ', 'success')
         return redirect(url_for('auth'))  # Redirect to login form
     

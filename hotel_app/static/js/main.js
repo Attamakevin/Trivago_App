@@ -1,3 +1,34 @@
+// Language Search Filter Function
+function filterLanguages() {
+    const searchInput = document.getElementById('languageSearch');
+    const searchTerm = searchInput.value.toLowerCase();
+    const languageList = document.getElementById('languageList');
+    const languageItems = languageList.querySelectorAll('[data-lang]');
+    const noResultsMsg = document.getElementById('noLanguagesFound');
+    
+    let visibleCount = 0;
+    
+    languageItems.forEach(item => {
+        const searchData = item.getAttribute('data-search').toLowerCase();
+        
+        if (searchData.includes(searchTerm)) {
+            item.style.display = 'flex';
+            visibleCount++;
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    // Show/hide no results message
+    if (visibleCount === 0) {
+        noResultsMsg.classList.remove('hidden');
+        languageList.classList.add('hidden');
+    } else {
+        noResultsMsg.classList.add('hidden');
+        languageList.classList.remove('hidden');
+    }
+}
+
 function safeGetElement(id) {
     const element = document.getElementById(id);
     if (!element) {

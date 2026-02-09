@@ -46,48 +46,463 @@
                         </svg>
                     </a>
 
-                    <!-- Language Dropdown -->
-                    <div id="languageDropdown"
-                        class="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[180px] overflow-hidden hidden">
-                        <div class="py-1">
-                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors bg-blue-50 text-blue-600 font-medium"
-                                onclick="selectLanguage('en', 'us', 'English', 'EN')">
-                                <span class="fi fi-us flag-icon"></span>
-                                <span class="flex-1 text-sm">English</span>
-                                <span class="text-xs text-gray-500">EN</span>
-                            </div>
-                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
-                                onclick="translateToLanguage('pt', 'Português')" data-lang="pt">
-                                <span class="fi fi-pt flag-icon"></span>
-                                <span class="flex-1 text-sm">Português</span>
-                                <span class="text-xs text-gray-500">PT</span>
-                            </div>
-                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
-                                onclick="translateToLanguage('es', 'Español')" data-lang="es">
-                                <span class="fi fi-it flag-icon"></span>
-                                <span class="flex-1 text-sm">Español</span>
-                                <span class="text-xs text-gray-500">ES</span>
-                            </div>
-                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
-                                onclick="translateToLanguage('it', 'Italiano')" data-lang="it">
-                                <span class="fi fi-it flag-icon"></span>
-                                <span class="flex-1 text-sm">Italiano</span>
-                                <span class="text-xs text-gray-500">IT</span>
-                            </div>
-                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
-                                onclick="translateToLanguage('fr', 'Français')" data-lang="fr">
-                                <span class="fi fi-nl flag-icon"></span>
-                                <span class="flex-1 text-sm">Français</span>
-                                <span class="text-xs text-gray-500">FR</span>
-                            </div>
-                            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
-                                onclick="translateToLanguage('de', 'Deutsch')" data-lang="de">
-                                <span class="fi fi-nl flag-icon"></span>
-                                <span class="flex-1 text-sm">Deutsch</span>
-                                <span class="text-xs text-gray-500">DE</span>
-                            </div>
-                        </div>
-                    </div>
+                    <!-- Language Dropdown - UPDATED WITH ALL WORLD LANGUAGES -->
+<div id="languageDropdown"
+    class="absolute top-full right-0 mt-2 bg-white border border-gray-200 rounded-lg shadow-lg z-50 min-w-[220px] max-h-[400px] overflow-y-auto hidden">
+    <div class="py-1">
+        <!-- Search Input -->
+        <div class="sticky top-0 bg-white border-b border-gray-100 p-2">
+            <input type="text" id="languageSearch" 
+                placeholder="Search languages..." 
+                class="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                onkeyup="filterLanguages()">
+        </div>
+
+        <!-- Language Options -->
+        <div id="languageList" class="py-1">
+            <!-- English (Default) -->
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors bg-blue-50 text-blue-600 font-medium"
+                onclick="selectLanguage('en', 'us', 'English', 'EN')" data-lang="en" data-search="english">
+                <span class="fi fi-us flag-icon"></span>
+                <span class="flex-1 text-sm">English</span>
+                <span class="text-xs text-gray-500">EN</span>
+            </div>
+
+            <!-- Major Languages -->
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('zh', 'Chinese')" data-lang="zh" data-search="chinese 中文">
+                <span class="fi fi-cn flag-icon"></span>
+                <span class="flex-1 text-sm">Chinese (中文)</span>
+                <span class="text-xs text-gray-500">ZH</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('es', 'Español')" data-lang="es" data-search="spanish español">
+                <span class="fi fi-es flag-icon"></span>
+                <span class="flex-1 text-sm">Español</span>
+                <span class="text-xs text-gray-500">ES</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('hi', 'Hindi')" data-lang="hi" data-search="hindi हिन्दी">
+                <span class="fi fi-in flag-icon"></span>
+                <span class="flex-1 text-sm">Hindi (हिन्दी)</span>
+                <span class="text-xs text-gray-500">HI</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('ar', 'Arabic')" data-lang="ar" data-search="arabic العربية">
+                <span class="fi fi-sa flag-icon"></span>
+                <span class="flex-1 text-sm">Arabic (العربية)</span>
+                <span class="text-xs text-gray-500">AR</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('pt', 'Português')" data-lang="pt" data-search="portuguese português">
+                <span class="fi fi-pt flag-icon"></span>
+                <span class="flex-1 text-sm">Português</span>
+                <span class="text-xs text-gray-500">PT</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('bn', 'Bengali')" data-lang="bn" data-search="bengali বাংলা">
+                <span class="fi fi-bd flag-icon"></span>
+                <span class="flex-1 text-sm">Bengali (বাংলা)</span>
+                <span class="text-xs text-gray-500">BN</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('ru', 'Russian')" data-lang="ru" data-search="russian русский">
+                <span class="fi fi-ru flag-icon"></span>
+                <span class="flex-1 text-sm">Russian (Русский)</span>
+                <span class="text-xs text-gray-500">RU</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('ja', 'Japanese')" data-lang="ja" data-search="japanese 日本語">
+                <span class="fi fi-jp flag-icon"></span>
+                <span class="flex-1 text-sm">Japanese (日本語)</span>
+                <span class="text-xs text-gray-500">JA</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('pa', 'Punjabi')" data-lang="pa" data-search="punjabi ਪੰਜਾਬੀ">
+                <span class="fi fi-in flag-icon"></span>
+                <span class="flex-1 text-sm">Punjabi (ਪੰਜਾਬੀ)</span>
+                <span class="text-xs text-gray-500">PA</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('de', 'Deutsch')" data-lang="de" data-search="german deutsch">
+                <span class="fi fi-de flag-icon"></span>
+                <span class="flex-1 text-sm">Deutsch</span>
+                <span class="text-xs text-gray-500">DE</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('ko', 'Korean')" data-lang="ko" data-search="korean 한국어">
+                <span class="fi fi-kr flag-icon"></span>
+                <span class="flex-1 text-sm">Korean (한국어)</span>
+                <span class="text-xs text-gray-500">KO</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('fr', 'Français')" data-lang="fr" data-search="french français">
+                <span class="fi fi-fr flag-icon"></span>
+                <span class="flex-1 text-sm">Français</span>
+                <span class="text-xs text-gray-500">FR</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('te', 'Telugu')" data-lang="te" data-search="telugu తెలుగు">
+                <span class="fi fi-in flag-icon"></span>
+                <span class="flex-1 text-sm">Telugu (తెలుగు)</span>
+                <span class="text-xs text-gray-500">TE</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('mr', 'Marathi')" data-lang="mr" data-search="marathi मराठी">
+                <span class="fi fi-in flag-icon"></span>
+                <span class="flex-1 text-sm">Marathi (मराठी)</span>
+                <span class="text-xs text-gray-500">MR</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('tr', 'Turkish')" data-lang="tr" data-search="turkish türkçe">
+                <span class="fi fi-tr flag-icon"></span>
+                <span class="flex-1 text-sm">Türkçe</span>
+                <span class="text-xs text-gray-500">TR</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('ta', 'Tamil')" data-lang="ta" data-search="tamil தமிழ்">
+                <span class="fi fi-in flag-icon"></span>
+                <span class="flex-1 text-sm">Tamil (தமிழ்)</span>
+                <span class="text-xs text-gray-500">TA</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('vi', 'Vietnamese')" data-lang="vi" data-search="vietnamese tiếng việt">
+                <span class="fi fi-vn flag-icon"></span>
+                <span class="flex-1 text-sm">Tiếng Việt</span>
+                <span class="text-xs text-gray-500">VI</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('ur', 'Urdu')" data-lang="ur" data-search="urdu اردو">
+                <span class="fi fi-pk flag-icon"></span>
+                <span class="flex-1 text-sm">Urdu (اردو)</span>
+                <span class="text-xs text-gray-500">UR</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('it', 'Italiano')" data-lang="it" data-search="italian italiano">
+                <span class="fi fi-it flag-icon"></span>
+                <span class="flex-1 text-sm">Italiano</span>
+                <span class="text-xs text-gray-500">IT</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('th', 'Thai')" data-lang="th" data-search="thai ไทย">
+                <span class="fi fi-th flag-icon"></span>
+                <span class="flex-1 text-sm">Thai (ไทย)</span>
+                <span class="text-xs text-gray-500">TH</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('gu', 'Gujarati')" data-lang="gu" data-search="gujarati ગુજરાતી">
+                <span class="fi fi-in flag-icon"></span>
+                <span class="flex-1 text-sm">Gujarati (ગુજરાતી)</span>
+                <span class="text-xs text-gray-500">GU</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('pl', 'Polish')" data-lang="pl" data-search="polish polski">
+                <span class="fi fi-pl flag-icon"></span>
+                <span class="flex-1 text-sm">Polski</span>
+                <span class="text-xs text-gray-500">PL</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('uk', 'Ukrainian')" data-lang="uk" data-search="ukrainian українська">
+                <span class="fi fi-ua flag-icon"></span>
+                <span class="flex-1 text-sm">Українська</span>
+                <span class="text-xs text-gray-500">UK</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('nl', 'Dutch')" data-lang="nl" data-search="dutch nederlands">
+                <span class="fi fi-nl flag-icon"></span>
+                <span class="flex-1 text-sm">Nederlands</span>
+                <span class="text-xs text-gray-500">NL</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('ml', 'Malayalam')" data-lang="ml" data-search="malayalam മലയാളം">
+                <span class="fi fi-in flag-icon"></span>
+                <span class="flex-1 text-sm">Malayalam (മലയാളം)</span>
+                <span class="text-xs text-gray-500">ML</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('kn', 'Kannada')" data-lang="kn" data-search="kannada ಕನ್ನಡ">
+                <span class="fi fi-in flag-icon"></span>
+                <span class="flex-1 text-sm">Kannada (ಕನ್ನಡ)</span>
+                <span class="text-xs text-gray-500">KN</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('ro', 'Romanian')" data-lang="ro" data-search="romanian română">
+                <span class="fi fi-ro flag-icon"></span>
+                <span class="flex-1 text-sm">Română</span>
+                <span class="text-xs text-gray-500">RO</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('fa', 'Persian')" data-lang="fa" data-search="persian farsi فارسی">
+                <span class="fi fi-ir flag-icon"></span>
+                <span class="flex-1 text-sm">Persian (فارسی)</span>
+                <span class="text-xs text-gray-500">FA</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('hu', 'Hungarian')" data-lang="hu" data-search="hungarian magyar">
+                <span class="fi fi-hu flag-icon"></span>
+                <span class="flex-1 text-sm">Magyar</span>
+                <span class="text-xs text-gray-500">HU</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('cs', 'Czech')" data-lang="cs" data-search="czech čeština">
+                <span class="fi fi-cz flag-icon"></span>
+                <span class="flex-1 text-sm">Čeština</span>
+                <span class="text-xs text-gray-500">CS</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('sv', 'Swedish')" data-lang="sv" data-search="swedish svenska">
+                <span class="fi fi-se flag-icon"></span>
+                <span class="flex-1 text-sm">Svenska</span>
+                <span class="text-xs text-gray-500">SV</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('el', 'Greek')" data-lang="el" data-search="greek ελληνικά">
+                <span class="fi fi-gr flag-icon"></span>
+                <span class="flex-1 text-sm">Ελληνικά</span>
+                <span class="text-xs text-gray-500">EL</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('he', 'Hebrew')" data-lang="he" data-search="hebrew עברית">
+                <span class="fi fi-il flag-icon"></span>
+                <span class="flex-1 text-sm">Hebrew (עברית)</span>
+                <span class="text-xs text-gray-500">HE</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('da', 'Danish')" data-lang="da" data-search="danish dansk">
+                <span class="fi fi-dk flag-icon"></span>
+                <span class="flex-1 text-sm">Dansk</span>
+                <span class="text-xs text-gray-500">DA</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('fi', 'Finnish')" data-lang="fi" data-search="finnish suomi">
+                <span class="fi fi-fi flag-icon"></span>
+                <span class="flex-1 text-sm">Suomi</span>
+                <span class="text-xs text-gray-500">FI</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('no', 'Norwegian')" data-lang="no" data-search="norwegian norsk">
+                <span class="fi fi-no flag-icon"></span>
+                <span class="flex-1 text-sm">Norsk</span>
+                <span class="text-xs text-gray-500">NO</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('sk', 'Slovak')" data-lang="sk" data-search="slovak slovenčina">
+                <span class="fi fi-sk flag-icon"></span>
+                <span class="flex-1 text-sm">Slovenčina</span>
+                <span class="text-xs text-gray-500">SK</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('hr', 'Croatian')" data-lang="hr" data-search="croatian hrvatski">
+                <span class="fi fi-hr flag-icon"></span>
+                <span class="flex-1 text-sm">Hrvatski</span>
+                <span class="text-xs text-gray-500">HR</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('bg', 'Bulgarian')" data-lang="bg" data-search="bulgarian български">
+                <span class="fi fi-bg flag-icon"></span>
+                <span class="flex-1 text-sm">Български</span>
+                <span class="text-xs text-gray-500">BG</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('lt', 'Lithuanian')" data-lang="lt" data-search="lithuanian lietuvių">
+                <span class="fi fi-lt flag-icon"></span>
+                <span class="flex-1 text-sm">Lietuvių</span>
+                <span class="text-xs text-gray-500">LT</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('sl', 'Slovenian')" data-lang="sl" data-search="slovenian slovenščina">
+                <span class="fi fi-si flag-icon"></span>
+                <span class="flex-1 text-sm">Slovenščina</span>
+                <span class="text-xs text-gray-500">SL</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('lv', 'Latvian')" data-lang="lv" data-search="latvian latviešu">
+                <span class="fi fi-lv flag-icon"></span>
+                <span class="flex-1 text-sm">Latviešu</span>
+                <span class="text-xs text-gray-500">LV</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('et', 'Estonian')" data-lang="et" data-search="estonian eesti">
+                <span class="fi fi-ee flag-icon"></span>
+                <span class="flex-1 text-sm">Eesti</span>
+                <span class="text-xs text-gray-500">ET</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('id', 'Indonesian')" data-lang="id" data-search="indonesian bahasa indonesia">
+                <span class="fi fi-id flag-icon"></span>
+                <span class="flex-1 text-sm">Bahasa Indonesia</span>
+                <span class="text-xs text-gray-500">ID</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('ms', 'Malay')" data-lang="ms" data-search="malay bahasa melayu">
+                <span class="fi fi-my flag-icon"></span>
+                <span class="flex-1 text-sm">Bahasa Melayu</span>
+                <span class="text-xs text-gray-500">MS</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('tl', 'Filipino')" data-lang="tl" data-search="filipino tagalog">
+                <span class="fi fi-ph flag-icon"></span>
+                <span class="flex-1 text-sm">Filipino</span>
+                <span class="text-xs text-gray-500">TL</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('sw', 'Swahili')" data-lang="sw" data-search="swahili kiswahili">
+                <span class="fi fi-ke flag-icon"></span>
+                <span class="flex-1 text-sm">Kiswahili</span>
+                <span class="text-xs text-gray-500">SW</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('af', 'Afrikaans')" data-lang="af" data-search="afrikaans">
+                <span class="fi fi-za flag-icon"></span>
+                <span class="flex-1 text-sm">Afrikaans</span>
+                <span class="text-xs text-gray-500">AF</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('sq', 'Albanian')" data-lang="sq" data-search="albanian shqip">
+                <span class="fi fi-al flag-icon"></span>
+                <span class="flex-1 text-sm">Shqip</span>
+                <span class="text-xs text-gray-500">SQ</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('hy', 'Armenian')" data-lang="hy" data-search="armenian հայերեն">
+                <span class="fi fi-am flag-icon"></span>
+                <span class="flex-1 text-sm">Հայերեն</span>
+                <span class="text-xs text-gray-500">HY</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('az', 'Azerbaijani')" data-lang="az" data-search="azerbaijani azərbaycan">
+                <span class="fi fi-az flag-icon"></span>
+                <span class="flex-1 text-sm">Azərbaycan</span>
+                <span class="text-xs text-gray-500">AZ</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('ka', 'Georgian')" data-lang="ka" data-search="georgian ქართული">
+                <span class="fi fi-ge flag-icon"></span>
+                <span class="flex-1 text-sm">ქართული</span>
+                <span class="text-xs text-gray-500">KA</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('is', 'Icelandic')" data-lang="is" data-search="icelandic íslenska">
+                <span class="fi fi-is flag-icon"></span>
+                <span class="flex-1 text-sm">Íslenska</span>
+                <span class="text-xs text-gray-500">IS</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('km', 'Khmer')" data-lang="km" data-search="khmer cambodian ខ្មែរ">
+                <span class="fi fi-kh flag-icon"></span>
+                <span class="flex-1 text-sm">Khmer (ខ្មែរ)</span>
+                <span class="text-xs text-gray-500">KM</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('lo', 'Lao')" data-lang="lo" data-search="lao ລາວ">
+                <span class="fi fi-la flag-icon"></span>
+                <span class="flex-1 text-sm">Lao (ລາວ)</span>
+                <span class="text-xs text-gray-500">LO</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('mk', 'Macedonian')" data-lang="mk" data-search="macedonian македонски">
+                <span class="fi fi-mk flag-icon"></span>
+                <span class="flex-1 text-sm">Македонски</span>
+                <span class="text-xs text-gray-500">MK</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('mn', 'Mongolian')" data-lang="mn" data-search="mongolian монгол">
+                <span class="fi fi-mn flag-icon"></span>
+                <span class="flex-1 text-sm">Монгол</span>
+                <span class="text-xs text-gray-500">MN</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('ne', 'Nepali')" data-lang="ne" data-search="nepali नेपाली">
+                <span class="fi fi-np flag-icon"></span>
+                <span class="flex-1 text-sm">Nepali (नेपाली)</span>
+                <span class="text-xs text-gray-500">NE</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('sr', 'Serbian')" data-lang="sr" data-search="serbian српски">
+                <span class="fi fi-rs flag-icon"></span>
+                <span class="flex-1 text-sm">Српски</span>
+                <span class="text-xs text-gray-500">SR</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('si', 'Sinhala')" data-lang="si" data-search="sinhala සිංහල">
+                <span class="fi fi-lk flag-icon"></span>
+                <span class="flex-1 text-sm">Sinhala (සිංහල)</span>
+                <span class="text-xs text-gray-500">SI</span>
+            </div>
+
+            <div class="flex items-center gap-2 px-3 py-2 hover:bg-gray-50 cursor-pointer transition-colors"
+                onclick="translateToLanguage('zu', 'Zulu')" data-lang="zu" data-search="zulu isizulu">
+                <span class="fi fi-za flag-icon"></span>
+                <span class="flex-1 text-sm">IsiZulu</span>
+                <span class="text-xs text-gray-500">ZU</span>
+            </div>
+        </div>
+
+        <!-- No Results Message -->
+        <div id="noLanguagesFound" class="hidden px-3 py-4 text-center text-sm text-gray-500">
+            No languages found
+        </div>
+    </div>
+</div>
                 </div>
                 <a href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"

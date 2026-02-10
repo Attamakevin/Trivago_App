@@ -1141,6 +1141,33 @@ def profile():
                          completion_rate=completion_rate,
                          total_commission=total_commission)
 
+
+@app.route('/currency', methods=['POST'])
+@login_required  # Make sure user is logged in
+def set_currency():
+    try:
+        # Get currency from form
+        currency = request.form.get('currency')
+        
+        # Validate currency
+        if not currency:
+            flash('Please select a currency', 'error')
+            return redirect(url_for('profile'))
+        
+        # Update current user's currency
+        current_user.currency = currency
+        
+        # Save to database
+        db.session.commit()
+        
+        flash(f'Currency updated to {currency}', 'success')
+        return redirect(url_for('profile'))
+        
+    except Exception as e:
+        db.session.rollback()
+        flash('Failed to update currency', 'error')
+        return redirect(url_for('profile'))
+
 # Enhanced deposit route with comprehensive debugging
 @app.route('/deposit', methods=['GET', 'POST'])
 def deposit():

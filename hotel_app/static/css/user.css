@@ -10,6 +10,26 @@ body {
   color: #333;
 }
 
+:root {
+  --mobile-shell-max: 480px;
+  --mobile-shell-bg: #f9fafb;
+  --desktop-backdrop: #e5e7eb;
+}
+
+@media (min-width: 768px) {
+  html {
+    background: var(--desktop-backdrop);
+  }
+
+  body {
+    max-width: var(--mobile-shell-max);
+    margin: 0 auto;
+    min-height: 100vh;
+    background: var(--mobile-shell-bg);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  }
+}
+
 .gradient-bg {
   background: linear-gradient(135deg, #7b93fd 0%, #d9bdf5 100%);
 }
@@ -793,7 +813,8 @@ input:checked + .slider:before {
     box-shadow: 0 0 5px rgba(251, 191, 36, 0.5);
   }
   50% {
-    box-shadow: 0 0 20px rgba(251, 191, 36, 0.8),
+    box-shadow:
+      0 0 20px rgba(251, 191, 36, 0.8),
       0 0 30px rgba(251, 191, 36, 0.6);
   }
 }

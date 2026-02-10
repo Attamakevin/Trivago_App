@@ -16,77 +16,150 @@
                         <i class="fas fa-arrow-left"></i> Back to Hotels
                     </a>
                 </div>
-                <!-- Price and Category Filter Section -->
-                <div class="price-filter-section">
-                    <h4>Filter Hotels</h4>
+                
+                <!-- User Selection Section -->
+                <div class="user-selection-section">
+                    <h4>Select User</h4>
                     <form method="GET" id="filterForm">
                         <div class="row">
-                            <div class="col-md-3">
+                            <!-- User Search and Selection -->
+                            <div class="col-md-4">
+                                <label class="form-label">Search User</label>
+                                <div class="input-group mb-3">
+                                    <input type="text" name="user_search" class="form-control" 
+                                           value="{{ user_search or '' }}" 
+                                           placeholder="Search by ID, nickname, contact...">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-search"></i> Search
+                                    </button>
+                                </div>
+                                
                                 <label for="user_id" class="form-label">Select User</label>
-                                <select name="user_id" id="user_id" class="form-select">
-                                    <option value="">Choose a user...</option>
+                                <select name="user_id" id="user_id" class="form-select" size="8" onchange="this.form.submit()">
+                                    <option value="">-- Choose a user --</option>
                                     {% for user in users %}
                                     <option value="{{ user.id }}" {% if selected_user and selected_user.id == user.id %}selected{% endif %}>
-                                        {{ user.id }} ({{ user.contact }})
+                                        ID: {{ user.id }} | 
+                                        {% if user.nickname %}{{ user.nickname }} | {% endif %}
+                                        {{ user.contact or user.email or 'No contact' }} | 
+                                        VIP: {{ user.vip_level }}
                                     </option>
                                     {% endfor %}
                                 </select>
+                                <small class="text-muted">
+                                    <i class="fas fa-info-circle"></i> 
+                                    {{ users|length }} users found • Newest users first
+                                </small>
                             </div>
-                            <div class="col-md-2">
-                                <label for="category" class="form-label">Category</label>
-                                <select name="category" id="category" class="form-select">
-                                    <option value="">All Categories</option>
-                                    <option value="regular" {% if category_filter=='regular' %}selected{% endif %}>
-                                        Regular</option>
-                                    <option value="luxury" {% if category_filter=='luxury' %}selected{% endif %}>Luxury
-                                    </option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label for="min_price" class="form-label">Min Price (£)</label>
-                                <input type="number" name="min_price" id="min_price" class="form-control"
-                                    value="{{ min_price or '' }}" step="0.01" min="0">
-                            </div>
-                            <div class="col-md-2">
-                                <label for="max_price" class="form-label">Max Price (£)</label>
-                                <input type="number" name="max_price" id="max_price" class="form-control"
-                                    value="{{ max_price or '' }}" step="0.01" min="0">
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">&nbsp;</label>
-                                <div class="d-flex gap-2">
-                                    <button type="submit" class="btn btn-primary">Filter</button>
-                                    <a href="{{ url_for('assign_hotels_to_user') }}" class="btn btn-secondary">Clear</a>
+                            
+                            <!-- Hotel Filters -->
+                            <div class="col-md-8">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <label for="category" class="form-label">Hotel Category</label>
+                                        <select name="category" id="category" class="form-select">
+                                            <option value="">All Categories</option>
+                                            <option value="regular" {% if category_filter=='regular' %}selected{% endif %}>
+                                                Regular</option>
+                                            <option value="luxury" {% if category_filter=='luxury' %}selected{% endif %}>Luxury
+                                            </option>
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-md-2">
+                                        <label for="min_price" class="form-label">Min Price (£)</label>
+                                        <input type="number" name="min_price" id="min_price" class="form-control"
+                                            value="{{ min_price or '' }}" step="0.01" min="0">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label for="max_price" class="form-label">Max Price (£)</label>
+                                        <input type="number" name="max_price" id="max_price" class="form-control"
+                                            value="{{ max_price or '' }}" step="0.01" min="0">
+                                    </div>
+                                    
+                                    <div class="col-md-3">
+                                        <label class="form-label">&nbsp;</label>
+                                        <div class="d-flex gap-2">
+                                            <button type="submit" class="btn btn-primary w-100">
+                                                <i class="fas fa-filter"></i> Apply
+                                            </button>
+                                            <a href="{{ url_for('assign_hotels_to_user') }}" class="btn btn-secondary">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Price Presets -->
+                                <div class="row mt-3">
+                                    <div class="col-md-12">
+                                        <label class="form-label">Quick Price Filters:</label>
+                                        <div class="btn-group flex-wrap" role="group">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(0, 500)">
+                                                Budget (£0-£500)
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(500, 1500)">
+                                                Mid-Range (£500-£1500)
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(1500, null)">
+                                                Luxury (£1500+)
+                                            </button>
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(200, 2000)">
+                                                Custom (£200-£2000)
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Quick Price Presets -->
-                        <div class="row mt-3">
-                            <div class="col-md-12">
-                                <label class="form-label">Quick Price Filters:</label>
-                                <div class="btn-group flex-wrap" role="group">
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(0, 500)">
-                                        Budget (£0-£500)
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(500, 1500)">
-                                        Mid-Range (£500-£1500)
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(1500, null)">
-                                        Luxury (£1500+)
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="setPrice(200, 2000)">
-                                        Custom (£200-£2000)
-                                    </button>
-                                </div>
-                            </div>                  </div>
                     </form>
                 </div>
 
+                <!-- Selected User Info -->
+                {% if selected_user %}
+                <div class="user-info-card card mt-3">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            <i class="fas fa-user-check"></i> Selected User: 
+                            {% if selected_user.nickname %}
+                            {{ selected_user.nickname }}
+                            {% else %}
+                            User {{ selected_user.id }}
+                            {% endif %}
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <strong>User ID:</strong><br>
+                                <span class="badge bg-primary">{{ selected_user.id }}</span>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>VIP Level:</strong><br>
+                                <span class="badge bg-warning">{{ selected_user.vip_level }}</span>
+                            </div>
+                            <div class="col-md-2">
+                                <strong>Balance:</strong><br>
+                                £{{ "%.2f"|format(selected_user.balance) }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Contact:</strong><br>
+                                {{ selected_user.contact or selected_user.email or 'N/A' }}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Status:</strong><br>
+                                <span class="badge bg-success">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
                 <!-- Filter Summary -->
-                {% if category_filter or min_price or max_price %}
-                <div class="filter-summary">
+                {% if category_filter or min_price or max_price or user_search %}
+                <div class="filter-summary mt-3">
                     <strong>Active Filters:</strong>
+                    {% if user_search %}
+                    <span class="badge bg-primary">User Search: "{{ user_search }}"</span>
+                    {% endif %}
                     {% if category_filter %}
                     <span class="badge bg-info">Category: {{ category_filter|title }}</span>
                     {% endif %}
@@ -97,13 +170,7 @@
                     <span class="badge bg-warning">Max Price: £{{ max_price }}</span>
                     {% endif %}
                     <span class="badge bg-secondary">{{ hotels|length }} hotels found</span>
-                </div>
-                {% endif %}
-
-                <!-- Price Statistics -->
-                {% if price_stats %}
-                <div class="alert alert-info">
-                    <strong>Price Range:</strong> £{{ price_stats.min_price }} - £{{ price_stats.max_price }}
+                    <span class="badge bg-info">{{ users|length }} users found</span>
                 </div>
                 {% endif %}
 
@@ -124,18 +191,18 @@
                             <label class="form-label">Selection Tools</label>
                             <div class="btn-group" role="group">
                                 <button type="button" class="btn btn-outline-primary btn-sm" onclick="selectAll()">
-                                    Select All
+                                    <i class="fas fa-check-square"></i> Select All
                                 </button>
                                 <button type="button" class="btn btn-outline-secondary btn-sm" onclick="deselectAll()">
-                                    Deselect All
+                                    <i class="fas fa-times-circle"></i> Deselect All
                                 </button>
                                 <button type="button" class="btn btn-outline-success btn-sm"
                                     onclick="selectByCategory('regular')">
-                                    Select Regular
+                                    <i class="fas fa-hotel"></i> Select Regular
                                 </button>
                                 <button type="button" class="btn btn-outline-warning btn-sm"
                                     onclick="selectByCategory('luxury')">
-                                    Select Luxury
+                                    <i class="fas fa-crown"></i> Select Luxury
                                 </button>
                             </div>
                         </div>
@@ -149,33 +216,34 @@
                             <div class="row">
                                 {% for hotel in hotels %}
                                 <div class="col-md-6 col-lg-4 mb-3">
-                                    <div class="hotel-card" data-category="{{ hotel.category }}"
+                                    <div class="hotel-card card h-100" data-category="{{ hotel.category }}"
                                         data-price="{{ hotel.price }}">
-                                        <div class="form-check">
-                                            <input class="form-check-input hotel-checkbox" type="checkbox"
-                                                name="hotel_ids" value="{{ hotel.id }}" id="hotel_{{ hotel.id }}">
-                                            <label class="form-check-label" for="hotel_{{ hotel.id }}">
-                                                <strong>{{ hotel.name }}</strong>
-                                            </label>
-                                        </div>
+                                        <div class="card-body">
+                                            <div class="form-check">
+                                                <input class="form-check-input hotel-checkbox" type="checkbox"
+                                                    name="hotel_ids" value="{{ hotel.id }}" id="hotel_{{ hotel.id }}">
+                                                <label class="form-check-label" for="hotel_{{ hotel.id }}">
+                                                    <strong>{{ hotel.name }}</strong>
+                                                </label>
+                                            </div>
 
-                                        <div class="mt-2">
-                                            <span class="badge bg-primary price-badge">£{{ hotel.price }}</span>
-                                            <span class="badge bg-secondary category-badge">{{ hotel.category }}</span>
-                                        </div>
+                                            <div class="mt-2">
+                                                <span class="badge bg-primary price-badge">£{{ hotel.price }}</span>
+                                                <span class="badge bg-secondary category-badge">{{ hotel.category }}</span>
+                                            </div>
 
-                                        {% if hotel.location %}
-                                        <div class="text-muted small mt-1">
-                                            📍 {{ hotel.location }}
-                                        </div>
-                                        {% endif %}
+                                            {% if hotel.location %}
+                                            <div class="text-muted small mt-1">
+                                                <i class="fas fa-map-marker-alt"></i> {{ hotel.location }}
+                                            </div>
+                                            {% endif %}
 
-                                        <div class="mt-2">
-                                            <label for="commission_{{ hotel.id }}" class="form-label small">Commission
-                                                (£)</label>
-                                            <input type="number" class="form-control form-control-sm"
-                                                name="commission_{{ hotel.id }}" id="commission_{{ hotel.id }}"
-                                                value="{{ hotel.commission_multiplier * 10 }}" step="0.01" min="0">
+                                            <div class="mt-3">
+                                                <label for="commission_{{ hotel.id }}" class="form-label small">Commission (£)</label>
+                                                <input type="number" class="form-control form-control-sm"
+                                                    name="commission_{{ hotel.id }}" id="commission_{{ hotel.id }}"
+                                                    value="{{ hotel.commission_multiplier * 10 }}" step="0.01" min="0">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -184,44 +252,37 @@
 
                             <div class="mt-4">
                                 <button type="submit" class="btn btn-success btn-lg">
-                                    Assign Selected Hotels
+                                    <i class="fas fa-paper-plane"></i> Assign Selected Hotels
                                 </button>
                                 <a href="{{ url_for('manage_hotels') }}" class="btn btn-secondary">
-                                    Cancel
+                                    <i class="fas fa-times"></i> Cancel
                                 </a>
                             </div>
                             {% else %}
                             <div class="alert alert-warning">
-                                No hotels found matching your criteria. Try adjusting your filters.
+                                <i class="fas fa-exclamation-triangle"></i> 
+                                No hotels found matching your criteria.
                             </div>
                             {% endif %}
                         </div>
                     </div>
                 </form>
                 {% else %}
-                <div class="alert alert-info">
-                    Please select a user first to assign hotels.
+                <div class="alert alert-info mt-3">
+                    <i class="fas fa-info-circle"></i> 
+                    {% if user_search and users|length == 0 %}
+                    No users found matching "{{ user_search }}". Try a different search term.
+                    {% elif user_search %}
+                    Please select a user from the search results above.
+                    {% else %}
+                    Please search for and select a user to assign hotels.
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>
         </div>
     </div>
-    <!-- Display flash messages -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show mt-3"
-        role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-    </div>
-    {% endfor %}
-    {% endif %}
-    {% endwith %}
 
-    {% endblock %}
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function setPrice(min, max) {
             document.getElementById('min_price').value = min || '';
@@ -231,49 +292,48 @@
         function selectAll() {
             document.querySelectorAll('.hotel-checkbox').forEach(checkbox => {
                 checkbox.checked = true;
-                checkbox.closest('.hotel-card').classList.add('selected');
             });
         }
 
         function deselectAll() {
             document.querySelectorAll('.hotel-checkbox').forEach(checkbox => {
                 checkbox.checked = false;
-                checkbox.closest('.hotel-card').classList.remove('selected');
             });
         }
 
         function selectByCategory(category) {
             document.querySelectorAll('.hotel-card').forEach(card => {
                 const checkbox = card.querySelector('.hotel-checkbox');
-                if (card.dataset.category === category) {
-                    checkbox.checked = true;
-                    card.classList.add('selected');
-                } else {
-                    checkbox.checked = false;
-                    card.classList.remove('selected');
-                }
+                checkbox.checked = (card.dataset.category === category);
             });
         }
-
-        // Add visual feedback for selected hotels
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelectorAll('.hotel-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', function () {
-                    const card = this.closest('.hotel-card');
-                    if (this.checked) {
-                        card.classList.add('selected');
-                    } else {
-                        card.classList.remove('selected');
-                    }
-                });
-            });
-        });
-
-        // Auto-submit filter form when user is selected
-        document.getElementById('user_id').addEventListener('change', function () {
-            if (this.value) {
-                document.getElementById('filterForm').submit();
-            }
-        });
     </script>
+    
+    <style>
+        .user-selection-section {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .user-info-card {
+            border-left: 4px solid #28a745;
+        }
+        .filter-summary {
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            border-left: 4px solid #007bff;
+        }
+        #user_id {
+            font-size: 0.85em;
+        }
+        .hotel-card {
+            transition: all 0.3s ease;
+        }
+        .hotel-card:hover {
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+    </style>
 </body>
+{% endblock %}

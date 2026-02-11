@@ -1227,29 +1227,23 @@ def currencies():
 
 
 @app.route('/currency', methods=['POST'])
-@login_required  # Make sure user is logged in
 def set_currency():
+    """Update user's currency preference - Simple version"""
     try:
-        # Get currency from form
+        # Check session
+        if 'user_id' not in session:
+            flash('Please log in first', 'error')
+            return redirect(url_for('login'))
+        
+        # Get user
+        user = User.query.get(session['user_id'])
         currency = request.form.get('currency')
-        currency_symbol = request.form.get('currency_symbol')
         
-        # Validate currency
-        if not currency or not currency_symbol:
-            flash('Please select a currency', 'error')
-            return redirect(url_for('profile'))
-        
-        # Update current user's currency
-        current_user.currency = currency
-        # Store symbol for downstream use without breaking if column is missing
-        session['currency_symbol'] = currency_symbol
-        if hasattr(current_user, 'currency_symbol'):
-            current_user.currency_symbol = currency_symbol
-        
-        # Save to database
+        # Update
+        user.currency = currency
         db.session.commit()
         
-        flash(f'Currency updated to {currency_symbol} {currency}', 'success')
+        flash(f'Currency updated to {currency}', 'success')
         return redirect(url_for('profile'))
         
     except Exception as e:

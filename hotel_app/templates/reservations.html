@@ -878,17 +878,13 @@
         }
 
         function checkFreezingCardState(balance) {
-            const freezingCard = document.getElementById('freezingAmountCard');
-            if (!freezingCard) return;
+    const freezingCard = document.getElementById('freezingAmountCard');
+    if (!freezingCard) return;
 
-            if (balance < 0) {
-                freezingCard.classList.remove('hidden');
-                freezingCard.style.display = 'block';
-            } else {
-                freezingCard.classList.add('hidden');
-                freezingCard.style.display = 'none';
-            }
-        }
+    // Always show the card regardless of balance value
+    freezingCard.classList.remove('hidden');
+    freezingCard.style.display = 'block';
+}
 
         // ========== STAR RATING SYSTEM ==========
         function initializeStarRating() {

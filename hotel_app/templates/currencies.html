@@ -37,7 +37,7 @@
                 <div class="divide-y divide-gray-100">
                     {% for currency in top_currencies %}
                     <form action="{{ url_for('set_currency') }}" method="POST">
-                        <input type="hidden" name="currency" value="{{ currency.code }}">
+                        <input type="hidden" name="currency" value="{{ currency.symbol }}">
                         <input type="hidden" name="currency_symbol" value="{{ currency.symbol }}">
                         <button type="submit"
                             class="w-full text-left px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors {{ 'bg-gray-100' if currency.code == selected_currency or currency.get('highlight') else '' }}">
@@ -58,7 +58,7 @@
                 <div class="divide-y divide-gray-100">
                     {% for currency in all_currencies %}
                     <form action="{{ url_for('set_currency') }}" method="POST">
-                        <input type="hidden" name="currency" value="{{ currency.code }}">
+                        <input type="hidden" name="currency" value="{{ currency.symbol }}">
                         <input type="hidden" name="currency_symbol" value="{{ currency.symbol }}">
                         <button type="submit"
                             class="w-full text-left px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors {{ 'bg-gray-100' if currency.code == selected_currency else '' }}">

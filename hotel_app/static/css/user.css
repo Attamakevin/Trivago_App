@@ -16,6 +16,7 @@ body {
   --desktop-backdrop: #e5e7eb;
 }
 
+/* Force desktop to display the mobile layout for non-admin, non-home/auth pages */
 @media (min-width: 768px) {
   html {
     background: var(--desktop-backdrop);

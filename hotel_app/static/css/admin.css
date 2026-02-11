@@ -28,26 +28,6 @@
   transition: margin-left 0.3s ease-in-out;
 }
 
-:root {
-  --mobile-shell-max: 480px;
-  --mobile-shell-bg: #f9fafb;
-  --desktop-backdrop: #e5e7eb;
-}
-
-@media (min-width: 768px) {
-  html {
-    background: var(--desktop-backdrop);
-  }
-
-  body {
-    max-width: var(--mobile-shell-max);
-    margin: 0 auto;
-    min-height: 100vh;
-    background: var(--mobile-shell-bg);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  }
-}
-
 .card {
   border: none;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);

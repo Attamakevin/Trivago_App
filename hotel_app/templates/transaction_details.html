@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
     <head>
@@ -29,14 +29,14 @@
         <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
     </head>
 
-    <body class="bg-gray-50 min-h-screen">
+    <body class="max-w-screen-sm mx-auto w-full bg-gray-50 min-h-screen">
         <!-- Header -->
-        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 px-4">
             <div class="flex items-center justify-start gap-8 text-white h-full">
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 data-translate class="text-white text-sm md:text-md font-bold">Transaction History</h1>
+                <h1 data-translate class="text-white text-sm font-bold">Transaction History</h1>
             </div>
         </header>
 
@@ -50,7 +50,7 @@
             <!-- Main Content -->
             <div id="mainContent" class="hidden">
                 <!-- Summary Cards -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="grid grid-cols-1 gap-6 mb-8">
                     <!-- Current Balance -->
                     <div class="bg-white rounded-lg shadow-md p-6 border-l-4 border-blue-500">
                         <div class="flex items-center justify-between">
@@ -70,7 +70,8 @@
                             <div>
                                 <p data-translate class="text-sm font-medium text-gray-600">Total Deposits</p>
                                 <p class="text-2xl font-bold text-green-600" id="totalDeposits">£0.00</p>
-                                <p data-translate class="text-xs text-gray-500 mt-1" id="depositsBreakdown">Approved transactions only
+                                <p data-translate class="text-xs text-gray-500 mt-1" id="depositsBreakdown">Approved
+                                    transactions only
                                 </p>
                             </div>
                             <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
@@ -85,7 +86,8 @@
                             <div>
                                 <p data-translate class="text-sm font-medium text-gray-600">Total Withdrawals</p>
                                 <p class="text-2xl font-bold text-red-600" id="totalWithdrawals">£0.00</p>
-                                <p data-translate class="text-xs text-gray-500 mt-1" id="withdrawalsBreakdown">Approved transactions
+                                <p data-translate class="text-xs text-gray-500 mt-1" id="withdrawalsBreakdown">Approved
+                                    transactions
                                     only</p>
                             </div>
                             <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center">
@@ -106,7 +108,7 @@
                     <div id="transactionsWithFilters" class="hidden">
                         <!-- Filters -->
                         <div class="p-6 border-b border-gray-200">
-                            <div class="flex flex-col md:flex-row gap-4 items-start md:items-center justify-between">
+                            <div class="flex flex-col flex-row gap-4 items-start items-center justify-between">
                                 <!-- Search -->
                                 <div class="flex-1 max-w-md">
                                     <div class="relative">
@@ -119,10 +121,12 @@
 
                                 <!-- Type Filters -->
                                 <div class="flex flex-wrap gap-2">
-                                    <button data-translate onclick="filterByType('all')" class="filter-btn active" data-type="all">
+                                    <button data-translate onclick="filterByType('all')" class="filter-btn active"
+                                        data-type="all">
                                         <i class="fas fa-list mr-2"></i>All
                                     </button>
-                                    <button data-translate onclick="filterByType('deposit')" class="filter-btn" data-type="deposit">
+                                    <button data-translate onclick="filterByType('deposit')" class="filter-btn"
+                                        data-type="deposit">
                                         <i class="fas fa-arrow-down mr-2"></i>Deposits
                                     </button>
                                     <button data-translate onclick="filterByType('withdrawal')" class="filter-btn"
@@ -168,11 +172,12 @@
                         <div class="max-w-md mx-auto">
                             <i class="fas fa-receipt text-6xl text-gray-300 mb-6"></i>
                             <h3 data-translate class="text-xl font-semibold text-gray-900 mb-3">No transactions yet</h3>
-                            <p data-translate class="text-gray-600 mb-6">You haven't made any deposits or withdrawals yet. Your
+                            <p data-translate class="text-gray-600 mb-6">You haven't made any deposits or withdrawals
+                                yet. Your
                                 transaction history will appear here once you start making transactions.</p>
 
                             <!-- Action buttons -->
-                            <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                            <div class="flex flex-col flex-row gap-3 justify-center">
                                 <button data-translate onclick="window.location.href='/deposit'"
                                     class="bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2">
                                     <i class="fas fa-plus"></i>

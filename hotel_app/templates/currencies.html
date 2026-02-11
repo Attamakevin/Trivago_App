@@ -37,9 +37,11 @@
                 <div class="divide-y divide-gray-100">
                     {% for currency in top_currencies %}
                     <form action="{{ url_for('set_currency') }}" method="POST">
-                        <button type="submit" name="currency" value="{{ currency.code }}"
+                        <input type="hidden" name="currency" value="{{ currency.code }}">
+                        <input type="hidden" name="currency_symbol" value="{{ currency.symbol }}">
+                        <button type="submit"
                             class="w-full text-left px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors {{ 'bg-gray-100' if currency.code == selected_currency or currency.get('highlight') else '' }}">
-                            <span class="text-sm text-gray-900">{{ currency.code }} - {{ currency.name }}</span>
+                            <span class="text-sm text-gray-900">{{ currency.symbol }} {{ currency.code }} - {{ currency.name }}</span>
                             {% if currency.code == selected_currency %}
                             <i class="fas fa-check text-green-600"></i>
                             {% endif %}
@@ -56,9 +58,11 @@
                 <div class="divide-y divide-gray-100">
                     {% for currency in all_currencies %}
                     <form action="{{ url_for('set_currency') }}" method="POST">
-                        <button type="submit" name="currency" value="{{ currency.code }}"
+                        <input type="hidden" name="currency" value="{{ currency.code }}">
+                        <input type="hidden" name="currency_symbol" value="{{ currency.symbol }}">
+                        <button type="submit"
                             class="w-full text-left px-4 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors {{ 'bg-gray-100' if currency.code == selected_currency else '' }}">
-                            <span class="text-sm text-gray-900">{{ currency.code }} - {{ currency.name }}</span>
+                            <span class="text-sm text-gray-900">{{ currency.symbol }} {{ currency.code }} - {{ currency.name }}</span>
                             {% if currency.code == selected_currency %}
                             <i class="fas fa-check text-green-600"></i>
                             {% endif %}

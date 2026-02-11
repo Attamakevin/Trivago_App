@@ -1232,19 +1232,24 @@ def set_currency():
     try:
         # Get currency from form
         currency = request.form.get('currency')
+        currency_symbol = request.form.get('currency_symbol')
         
         # Validate currency
-        if not currency:
+        if not currency or not currency_symbol:
             flash('Please select a currency', 'error')
             return redirect(url_for('profile'))
         
         # Update current user's currency
         current_user.currency = currency
+        # Store symbol for downstream use without breaking if column is missing
+        session['currency_symbol'] = currency_symbol
+        if hasattr(current_user, 'currency_symbol'):
+            current_user.currency_symbol = currency_symbol
         
         # Save to database
         db.session.commit()
         
-        flash(f'Currency updated to {currency}', 'success')
+        flash(f'Currency updated to {currency_symbol} {currency}', 'success')
         return redirect(url_for('profile'))
         
     except Exception as e:

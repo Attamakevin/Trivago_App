@@ -1,119 +1,480 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="./static/images/ico.png" type="image/x-icon">
-        <title>Events - trivago</title>
-        <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-        <link rel="stylesheet" href="./static/css/user.css">
-        <link rel="stylesheet" href="./static/css/translate.css">
-        <!-- TailwindCSS -->
-        <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-        <script src="https://cdn.tailwindcss.com"></script>
-        <!-- FlatPickr -->
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-        <!-- Country-list & FlagIcon -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
-            rel="stylesheet">
-        <!-- <script src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
-        <!-- Custom Script -->
-        <script src="./static/js/main.js"></script>
-        <script src="./static/js/translate.js"></script>
-        <script src="./static/js/user.js"></script>
-    </head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="./static/images/ico.png" type="image/x-icon">
+    <title>Events - trivago</title>
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="./static/css/user.css">
+    <link rel="stylesheet" href="./static/css/translate.css">
+    <!-- TailwindCSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FlatPickr -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <!-- Country-list & FlagIcon -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/country-list/2.2.0/country-list.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/6.6.6/css/flag-icons.min.css">
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap"
+        rel="stylesheet">
+    <!-- Custom Script -->
+    <script src="./static/js/main.js"></script>
+    <script src="./static/js/translate.js"></script>
+    <script src="./static/js/user.js"></script>
 
-    <body class="luxury-bg min-h-screen">
-        <!-- Header -->
-        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
-            <div class="px-3 flex items-center justify-start gap-8 text-white">
-                <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
-                    <i class="fas fa-arrow-left text-xl"></i>
-                </button>
-                <h1 class="text-white text-sm md:text-md font-bold">Events</h1>
-            </div>
-        </header>
+    <style>
+        .event-slide {
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            pointer-events: none;
+        }
 
-        <div class="py-3 space-y-">
-            <!-- Featured Events Slider -->
-            <div class="relative">
-                <!-- <div class="bg-blue-900">
-                    <h2 class="text-sm md:text-lg font-bold text-gray-900 mb-1 px-3 text-[#007cc2]">Events</h2>
-                    <p class="text-gray-900 mb- px-3 text-xs">Promotional activities. Hurry Now to participate</p>
-                </div> -->
-                <div class="relative w-full h-screen bg-blue-900 overflow-hidden shadow-2xl">
+        .event-slide.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
 
-                    <!-- Event Slide 1: Travel Expo -->
-                    <div class="event-slide active absolute inset-0 bg-contain bg-center bg-no-repeat"
-                        style="background-image: url('./static/images/ev1.jpg')">
+        .indicator {
+            opacity: 0.5;
+        }
 
-                    </div>
+        .indicator.active {
+            opacity: 1;
+            transform: scale(1.2);
+        }
 
-                    <!-- Event Slide 2: Hotel Conference -->
-                    <div class="event-slide absolute inset-0 bg-contain bg-center bg-no-repeat"
-                        style="background-image: url('./static/images/ev2.jpg')">
+        .tech-bg {
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #1e40af 100%);
+            position: relative;
+            overflow: hidden;
+        }
 
-                    </div>
+        .tech-bg::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(90deg, rgba(59, 130, 246, 0.1) 1px, transparent 1px),
+                linear-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
 
-                    <!-- Event Slide 3: Tech Innovation -->
-                    <div class="event-slide absolute inset-0 bg-contain bg-center bg-no-repeat"
-                        style="background-image: url('./static/images/ev3.jpg')">
+        @keyframes gridMove {
+            0% {
+                transform: translate(0, 0);
+            }
+            100% {
+                transform: translate(50px, 50px);
+            }
+        }
 
-                    </div>
+        .vip-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
 
-                    <div class="event-slide absolute inset-0 bg-contain bg-center bg-no-repeat"
-                        style="background-image: url('./static/images/ev4.jpg')">
+        .vip-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(59, 130, 246, 0.6);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
 
-                    </div>
+        .payment-box {
+            background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, rgba(59, 130, 246, 0.1) 100%);
+            border: 3px solid #f97316;
+            transition: all 0.3s ease;
+        }
 
-                    <div class="event-slide absolute inset-0 bg-contain bg-center bg-no-repeat"
-                        style="background-image: url('./static/images/ev5.jpg')">
-                    
-                    </div>
+        .payment-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(249, 115, 22, 0.4);
+        }
 
-                    <!-- Navigation Buttons -->
-                    <button onclick="previousSlide()"
-                        class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white bg-opacity-20 backdrop-blur-md border border-white border-opacity-30 rounded-full flex items-center justify-center text-white hover:bg-opacity-30 hover:scale-110 transition-all duration-300 z-10">
-                        <i class="fas fa-chevron-left text-lg md:text-xl"></i>
-                    </button>
+        .luxury-villa-bg {
+            background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0284c7 100%);
+        }
 
-                    <button onclick="nextSlide()"
-                        class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-8 h-8 md:w-10 md:h-10 bg-white bg-opacity-20 backdrop-blur-md border border-white border-opacity-30 rounded-full flex items-center justify-center text-white hover:bg-opacity-30 hover:scale-110 transition-all duration-300 z-10">
-                        <i class="fas fa-chevron-right text-lg md:text-xl"></i>
-                    </button>
+        .bonus-badge {
+            background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+            animation: pulse 2s ease-in-out infinite;
+        }
 
-                    <!-- Slide Indicators -->
-                    <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
-                        <button onclick="goToSlide(0)"
-                            class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white transition-all duration-300 indicator active"></button>
-                        <button onclick="goToSlide(1)"
-                            class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"></button>
-                        <button onclick="goToSlide(2)"
-                            class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"></button>
-                        <button onclick="goToSlide(3)"
-                            class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"></button>
-                        <button onclick="goToSlide(4)"
-                            class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"></button>
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+    </style>
+</head>
+
+<body class="luxury-bg min-h-screen">
+    <!-- Header -->
+    <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+        <div class="px-3 flex items-center justify-start gap-8 text-white">
+            <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
+                <i class="fas fa-arrow-left text-xl"></i>
+            </button>
+            <h1 class="text-white text-sm md:text-md font-bold">Events</h1>
+        </div>
+    </header>
+
+    <div class="py-3 space-y-">
+        <!-- Featured Events Slider -->
+        <div class="relative">
+            <div class="relative w-full h-screen overflow-hidden shadow-2xl">
+
+                <!-- Event Slide 1: Membership Rewards -->
+                <div class="event-slide active absolute inset-0 tech-bg">
+                    <div class="relative z-10 h-full flex flex-col p-6 md:p-8">
+                        <!-- Logo and Header -->
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center">
+                                <div class="text-2xl md:text-3xl font-bold">
+                                    <span class="text-red-500">t</span>
+                                    <span class="text-orange-500">r</span>
+                                    <span class="text-blue-500">i</span>
+                                </div>
+                            </div>
+                            <h1 class="text-3xl md:text-5xl font-bold">
+                                <span class="text-red-500">t</span><span class="text-red-400">r</span><span class="text-orange-500">i</span><span class="text-orange-400">v</span><span class="text-yellow-500">a</span><span class="text-blue-500">g</span><span class="text-blue-400">o</span>
+                            </h1>
+                        </div>
+
+                        <h2 class="text-2xl md:text-4xl font-bold text-white mb-6 text-center">
+                            Trivago Membership Rewards
+                        </h2>
+
+                        <!-- VIP Cards -->
+                        <div class="flex-1 space-y-3 md:space-y-4 overflow-y-auto">
+                            <!-- VIP 0 -->
+                            <div class="vip-card rounded-2xl p-4 flex items-center gap-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg flex items-center justify-center relative">
+                                        <i class="fas fa-crown text-white text-2xl md:text-3xl"></i>
+                                        <span class="absolute -bottom-1 text-white text-xs font-bold bg-blue-600 px-2 rounded">VIP0</span>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-lg md:text-xl font-bold text-red-400 mb-1">VIP 0 Membership</h3>
+                                    <p class="text-2xl md:text-3xl font-bold text-orange-400">€50</p>
+                                </div>
+                                <div class="text-right text-white text-sm md:text-base">
+                                    <p><span class="font-semibold">Daily Limit:</span> 35 Products</p>
+                                    <p><span class="font-semibold">Profit Rate:</span> 0.36%</p>
+                                    <p><span class="font-semibold">Reset Entitlement:</span> 2</p>
+                                </div>
+                            </div>
+
+                            <!-- VIP 1 -->
+                            <div class="vip-card rounded-2xl p-4 flex items-center gap-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg flex items-center justify-center relative">
+                                        <i class="fas fa-crown text-white text-2xl md:text-3xl"></i>
+                                        <span class="absolute -bottom-1 text-white text-xs font-bold bg-blue-600 px-2 rounded">VIP1</span>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-lg md:text-xl font-bold text-red-400 mb-1">VIP 1 Membership</h3>
+                                    <p class="text-2xl md:text-3xl font-bold text-orange-400">€1,000</p>
+                                </div>
+                                <div class="text-right text-white text-sm md:text-base">
+                                    <p><span class="font-semibold">Daily Limit:</span> 35 Products</p>
+                                    <p><span class="font-semibold">Profit Rate:</span> 0.45%</p>
+                                    <p><span class="font-semibold">Reset Entitlement:</span> 2</p>
+                                </div>
+                            </div>
+
+                            <!-- VIP 2 -->
+                            <div class="vip-card rounded-2xl p-4 flex items-center gap-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg flex items-center justify-center relative">
+                                        <i class="fas fa-crown text-white text-2xl md:text-3xl"></i>
+                                        <span class="absolute -bottom-1 text-white text-xs font-bold bg-blue-600 px-2 rounded">VIP2</span>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-lg md:text-xl font-bold text-red-400 mb-1">VIP 2 Membership</h3>
+                                    <p class="text-2xl md:text-3xl font-bold text-orange-400">€3,000</p>
+                                </div>
+                                <div class="text-right text-white text-sm md:text-base">
+                                    <p><span class="font-semibold">Daily Limit:</span> 38 Products</p>
+                                    <p><span class="font-semibold">Profit Rate:</span> 0.54%</p>
+                                    <p><span class="font-semibold">Reset Entitlement:</span> 2</p>
+                                </div>
+                            </div>
+
+                            <!-- VIP 3 -->
+                            <div class="vip-card rounded-2xl p-4 flex items-center gap-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-16 h-16 md:w-20 md:h-20 bg-gradient-to-br from-blue-400 to-cyan-300 rounded-lg flex items-center justify-center relative">
+                                        <i class="fas fa-crown text-white text-2xl md:text-3xl"></i>
+                                        <span class="absolute -bottom-1 text-white text-xs font-bold bg-blue-600 px-2 rounded">VIP3</span>
+                                    </div>
+                                </div>
+                                <div class="flex-1">
+                                    <h3 class="text-lg md:text-xl font-bold text-red-400 mb-1">VIP 3 Membership</h3>
+                                    <p class="text-2xl md:text-3xl font-bold text-orange-400">€5,000</p>
+                                </div>
+                                <div class="text-right text-white text-sm md:text-base">
+                                    <p><span class="font-semibold">Daily Limit:</span> 40 Products</p>
+                                    <p><span class="font-semibold">Profit Rate:</span> 0.66%</p>
+                                    <p><span class="font-semibold">Reset Entitlement:</span> 2</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- FAQs and Terms -->
+                        <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4 text-white text-xs md:text-sm">
+                            <div>
+                                <h3 class="font-bold text-base mb-2">FAQs</h3>
+                                <ul class="space-y-1">
+                                    <li>• Offers Are Open To Every DesertCart Member</li>
+                                    <li>• Profit Rates Are Different For Every Membership Tier</li>
+                                    <li>• Products Traffic Reset(s) Based On Membership Tier</li>
+                                    <li>• Daily Check-in Incentives Bonus Program</li>
+                                    <li>• Membership Fees Funds Are Withdrawable</li>
+                                    <li>• Offers Are Open To Every DesertCart</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-base mb-2">Terms & Conditions</h3>
+                                <ul class="space-y-1">
+                                    <li>• Membership(s) Are Non-transferable</li>
+                                    <li>• Membership Fees Are Non-refundable</li>
+                                    <li>• Withdrawable Membership Fee Upon Completion Of Products Traffic</li>
+                                    <li>• Membership Termination/Suspension Without Prior Notice To T&C Violators</li>
+                                    <li class="text-orange-400 font-semibold">" General Terms And Conditions Apply"</li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- View All Events Button -->
-            <!-- <div class="text-center">
-                <button
-                    class="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-sm font-semibold py-3 px-4 rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
-                    View All Events
+                <!-- Event Slide 2: Payment Activities -->
+                <div class="event-slide absolute inset-0 tech-bg">
+                    <div class="relative z-10 h-full flex flex-col justify-center items-center p-6 md:p-8">
+                        <!-- Logo and Header -->
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center">
+                                <div class="text-2xl md:text-3xl font-bold">
+                                    <span class="text-red-500">t</span>
+                                    <span class="text-orange-500">r</span>
+                                    <span class="text-blue-500">i</span>
+                                </div>
+                            </div>
+                            <h1 class="text-3xl md:text-5xl font-bold">
+                                <span class="text-red-500">t</span><span class="text-red-400">r</span><span class="text-orange-500">i</span><span class="text-orange-400">v</span><span class="text-yellow-500">a</span><span class="text-blue-500">g</span><span class="text-blue-400">o</span>
+                            </h1>
+                        </div>
+
+                        <h2 class="text-3xl md:text-5xl font-bold text-white mb-12 text-center">
+                            PAYMENT ACTIVITIES
+                        </h2>
+
+                        <!-- Payment Boxes -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-4xl w-full mb-12">
+                            <!-- 4 Days -->
+                            <div class="payment-box rounded-3xl p-6 md:p-8 text-center col-span-1 md:col-span-2">
+                                <p class="text-orange-400 text-2xl md:text-4xl font-bold mb-3">4 days</p>
+                                <p class="text-white text-4xl md:text-6xl font-bold">€600</p>
+                            </div>
+
+                            <!-- 15 Days -->
+                            <div class="payment-box rounded-3xl p-6 md:p-8 text-center">
+                                <p class="text-orange-400 text-2xl md:text-4xl font-bold mb-3">15 days</p>
+                                <p class="text-white text-4xl md:text-6xl font-bold">€900</p>
+                            </div>
+
+                            <!-- 30 Days -->
+                            <div class="payment-box rounded-3xl p-6 md:p-8 text-center">
+                                <p class="text-orange-400 text-2xl md:text-4xl font-bold mb-3">30 days</p>
+                                <p class="text-white text-4xl md:text-6xl font-bold">€1,500</p>
+                            </div>
+                        </div>
+
+                        <!-- Terms -->
+                        <div class="bg-white bg-opacity-10 backdrop-blur-md rounded-2xl p-6 max-w-3xl text-white text-sm md:text-base">
+                            <p class="mb-3">Each member must complete at least 2 sets per day to qualify for this activity.</p>
+                            <p class="mb-3">The base salary bonus is refunded to your platform account from the 4th - 15th - 30th day.</p>
+                            <p>If you have any questions, please contact Customer Service for further details.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Slide 3: First Luxury Order -->
+                <div class="event-slide absolute inset-0 luxury-villa-bg">
+                    <div class="relative z-10 h-full flex flex-col justify-center items-center p-6 md:p-8 text-center">
+                        <!-- Logo and Header -->
+                        <div class="flex items-center gap-3 mb-8">
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center">
+                                <div class="text-2xl md:text-3xl font-bold">
+                                    <span class="text-red-500">t</span>
+                                    <span class="text-orange-500">r</span>
+                                    <span class="text-blue-500">i</span>
+                                </div>
+                            </div>
+                            <h1 class="text-3xl md:text-5xl font-bold">
+                                <span class="text-red-500">t</span><span class="text-red-400">r</span><span class="text-orange-500">i</span><span class="text-orange-400">v</span><span class="text-yellow-500">a</span><span class="text-blue-500">g</span><span class="text-blue-400">o</span>
+                            </h1>
+                        </div>
+
+                        <!-- Main Content -->
+                        <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl p-8 md:p-12 max-w-2xl">
+                            <div class="bg-gradient-to-br from-red-600 to-red-500 text-white rounded-2xl p-6 mb-6 shadow-2xl">
+                                <h2 class="text-2xl md:text-4xl font-bold mb-4 leading-tight">
+                                    RECEIVED MY<br>
+                                    FIRST LUXURY<br>
+                                    ORDER!<br>
+                                    EXCELLENT!!
+                                </h2>
+                                <div class="text-6xl md:text-8xl font-bold">
+                                    15€
+                                </div>
+                            </div>
+
+                            <div class="text-white">
+                                <p class="text-lg md:text-xl mb-4">🎉 Congratulations on your first luxury booking!</p>
+                                <p class="text-base md:text-lg opacity-90">Start your journey with exclusive rewards and premium experiences.</p>
+                            </div>
+                        </div>
+
+                        <!-- Decorative Elements -->
+                        <div class="absolute top-20 left-10 text-white opacity-20">
+                            <i class="fas fa-star text-4xl"></i>
+                        </div>
+                        <div class="absolute bottom-20 right-10 text-white opacity-20">
+                            <i class="fas fa-star text-3xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Event Slide 4: 5% Bonus -->
+                <div class="event-slide absolute inset-0 luxury-villa-bg">
+                    <div class="relative z-10 h-full flex flex-col justify-center items-center p-6 md:p-8 text-center">
+                        <!-- Logo and Header -->
+                        <div class="flex items-center gap-3 mb-12">
+                            <div class="w-12 h-12 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center">
+                                <div class="text-2xl md:text-3xl font-bold">
+                                    <span class="text-red-500">t</span>
+                                    <span class="text-orange-500">r</span>
+                                    <span class="text-blue-500">i</span>
+                                </div>
+                            </div>
+                            <h1 class="text-3xl md:text-5xl font-bold">
+                                <span class="text-red-500">t</span><span class="text-red-400">r</span><span class="text-orange-500">i</span><span class="text-orange-400">v</span><span class="text-yellow-500">a</span><span class="text-blue-500">g</span><span class="text-blue-400">o</span>
+                            </h1>
+                        </div>
+
+                        <!-- Bonus Card -->
+                        <div class="bg-white bg-opacity-10 backdrop-blur-lg rounded-3xl p-8 md:p-12 max-w-2xl transform hover:scale-105 transition-transform duration-300">
+                            <div class="bonus-badge text-white rounded-2xl p-8 md:p-12 shadow-2xl">
+                                <div class="text-7xl md:text-9xl font-bold mb-6">
+                                    5%
+                                </div>
+                                <h2 class="text-3xl md:text-5xl font-bold mb-4">
+                                    Bonus
+                                </h2>
+                                <div class="h-1 w-32 bg-white mx-auto mb-6"></div>
+                                <p class="text-xl md:text-3xl font-semibold">
+                                    Luxury order
+                                </p>
+                                <p class="text-xl md:text-3xl font-semibold">
+                                    Extra bonus
+                                </p>
+                            </div>
+
+                            <div class="mt-8 text-white">
+                                <p class="text-lg md:text-xl">🎁 Get 5% extra on all luxury bookings!</p>
+                                <p class="text-sm md:text-base opacity-80 mt-2">Limited time offer - Book now and save more</p>
+                            </div>
+                        </div>
+
+                        <!-- Decorative Elements -->
+                        <div class="absolute top-1/4 left-10 text-orange-400 opacity-30">
+                            <i class="fas fa-gift text-5xl"></i>
+                        </div>
+                        <div class="absolute bottom-1/4 right-10 text-orange-400 opacity-30">
+                            <i class="fas fa-percentage text-5xl"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Navigation Buttons -->
+                <button onclick="previousSlide()"
+                    class="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white bg-opacity-20 backdrop-blur-md border border-white border-opacity-30 rounded-full flex items-center justify-center text-white hover:bg-opacity-30 hover:scale-110 transition-all duration-300 z-10">
+                    <i class="fas fa-chevron-left text-xl"></i>
                 </button>
-            </div> -->
+
+                <button onclick="nextSlide()"
+                    class="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 bg-white bg-opacity-20 backdrop-blur-md border border-white border-opacity-30 rounded-full flex items-center justify-center text-white hover:bg-opacity-30 hover:scale-110 transition-all duration-300 z-10">
+                    <i class="fas fa-chevron-right text-xl"></i>
+                </button>
+
+                <!-- Slide Indicators -->
+                <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex space-x-3 z-10">
+                    <button onclick="goToSlide(0)"
+                        class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white transition-all duration-300 indicator active"></button>
+                    <button onclick="goToSlide(1)"
+                        class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"></button>
+                    <button onclick="goToSlide(2)"
+                        class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"></button>
+                    <button onclick="goToSlide(3)"
+                        class="w-3 h-3 md:w-4 md:h-4 rounded-full bg-white bg-opacity-50 transition-all duration-300 indicator"></button>
+                </div>
+            </div>
         </div>
-    </body>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.event-slide');
+        const indicators = document.querySelectorAll('.indicator');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            // Hide all slides
+            slides.forEach(slide => slide.classList.remove('active'));
+            indicators.forEach(indicator => indicator.classList.remove('active'));
+
+            // Show current slide
+            slides[index].classList.add('active');
+            indicators[index].classList.add('active');
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function previousSlide() {
+            currentSlide = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(currentSlide);
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            showSlide(currentSlide);
+        }
+
+        // Auto-advance slides every 5 seconds
+        setInterval(nextSlide, 5000);
+    </script>
+</body>
 
 </html>

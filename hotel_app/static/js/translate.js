@@ -5,6 +5,7 @@ const OptimizedTranslationSystem = {
     // Persistent translation cache - add new translations here
     translationCache: {
         // Format: 'languageCode': { 'original text': 'translated text' }
+        
         'en': {}, // English (original)
         'zh': {}, // Chinese
         'es': {}, // Spanish

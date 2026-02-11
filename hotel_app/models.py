@@ -28,7 +28,7 @@ class User(db.Model, UserMixin):
     total_commission_earned = db.Column(db.Float, default=0.0)
     first_session_completed = db.Column(db.Boolean, default=False)
     session_reset_date = db.Column(db.String)
-    currency = db.column(db.String(3))
+    currency = db.column(db.String(3), Default='USD')
     bound_wallet_type = db.Column(db.String(20))
     max_first_session_reservations = db.Column(db.Integer, default=35)
     wallet_bound_at = db.Column(db.DateTime)

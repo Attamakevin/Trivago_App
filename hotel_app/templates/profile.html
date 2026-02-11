@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
     <head>
@@ -31,27 +31,26 @@
         <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
     </head>
 
-    <body class="bg-gray-50 min-h-screen">
+    <body class="max-w-screen-sm mx-auto w-full bg-gray-50 min-h-screen">
         <!-- Header -->
-        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 px-4">
             <div class="flex items-center justify-start gap-8 text-white h-full">
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 data-translate class="text-white text-sm md:text-md font-bold">Profile</h1>
+                <h1 data-translate class="text-white text-sm font-bold">Profile</h1>
             </div>
         </header>
 
         <div class="px-4 py-6 space-y-6">
             <!-- Profile Section -->
             <div class="bg-white rounded-2xl overflow-hidden">
-                <div class="gradient-bg h-24 md:h-32"></div>
+                <div class="gradient-bg h-10"></div>
                 <div class="relative px-6 pb-6">
                     <!-- Profile Image -->
-                    <div class="relative -mt-12 md:-mt-16 mb-4">
-                        <img src="./static/images/profile.jpg"
-                            alt="Profile Picture"
-                            class="w-24 h-24 md:w-32 md:h-32 rounded-full border-4 border-white shadow-lg object-cover">
+                    <div class="relative -mt-5 mb-4">
+                        <img src="./static/images/profile.jpg" alt="Profile Picture"
+                            class="w-16 h-16 rounded-full border-4 border-white shadow-lg object-cover">
                         <!-- <button
                             class="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 transition-colors">
                             <i class="fas fa-camera text-sm"></i>
@@ -61,11 +60,13 @@
                     <!-- Profile Info -->
                     <div class="space-y-3">
                         <div>
-                            <h2 class="text-2xl md:text-3xl font-bold text-gray-900">USER ID: <span class="text-green-500 font-bold text-sm"></span>{{ user.user_id }}</h2>
-                            <p class="text-gray-600">VIP Level: <span class="text-green-500 font-bold text-xl"> {{ user.vip_level }}</span></p>
+                            <h2 class="text-md font-bold text-gray-900">USER ID: <span
+                                    class="text-green-500 font-bold text-sm"></span>{{ user.user_id }}</h2>
+                            <p class="text-gray-600">VIP Level: <span class="text-green-500 font-bold text-md">
+                                    {{ user.vip_level }}</span></p>
                         </div>
 
-                        <div class="grid md:grid-cols-2 gap-4 text-sm md:text-base">
+                        <div class="grid grid-cols-2 gap-4 text-sm">
                             <div class="flex items-center space-x-3">
                                 <i class="fas fa-hashtag text-blue-600 w-5"></i>
                                 <span class="text-gray-700">Agent ID: 65678654</span>
@@ -76,11 +77,13 @@
                             </div>
                             <div class="flex items-center space-x-3">
                                 <i class="fas fa-check text-purple-600 w-5"></i>
-                                <span class="text-gray-700">Invitation Code: <span class="text-green-500 font-bold text-sm">{{ user.invitation_code }}</span></span>
+                                <span class="text-gray-700">Invitation Code: <span
+                                        class="text-green-500 font-bold text-sm">{{ user.invitation_code }}</span></span>
                             </div>
                             <div class="flex items-center space-x-3">
                                 <i class="fas fa-plus text-purple-600 w-5"></i>
-                                <span class="text-gray-700">Member Points: <span class="text-green-500 font-bold text-md">{{ user.member_points }}</span></span>
+                                <span class="text-gray-700">Member Points: <span
+                                        class="text-green-500 font-bold text-md">{{ user.member_points }}</span></span>
                             </div>
                         </div>
                     </div>
@@ -88,12 +91,12 @@
             </div>
 
             <!-- Account Balance Section -->
-            <div class="balance-card rounded-2xl p-6 text-white">
+            <div class="balance-card rounded-2xl p-4 text-white">
                 <div class="flex items-center justify-between">
                     <div>
-                        <h3 data-translate class="text-lg font-semibold opacity-90">Account Balance</h3>
+                        <h3 data-translate class="text-md font-semibold opacity-90">Account Balance</h3>
                         <div class="mt-2">
-                            <span class="text-3xl md:text-4xl font-bold">€{{ "%.2f"|format(user.balance) }}</span>
+                            <span class="text-xl font-bold">{{ user.currency }}{{ "%.2f"|format(user.balance) }}</span>
                             <div class="flex items-center mt-2 space-x-4">
                                 <!-- <span class="text-sm opacity-80">Available: £11,200.50</span>
                                 <span class="text-sm opacity-80">Pending: £1,256.28</span> -->
@@ -101,7 +104,7 @@
                         </div>
                     </div>
                     <div class="text-right">
-                        <i class="fas fa-wallet text-4xl opacity-20"></i>
+                        <i class="fas fa-wallet text-2xl opacity-20"></i>
                         <div class="mt-2">
                             <span class="text-xs bg-white bg-opacity-20 px-2 py-1 rounded-full">+2.5% this month</span>
                         </div>
@@ -110,43 +113,43 @@
             </div>
 
             <!-- Action Cards -->
-            <div class="grid md:grid-cols-3 gap-4 md:gap-6">
+            <div class="grid grid-cols-3 gap-2">
                 <!-- Deposit Card -->
                 <a href="{{ url_for('deposit') }}"
-                    class="deposit-card rounded-2xl p-6 text-white card-hover cursor-pointer">
+                    class="deposit-card rounded-2xl p-4 text-white card-hover cursor-pointer">
                     <div class="text-center">
                         <div
-                            class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                            <i class="fas fa-plus text-2xl"></i>
+                            class="w-10 h-10 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-plus text-md"></i>
                         </div>
-                        <h4 data-translate class="text-xl font-bold mb-2">Deposit</h4>
-                        <p data-translate class="text-sm opacity-90">Add funds to your account</p>
+                        <p data-translate class="text-sm font-bold mb-2">Deposit</p>
+                        <p data-translate class="text-[13px] opacity-90">Add funds to your account</p>
                     </div>
                 </a>
 
                 <!-- Withdraw Card -->
                 <a href="{{ url_for('withdraw') }}"
-                    class="withdraw-card rounded-2xl p-6 text-white card-hover cursor-pointer">
+                    class="withdraw-card rounded-2xl p-4 text-white card-hover cursor-pointer">
                     <div class="text-center">
                         <div
-                            class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                            <i class="fas fa-minus text-2xl"></i>
+                            class="w-10 h-10 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-minus text-md"></i>
                         </div>
-                        <h4 data-translate class="text-xl font-bold mb-2">Withdraw</h4>
-                        <p data-translate class="text-sm opacity-90">Transfer funds out</p>
+                        <p data-translate class="text-sm font-bold mb-2">Withdraw</p>
+                        <p data-translate class="text-[13px] opacity-90">Transfer funds out</p>
                     </div>
                 </a>
 
                 <!-- Details Card -->
                 <a href="{{ url_for('transaction_details') }}"
-                    class="details-card rounded-2xl p-6 text-white card-hover cursor-pointer">
+                    class="details-card rounded-2xl p-4 text-white card-hover cursor-pointer">
                     <div class="text-center">
                         <div
-                            class="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                            <i class="fas fa-chart-line text-2xl"></i>
+                            class="w-10 h-10 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                            <i class="fas fa-chart-line text-md"></i>
                         </div>
-                        <h4 data-translate class="text-xl font-bold mb-2">Details</h4>
-                        <p data-translate class="text-sm opacity-90">View transaction history</p>
+                        <p data-translate class="text-sm font-bold mb-2">Details</p>
+                        <p data-translate class="text-[13px] opacity-90">View transaction history</p>
                     </div>
                 </a>
             </div>
@@ -154,20 +157,20 @@
             <!-- Menu Items -->
             <div class="bg-white rounded-2xl overflow-hidden">
                 <div class="p-4 border-b border-gray-100">
-                    <h3 data-translate class="text-lg font-semibold text-gray-900">Account Management</h3>
+                    <p data-translate class="text-md font-semibold text-gray-900">Account Management</p>
                 </div>
 
                 <div class="divide-y divide-gray-100">
                     <!-- Membership -->
                     <a href="{{ url_for('membership') }}"
-                        class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                        class="flex items-center justify-between p-3 hover:bg-gray-50 cursor-pointer transition-colors">
                         <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                            <div class="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                                 <i class="fas fa-crown text-purple-600"></i>
                             </div>
                             <div>
-                                <h4 data-translate class="font-medium text-gray-900">Membership</h4>
-                                <p data-translate class="text-sm text-gray-500">Manage your subscription</p>
+                                <p data-translate class="text-[14px] font-medium text-gray-900">Membership</p>
+                                <p data-translate class="text-[11px] text-gray-500">Manage your subscription</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -175,14 +178,14 @@
 
                     <!-- About Us -->
                     <a href="{{ url_for('about_us') }}"
-                        class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                        class="flex items-center justify-between p-3 hover:bg-gray-50 cursor-pointer transition-colors">
                         <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                                 <i class="fas fa-info-circle text-blue-600"></i>
                             </div>
                             <div>
-                                <h4 data-translate class="font-medium text-gray-900">About Us</h4>
-                                <p data-translate class="text-sm text-gray-500">Learn more about Trivago</p>
+                                <p data-translate class="text-[14px] font-medium text-gray-900">About Us</p>
+                                <p data-translate class="text-[11px] text-gray-500">Learn more about Trivago</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -190,14 +193,29 @@
 
                     <!-- Settings -->
                     <a href="{{ url_for('settings') }}"
-                        class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                        class="flex items-center justify-between p-3 hover:bg-gray-50 cursor-pointer transition-colors">
                         <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                            <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
                                 <i class="fas fa-cog text-gray-600"></i>
                             </div>
                             <div>
-                                <h4 data-translate class="font-medium text-gray-900">Settings</h4>
-                                <p data-translate class="text-sm text-gray-500">Privacy and preferences</p>
+                                <p data-translate class="text-[14px] font-medium text-gray-900">Settings</p>
+                                <p data-translate class="text-[11px] text-gray-500">Privacy and preferences</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-chevron-right text-gray-400"></i>
+                    </a>
+
+                    <!-- Currencies -->
+                    <a href="{{ url_for('currencies') }}"
+                        class="flex items-center justify-between p-3 hover:bg-gray-50 cursor-pointer transition-colors">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                                <i class="fas fa-coins text-green-600"></i>
+                            </div>
+                            <div>
+                                <p data-translate class="text-[14px] font-medium text-gray-900">Currencies</p>
+                                <p data-translate class="text-[11px] text-gray-500">Choose your display currency</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -205,14 +223,14 @@
 
                     <!-- Customer Service -->
                     <a href="{{ url_for('customer_service') }}"
-                        class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                        class="flex items-center justify-between p-3 hover:bg-gray-50 cursor-pointer transition-colors">
                         <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                            <div class="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                                 <i class="fas fa-headset text-green-600"></i>
                             </div>
                             <div>
-                                <h4 data-translate class="font-medium text-gray-900">Customer Service</h4>
-                                <p data-translate class="text-sm text-gray-500">Get help and support</p>
+                                <p data-translate class="text-[14px] font-medium text-gray-900">Customer Service</p>
+                                <p data-translate class="text-[11px] text-gray-500">Get help and support</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -220,14 +238,14 @@
 
                     <!-- Feedback -->
                     <a href="{{ url_for('feedback') }}"
-                        class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                        class="flex items-center justify-between p-3 hover:bg-gray-50 cursor-pointer transition-colors">
                         <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                            <div class="w-8 h-8 bg-yellow-100 rounded-full flex items-center justify-center">
                                 <i class="fas fa-comment-dots text-yellow-600"></i>
                             </div>
                             <div>
-                                <h4 data-translate class="font-medium text-gray-900">Feedback</h4>
-                                <p data-translate class="text-sm text-gray-500">Share your thoughts</p>
+                                <p data-translate class="text-[14px] font-medium text-gray-900">Feedback</p>
+                                <p data-translate class="text-[11px] text-gray-500">Share your thoughts</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -235,28 +253,28 @@
 
                     <!-- Help Center -->
                     <a href="{{ url_for('help_center') }}"
-                        class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                        class="flex items-center justify-between p-3 hover:bg-gray-50 cursor-pointer transition-colors">
                         <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                            <div class="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
                                 <i class="fas fa-question-circle text-red-600"></i>
                             </div>
                             <div>
-                                <h4 data-translate class="font-medium text-gray-900">Help Center</h4>
-                                <p data-translate class="text-sm text-gray-500">FAQs</p>
+                                <p data-translate class="text-[14px] font-medium text-gray-900">Help Center</p>
+                                <p data-translate class="text-[11px] text-gray-500">FAQs</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
                     </a>
                     <!-- Bind Wallet Address -->
                     <a href="{{ url_for('bind_wallet') }}"
-                        class="flex items-center justify-between p-4 hover:bg-gray-50 cursor-pointer transition-colors">
+                        class="flex items-center justify-between p-3 hover:bg-gray-50 cursor-pointer transition-colors">
                         <div class="flex items-center space-x-4">
-                            <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                            <div class="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
                                 <i class="fas fa-wallet text-gray-600"></i>
                             </div>
                             <div>
-                                <h4 data-translate class="font-medium text-gray-900">Bind Wallet Address</h4>
-                                <p data-translate class="text-sm text-gray-500">Your Wallet Address</p>
+                                <p data-translate class="text-[14px] font-medium text-gray-900">Bind Wallet Address</p>
+                                <p data-translate class="text-[11px] text-gray-500">Your Wallet Address</p>
                             </div>
                         </div>
                         <i class="fas fa-chevron-right text-gray-400"></i>
@@ -266,14 +284,14 @@
 
             <!-- Logout Button -->
             <div class="bg-white rounded-2xl p-4">
-    <form action="/logout" method="POST">
-        <button type="submit"
-            class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2">
-            <i class="fas fa-sign-out-alt"></i>
-            <span data-translate>Sign Out</span>
-        </button>
-    </form>
-</div>
+                <form action="/logout" method="POST">
+                    <button type="submit"
+                        class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 px-4 rounded-xl transition-colors flex items-center justify-center space-x-2">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span data-translate>Sign Out</span>
+                    </button>
+                </form>
+            </div>
         </div>
     </body>
 

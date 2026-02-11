@@ -1142,6 +1142,90 @@ def profile():
                          total_commission=total_commission)
 
 
+@app.route('/currencies')
+def currencies():
+    if 'user_id' not in session:
+        return redirect(url_for('login'))
+
+    # Determine currently selected currency (defaults to USD if none)
+    selected_currency = None
+    if current_user and hasattr(current_user, 'currency'):
+        selected_currency = current_user.currency
+    if not selected_currency:
+        selected_currency = 'EUR'
+
+    top_currencies = [
+        {"code": "EUR", "symbol": "€", "name": "Euro", "highlight": True},
+        {"code": "GBP", "symbol": "£", "name": "British Pound"},
+        {"code": "USD", "symbol": "$", "name": "US Dollar"},
+    ]
+
+    all_currencies = [
+        {"code": "AED", "symbol": "د.إ", "name": "Emirati Dirham"},
+        {"code": "ARS", "symbol": "$", "name": "Argentine Peso"},
+        {"code": "AUD", "symbol": "$", "name": "Australian Dollar"},
+        {"code": "AZN", "symbol": "₼", "name": "Azerbaijani Manat"},
+        {"code": "BGN", "symbol": "лв", "name": "Bulgarian Lev"},
+        {"code": "BHD", "symbol": "ب.د", "name": "Bahraini Dinar"},
+        {"code": "BRL", "symbol": "R$", "name": "Brazilian Real"},
+        {"code": "CAD", "symbol": "$", "name": "Canadian Dollar"},
+        {"code": "CHF", "symbol": "CHF", "name": "Swiss Franc"},
+        {"code": "CLP", "symbol": "$", "name": "Chilean Peso"},
+        {"code": "CNY", "symbol": "¥", "name": "Chinese Yuan"},
+        {"code": "COP", "symbol": "$", "name": "Colombian Peso"},
+        {"code": "CZK", "symbol": "Kč", "name": "Czech Koruna"},
+        {"code": "DKK", "symbol": "kr", "name": "Danish Krone"},
+        {"code": "DZD", "symbol": "د.ج", "name": "Algerian Dinar"},
+        {"code": "EGP", "symbol": "£", "name": "Egyptian Pound"},
+        {"code": "EUR", "symbol": "€", "name": "Euro"},
+        {"code": "GBP", "symbol": "£", "name": "British Pound"},
+        {"code": "HKD", "symbol": "$", "name": "Hong Kong Dollar"},
+        {"code": "HRK", "symbol": "kn", "name": "Croatian Kuna"},
+        {"code": "HUF", "symbol": "Ft", "name": "Hungarian Forint"},
+        {"code": "IDR", "symbol": "Rp", "name": "Indonesian Rupiah"},
+        {"code": "ILS", "symbol": "₪", "name": "Israeli New Shekel"},
+        {"code": "INR", "symbol": "₹", "name": "Indian Rupee"},
+        {"code": "JOD", "symbol": "د.ا", "name": "Jordanian Dinar"},
+        {"code": "JPY", "symbol": "¥", "name": "Japanese Yen"},
+        {"code": "KRW", "symbol": "₩", "name": "S. Korean Won"},
+        {"code": "KWD", "symbol": "د.ك", "name": "Kuwaiti Dinar"},
+        {"code": "KZT", "symbol": "₸", "name": "Kazakhstan Tenge"},
+        {"code": "LBP", "symbol": "ل.ل", "name": "Lebanese Pound"},
+        {"code": "MAD", "symbol": "د.م.", "name": "Morocco Dirhams"},
+        {"code": "MDL", "symbol": "L", "name": "Moldovan Leu"},
+        {"code": "MXN", "symbol": "$", "name": "Mexican Peso"},
+        {"code": "MYR", "symbol": "RM", "name": "Malaysian Ringgit"},
+        {"code": "NGN", "symbol": "₦", "name": "Nigerian Naira"},
+        {"code": "NOK", "symbol": "kr", "name": "Norwegian Krone"},
+        {"code": "NZD", "symbol": "$", "name": "New Zealand Dollar"},
+        {"code": "OMR", "symbol": "ر.ع.", "name": "Omani Rial"},
+        {"code": "PEN", "symbol": "S/", "name": "Peruvian Nuevo Sol"},
+        {"code": "PHP", "symbol": "₱", "name": "Philippine Peso"},
+        {"code": "PLN", "symbol": "zł", "name": "Polish Zloty"},
+        {"code": "QAR", "symbol": "ر.ق", "name": "Qatari Riyal"},
+        {"code": "RON", "symbol": "lei", "name": "Romanian Leu"},
+        {"code": "RSD", "symbol": "дин", "name": "Serbian Dinar"},
+        {"code": "RUB", "symbol": "₽", "name": "Russian Ruble"},
+        {"code": "SAR", "symbol": "﷼", "name": "Saudi Riyal"},
+        {"code": "SEK", "symbol": "kr", "name": "Swedish Krona"},
+        {"code": "SGD", "symbol": "S$", "name": "Singaporean Dollar"},
+        {"code": "THB", "symbol": "฿", "name": "Thai Baht"},
+        {"code": "TND", "symbol": "د.ت", "name": "Tunisian Dinar"},
+        {"code": "TRY", "symbol": "₺", "name": "Turkish Lira"},
+        {"code": "TWD", "symbol": "NT$", "name": "New Taiwan Dollar"},
+        {"code": "UAH", "symbol": "₴", "name": "Ukrainian Hryvnia"},
+        {"code": "USD", "symbol": "$", "name": "US Dollar"},
+        {"code": "UYU", "symbol": "$", "name": "Uruguayan Peso"},
+        {"code": "VND", "symbol": "₫", "name": "Vietnamese Dong"},
+        {"code": "ZAR", "symbol": "R", "name": "South African Rand"},
+    ]
+
+    return render_template('currencies.html',
+                           top_currencies=top_currencies,
+                           all_currencies=all_currencies,
+                           selected_currency=selected_currency)
+
+
 @app.route('/currency', methods=['POST'])
 @login_required  # Make sure user is logged in
 def set_currency():

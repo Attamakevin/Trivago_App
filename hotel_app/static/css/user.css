@@ -10,27 +10,6 @@ body {
   color: #333;
 }
 
-:root {
-  --mobile-shell-max: 480px;
-  --mobile-shell-bg: #f9fafb;
-  --desktop-backdrop: #e5e7eb;
-}
-
-/* Force desktop to display the mobile layout for non-admin, non-home/auth pages */
-@media (min-width: 768px) {
-  html {
-    background: var(--desktop-backdrop);
-  }
-
-  body {
-    max-width: var(--mobile-shell-max);
-    margin: 0 auto;
-    min-height: 100vh;
-    background: var(--mobile-shell-bg);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-  }
-}
-
 .gradient-bg {
   background: linear-gradient(135deg, #7b93fd 0%, #d9bdf5 100%);
 }

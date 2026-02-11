@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
     <head>
@@ -23,14 +23,14 @@
         <script defer src="{{ url_for('static', filename='js/user.js') }}"></script>
     </head>
 
-    <body class="bg-gray-50 min-h-screen">
+    <body class="max-w-screen-sm mx-auto w-full bg-gray-50 min-h-screen">
         <!-- Header -->
-        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 px-4">
             <div class="flex items-center justify-start gap-8 text-white h-full">
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-white text-sm md:text-md font-bold">Company Information</h1>
+                <h1 data-translate class="text-white text-sm font-bold">Company Information</h1>
             </div>
         </header>
 
@@ -47,8 +47,8 @@
                                     <i class="fas fa-rocket text-amber-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-sm sm:text-xl font-bold text-gray-900">Version</h3>
-                                    <p class="text-xs sm:text-sm text-gray-600">Checkout the app version</p>
+                                    <h3 data-translate class="text-sm font-bold text-gray-900">Version</h3>
+                                    <p data-translate class="text-xs text-gray-600">Checkout the app version</p>
                                 </div>
                             </div>
                             <p class="text-gray-400 transform transition-transform" id="">3.1</p>
@@ -66,8 +66,8 @@
                                     <i class="fas fa-info-circle text-blue-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-sm sm:text-xl font-bold text-gray-900">About Us</h3>
-                                    <p class="text-xs sm:text-sm text-gray-600">Learn about our company, mission, and
+                                    <h3 data-translate  class="text-sm font-bold text-gray-900">About Us</h3>
+                                    <p data-translate class="text-xs text-gray-600">Learn about our company, mission, and
                                         values</p>
                                 </div>
                             </div>
@@ -81,8 +81,8 @@
                             <div class="pt-6 space-y-6">
                                 <!-- Company Overview -->
                                 <div>
-                                    <h4 class="font-semibold text-gray-900 mb-3">Our Mission</h4>
-                                    <p class="text-gray-700 leading-relaxed">
+                                    <h4 data-translate class="font-semibold text-gray-900 mb-3">Our Mission</h4>
+                                    <p data-translate class="text-gray-700 leading-relaxed">
                                         To empower every traveler with the tools, information, and confidence needed to
                                         explore the world.
                                         We believe that travel should be accessible, affordable, and extraordinary for
@@ -92,44 +92,44 @@
 
                                 <!-- Key Stats -->
                                 <div>
-                                    <h4 class="font-semibold text-gray-900 mb-3">Key Statistics</h4>
-                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                    <h4 data-translate class="font-semibold text-gray-900 mb-3">Key Statistics</h4>
+                                    <div class="grid grid-cols-2 gap-4">
                                         <div class="text-center p-3 bg-gray-50 rounded-lg">
-                                            <div class="text-2xl font-bold text-blue-600">50M+</div>
-                                            <p class="text-xs text-gray-600">Happy Travelers</p>
+                                            <div data-translate class="text-2xl font-bold text-blue-600">50M+</div>
+                                            <p data-translate class="text-xs text-gray-600">Happy Travelers</p>
                                         </div>
                                         <div class="text-center p-3 bg-gray-50 rounded-lg">
-                                            <div class="text-2xl font-bold text-blue-600">180+</div>
-                                            <p class="text-xs text-gray-600">Countries</p>
+                                            <div data-translate class="text-2xl font-bold text-blue-600">180+</div>
+                                            <p data-translate class="text-xs text-gray-600">Countries</p>
                                         </div>
                                         <div class="text-center p-3 bg-gray-50 rounded-lg">
-                                            <div class="text-2xl font-bold text-blue-600">15+</div>
-                                            <p class="text-xs text-gray-600">Years Experience</p>
+                                            <div data-translate class="text-2xl font-bold text-blue-600">15+</div>
+                                            <p data-translate class="text-xs text-gray-600">Years Experience</p>
                                         </div>
                                         <div class="text-center p-3 bg-gray-50 rounded-lg">
-                                            <div class="text-2xl font-bold text-blue-600">24/7</div>
-                                            <p class="text-xs text-gray-600">Customer Support</p>
+                                            <div data-translate class="text-2xl font-bold text-blue-600">24/7</div>
+                                            <p data-translate class="text-xs text-gray-600">Customer Support</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Values -->
                                 <div>
-                                    <h4 class="font-semibold text-gray-900 mb-3">Our Core Values</h4>
-                                    <div class="grid md:grid-cols-2 gap-4">
+                                    <h4 data-translate class="font-semibold text-gray-900 mb-3">Our Core Values</h4>
+                                    <div class="grid grid-cols-2 gap-4">
                                         <div class="flex items-start gap-3">
                                             <i class="fas fa-compass text-blue-600 mt-1"></i>
                                             <div>
-                                                <h5 class="font-medium text-gray-900">Innovation</h5>
-                                                <p class="text-sm text-gray-600">Constantly pushing boundaries to create
+                                                <h5 data-translate class="font-medium text-gray-900">Innovation</h5>
+                                                <p data-translate class="text-sm text-gray-600">Constantly pushing boundaries to create
                                                     cutting-edge travel solutions.</p>
                                             </div>
                                         </div>
                                         <div class="flex items-start gap-3">
                                             <i class="fas fa-heart text-green-600 mt-1"></i>
                                             <div>
-                                                <h5 class="font-medium text-gray-900">Customer First</h5>
-                                                <p class="text-sm text-gray-600">Every decision is guided by what's best
+                                                <h5 data-translate class="font-medium text-gray-900">Customer First</h5>
+                                                <p data-translate class="text-sm text-gray-600">Every decision is guided by what's best
                                                     for
                                                     our travelers.</p>
                                             </div>
@@ -137,8 +137,8 @@
                                         <div class="flex items-start gap-3">
                                             <i class="fas fa-shield-alt text-yellow-600 mt-1"></i>
                                             <div>
-                                                <h5 class="font-medium text-gray-900">Transparency</h5>
-                                                <p class="text-sm text-gray-600">Honest pricing, clear policies, and
+                                                <h5 data-translate class="font-medium text-gray-900">Transparency</h5>
+                                                <p data-translate class="text-sm text-gray-600">Honest pricing, clear policies, and
                                                     open
                                                     communication.</p>
                                             </div>
@@ -146,8 +146,8 @@
                                         <div class="flex items-start gap-3">
                                             <i class="fas fa-globe text-purple-600 mt-1"></i>
                                             <div>
-                                                <h5 class="font-medium text-gray-900">Global Impact</h5>
-                                                <p class="text-sm text-gray-600">Committed to sustainable travel and
+                                                <h5 data-translate class="font-medium text-gray-900">Global Impact</h5>
+                                                <p data-translate class="text-sm text-gray-600">Committed to sustainable travel and
                                                     supporting local communities.</p>
                                             </div>
                                         </div>
@@ -156,12 +156,12 @@
 
                                 <!-- Company Info -->
                                 <div>
-                                    <h4 class="font-semibold text-gray-900 mb-3">Company Details</h4>
-                                    <div class="grid md:grid-cols-2 gap-4 text-sm">
-                                        <div><strong>Founded:</strong> 2008</div>
-                                        <div><strong>Headquarters:</strong> Düsseldorf, Germany</div>
-                                        <div><strong>Employees:</strong> 1,000+ worldwide</div>
-                                        <div><strong>Partners:</strong> 300+ booking sites</div>
+                                    <h4 data-translate class="font-semibold text-gray-900 mb-3">Company Details</h4>
+                                    <div class="grid grid-cols-2 gap-4 text-sm">
+                                        <div data-translate><strong>Founded:</strong> 2008</div>
+                                        <div data-translate><strong>Headquarters:</strong> DÃ¼sseldorf, Germany</div>
+                                        <div data-translate><strong>Employees:</strong> 1,000+ worldwide</div>
+                                        <div data-translate><strong>Partners:</strong> 300+ booking sites</div>
                                     </div>
                                 </div>
                             </div>
@@ -179,8 +179,8 @@
                                     <i class="fas fa-file-contract text-purple-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-sm sm:text-xl font-bold text-gray-900">Terms and Conditions</h3>
-                                    <p class="text-xs sm:text-sm text-gray-600">Rules and guidelines for using our
+                                    <h3 data-translate class="text-sm font-bold text-gray-900">Terms and Conditions</h3>
+                                    <p data-translate class="text-xs text-gray-600">Rules and guidelines for using our
                                         services</p>
                                 </div>
                             </div>
@@ -192,16 +192,16 @@
                     <div class="section-content hidden" id="terms-content">
                         <div class="px-6 pb-6 border-t border-gray-100">
                             <div class="pt-6">
-                                <h1 class="text-slate-700 border-b-4 border-blue-500 pb-3">Agreement Between the Agent
+                                <h1 data-translate class="text-slate-700 border-b-4 border-blue-500 pb-3">Agreement Between the Agent
                                     and the Company Platform</h1>
-                                <p class="mb-4 text-justify">This website and any related mobile applications ("Site")
+                                <p data-translate class="mb-4 text-justify">This website and any related mobile applications ("Site")
                                     are operated by Company and these
                                     terms and conditions of use ("Terms of Use") set out the terms under which Company
                                     agrees to provide services to you
                                     through this website and the terms on which the supplier agrees to provide the
                                     service to you.</p>
 
-                                <p class="mb-4 text-justify">This website is provided to you on the condition that you
+                                <p data-translate class="mb-4 text-justify">This website is provided to you on the condition that you
                                     accept without modification all
                                     terms, conditions, and notices under these terms of use. Please read the terms of
                                     use carefully. Your use of this
@@ -209,29 +209,29 @@
                                     are not authorized to use this
                                     site.</p>
 
-                                <p class="mb-4 text-justify">The platform may change these terms of use at any time, and
+                                <p data-translate class="mb-4 text-justify">The platform may change these terms of use at any time, and
                                     your continued use of the site
                                     is conditional on acceptance of the updated terms of use.</p>
 
-                                <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">1. Definition and Scope
+                                <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">1. Definition and Scope
                                 </h2>
 
-                                <p class="mb-4 text-justify">The following definitions have the same meaning whether in
+                                <p v class="mb-4 text-justify">The following definitions have the same meaning whether in
                                     the singular or the plural:</p>
 
-                                <div class="definition">
+                                <div data-translate class="definition">
                                     <p class="mb-4 text-justify"><strong>"Agent"</strong> (or "you/your") means the
                                         agent who maintains and/or provides
                                         one or more of the services offered on the Site.</p>
                                 </div>
 
-                                <div class="definition">
+                                <div data-translate class="definition">
                                     <p class="mb-4 text-justify"><strong>"Terms of Use"</strong> means the general terms
                                         and conditions of rating review
                                         and use as amended from time to time.</p>
                                 </div>
 
-                                <div class="definition">
+                                <div data-translate class="definition">
                                     <p class="mb-4 text-justify"><strong>"Services"</strong> means the services provided
                                         by the Platform, which the
                                         Agent will be able to experience by the Terms of Use after payment, including
@@ -249,12 +249,12 @@
                                         device, and/or any other device capable of connecting to the Internet.</p>
                                 </div>
 
-                                <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">2. Legal Authorization
+                                <h2  data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">2. Legal Authorization
                                     of the Client</h2>
 
                                 <div class="ml-5">
-                                    <h4 class="text-slate-600 mt-5">2.1</h4>
-                                    <p class="mb-4 text-justify">The lead agent must be at least 18 years of age and
+                                    <h4 data-translate class="text-slate-600 mt-5">2.1</h4>
+                                    <p data-translate class="mb-4 text-justify">The lead agent must be at least 18 years of age and
                                         sound mind and have the statutory
                                         authority to make binding legal obligations. The lead agency must be legally
                                         authorized to enter into
@@ -263,7 +263,7 @@
                                         act on behalf of anyone in the rating review.</p>
 
                                     <h4 class="text-slate-600 mt-5">2.2</h4>
-                                    <p class="mb-4 text-justify">The Lead Agent must ensure and confirm that the details
+                                    <p data-translate class="mb-4 text-justify">The Lead Agent must ensure and confirm that the details
                                         provided to the evaluating
                                         Hotel parties are complete and accurate, that all parties agree to be bound by
                                         these Terms of Use, and that the
@@ -271,31 +271,31 @@
                                         Reservation.</p>
 
                                     <h4 class="text-slate-600 mt-5">2.3</h4>
-                                    <p class="mb-4 text-justify">The Lead Agent is the person responsible for evaluating
+                                    <p data-translate class="mb-4 text-justify">The Lead Agent is the person responsible for evaluating
                                         hotels, paying the deposit and
                                         full price, making any amendment and cancellation requests, paying any
                                         additional fees related to the evaluated
                                         hotel, and all other matters related to the rating review.</p>
                                 </div>
 
-                                <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">3. General Use of the
+                                <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">3. General Use of the
                                     Website</h2>
 
                                 <div class="ml-5">
                                     <h4 class="text-slate-600 mt-5">3.1</h4>
-                                    <p class="mb-4 text-justify">As a condition of your use of this website, you warrant
+                                    <p data-translate class="mb-4 text-justify">As a condition of your use of this website, you warrant
                                         that:</p>
-                                    <div class="list-item">(i) you will use this website according to these terms of
+                                    <div data-translate class="list-item">(i) you will use this website according to these terms of
                                         use;</div>
-                                    <div class="list-item">(ii) you will only use this website to make lawful
+                                    <div data-translate class="list-item">(ii) you will only use this website to make lawful
                                         reservations for you or others legally
                                         authorized by you;</div>
-                                    <div class="list-item">(iii) if you own a Platform account, you will protect your
+                                    <div data-translate  class="list-item">(iii) if you own a Platform account, you will protect your
                                         account information and supervise
                                         and be solely responsible for any use of your account.</div>
 
-                                    <h4 class="text-slate-600 mt-5">3.2</h4>
-                                    <p class="mb-4 text-justify">We reserve the right to deny access to the Website and
+                                    <h4 data-translate class="text-slate-600 mt-5">3.2</h4>
+                                    <p data-translate class="mb-4 text-justify">We reserve the right to deny access to the Website and
                                         Services to anyone at any time
                                         for any reason in our sole discretion. Any fraudulent or conflicting use of this
                                         site's Terms of Use shall be
@@ -306,12 +306,12 @@
                                 <button class="read-more-btn" onclick="toggleContent()">Read More</button>
 
                                 <div id="hiddenContent" class="hidden-content">
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">4. Prohibited
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">4. Prohibited
                                         Activities</h2>
 
                                     <div class="ml-5">
-                                        <h4 class="text-slate-600 mt-5">4.1</h4>
-                                        <p class="mb-4 text-justify">The content and information on this website and the
+                                        <h4 data-translate class="text-slate-600 mt-5">4.1</h4>
+                                        <p data-translate class="mb-4 text-justify">The content and information on this website and the
                                             infrastructure used to provide
                                             such content and information are the exclusive rights of us or our suppliers
                                             and providers. Although you may
@@ -322,26 +322,26 @@
                                             information, software, products or services obtained through this website.
                                         </p>
 
-                                        <p class="mb-4 text-justify">In addition, you agree not to:</p>
-                                        <div class="list-item">(i) use this website or its content for any commercial
+                                        <p data-translate class="mb-4 text-justify">In addition, you agree not to:</p>
+                                        <div data-translate class="list-item">(i) use this website or its content for any commercial
                                             purpose;</div>
-                                        <div class="list-item">(ii) conduct any speculative, false or fraudulent rating
+                                        <div data-translate class="list-item">(ii) conduct any speculative, false or fraudulent rating
                                             reviews;</div>
-                                        <div class="list-item">(iii) use any robot, spider, crawler, or other automated
+                                        <div data-translate class="list-item">(iii) use any robot, spider, crawler, or other automated
                                             means without our express
                                             written permission;</div>
-                                        <div class="list-item">(iv) violate any restrictions or bypass measures used to
+                                        <div data-translate class="list-item">(iv) violate any restrictions or bypass measures used to
                                             prevent access to the Site;
                                         </div>
-                                        <div class="list-item">(v) deep linking to any part of this website without our
+                                        <div data-translate class="list-item">(v) deep linking to any part of this website without our
                                             express written permission;
                                         </div>
-                                        <div class="list-item">(vi) "frame", "mirror" or otherwise incorporate any part
+                                        <div data-translate class="list-item">(vi) "frame", "mirror" or otherwise incorporate any part
                                             of this website into any other
                                             website without authorization.</div>
 
                                         <h4 class="text-slate-600 mt-5">4.2</h4>
-                                        <p class="mb-4 text-justify">If your rating reviews or account show signs of
+                                        <p data-translate class="mb-4 text-justify">If your rating reviews or account show signs of
                                             fraud, abuse or suspicious
                                             activity, the company may cancel any rating reviews associated with your
                                             name, phone number, or account and
@@ -350,7 +350,7 @@
                                             losses including litigation costs and damages.</p>
 
                                         <h4 class="text-slate-600 mt-5">4.3</h4>
-                                        <p class="mb-4 text-justify">You agree and authorize the company to cancel the
+                                        <p data-translate class="mb-4 text-justify">You agree and authorize the company to cancel the
                                             rating review of a task and reset
                                             your task for completion if the company deems it necessary or if you have
                                             violated our Terms of Service.</p>
@@ -358,19 +358,19 @@
 
                                     <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">5. Privacy Policy
                                     </h2>
-                                    <p class="mb-4 text-justify">The platform believes in protecting your privacy. You
+                                    <p data-translate class="mb-4 text-justify">The platform believes in protecting your privacy. You
                                         can view our current Privacy
                                         Policy on another page that also governs your use of the website to learn about
                                         our practices.</p>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">6. Confirmation and
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">6. Confirmation and
                                         Cancellation of Rating Review
                                     </h2>
 
                                     <h3 class="text-slate-700 mt-6">Confirmation</h3>
                                     <div class="ml-5">
-                                        <h4 class="text-slate-600 mt-5">6.1</h4>
-                                        <p class="mb-4 text-justify">The confirmation of the rating review including
+                                        <h4 data-translate class="text-slate-600 mt-5">6.1</h4>
+                                        <p data-translate class="mb-4 text-justify">The confirmation of the rating review including
                                             basic elements such as service
                                             description and price will be sent to the lead agent on the platform rating
                                             review page. If the lead agency
@@ -379,7 +379,7 @@
                                             unfreeze or unlock the account.</p>
 
                                         <h4 class="text-slate-600 mt-5">6.2</h4>
-                                        <p class="mb-4 text-justify">It is expressly agreed that the data stored in the
+                                        <p data-translate class="mb-4 text-justify">It is expressly agreed that the data stored in the
                                             company and/or its suppliers'
                                             information systems shall constitute evidence about the Rating Review
                                             conducted by the lead agent. Data
@@ -388,16 +388,16 @@
                                             physical written documents.</p>
                                     </div>
 
-                                    <h3 class="text-slate-700 mt-6">Cancellation and Postponement</h3>
+                                    <h3 data-translate class="text-slate-700 mt-6">Cancellation and Postponement</h3>
                                     <div class="ml-5">
-                                        <h4 class="text-slate-600 mt-5">6.3</h4>
-                                        <p class="important-note"><strong>Important:</strong> Once a rating review is
+                                        <h4 data-translate class="text-slate-600 mt-5">6.3</h4>
+                                        <p data-translate class="important-note"><strong>Important:</strong> Once a rating review is
                                             posted, it cannot be canceled. In
                                             any event, once payment is received, no refund will be given even if
                                             canceled.</p>
 
-                                        <h4 class="text-slate-600 mt-5">6.4</h4>
-                                        <p class="mb-4 text-justify">If the Agent wishes to extend the rating review
+                                        <h4 data-translate class="text-slate-600 mt-5">6.4</h4>
+                                        <p data-translate class="mb-4 text-justify">If the Agent wishes to extend the rating review
                                             and/or make other changes after
                                             conducting the Rating Review, including changing the Agent's details, the
                                             Agent should contact Customer
@@ -405,11 +405,11 @@
                                             extended.</p>
                                     </div>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">7. Hotel and Travel
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">7. Hotel and Travel
                                         Promotion</h2>
                                     <div class="ml-5">
                                         <h4 class="text-slate-600 mt-5">7.1</h4>
-                                        <p class="mb-4 text-justify">The promotion of Hotel and travel through data
+                                        <p data-translate class="mb-4 text-justify">The promotion of Hotel and travel through data
                                             integration has not occurred any
                                             accidents, but some regions or hotels involve risks such as sensitive
                                             content. The company advises customers
@@ -420,11 +420,11 @@
                                             Affairs on travel safety.</p>
                                     </div>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">8. Statement of
+                                    <h2 data-translate  class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">8. Statement of
                                         Liability</h2>
                                     <div class="ml-5">
-                                        <h4 class="text-slate-600 mt-5">8.1</h4>
-                                        <p class="mb-4 text-justify">In no event shall the Company's representatives
+                                        <h4 data-translate class="text-slate-600 mt-5">8.1</h4>
+                                        <p data-translate class="mb-4 text-justify">In no event shall the Company's representatives
                                             warrant that the promotion of the
                                             Hotels and the raising of the reviews are risk-free and the Company shall
                                             not be liable for any damage or
@@ -432,11 +432,11 @@
                                             raising of the reviews.</p>
                                     </div>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">9. Comments and
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">9. Comments and
                                         Other Submissions</h2>
                                     <div class="ml-5">
                                         <h4 class="text-slate-600 mt-5">9.1</h4>
-                                        <p class="mb-4 text-justify">Any hotel reviews, comments, questions,
+                                        <p data-translate class="mb-4 text-justify">Any hotel reviews, comments, questions,
                                             suggestions, ideas, or similar content
                                             contained in any Submission, you grant the Company a non-exclusive,
                                             royalty-free, perpetual, transferable,
@@ -446,13 +446,13 @@
                                             in any media.</p>
 
                                         <h4 class="text-slate-600 mt-5">9.2</h4>
-                                        <p class="mb-4 text-justify">You acknowledge that the Company may, in its sole
+                                        <p data-translate class="mb-4 text-justify">You acknowledge that the Company may, in its sole
                                             discretion, choose to provide
                                             attribution of comments and that such submissions may be shared with our
                                             vendor partners.</p>
 
                                         <h4 class="text-slate-600 mt-5">9.3</h4>
-                                        <p class="mb-4 text-justify">You acknowledge and agree that Submissions are
+                                        <p data-translate class="mb-4 text-justify">You acknowledge and agree that Submissions are
                                             non-confidential and
                                             non-proprietary. You expressly waive any "moral rights" that may exist in
                                             your Submission and agree that you
@@ -460,10 +460,10 @@
                                             Submissions.</p>
                                     </div>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">10. Disclaimer</h2>
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">10. Disclaimer</h2>
                                     <div class="ml-5">
                                         <h4 class="text-slate-600 mt-5">10.1</h4>
-                                        <p class="mb-4 text-justify">The information, software, products, and services
+                                        <p data-translate class="mb-4 text-justify">The information, software, products, and services
                                             published on this website may
                                             contain inaccuracies or typographical errors. The company and its affiliates
                                             do not warrant the accuracy of
@@ -472,7 +472,7 @@
                                             general guidelines only.</p>
 
                                         <h4 class="text-slate-600 mt-5">10.2</h4>
-                                        <p class="mb-4 text-justify">The Company and its suppliers make no
+                                        <p data-translate class="mb-4 text-justify">The Company and its suppliers make no
                                             representations about the suitability of the
                                             information, software, products, and services contained on this website for
                                             any purpose. The Company
@@ -481,42 +481,42 @@
                                             particular purpose, title and non-infringement.</p>
                                     </div>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">11. Indemnity</h2>
-                                    <p class="mb-4 text-justify">You agree to indemnify against any claim, cause of
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">11. Indemnity</h2>
+                                    <p data-translate class="mb-4 text-justify">You agree to indemnify against any claim, cause of
                                         action, demand, recovery, loss,
                                         damage, fine, or other costs or expenses of any kind, including reasonable legal
                                         and accounting fees, by third
                                         parties due to:</p>
-                                    <div class="list-item">(a) your breach of these Terms of Use;</div>
-                                    <div class="list-item">(b) you violate any law or the rights of a third party;</div>
-                                    <div class="list-item">(c) Your use of this website.</div>
+                                    <div data-translate class="list-item">(a) your breach of these Terms of Use;</div>
+                                    <div data-translate  class="list-item">(b) you violate any law or the rights of a third party;</div>
+                                    <div data-translate class="list-item">(c) Your use of this website.</div>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">12. Links to Third
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">12. Links to Third
                                         Party Websites</h2>
-                                    <p class="mb-4 text-justify">This website may contain hyperlinks to websites
+                                    <p data-translate class="mb-4 text-justify">This website may contain hyperlinks to websites
                                         operated by parties other than the
                                         company. Such hyperlinks are provided for your information only. We do not
                                         control such websites and are not
                                         responsible for their content or your use of them.</p>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">13. General</h2>
+                                    <h2  data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">13. General</h2>
                                     <div class="ml-5">
                                         <h4 class="text-slate-600 mt-5">13.1</h4>
-                                        <p class="mb-4 text-justify">This Agreement shall be governed by the laws of
+                                        <p data-translate class="mb-4 text-justify">This Agreement shall be governed by the laws of
                                             India. Use of this website is
                                             unauthorized in any jurisdiction that does not give effect to all provisions
                                             of these terms and conditions.
                                         </p>
 
                                         <h4 class="text-slate-600 mt-5">13.2</h4>
-                                        <p class="mb-4 text-justify">Any dispute arising out of or in connection with
+                                        <p data-translate class="mb-4 text-justify">Any dispute arising out of or in connection with
                                             these Terms of Use shall be
                                             submitted to and finally resolved by arbitration in India. The arbitral
                                             tribunal shall consist of one (1)
                                             arbitrator. The language of the arbitration shall be English.</p>
 
                                         <h4 class="text-slate-600 mt-5">13.3</h4>
-                                        <p class="mb-4 text-justify">This Agreement constitutes the entire agreement
+                                        <p data-translate class="mb-4 text-justify">This Agreement constitutes the entire agreement
                                             between you and the Company about
                                             the Website and supersedes all prior communications and proposals between
                                             the Client and the Company about
@@ -524,62 +524,62 @@
                                     </div>
 
                                     <div class="important-note">
-                                        <h3 class="text-slate-700 mt-6">Withdrawal Fee Notice</h3>
-                                        <p class="mb-4 text-justify"><strong>Important:</strong> Members who are
+                                        <h3 data-translate class="text-slate-700 mt-6">Withdrawal Fee Notice</h3>
+                                        <p data-translate class="mb-4 text-justify"><strong>Important:</strong> Members who are
                                             withdrawing more than 10,000.00 euro
                                             have to deposit withdrawal fee.</p>
                                     </div>
 
-                                    <h1 class="text-slate-700 border-b-4 border-blue-500 pb-3">Privacy Policy</h1>
+                                    <h1 data-translate class="text-slate-700 border-b-4 border-blue-500 pb-3">Privacy Policy</h1>
 
-                                    <p class="mb-4 text-justify">The Company respects the privacy rights of individuals
+                                    <p data-translate class="mb-4 text-justify">The Company respects the privacy rights of individuals
                                         and its privacy policy is based
                                         on the Personal Data Protection Act 2012. This Privacy Policy describes how the
                                         company collects, uses, and/or
                                         discloses information on our website and mobile applications.</p>
 
-                                    <p class="mb-4 text-justify">By interacting with us, using our website and/or mobile
+                                    <p data-translate class="mb-4 text-justify">By interacting with us, using our website and/or mobile
                                         application, submitting
                                         information to us, or registering for an account, you represent that you have
                                         read and understood this Privacy
                                         Policy and agree to be bound by its terms.</p>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Types of Personal
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Types of Personal
                                         Information We Collect</h2>
-                                    <p class="mb-4 text-justify">"Personal Information" means information that can be
+                                    <p data-translate class="mb-4 text-justify">"Personal Information" means information that can be
                                         used to identify, locate or
                                         contact an individual or business. For your account registration process and
                                         subsequent use of our services, we
                                         collect personal information which may include:</p>
 
-                                    <div class="list-item">(a) <strong>Contact Information</strong> - name, social media
+                                    <div data-translate class="list-item">(a) <strong>Contact Information</strong> - name, social media
                                         account names, telephone number
                                     </div>
-                                    <div class="list-item">(b) <strong>Transactional Information</strong> - how you
+                                    <div data-translate class="list-item">(b) <strong>Transactional Information</strong> - how you
                                         interact with the platform, services
                                         you view, purchase, and rate</div>
-                                    <div class="list-item">(c) <strong>Financial Account Information</strong> - bank
+                                    <div data-translate class="list-item">(c) <strong>Financial Account Information</strong> - bank
                                         account number, bank name, required
                                         to process payments</div>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">How We Use Personal
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">How We Use Personal
                                         Information</h2>
-                                    <p class="mb-4 text-justify">The platform uses personal information for the
+                                    <p data-translate class="mb-4 text-justify">The platform uses personal information for the
                                         following purposes:</p>
-                                    <div class="list-item">(a) operate and improve our website and/or mobile application
+                                    <div data-translate class="list-item">(a) operate and improve our website and/or mobile application
                                     </div>
-                                    <div class="list-item">(b) open and maintain your account with us</div>
-                                    <div class="list-item">(c) send you relevant information including confirmations,
+                                    <div data-translate class="list-item">(b) open and maintain your account with us</div>
+                                    <divdata-translate  class="list-item">(c) send you relevant information including confirmations,
                                         invoices, technical notices</div>
-                                    <div class="list-item">(d) provide general data for research and analysis</div>
-                                    <div class="list-item">(e) facilitate orders and fulfill requests for platform
+                                    <div data-translate class="list-item">(d) provide general data for research and analysis</div>
+                                    <div  data-translate class="list-item">(e) facilitate orders and fulfill requests for platform
                                         services</div>
-                                    <div class="list-item">(f) provide customer support</div>
-                                    <div class="list-item">(g) manage our business needs including fraud prevention and
+                                    <div data-translate class="list-item">(f) provide customer support</div>
+                                    <div data-translate class="list-item">(g) manage our business needs including fraud prevention and
                                         legal compliance</div>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Data Security</h2>
-                                    <p class="mb-4 text-justify">We follow generally accepted standards to protect
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Data Security</h2>
+                                    <p data-translate class="mb-4 text-justify">We follow generally accepted standards to protect
                                         personal information submitted to us,
                                         both during transmission and after we receive it. Any payment transactions will
                                         be encrypted using SSL
@@ -587,16 +587,16 @@
                                         therefore we cannot guarantee
                                         absolute safety.</p>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Your Rights</h2>
-                                    <p class="mb-4 text-justify">You have the right to access the personal data we hold
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Your Rights</h2>
+                                    <p data-translate class="mb-4 text-justify">You have the right to access the personal data we hold
                                         about you and to correct any
                                         inaccurate personal data. If you want to inquire, correct, or request to delete
                                         your data, please contact us
                                         through Live Customer Service.</p>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Changes to Privacy
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Changes to Privacy
                                         Policy</h2>
-                                    <p class="mb-4 text-justify">We may update this Privacy Policy from time to time. If
+                                    <p data-translate class="mb-4 text-justify">We may update this Privacy Policy from time to time. If
                                         we make any material changes,
                                         we will notify you through a notice on the website before the changes become
                                         effective.</p>
@@ -616,8 +616,8 @@
                                     <i class="fas fa-shield-alt text-green-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <h3 class="text-sm sm:text-xl font-bold text-gray-900">Privacy Policy</h3>
-                                    <p class="text-xs sm:text-sm text-gray-600">How we collect, use, and protect your
+                                    <h3 data-translate class="text-sm font-bold text-gray-900">Privacy Policy</h3>
+                                    <p data-translate class="text-xs text-gray-600">How we collect, use, and protect your
                                         personal
                                         information</p>
                                 </div>
@@ -630,24 +630,24 @@
                     <div class="section-content hidden" id="privacy-content">
                         <div class="px-6 pb-6 border-t border-gray-100">
                             <div class="pt-6">
-                                <h1 class="text-slate-700 border-b-4 border-blue-500 pb-3">Trivago Privacy Policy
+                                <h1 data-translate class="text-slate-700 border-b-4 border-blue-500 pb-3">Trivago Privacy Policy
                                 </h1>
 
-                                <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Who is the Controller of
+                                <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Who is the Controller of
                                     Your Personal Data?</h2>
 
-                                <p class="mb-4 text-justify">The pages on this website ("the website") are managed and
+                                <p data-translate class="mb-4 text-justify">The pages on this website ("the website") are managed and
                                     operated by Trivago
                                     (referred to hereafter as "we" or "us").</p>
 
-                                <p class="mb-4 text-justify">This privacy policy explains how we use any personal
+                                <p data-translate  class="mb-4 text-justify">This privacy policy explains how we use any personal
                                     information that you provide to us or
                                     that we collect about you when using this website. We've updated our privacy policy
                                     in line with the requirements
                                     set out by General Data Protection Regulation.</p>
 
                                 <div class="info-box">
-                                    <p class="mb-4 text-justify">Your privacy is a serious matter to us and we have
+                                    <p data-translate class="mb-4 text-justify">Your privacy is a serious matter to us and we have
                                         created this Privacy Policy to
                                         inform you of how we collect, use, share, and secure your Personal Information.
                                         "Personal Information" includes
@@ -658,64 +658,64 @@
                                         Personal Information.</p>
                                 </div>
 
-                                <p class="mb-4 text-justify">This Privacy Policy explains, in general, what Personal
+                                <p data-translate class="mb-4 text-justify">This Privacy Policy explains, in general, what Personal
                                     Information and other information
                                     is collected on the Website, how the information is used, and with whom we may share
                                     such information. Please take a
                                     few minutes to read our Privacy Policy so that you understand how Trivago
                                     treats your Personal Information.</p>
 
-                                <p class="mb-4 text-justify"><strong>It is our general policy not to share your Personal
+                                <p data-translate class="mb-4 text-justify"><strong>It is our general policy not to share your Personal
                                         Information with third parties
                                         for such third parties' direct marketing purposes without your consent.</strong>
                                 </p>
 
-                                <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">What Information Do We
+                                <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">What Information Do We
                                     Collect About You?</h2>
 
-                                <p class="mb-4 text-justify">Trivago may collect information in a number of ways in
+                                <p data-translate class="mb-4 text-justify">Trivago may collect information in a number of ways in
                                     connection with the Website,
                                     including, without limitation, as follows:</p>
 
-                                <div class="list-item">• When you submit a resume or other information to be considered
+                                <div data-translate class="list-item">• When you submit a resume or other information to be considered
                                     for employment with Trivago
                                 </div>
-                                <div class="list-item">• When you send us an enquiry via the contact form on our website
+                                <div data-translate class="list-item">• When you send us an enquiry via the contact form on our website
                                 </div>
-                                <div class="list-item">• When you subscribe to one of our Global Intelligence
+                                <div data-translate class="list-item">• When you subscribe to one of our Global Intelligence
                                     publications and reports</div>
-                                <div class="list-item">• When you request to receive our newsletters</div>
-                                <div class="list-item">• When you voluntarily provide Personal Information to us for any
+                                <div data-translate class="list-item">• When you request to receive our newsletters</div>
+                                <div data-translate class="list-item">• When you voluntarily provide Personal Information to us for any
                                     other purpose</div>
 
-                                <p class="mb-4 text-justify">We collect information about you when you register with us
+                                <p data-translate class="mb-4 text-justify">We collect information about you when you register with us
                                     or request information from us
                                     about our products and services. The type of information that we collect from you
                                     will include your name, your
                                     company, your email address, and your phone number.</p>
 
-                                <p class="mb-4 text-justify">We will also collect information about your use of this
+                                <p data-translate class="mb-4 text-justify">We will also collect information about your use of this
                                     website. Website usage information
                                     is obtained via the use of cookies (please see the 'cookies' section below).</p>
 
-                                <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">How Will We Use Your
+                                <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">How Will We Use Your
                                     Information?</h2>
 
-                                <p class="mb-4 text-justify">The information collected will be used to send you the
+                                <p data-translate class="mb-4 text-justify">The information collected will be used to send you the
                                     information you have requested from
                                     us and will, where agreed to by you, be used to provide you with information about
                                     our products and services. All
                                     personal information collected about you shall be processed in accordance with the
                                     Data Protection Act 1998.</p>
 
-                                <p class="mb-4 text-justify">When sending us an enquiry, a backup of your data will be
+                                <p data-translate class="mb-4 text-justify">When sending us an enquiry, a backup of your data will be
                                     held for 30 days but only
                                     authorized individuals will be able to access your data during this period.</p>
 
-                                <button class="read-more-btn1" onclick="togglePrivacyContent()">Read More</button>
+                                <button data-translate class="read-more-btn1" onclick="togglePrivacyContent()">Read More</button>
 
                                 <div id="hiddenPrivacyContent" class="hidden-content">
-                                    <p class="mb-4 text-justify">We may pass on your personal information to our group
+                                    <p data-translate class="mb-4 text-justify">We may pass on your personal information to our group
                                         companies within Trivago
                                         network so that they may provide you with information on their products and
                                         services that may be of interest to
@@ -723,9 +723,9 @@
                                         purposes with companies outside of the
                                         Trivago group network.</p>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Marketing</h2>
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Marketing</h2>
 
-                                    <p class="mb-4 text-justify">We would like to send you information about our (and
+                                    <p data-translate class="mb-4 text-justify">We would like to send you information about our (and
                                         our group companies) products and
                                         services which may be of interest to you. If you have consented to receive
                                         marketing information from us (or a
@@ -733,32 +733,32 @@
                                     </p>
 
                                     <div class="contact-box">
-                                        <p class="mb-4 text-justify"><strong>Opt-out of Marketing:</strong> If you no
+                                        <p data-translate class="mb-4 text-justify"><strong>Opt-out of Marketing:</strong> If you no
                                             longer wish to be contacted by us,
                                             please email <a href="mailto:Comments@Trivago.com"
                                                 class="text-blue-600 hover:text-blue-800 underline">Comments@Trivago.com</a>
                                         </p>
                                     </div>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Access to Your
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Access to Your
                                         Information and Correction</h2>
 
-                                    <p class="mb-4 text-justify">You have the right to request a copy of the information
+                                    <p data-translate class="mb-4 text-justify">You have the right to request a copy of the information
                                         that we hold about you. If you
                                         would like a copy of the personal information that we hold about you, please
                                         email us at <a href="mailto:Comments@Trivago.com"
                                             class="text-blue-600 hover:text-blue-800 underline">Comments@Trivago.com</a>
                                     </p>
 
-                                    <p class="mb-4 text-justify">We want to make sure that your personal information is
+                                    <p data-translate class="mb-4 text-justify">We want to make sure that your personal information is
                                         accurate and up to date.
                                         Therefore you can also contact us at any time to ask us to correct or remove
                                         information that you think is
                                         inaccurate.</p>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Cookies</h2>
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Cookies</h2>
 
-                                    <p class="mb-4 text-justify">Our website uses cookies. The cookies we use are
+                                    <p data-translate class="mb-4 text-justify">Our website uses cookies. The cookies we use are
                                         'analytical' cookies. They allow us to
                                         recognize and count the number of visitors to our website and enable us to
                                         analyze how visitors move around the
@@ -767,51 +767,51 @@
                                         sure you can find the information you are looking for easily.</p>
 
                                     <div class="info-box">
-                                        <h4 class="text-slate-600 mt-5">Cookie Information</h4>
-                                        <p class="mb-4 text-justify">For further information on cookies, please visit
+                                        <h4 data-translate class="text-slate-600 mt-5">Cookie Information</h4>
+                                        <p data-translate class="mb-4 text-justify">For further information on cookies, please visit
                                             eone.com</p>
-                                        <p class="mb-4 text-justify">You can set your browser not to accept cookies and
+                                        <p data-translate class="mb-4 text-justify">You can set your browser not to accept cookies and
                                             the above website shall tell you
                                             how to remove them from your browser. However, in a few cases, some of our
                                             website features may not function
                                             as a result.</p>
                                     </div>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Other Websites</h2>
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Other Websites</h2>
 
-                                    <p class="mb-4 text-justify">Our website contains links to other websites. This
+                                    <p data-translate class="mb-4 text-justify">Our website contains links to other websites. This
                                         privacy policy only applies to this
                                         website so when you link to other websites you should read their privacy
                                         policies.</p>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Changes to Our
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">Changes to Our
                                         Privacy Policy</h2>
 
-                                    <p class="mb-4 text-justify">We keep our privacy policy under regular review and we
+                                    <p data-translate class="mb-4 text-justify">We keep our privacy policy under regular review and we
                                         will place any updates on this
                                         webpage.</p>
 
-                                    <h2 class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">How to Contact Us
+                                    <h2 data-translate class="text-slate-600 mt-8 border-l-4 border-blue-500 pl-4">How to Contact Us
                                     </h2>
 
                                     <div class="contact-box">
-                                        <h4 class="text-slate-600 mt-5">Contact Information</h4>
-                                        <p class="mb-4 text-justify">Please contact us if you have any questions about
+                                        <h4 data-translate class="text-slate-600 mt-5">Contact Information</h4>
+                                        <p data-translate class="mb-4 text-justify">Please contact us if you have any questions about
                                             our privacy policy or information
                                             we hold about you. Please consult our customer service representative.</p>
-                                        <p class="mb-4 text-justify"><strong>Email:</strong> <a
+                                        <p data-translate class="mb-4 text-justify"><strong>Email:</strong> <a
                                                 href="mailto:Comments@Trivago.com"
                                                 class="text-blue-600 hover:text-blue-800 underline">Comments@Trivago.com</a>
                                         </p>
                                     </div>
 
                                     <div class="info-box">
-                                        <h3 class="text-slate-700 mt-6">Your Rights Summary</h3>
-                                        <div class="list-item">• Right to access your personal information</div>
-                                        <div class="list-item">• Right to correct inaccurate information</div>
-                                        <div class="list-item">• Right to opt-out of marketing communications</div>
-                                        <div class="list-item">• Right to understand how your data is used</div>
-                                        <div class="list-item">• Right to request removal of personal information</div>
+                                        <h3 data-translate class="text-slate-700 mt-6">Your Rights Summary</h3>
+                                        <div class="list-item" data-translate>• Right to access your personal information</div>
+                                        <div class="list-item" data-translate>• Right to correct inaccurate information</div>
+                                        <div class="list-item" data-translate>• Right to opt-out of marketing communications</div>
+                                        <div class="list-item" data-translate>• Right to understand how your data is used</div>
+                                        <div class="list-item" data-translate>• Right to request removal of personal information</div>
                                     </div>
                                 </div>
                             </div>
@@ -832,7 +832,7 @@
                 <div class="px-4 py-6">
                     <!-- Current Version -->
                     <div class="text-center mb-1 flex justify-between">
-                        <p class="text-gray-600">Current Version</p>
+                        <p data-translate class="text-gray-600">Current Version</p>
                         <p class="font-bold text-amber-600">v3.1</p>
                     </div>
                 </div>
@@ -962,3 +962,6 @@
     </body>
 
 </html>
+
+
+

@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
     <head>
@@ -22,14 +22,14 @@
         <!-- <script defer src="{{ url_for('static', filename='js/user.js') }}"></script> -->
     </head>
 
-    <body class="bg-gray-50 min-h-screen">
+    <body class="max-w-screen-sm mx-auto w-full bg-gray-50 min-h-screen">
         <!-- Header -->
-        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 px-4">
             <div class="flex items-center justify-start gap-8 text-white h-full">
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 class="text-white text-sm md:text-md font-bold">Manage Wallets</h1>
+                <h1 class="text-white text-sm font-bold">Manage Wallets</h1>
             </div>
         </header>
         <div class="max-w-4xl mx-auto px-4 py-8">
@@ -38,8 +38,8 @@
                 <div class="w-20 h-20 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="fas fa-wallet text-blue-600 text-3xl"></i>
                 </div>
-                <h2 class="text-lg md:text-3xl font-bold text-gray-900 mb-2">Manage Your Wallets</h2>
-                <p class="text-sm md:text-base text-gray-600">Connect multiple payment methods for seamless transactions</p>
+                <h2 class="text-lg font-bold text-gray-900 mb-2">Manage Your Wallets</h2>
+                <p class="text-sm text-gray-600">Connect multiple payment methods for seamless transactions</p>
             </div>
             <!-- Flash Messages -->
             <div id="flashMessages" class="hidden mb-6">
@@ -62,11 +62,11 @@
             <div id="walletSummary"
                 class="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-lg p-6 mb-6 hidden">
                 <div class="flex items-center justify-between mb-4">
-                    <h3 class="text-xs sm:text-lg font-semibold text-blue-900">Your Connected Wallets</h3>
+                    <h3 class="text-xs font-semibold text-blue-900">Your Connected Wallets</h3>
                     <span id="connectedCount"
-                        class="px-3 py-1 bg-blue-100 text-blue-800 text-[9px] sm:text-sm whitespace-nowrap rounded-full font-medium">0 Connected</span>
+                        class="px-3 py-1 bg-blue-100 text-blue-800 text-[9px] text-sm whitespace-nowrap rounded-full font-medium">0 Connected</span>
                 </div>
-                <div id="connectedWalletsList" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div id="connectedWalletsList" class="grid grid-cols-1 gap-4">
                     <!-- Connected wallets will be shown here -->
                 </div>
             </div>
@@ -81,13 +81,13 @@
                                     <i class="fab fa-bitcoin text-green-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm sm:text-xl font-bold text-gray-900">USDT Wallet</p>
-                                    <p class="text-xs sm:text-sm text-gray-600">Tether USD (TRC-20/ERC-20/Omni)</p>
+                                    <p class="text-sm font-bold text-gray-900">USDT Wallet</p>
+                                    <p class="text-xs text-gray-600">Tether USD (TRC-20/ERC-20/Omni)</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span id="usdt-status"
-                                    class="text-[8px] whitespace-nowrap sm:text-xs px-1 py-1 sm:px-3 sm:py-1 bg-gray-100 text-gray-700 rounded-full">Not
+                                    class="text-[8px] whitespace-nowrap text-xs px-1 py-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full">Not
                                     Connected</span>
                                 <button onclick="toggleWalletForm('usdt')" id="usdt-toggle-btn"
                                     class="text-blue-600 hover:text-blue-700">
@@ -134,7 +134,7 @@
                                                 <i class="fas fa-info-circle text-green-600 mt-1"></i>
                                                 <div>
                                                     <h5 class="font-medium text-green-800 mb-1">Supported Formats:</h5>
-                                                    <ul class="text-[8px] sm:text-sm text-green-700 space-y-1">
+                                                    <ul class="text-[8px] text-sm text-green-700 space-y-1">
                                                         <li>
                                                             •
                                                             <strong>TRC-20:</strong>
@@ -154,15 +154,15 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="flex gap-3 pt-4 text-xs sm:text-sm whitespace-nowrap">
+                                        <div class="flex gap-3 pt-4 text-xs whitespace-nowrap">
                                             <button type="submit"
-                                                class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-2 sm:py-3 sm:px-6 rounded-lg transition-all">
+                                                class="flex-1 bg-green-500 hover:bg-green-600 text-white font-semibold py-1 px-2 py-3 px-6 rounded-lg transition-all">
                                                 <i class="fas fa-link mr-2"></i>
-                                                <span id="usdt-btn-text text-xs sm:text-sm">Bind USDT Wallet</span>
+                                                <span id="usdt-btn-text text-xs">Bind USDT Wallet</span>
                                             </button>
                                             <button type="button" onclick="cancelWalletForm('usdt')"
-                                                class="py-1 px-2 sm:py-3 sm:px-6 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                                                <i class="fas fa-times mr-2 text-xs sm:text-sm"></i>
+                                                class="py-1 px-2 py-3 px-6 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                                <i class="fas fa-times mr-2 text-xs"></i>
                                                 Cancel
                                             </button>
                                         </div>
@@ -181,13 +181,13 @@
                                     <i class="fab fa-ethereum text-purple-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm sm:text-xl font-bold text-gray-900">Ethereum Wallet</p>
-                                    <p class="text-xs sm:text-sm text-gray-600">Ethereum (ETH) wallet address</p>
+                                    <p class="text-sm font-bold text-gray-900">Ethereum Wallet</p>
+                                    <p class="text-xs text-gray-600">Ethereum (ETH) wallet address</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span id="eth-status"
-                                    class="text-[8px] whitespace-nowrap sm:text-xs px-1 py-1 sm:px-3 sm:py-1 bg-gray-100 text-gray-700 rounded-full">Not
+                                    class="text-[8px] whitespace-nowrap text-xs px-1 py-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full">Not
                                     Connected</span>
                                 <button onclick="toggleWalletForm('eth')" id="eth-toggle-btn"
                                     class="text-blue-600 hover:text-blue-700">
@@ -235,7 +235,7 @@
                                                 <div>
                                                     <h5 class="font-medium text-purple-800 mb-1">Ethereum Address
                                                         Format:</h5>
-                                                    <ul class="text-[8px] sm:text-sm text-purple-700 space-y-1">
+                                                    <ul class="text-[8px] text-sm text-purple-700 space-y-1">
                                                         <li>• Must start with '0x'</li>
                                                         <li>• Followed by exactly 40 hexadecimal characters</li>
                                                         <li>• Example: 0x742d35Cc6634C0532925a3b8D40Ec6a</li>
@@ -243,15 +243,15 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="flex gap-3 pt-4 text-xs sm:text-sm whitespace-nowrap">
+                                        <div class="flex gap-3 pt-4 text-xs whitespace-nowrap">
                                             <button type="submit"
-                                                class="flex-1 bg-purple-500 hover:bg-purple-600 text-white font-semibold py-1 px-2 sm:py-3 sm:px-6 rounded-lg transition-all">
+                                                class="flex-1 bg-purple-500 hover:bg-purple-600 text-white font-semibold py-1 px-2 py-3 px-6 rounded-lg transition-all">
                                                 <i class="fas fa-link mr-2"></i>
-                                                <span id="eth-btn-text text-xs sm:text-sm">Bind ETH Wallet</span>
+                                                <span id="eth-btn-text text-xs">Bind ETH Wallet</span>
                                             </button>
                                             <button type="button" onclick="cancelWalletForm('eth')"
-                                                class="py-1 px-2 sm:py-3 sm:px-6 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                                                <i class="fas fa-times mr-2 text-xs sm:text-sm"></i>
+                                                class="py-1 px-2 py-3 px-6 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                                <i class="fas fa-times mr-2 text-xs"></i>
                                                 Cancel
                                             </button>
                                         </div>
@@ -270,13 +270,13 @@
                                     <i class="fab fa-paypal text-yellow-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm sm:text-xl font-bold text-gray-900">PayPal Account</p>
-                                    <p class="text-xs sm:text-sm text-gray-600">PayPal email address</p>
+                                    <p class="text-sm font-bold text-gray-900">PayPal Account</p>
+                                    <p class="text-xs text-gray-600">PayPal email address</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span id="paypal-status"
-                                    class="text-[8px] whitespace-nowrap sm:text-xs px-1 py-1 sm:px-3 sm:py-1 bg-gray-100 text-gray-700 rounded-full">Not
+                                    class="text-[8px] whitespace-nowrap text-xs px-1 py-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full">Not
                                     Connected</span>
                                 <button onclick="toggleWalletForm('paypal')" id="paypal-toggle-btn"
                                     class="text-blue-600 hover:text-blue-700">
@@ -325,7 +325,7 @@
                                                 <div>
                                                     <h5 class="font-medium text-yellow-800 mb-1">PayPal Requirements:
                                                     </h5>
-                                                    <ul class="text-[8px] sm:text-sm text-yellow-700 space-y-1">
+                                                    <ul class="text-[8px] text-sm text-yellow-700 space-y-1">
                                                         <li>• Use your verified PayPal email address</li>
                                                         <li>• Account must be active and in good standing</li>
                                                         <li>• Ensure your account can receive payments</li>
@@ -333,14 +333,14 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="flex gap-3 pt-4 pt-4 text-xs sm:text-sm whitespace-nowrap">
+                                        <div class="flex gap-3 pt-4 pt-4 text-xs whitespace-nowrap">
                                             <button type="submit"
-                                                class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1 px-2 sm:py-3 sm:px-6 rounded-lg transition-all">
+                                                class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold py-1 px-2 py-3 px-6 rounded-lg transition-all">
                                                 <i class="fas fa-link mr-2"></i>
                                                 <span id="paypal-btn-text">Bind PayPal Account</span>
                                             </button>
                                             <button type="button" onclick="cancelWalletForm('paypal')"
-                                                class="py-1 px-2 sm:py-3 sm:px-6 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                                class="py-1 px-2 py-3 px-6 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
                                                 <i class="fas fa-times mr-2"></i>
                                                 Cancel
                                             </button>
@@ -360,14 +360,14 @@
                                     <i class="fas fa-university text-blue-600 text-xl"></i>
                                 </div>
                                 <div>
-                                    <p class="text-sm sm:text-xl font-bold text-gray-900">Revolut Account</p>
-                                    <p class="text-xs sm:text-sm text-gray-600">Revolut email or phone number with additional
+                                    <p class="text-sm font-bold text-gray-900">Revolut Account</p>
+                                    <p class="text-xs text-gray-600">Revolut email or phone number with additional
                                         details</p>
                                 </div>
                             </div>
                             <div class="flex items-center gap-2">
                                 <span id="revolut-status"
-                                    class="text-[8px] whitespace-nowrap sm:text-xs px-1 py-1 sm:px-3 sm:py-1 bg-gray-100 text-gray-700 rounded-full">
+                                    class="text-[8px] whitespace-nowrap text-xs px-1 py-1 px-3 py-1 bg-gray-100 text-gray-700 rounded-full">
                                     Not
                                     Connected
                                 </span>
@@ -383,7 +383,7 @@
                                 <div class="flex items-center justify-between">
                                     <div class="w-full">
                                         <p class="text-sm text-blue-600 font-medium">Connected Account:</p>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-2">
+                                        <div class="grid grid-cols-1 gap-3 mt-2">
                                             <div>
                                                 <p class="text-xs text-blue-500">Contact:</p>
                                                 <p class="text-blue-800 font-mono text-sm" id="revolut-display-address">
@@ -482,7 +482,7 @@
                                                 <div>
                                                     <h5 class="font-medium text-blue-800 mb-1">Revolut Requirements:
                                                     </h5>
-                                                    <ul class="text-[8px] sm:text-sm text-blue-700 space-y-1">
+                                                    <ul class="text-[8px] text-sm text-blue-700 space-y-1">
                                                         <li>• All fields are required for Revolut transfers</li>
                                                         <li>• Account must be active and verified</li>
                                                         <li>• IBAN format: 2 letters + 2 digits + alphanumeric
@@ -494,15 +494,15 @@
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="flex gap-1 sm:gap-3 pt-4 text-xs sm:text-sm whitespace-nowrap">
+                                        <div class="flex gap-1 gap-3 pt-4 text-xs whitespace-nowrap">
                                             <button type="submit"
-                                                class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-2 sm:py-3 sm:px-6 rounded-lg transition-all">
+                                                class="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-semibold py-1 px-2 py-3 px-6 rounded-lg transition-all">
                                                 <i class="fas fa-link mr-2"></i>
-                                                <span id="revolut-btn-text text-xs sm:text-sm">Bind Revolut Account</span>
+                                                <span id="revolut-btn-text text-xs">Bind Revolut Account</span>
                                             </button>
                                             <button type="button" onclick="cancelWalletForm('revolut')"
-                                                class="py-1 px-2 sm:py-3 sm:px-6 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
-                                                <i class="fas fa-times mr-2 text-xs sm:text-sm"></i>
+                                                class="py-1 px-2 py-3 px-6 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                                <i class="fas fa-times mr-2 text-xs"></i>
                                                 Cancel
                                             </button>
                                         </div>
@@ -576,7 +576,7 @@ function loadWalletData() {
             } else if (data.wallet_bound && data.wallet_type && data.wallet_address) {
                 const walletType = data.wallet_type.toLowerCase();
                 
-                // ✅ FIXED: Create proper wallet object instead of just storing address
+                // âœ… FIXED: Create proper wallet object instead of just storing address
                 walletData[walletType] = {
                     address: data.wallet_address,
                     type: data.wallet_type,
@@ -609,7 +609,7 @@ function loadWalletData() {
     walletTypes.forEach(type => {
         
         if (walletData[type]) {            
-            // ✅ FIXED: Pass the full wallet object, not just the address
+            // âœ… FIXED: Pass the full wallet object, not just the address
             setWalletConnected(type, walletData[type]);
             connectedCount++;
         } else {
@@ -1090,3 +1090,6 @@ function loadWalletData() {
     </body>
 
 </html>
+
+
+

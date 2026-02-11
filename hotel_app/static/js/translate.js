@@ -677,10 +677,10 @@ if (document.readyState === 'loading') {
     initializeTranslationSystem();
 }
 
-console.log('🌍 Optimized Translation System Loaded!');
-console.log('💡 Useful commands:');
-console.log('  - getTranslationStats() - View translation statistics');
-console.log('  - exportTranslationCache() - Export cache as JSON file');
-console.log('  - importTranslationCache(json) - Import cache from JSON');
-console.log('  - preTranslateLanguage("es") - Pre-translate all content for a language');
-console.log('  - clearTranslationCache() - Clear all cached translations');
+// console.log('🌍 Optimized Translation System Loaded!');
+// console.log('💡 Useful commands:');
+// console.log('  - getTranslationStats() - View translation statistics');
+// console.log('  - exportTranslationCache() - Export cache as JSON file');
+// console.log('  - importTranslationCache(json) - Import cache from JSON');
+// console.log('  - preTranslateLanguage("es") - Pre-translate all content for a language');
+// console.log('  - clearTranslationCache() - Clear all cached translations');

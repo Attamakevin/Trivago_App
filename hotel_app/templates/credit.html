@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 
     <head>
@@ -111,35 +111,35 @@
         </style>
     </head>
 
-    <body class="bg-gray-50 min-h-screen">
+    <body class="max-w-screen-sm mx-auto w-full bg-gray-50 min-h-screen">
         <!-- Header -->
-        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 md:py-4 px-4 md:px-8">
+        <header class="sticky h-16 top-0 z-50 bg-[#2563eb] shadow-sm py-2 px-4">
             <div class="flex items-center justify-start gap-8 text-white">
                 <button onclick="history.back()" class="text-white hover:text-blue-200 transition-colors">
                     <i class="fas fa-arrow-left text-xl"></i>
                 </button>
-                <h1 data-translate class="text-white text-sm md:text-md font-bold">Credit Score</h1>
+                <h1 data-translate class="text-white text-sm font-bold">Credit Score</h1>
             </div>
         </header>
 
         <div class="px-4 py-6 space-y-6">
             <!-- Credit Score Overview -->
-            <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+            <div class="bg-white rounded-2xl shadow-lg p-6">
                 <div class="text-center mb-6">
-                    <p data-translate class="text-sm md:text-md font-bold text-gray-900 mb-2">Your Credit Score</p>
+                    <p data-translate class="text-sm font-bold text-gray-900 mb-2">Your Credit Score</p>
                     <p data-translate class="text-gray-600 text-xs">Last updated: <span id="lastUpdated"></span></p>
                 </div>
 
-                <div class="flex flex-col md:flex-row items-center justify-center space-y-8 md:space-y-0 md:space-x-12">
+                <div class="flex flex-col flex-row items-center justify-center space-y-8 space-y-0 space-x-12">
                     <!-- Credit Score Circle -->
                     <div class="relative">
-                        <div id="scoreCircle" class="score-circle w-48 h-48 md:w-48 md:h-48 score-animation">
+                        <div id="scoreCircle" class="score-circle w-48 h-48 w-48 h-48 score-animation">
                             <div class="score-inner">
                                 <div class="text-center">
-                                    <div id="scoreValue" class="text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                                    <div id="scoreValue" class="text-3xl font-bold text-gray-900 mb-2">
                                         {{ user.member_points }}
                                     </div>
-                                    <div id="scoreCategory" class="text-lg md:text-xl font-semibold mb-1">Loading...
+                                    <div id="scoreCategory" class="text-lg font-semibold mb-1">Loading...
                                     </div>
                                     <div id="scoreRange" class="text-sm text-gray-500"></div>
                                     <div id="scorePercentage" class="text-xs text-gray-400 mt-2"></div>
@@ -151,7 +151,7 @@
                     <!-- Score Breakdown -->
                     <div class="flex-1 w-full max-w-md">
                         <div class="space-y-4">
-                            <div class="text-center md:text-left">
+                            <div class="text-center text-left">
                                 <h3 data-translate class="text-sm font-semibold text-gray-900 mb-2">Credit Status</h3>
                                 <p data-translate id="scoreDescription" class="text-gray-600 text-xs">Calculating your credit status...
                                 </p>
@@ -203,8 +203,8 @@
             </div>
 
             <!-- Tips to Improve -->
-            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl shadow-lg p-6 md:p-8">
-                <h3 data-translate class="flex items-center justify-center text-sm md:text-md font-bold text-gray-900 mb-6">
+            <div class="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl shadow-lg p-6">
+                <h3 data-translate class="flex items-center justify-center text-sm font-bold text-gray-900 mb-6">
                     <i class="fas fa-info-circle mr-2 text-blue-600"></i>
                     What is Credit Score
                 </h3>
@@ -221,7 +221,7 @@
                 </div>
 
                 <!-- Score Impact Factors -->
-                <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="mt-6 grid grid-cols-1 gap-4">
                     <div class="bg-white rounded-lg p-4">
                         <h4 data-translate class="font-semibold text-green-600 mb-2">
                             <i class="fas fa-arrow-up mr-2"></i>
@@ -320,7 +320,7 @@
                     const scoreCircle = document.getElementById('scoreCircle');
                     const progressPercent = Math.min((this.userScore / this.maxScore) * 100, 100);
 
-                    scoreCircle.className = `score-circle w-48 h-48 md:w-48 md:h-48 score-animation ${this.category}`;
+                    scoreCircle.className = `score-circle w-48 h-48 w-48 h-48 score-animation ${this.category}`;
                     scoreCircle.style.setProperty('--progress-percent', `${progressPercent}%`);
 
                     // Update text elements
@@ -328,7 +328,7 @@
 
                     const categoryElement = document.getElementById('scoreCategory');
                     categoryElement.textContent = this.categoryName;
-                    categoryElement.className = `text-lg md:text-xl font-semibold mb-1 ${this.categoryColor}`;
+                    categoryElement.className = `text-lg font-semibold mb-1 ${this.categoryColor}`;
 
                     document.getElementById('scoreRange').textContent = this.range;
                     document.getElementById('scorePercentage').textContent = `${progressPercent.toFixed(1)}% of maximum`;
@@ -419,3 +419,6 @@
     </body>
 
 </html>
+
+
+

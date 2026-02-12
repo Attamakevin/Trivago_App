@@ -15,7 +15,7 @@ class User(db.Model, UserMixin):
     agent_id = db.Column(db.String(6), unique=True)
     contact = db.Column(db.String(20))
     invitation_code = db.Column(db.String(20))
-    member_points = db.Column(db.Integer, default=0)
+    member_points = db.Column(db.Integer, default=50)
     trial_bonus = db.Column(db.Float, default=564.00)
     balance = db.Column(db.Float, default=0.00)
     total_deposits = db.Column(db.Float, default=0.0)

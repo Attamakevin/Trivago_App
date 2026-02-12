@@ -202,13 +202,13 @@ def register_post():
             isp=location_data['isp'],
             last_location_update=datetime.utcnow()
         )
+        User.member_points = 50
         db.session.add(new_user)
         db.session.commit()
 
         # Clear captcha from session after successful registration
         session.pop('captcha_code', None)
         new_user.trial_bonus = 564.00
-        User.member_points = 50
         flash('Registration successful! ', 'success')
         return redirect(url_for('auth'))  # Redirect to login form
     

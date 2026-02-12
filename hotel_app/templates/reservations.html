@@ -499,7 +499,7 @@
                                     <i class="fas fa-gift text-xl"></i>
                                 </div>
                             </div>
-                            <div class="text-xl font-bold mb-1">€<span id="trialBonusCardDisplay">0.00</span></div>
+                            <div class="text-xl font-bold mb-1">{{user.currency}}<span id="trialBonusCardDisplay">0.00</span></div>
                             <p data-translate class="text-sm text-[#101f56]">Trial Bonus</p>
                         </div>
 
@@ -511,7 +511,7 @@
                                     <i class="fas fa-wallet text-xl text-teal-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl font-bold mb-1" id="accountBalanceDisplay">€0.00</div>
+                            <div class="text-xl font-bold mb-1" id="accountBalanceDisplay">{{user.currency}}0.00</div>
                             <p data-translate class="text-[#101f56] text-sm">Account Balance</p>
                             <p data-translate class="text-xs text-[#101f56] mt-1">Available for withdrawal</p>
                         </div>
@@ -524,7 +524,7 @@
                                     <i class="fas fa-chart-line text-xl text-orange-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl font-bold mb-1" id="totalCommissionDisplay">€0.00</div>
+                            <div class="text-xl font-bold mb-1" id="totalCommissionDisplay">{{user.currency}}0.00</div>
                             <p data-translate class="text-[#101f56] text-sm">Earned Commission</p>
                             <p data-translate class="text-xs text-[#101f56] mt-1">Total earnings</p>
                         </div>
@@ -537,7 +537,7 @@
                                     <i class="fas fa-piggy-bank text-xl text-purple-600"></i>
                                 </div>
                             </div>
-                            <div class="text-xl font-bold mb-1" id="freezingAmountDisplaye">€{{ user.total_deposits }}
+                            <div class="text-xl font-bold mb-1" id="freezingAmountDisplaye">{{user.currency}}{{ user.total_deposits }}
                             </div>
                             <p data-translate class="text-[#101f56] text-sm">Freezing Amount</p>
 
@@ -581,7 +581,7 @@
                         <p data-translate id="luxurySuccessMessage" class="text-gray-600 mb-6">Your luxury order has
                             been successfully claimed!</p>
                         <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                            <span id="luxuryAmountCredited" class="text-lg font-bold text-green-600">€0.00</span>
+                            <span id="luxuryAmountCredited" class="text-lg font-bold text-green-600">{{user.currency}}0.00</span>
                             <p data-translate class="text-xs text-green-600 mt-1">Added to your account balance</p>
                         </div>
                         <button onclick="closeLuxurySuccessModal()"
@@ -637,7 +637,7 @@
                         <p data-translate id="goldenEggSuccessMessage" class="text-gray-600 mb-6">Your golden egg has
                             been successfully claimed!</p>
                         <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                            <span id="goldenEggAmountCredited" class="text-lg font-bold text-green-600">€.00</span>
+                            <span id="goldenEggAmountCredited" class="text-lg font-bold text-green-600">{{user.currency}}.00</span>
                             <p data-translate class="text-xs text-green-600 mt-1">Added to your account balance</p>
                         </div>
                         <button onclick="closeGoldenEggSuccessModal()"
@@ -674,7 +674,7 @@
                                         </div>
                                         <div
                                             class="absolute top-3 left-3 bg-blue-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                                            €{{ "%.2f"|format(current_hotel_data.commission) }} Commission
+                                            {{user.currency}}{{ "%.2f"|format(current_hotel_data.commission) }} Commission
                                         </div>
                                     </div>
                                     <div class="p-4">
@@ -683,7 +683,7 @@
                                         <div class="flex items-center justify-between mb-3">
                                             <p class="text-gray-600 text-sm mb-3">
                                                 {{ current_hotel_data.hotel.location }}</p>
-                                            <span class="text-lg font-bold text-green-600">€{{
+                                            <span class="text-lg font-bold text-green-600">{{user.currency}}{{
                                                 "%.2f"|format(current_hotel_data.hotel.price) }}</span>
                                         </div>
                                         {% if current_hotel_data.assigned_at %}
@@ -715,7 +715,7 @@
                                             <div class="flex items-center justify-between">
                                                 <span class="text-sm font-medium text-blue-800">Your Commission</span>
                                                 <span class="text-lg font-bold text-blue-600">
-                                                    € {{ "%.2f"|format(current_hotel_data.commission) }}
+                                                    {{user.currency}} {{ "%.2f"|format(current_hotel_data.commission) }}
                                                     x
                                                     {{ "%.2f"|format(current_hotel_data.hotel.commission_multiplier or 1.0) }}
                                                 </span>
@@ -806,8 +806,8 @@
                                                 <p><i
                                                         class="fas fa-calendar mr-2"></i>{{ reservation.created_at.strftime('%B %d, %Y at %I:%M %p') }}
                                                 </p>
-                                                <p>Price: €{{ "%.2f"|format(reservation.price) }}</p>
-                                                <p><i class="fas fa-coins mr-2"></i>Commission Earned: €{{
+                                                <p>Price: {{user.currency}}{{ "%.2f"|format(reservation.price) }}</p>
+                                                <p><i class="fas fa-coins mr-2"></i>Commission Earned: {{user.currency}}{{
                                                     "%.2f"|format(reservation.commission) }}</p>
                                                 {% if reservation.commission_paid %}
                                                 <p class="text-green-600"><i
@@ -1130,8 +1130,8 @@
                     // Account Balance
                     const accountBalanceDisplay = document.getElementById('accountBalanceDisplay');
                     if (accountBalanceDisplay) {
-                        accountBalanceDisplay.textContent = `€${currentUserBalance.toFixed(2)}`;
-                        console.log('Set account balance to:', `€${currentUserBalance.toFixed(2)}`);
+                        accountBalanceDisplay.textContent = `{{user.currency}}${currentUserBalance.toFixed(2)}`;
+                        console.log('Set account balance to:', `{{user.currency}}${currentUserBalance.toFixed(2)}`);
                     }
 
                     // Trial Bonus (Top Card)
@@ -1158,8 +1158,8 @@
                     // Total Commission
                     const totalCommissionDisplay = document.getElementById('totalCommissionDisplay');
                     if (totalCommissionDisplay) {
-                        totalCommissionDisplay.textContent = `€${currentTotalCommission.toFixed(2)}`;
-                        console.log('Set total commission to:', `€${currentTotalCommission.toFixed(2)}`);
+                        totalCommissionDisplay.textContent = `{{user.currency}}${currentTotalCommission.toFixed(2)}`;
+                        console.log('Set total commission to:', `{{user.currency}}${currentTotalCommission.toFixed(2)}`);
                     }
 
                     // Check freezing card visibility
@@ -1176,7 +1176,7 @@
 
                     const accountBalanceDisplay = document.getElementById('accountBalanceDisplay');
                     if (accountBalanceDisplay) {
-                        accountBalanceDisplay.textContent = `€${currentUserBalance.toFixed(2)}`;
+                        accountBalanceDisplay.textContent = `{{user.currency}}${currentUserBalance.toFixed(2)}`;
                     }
 
                     updateFreezingCardAmount(currentUserBalance);
@@ -1186,7 +1186,7 @@
                 function updateFreezingCardAmount(balance) {
                     const freezingAmountDisplay = document.getElementById('freezingAmountDisplay');
                     if (freezingAmountDisplay) {
-                        freezingAmountDisplay.textContent = `€${Math.abs(balance).toFixed(2)}`;
+                        freezingAmountDisplay.textContent = `{{user.currency}}${Math.abs(balance).toFixed(2)}`;
                     }
                 }
 
@@ -1587,7 +1587,7 @@
                     const formattedOrder = {
                         id: Math.random().toString(36).substr(2, 9),
                         title: luxuryData.hotel_name || 'Luxury Hotel Order',
-                        description: `Base Commission: €${(luxuryData.base_commission || 0).toFixed(2)} × ${luxuryData.luxury_multiplier || 1}x multiplier = €${(luxuryData.luxury_commission || 0).toFixed(2)}`,
+                        description: `Base Commission: {{user.currency}}${(luxuryData.base_commission || 0).toFixed(2)} × ${luxuryData.luxury_multiplier || 1}x multiplier = {{user.currency}}${(luxuryData.luxury_commission || 0).toFixed(2)}`,
                         amount: luxuryData.luxury_commission || 0,
                         base_commission: luxuryData.base_commission || 0,
                         luxury_multiplier: luxuryData.luxury_multiplier || 1,
@@ -1620,11 +1620,11 @@
                                 <p class="text-sm text-gray-600 text-center mb-3">${order.description || 'Special luxury commission available'}</p>
                                 <div class="bg-white rounded-lg p-3 mb-4 border border-yellow-200">
                                     <div class="flex items-center justify-center">
-                                        <span class="text-2xl font-bold text-green-600">€${Math.abs(order.amount || 0).toFixed(2)}</span>
+                                        <span class="text-2xl font-bold text-green-600">{{user.currency}}${Math.abs(order.amount || 0).toFixed(2)}</span>
                                     </div>
                                     <p class="text-xs text-green-600 text-center mt-1">Total Commission</p>
                                     ${order.projected_balance !== undefined ? `
-                                        <p class="text-xs text-gray-500 text-center mt-1">New Balance: €${order.projected_balance.toFixed(2)}</p>
+                                        <p class="text-xs text-gray-500 text-center mt-1">New Balance: {{user.currency}}${order.projected_balance.toFixed(2)}</p>
                                     ` : ''}
                                 </div>
                                 <div class="flex gap-2">
@@ -1685,9 +1685,9 @@
                                 closeLuxuryOrderModal();
 
                                 document.getElementById('luxurySuccessMessage').textContent =
-                                    data.message || `Luxury order confirmed! Commission: €${(data.luxury_commission || 0).toFixed(2)}`;
+                                    data.message || `Luxury order confirmed! Commission: {{user.currency}}${(data.luxury_commission || 0).toFixed(2)}`;
                                 document.getElementById('luxuryAmountCredited').textContent =
-                                    `€${Math.abs(data.luxury_commission || 0).toFixed(2)}`;
+                                    `{{user.currency}}${Math.abs(data.luxury_commission || 0).toFixed(2)}`;
 
                                 if (data.new_balance !== undefined) {
                                     updateAllBalanceDisplays(data.new_balance);
@@ -1760,7 +1760,7 @@
                         const rewardDisplay = document.getElementById('eggRewardDisplay');
                         document.getElementById('rewardTitle').textContent = 'Congratulations!';
                         document.getElementById('rewardDescription').textContent = 'You found a golden reward!';
-                        document.getElementById('rewardAmount').textContent = `€${reward.toFixed(2)}`;
+                        document.getElementById('rewardAmount').textContent = `{{user.currency}}${reward.toFixed(2)}`;
 
                         rewardDisplay.classList.remove('hidden');
                     }, 1000);
@@ -1789,9 +1789,9 @@
                             closeGoldenEggsModal();
 
                             document.getElementById('goldenEggSuccessMessage').textContent =
-                                `Golden egg reward claimed! €${currentGoldenEgg.reward.toFixed(2)} added to your balance.`;
+                                `Golden egg reward claimed! {{user.currency}}${currentGoldenEgg.reward.toFixed(2)} added to your balance.`;
                             document.getElementById('goldenEggAmountCredited').textContent =
-                                `€${currentGoldenEgg.reward.toFixed(2)}`;
+                                `{{user.currency}}${currentGoldenEgg.reward.toFixed(2)}`;
 
                             document.getElementById('goldenEggSuccessModal').classList.remove('hidden');
                             currentGoldenEgg = null;
@@ -2043,7 +2043,7 @@
                         const rewardDisplay = document.getElementById('eggRewardDisplay');
                         document.getElementById('rewardTitle').textContent = 'Congratulations!';
                         document.getElementById('rewardDescription').textContent = title || 'You found a golden reward!';
-                        document.getElementById('rewardAmount').textContent = `€${reward.toFixed(2)}`;
+                        document.getElementById('rewardAmount').textContent = `{{user.currency}}${reward.toFixed(2)}`;
 
                         rewardDisplay.classList.remove('hidden');
                     }, 1000);
@@ -2091,9 +2091,9 @@
 
                                 // Show success modal
                                 document.getElementById('goldenEggSuccessMessage').textContent =
-                                    data.message || `Golden egg claimed! €${data.amount_credited.toFixed(2)} credited to your account.`;
+                                    data.message || `Golden egg claimed! {{user.currency}}${data.amount_credited.toFixed(2)} credited to your account.`;
                                 document.getElementById('goldenEggAmountCredited').textContent =
-                                    `€${data.amount_credited.toFixed(2)}`;
+                                    `{{user.currency}}${data.amount_credited.toFixed(2)}`;
 
                                 document.getElementById('goldenEggSuccessModal').classList.remove('hidden');
 

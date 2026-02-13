@@ -397,10 +397,10 @@
             </div>
         </header>
 
-        <div class="px-4 py-6 space-y-8 bg-cover bg-center"
+        <div class="px-4 py-5 space-y-8 bg-cover bg-center"
             style="background-image: url('{{ url_for('static', filename='images/hotel-5.jpg') }}')">
             <!-- Reservation Stats Section -->
-            <div class="flex flex-col flex-row items-center justify-between p-6">
+            <div class="flex flex-row items-center justify-between px-6 py-3">
                 <div class="mb-6 bg-white rounded-lg shadow-sm p-4 text">
                     <div class="text-sm font-bold text-purple-600 mb-2">
 
@@ -417,7 +417,7 @@
                             class="text-lg text-purple-600">{{ user.vip_level }}</span></p>
                 </div>
 
-                <div class="flex flex-col flex-row gap-4 justify-center">
+                <div class="flex flex-col gap-4 justify-center">
                     <button data-translate onclick="openRulesModal()"
                         class="flex-1 flex-none bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-3 px-6 rounded-xl transition-colors flex items-center justify-center">
                         <i class="fas fa-book mr-2"></i>Rules & Guidelines
@@ -430,8 +430,8 @@
             </div>
 
             <!-- Dancing Hotel Logos Section -->
-            <div class="p-6 bg-[#101f56] text-[#f7b437] rounded-lg shadow-sm overflow-hidden">
-                <h3 data-translate class="text-xl font-bold text-center mb-6">Our Hotel Partners</h3>
+            <div class="px-6 py-3 bg-[#101f56] text-[#f7b437] rounded-lg shadow-sm overflow-hidden">
+                <h3 data-translate class="text-xl font-bold text-center mb-4">Our Hotel Partners</h3>
                 <div class="partners-showcase">
                     <div class="partners-track">
                         <div class="partner-card" style="--shine-delay:0s; --tilt-delay:0s;">
@@ -481,7 +481,7 @@
             <!-- Main Action Card -->
             <div class="overflow-hidden bg-[#101f56]">
                 <!-- Reservation Button -->
-                <div class="p-8 text-center">
+                <div class="px-8 py-8 text-center">
                     <button data-translate onclick="openReservationModal()"
                         class="bg-[#f7b437] hover:bg-[#f7b437] font-bold py-4 px-8 rounded-xl transition-colors text-sm text-white shadow-lg">
                         Make Reservation
@@ -489,8 +489,8 @@
                 </div>
 
                 <!-- Stats Grid -->
-                <div class="p-6">
-                    <div class="grid grid-cols-1 gap-4">
+                <div class="px-6 py-3">
+                    <div class="grid grid-cols-2 gap-4">
                         <!-- Trial Bonus Card -->
                         <div class="card-hover bg-[#f7b437] rounded-2xl p-6 text-white">
                             <div class="flex items-center justify-between mb-4">
